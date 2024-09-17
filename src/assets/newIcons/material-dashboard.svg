@@ -1,0 +1,17 @@
+<svg
+                      className="dashboard"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16.729"
+                      height="16.729"
+                      viewBox="0 0 16.729 16.729"
+                    >
+                      <path
+                        id="Icon_material-dashboard"
+                        data-name="Icon material-dashboard"
+                        d="M4.5,13.238h6.99V4.5H4.5Zm0,6.99h6.99V14.986H4.5Zm8.738,0h6.99V11.49h-6.99Zm0-15.729V9.743h6.99V4.5Z"
+                        transform="translate(-4 -4)"
+                        fill="none"
+                        stroke="#174f73"
+                        stroke-width="1"
+                      />
+                    </svg>

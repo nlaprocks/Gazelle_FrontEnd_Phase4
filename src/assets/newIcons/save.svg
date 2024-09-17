@@ -1,0 +1,46 @@
+<svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="11.769"
+                      height="11.769"
+                      viewBox="0 0 11.769 11.769"
+                    >
+                      <g
+                        id="Icon_feather-save"
+                        data-name="Icon feather-save"
+                        transform="translate(-4 -4)"
+                      >
+                        <path
+                          id="Path_20096"
+                          data-name="Path 20096"
+                          d="M14.072,15.269H5.7a1.2,1.2,0,0,1-1.2-1.2V5.7A1.2,1.2,0,0,1,5.7,4.5h6.581l2.991,2.991v6.581A1.2,1.2,0,0,1,14.072,15.269Z"
+                          transform="translate(0 0)"
+                          fill="none"
+                          stroke="#ffffff"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="1"
+                        />
+                        <path
+                          id="Path_20097"
+                          data-name="Path 20097"
+                          d="M16.483,24.286V19.5H10.5v4.786"
+                          transform="translate(-3.607 -9.017)"
+                          fill="none"
+                          stroke="#ffffff"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="1"
+                        />
+                        <path
+                          id="Path_20098"
+                          data-name="Path 20098"
+                          d="M10.5,4.5V7.491h4.786"
+                          transform="translate(-3.607 0)"
+                          fill="none"
+                          stroke="#ffffff"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="1"
+                        />
+                      </g>
+                    </svg>

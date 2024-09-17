@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="10.625" height="13.031" viewBox="0 0 10.625 13.031">
+  <g id="Group_123069" data-name="Group 123069" transform="translate(0.5 0.5)">
+    <g id="Icon_feather-file-plus" data-name="Icon feather-file-plus">
+      <path id="Path_20099" data-name="Path 20099" d="M12.015,3H7.2A1.2,1.2,0,0,0,6,4.2v9.625a1.2,1.2,0,0,0,1.2,1.2h7.218a1.2,1.2,0,0,0,1.2-1.2V6.609Z" transform="translate(-6 -3)" fill="none" stroke="#174f73" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      <path id="Path_20100" data-name="Path 20100" d="M21,3V6.609h3.609" transform="translate(-14.985 -3)" fill="none" stroke="#174f73" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+    </g>
+    <g id="Icon_feather-log-out" data-name="Icon feather-log-out" transform="translate(2.235 5.22)">
+      <path id="Path_21420" data-name="Path 21420" d="M24,14.8l2.148-2.148L24,10.5" transform="translate(-20.993 -10.5)" fill="none" stroke="#174f73" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      <path id="Path_21421" data-name="Path 21421" d="M18.654,18H13.5" transform="translate(-13.5 -15.852)" fill="none" stroke="#174f73" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+    </g>
+  </g>
+</svg>

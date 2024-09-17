@@ -1,0 +1,267 @@
+.save__controls {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  z-index: 4;
+  font-size: 12px;
+}
+
+.save__controls button {
+  margin-left: 5px;
+}
+.flow-actions {
+  height: 13%;
+  width: 133.5%;
+  overflow: hidden;
+  z-index: 3;
+  background-color: rgb(207, 207, 207);
+  text-align: left;
+}
+.flow-controls {
+  margin-bottom: 0px;
+}
+.react-flow__handle {
+  border: 1px solid black !important;
+  border-radius: 100% !important;
+  background-color: #fff !important;
+  height: 10px !important;
+
+  position: absolute !important;
+  width: 10px !important;
+}
+.react-flow__handle-top {
+  margin-top: -1px !important;
+}
+
+.react-flow__handle-bottom {
+  margin-bottom: -1px !important;
+}
+.react-flow__edge-path {
+  stroke-width: 2 !important;
+  stroke: #6a6a6a;
+}
+/* Node And Edges colors on Click*/
+
+.react-flow__edge.selected .react-flow__edge-path {
+  stroke: #174f73 !important;
+}
+.react-flow__node.selected .readFile {
+  background-color: #174f73;
+  color: #fff;
+}
+.react-flow__node.selected .price {
+  background-color: #174f73;
+  color: #fff;
+}
+.react-flow__node.selected .writeFile {
+  background-color: #174f73;
+  color: #fff;
+}
+.react-flow__node.selected .unique {
+  background-color: #174f73;
+  color: #fff;
+}
+.back-arrow {
+  margin-top: 1%;
+  margin-bottom: 0.3%;
+  margin-left: 6%;
+  background-color: transparent;
+  color: rgb(78, 79, 80);
+  width: 2%;
+  height: 60%;
+}
+.flow-actions p {
+  color: rgb(78, 79, 80);
+  position: absolute;
+  left: 9%;
+  top: 10.5%;
+}
+.flow-actions h6 {
+  color: black;
+  position: absolute;
+  left: 9%;
+  top: 14.5%;
+  font-size: 18px;
+}
+.edit-icon {
+  width: 4%;
+  padding: 12px;
+  height: 70%;
+  position: relative;
+  margin-top: 0%;
+  margin-left: 13%;
+  background-color: transparent;
+  color: rgb(13, 13, 14);
+  border-radius: 5px;
+  /* border-radius: 5px;
+  border:2px solid rgb(167, 167, 167); */
+}
+.run-button {
+  width: max-content;
+  top: 10.5%;
+  position: absolute;
+  height: 7%;
+  border-radius: 5px;
+
+  padding-left: 40px;
+  padding-right: 50px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  margin-left: 9%;
+  border: 1px solid rgb(122, 122, 122);
+  background-color: rgb(207, 207, 207);
+}
+.run-icon {
+  position: absolute;
+  margin-left: 5px;
+  top: 15px;
+}
+.exclamation-icon {
+  position: absolute;
+  left: 44.5%;
+  top: 13%;
+}
+.output-button {
+  font-weight: 500;
+  width: max-content;
+  top: 10.5%;
+  position: absolute;
+  height: 7%;
+  border-radius: 5px;
+  border: 1px solid rgb(122, 122, 122);
+  background-color: rgb(207, 207, 207);
+  padding-left: 30px;
+  padding-right: 30px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  margin-left: 28%;
+  cursor: pointer;
+}
+.create-button {
+  font-weight: 500;
+  width: max-content;
+  top: 10.5%;
+  position: absolute;
+  height: 7%;
+  border-radius: 5px;
+  border: 1px solid rgb(122, 122, 122);
+  background-color: rgb(207, 207, 207);
+  padding-left: 40px;
+  padding-right: 40px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  margin-left: 37.5%;
+  cursor: pointer;
+}
+.saveas-button {
+  width: max-content;
+  font-weight: 500;
+  top: 10.5%;
+  position: absolute;
+  height: 7%;
+  border-radius: 5px;
+  border: 1px solid rgb(122, 122, 122);
+  background-color: rgb(207, 207, 207);
+  padding-left: 40px;
+  padding-right: 40px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  margin-left: 51.5%;
+  cursor: pointer;
+}
+.save-button {
+  width: max-content;
+  top: 10.5%;
+  font-weight: 500;
+  position: absolute;
+  height: 7%;
+  border-radius: 5px;
+  border: 1px solid rgb(122, 122, 122);
+  background-color: rgb(207, 207, 207);
+  padding-left: 40px;
+  padding-right: 40px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  margin-left: 62.3%;
+  cursor: pointer;
+}
+.save-button:focus,
+.save-button:hover,
+.create-button:hover,
+.create-button:focus,
+.output-button:focus,
+.output-button:hover,
+.create-button:hover,
+.create-button:focus {
+  background-color: #000000;
+  color: white;
+}
+.saveas-button:hover,
+.saveas-button:focus,
+.run-button:focus,
+.run-button:hover {
+  background-color: #000000;
+  color: white;
+  cursor: pointer;
+}
+/* .modal-content {
+  overflow: scroll;
+} */
+.save-button-unsaved {
+  width: max-content;
+  top: 10.5%;
+  font-weight: 500;
+  position: absolute;
+  height: 7%;
+  border-radius: 5px;
+  border: 1px solid rgb(122, 122, 122);
+  background-color: rgb(17, 17, 17);
+  color: white;
+  padding-left: 40px;
+  padding-right: 40px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  margin-left: 62.3%;
+  cursor: pointer;
+}
+.save-button-unsaved:hover {
+  background-color: rgb(211, 211, 211) !important;
+  color: rgb(2, 2, 2) !important;
+  cursor: pointer;
+}
+
+.project-list-body {
+  margin-left: 15%;
+  margin-right: 15%;
+  margin-top: 2%;
+}
+.react-flow__container {
+  /* height: calc(100vh - 219px) !important; */
+  height: 100%;
+}
+.react-flow {
+  height: calc(100vh - 290px) !important;
+}
+.react-flow__controls {
+  z-index: 21 !important;
+}
+.react-flow__attribution.right {
+  /* display: none; */
+}
+.react-flow__edge-path {
+  cursor: pointer;
+}
+/* Targets */
+.xyz:hover .react-flow__handle-top {
+  background-color: red !important;
+}
+.xyz:hover .react-flow__handle-left {
+  background-color: red !important;
+}
+/* Source */
+.xyz:hover .react-flow__handle-right {
+  background-color: green !important;
+}
+.xyz:hover .react-flow__handle-bottom {
+  background-color: green !important;
+}

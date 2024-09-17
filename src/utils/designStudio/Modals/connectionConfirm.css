@@ -1,0 +1,199 @@
+.nladatabaseparametermodal .modal-dialog {
+  max-width: 80%;
+}
+
+.input-box input {
+  height: 37px;
+  box-shadow: none;
+  outline: none;
+  border: none;
+  background-color: #f3f9fa;
+  border-radius: 0px;
+  width: 100%;
+  border-radius: 5px;
+}
+
+.input-box input::placeholder {
+  font-size: 12px;
+}
+
+.search-icon-box input {
+  height: 37px;
+  box-shadow: none;
+  outline: none;
+  border: 0px;
+  background-color: #efefef;
+  border-radius: 0px;
+  width: 100%;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+/* .nladatabaseparametermodal input, */
+.nladatabaseparametermodal select {
+  box-shadow: none;
+  outline: none;
+  border: 0px;
+  background-color: #efefef;
+  border-radius: 0px;
+  width: 100%;
+  border-radius: 5px;
+}
+.nladatabaseparametermodal select {
+  padding: 6px 15px;
+  cursor: pointer;
+}
+.nladatabaseparametermodal .table-responsivev {
+  overflow-x: auto;
+  overflow-y: auto;
+}
+.nladatabaseparametermodal table {
+  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.1607843137);
+  border-radius: 10px;
+  /* max-width: 600px; */
+}
+.nladatabaseparametermodal table input,
+.nladatabaseparametermodal table select {
+  width: auto;
+}
+.nladatabaseparametermodal table thead {
+  background-color: #f3f9fa;
+}
+.nladatabaseparametermodal table thead th {
+  font-size: 18px;
+  color: #174f73;
+  padding: 15px 45px;
+  border: 0px;
+}
+.nladatabaseparametermodal table thead th:nth-child(1) {
+  padding: 15px 30px;
+}
+.nladatabaseparametermodal table tbody td {
+  padding: 10px 30px;
+  font-size: 14px;
+  color: #2a2725;
+  text-transform: capitalize;
+}
+.nladatabaseparametermodal table tbody tr {
+  border-bottom: 1px solid #e8e8e8;
+}
+.nladatabaseparametermodal table tbody select {
+  background-color: #f3f9fa;
+  margin: 0;
+  padding: 6px 31px 6px 15px;
+}
+.nladatabaseparametermodal .modal-content .modal-body .select_table-box select {
+  padding: 8px 20px;
+  margin: 0;
+}
+.nladatabaseparametermodal .modal-content .modal-body table tbody select {
+  padding: 8px 51px 8px 15px;
+  color: #535555;
+  font-weight: 400;
+}
+.nladatabaseparametermodal .custom-checkbox {
+  padding-left: 0px;
+  margin: 0;
+}
+.nladatabaseparametermodal .custom-checkbox input[type="checkbox"] + label:before {
+  background-color: transparent;
+  width: 20px;
+  height: 20px;
+  border-radius: 2px;
+  border: 1px solid rgba(0, 0, 0, 0.5);
+}
+.nladatabaseparametermodal .custom-checkbox input[type="checkbox"]:checked + label:before {
+  background-color: #174f73;
+}
+.nladatabaseparametermodal .custom-checkbox input[type="checkbox"]:checked + label::after {
+  left: 6px;
+  top: 9px;
+}
+.nladatabaseparametermodal .modal-footer {
+  padding-top: 0px;
+  padding-bottom: 15px;
+}
+.nladatabaseparametermodal .modal-footer .btn {
+  padding: 8px 30px;
+}
+.nladatabaseparametermodal input[type="search"] {
+  background-image: url("../../../assets/newIcons/Icon-feather-search.png");
+  background-repeat: no-repeat;
+  background-size: 12px;
+  background-position: 98%;
+}
+.nladatabaseparametermodal .table-responsive {
+  overflow-x: hidden;
+  overflow-y: auto;
+  height: 383px;
+  /* Scrollbar Styling */
+}
+.nladatabaseparametermodal .table-responsive::-webkit-scrollbar {
+  width: 4px;
+}
+.nladatabaseparametermodal .table-responsive::-webkit-scrollbar-track {
+  background-color: #ebebeb;
+  border-radius: 10px;
+}
+.nladatabaseparametermodal .table-responsive::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background: #707070;
+}
+.nladatabaseparametermodal .table-responsive tbody {
+  border-top: 2px solid transparent;
+}
+.padding-spacer {
+  padding-right: 15px;
+}
+
+.db_coonection-text p {
+  color: #555657;
+}
+.db_coonection-text h5 {
+  font-size: 18px;
+  color: #2a2725;
+}
+.form-check-input[type="checkbox"]:checked + label:after {
+  content: "";
+  position: absolute;
+  left: 1.5px;
+  top: 5px;
+  background: #ffffff;
+  width: 2px;
+  height: 2px;
+  box-shadow: 2px 0 0 #ffffff, 3px 0 0 #ffffff, 3px -2px 0 #ffffff, 3px -3px 0 #ffffff, 3px -5px 0 #ffffff,
+    3px -7px 0 #ffffff;
+  transform: rotate(45deg);
+}
+.datePickerWrapper input {
+  text-align: center;
+  cursor: pointer;
+}
+.dateTimeInput .react-datetime-picker__wrapper .react-datetime-picker__inputGroup__input {
+  all: unset !important;
+  min-width: 0.54em;
+  height: calc(100% - 2px);
+  position: relative;
+  padding: 1px;
+  border: 0;
+  background: none;
+  font: inherit;
+  box-sizing: content-box;
+}
+.datePickerWrapper {
+  margin: auto;
+  display: flex;
+}
+.dateTimeInput {
+  max-width: 350px;
+  width: 100%;
+  margin: auto;
+}
+.dateTimeInput .react-datetime-picker__inputGroup {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.dateTimeInput .react-datetime-picker__inputGroup > input {
+  width: fit-content !important;
+}
