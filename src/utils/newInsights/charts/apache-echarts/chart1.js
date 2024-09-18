@@ -190,13 +190,12 @@ const Bar = ({ isLoading }) => {
   return (
     <div>
       <div>
-        <label style={{ paddingRight: "20px" }}>
+        <label>
           <input
             type="radio"
             value="brand"
             checked={selectedChart === "brand"}
             onChange={() => setSelectedChart("brand")}
-            style={{ marginRight: "20px" }}
           />
           Brand Charts
         </label>

@@ -5,7 +5,11 @@ import Pagination from "./pagination/Pagination";
 
 const LiftChart = ({ isLoading }) => {
   const chart8Reducer = useSelector((state) => state.chart8Reducer);
+  console.log(chart8Reducer,"liftchar1");
+  
   const chartData = chart8Reducer?.chart8Data?.data;
+  console.log(chartData,"chartdata");
+  
   const [isStacked, setIsStacked] = React.useState(false);
   const [chartType, setChartType] = React.useState('line');
 
@@ -158,9 +162,9 @@ const LiftChart = ({ isLoading }) => {
       curve: 'straight',
       width: 4,
       // colors:["#ea580c","#14532d","#ef4444","#0ea5e9"]
-      colors:["#2c99f4","#fa518a","#f9be56","#b386e1"],
+      colors: ["#2c99f4", "#fa518a", "#f9be56", "#b386e1"],
     },
-    colors:["#2c99f4","#fa518a","#f9be56","#b386e1"],
+    colors: ["#2c99f4", "#fa518a", "#f9be56", "#b386e1"],
     legend: {
       position: 'top',
       horizontalAlign: 'center',

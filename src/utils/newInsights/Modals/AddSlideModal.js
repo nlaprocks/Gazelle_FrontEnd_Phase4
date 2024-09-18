@@ -13,6 +13,7 @@ const AddSlideModal = ({ showSlideModal, setShowSlideModal, callingQuestionsOnRe
     question: "",
     type: "",
   });
+
   const changeHandlerOnQuestion = (e) => {
     setAddSlide({ ...addSlide, question: e.target.value });
   };
@@ -55,6 +56,7 @@ const AddSlideModal = ({ showSlideModal, setShowSlideModal, callingQuestionsOnRe
       delete addSlideReducer.success;
     }
   }, [addSlideReducer]);
+  
   return (
     <Modal show={showSlideModal} onHide={handleClose} centered>
       <Modal.Header>

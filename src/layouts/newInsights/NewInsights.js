@@ -8,12 +8,14 @@ import TopBar from "../../utils/newInsights/topBar/TopBar";
 import TapWrapper from "../../utils/newInsights/tabWrapper/TapWrapper";
 
 const NewInsights = () => {
+
   const [showShareModal, setShowShareModal] = React.useState(false);
   const [sidebarState, setSidebarState] = useState(false);
 
   const sidebarHandler = () => {
     setSidebarState(!sidebarState);
   };
+
   return (
     <div>
       <Header />

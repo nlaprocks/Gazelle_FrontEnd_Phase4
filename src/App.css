@@ -396,3 +396,13 @@ input[list] {
   scrollbar-color: #888 #f0f0f0;
   /* Set the color of the thumb and track */
 }
+
+/* Disable pointer events to prevent zooming */
+/* .chart-container {
+  pointer-events: none; 
+} */
+
+/* Enable pointer events for the chart itself */
+/* .chart-container .apexcharts-canvas {
+  pointer-events: auto;
+} */

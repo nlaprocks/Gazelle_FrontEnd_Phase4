@@ -3,6 +3,7 @@ import ApexCharts from "react-apexcharts";
 import { useSelector } from "react-redux";
 
 const PromotionalLiftChart = ({ isLoading }) => {
+
   const chart7Reducer = useSelector((state) => state.chart7Reducer);
   const chart7Data = chart7Reducer?.chart7Data?.data;
   const [isStacked, setIsStacked] = React.useState(false);
@@ -25,25 +26,23 @@ const PromotionalLiftChart = ({ isLoading }) => {
             {
               name: "TPR",
               data: [],
-              type:chartType
+              type: chartType
             },
             {
               name: "Feature Only",
               data: [],
-              type:chartType
-
+              type: chartType
             },
             {
               name: "Display Only",
               data: [],
-              type:chartType
+              type: chartType
 
             },
             {
               name: "Feature and Display",
               data: [],
-              type:chartType
-
+              type: chartType
             },
           ],
         },
@@ -115,7 +114,6 @@ const PromotionalLiftChart = ({ isLoading }) => {
         fontSize: '16px',
       },
     },
-    
     xaxis: {
       categories: data.data.categories,
       labels: {
@@ -179,17 +177,17 @@ const PromotionalLiftChart = ({ isLoading }) => {
     stroke: {
       curve: 'straight',
       width: 0,
-      colors:["#ea580c","#14532d","#ef4444","#0ea5e9"]
+      colors: ["#ea580c", "#14532d", "#ef4444", "#0ea5e9"]
     },
     grid: {
-      show:false,
+      show: false,
       borderColor: '#e7e7e7',
       row: {
         colors: ['#f3f3f3', 'transparent'], // Takes an array of colors to alternate between
         opacity: 0.5,
       },
     },
-    colors:["#2c99f4","#fa518a","#f9be56","#b386e1"],
+    colors: ["#2c99f4", "#fa518a", "#f9be56", "#b386e1"],
     tooltip: {
       shared: true,
       intersect: false,

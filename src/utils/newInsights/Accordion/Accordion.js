@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import Accordion from "react-bootstrap/Accordion";
 import DropDown from "../../../components/dropDown/DropDown";
 import { ReactComponent as Edit } from "../../../assets/newIcons/Icon_feather-edit-2.svg";
@@ -44,8 +44,10 @@ const AccordionComp = ({
   filterDropDown,
   setFilterDropDown,
 }) => {
+
   const { model_id } = useParams();
   const dispatch = useDispatch();
+
   // console.log("filterDropDown::: ", filterDropDown);
   // ** this state is to keep the track of active filterDropDown
   const [clickedIndex, setClickedIndex] = React.useState(null);
@@ -87,18 +89,6 @@ const AccordionComp = ({
   const ref1 = React.useRef();
 
   useClickAway(ref, () => setDropDownState(false));
-  // console.log("id: ", id);
-  // useClickAway(ref1, () => setFilterDropDown(false));
-  // useClickAway(ref1, (event) => {
-  //   // Check if the click target is within the Ant Design Select dropdown
-  //   const selectDropdown = document.querySelector(".ant-select-dropdown");
-  //   if (selectDropdown && selectDropdown.contains(event.target)) {
-  //     // Clicked inside the Select dropdown, do nothing (keep it open)
-  //   } else {
-  //     // Clicked outside the Select dropdown, close it
-  //     setFilterDropDown(false);
-  //   }
-  // });
 
   React.useEffect(() => {
     setDeleteTakeaway({ ...deleteTakeaway, slide_id: value.id });
@@ -167,8 +157,10 @@ const AccordionComp = ({
   const chart9Reducer = useSelector((state) => state.chart9Reducer);
   const chart10Reducer = useSelector((state) => state.chart10Reducer);
 
+
+
   return (
-    <div id="insightsAccordions">
+    <div id="insightsAccordions" >
       <Accordion defaultActiveKey="10">
         <Accordion.Item eventKey="0" id="myHtmlTableID">
           <Accordion.Header>

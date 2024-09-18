@@ -22,6 +22,7 @@ export default function Project({
   setShowUniversalAlert,
   setUniversalAlertMsg
 }) {
+
   const todayDate = new Date();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -67,6 +68,8 @@ export default function Project({
       console.error(error);
     }
   };
+
+  elem && console.log(elem)
 
   return (
     <>

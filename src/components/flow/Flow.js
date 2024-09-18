@@ -5,65 +5,47 @@ import useUndoable from "use-undoable";
 import { Modal, Button } from "react-bootstrap";
 import TextUpdaterNode from "../customNode/TextUpdaterNode";
 import ReactFlow, {
-  ReactFlowProvider,
-  useNodesState,
-  useEdgesState,
-  getBezierPath,
-  addEdge,
-  useReactFlow,
-  Background,
-  getMarkerEnd,
-  getEdgeCenter,
-  Controls,
+  ReactFlowProvider, useNodesState, useEdgesState, getBezierPath, addEdge, useReactFlow, Background, getMarkerEnd, getEdgeCenter, Controls,
   MiniMap,
   MarkerType,
   // InteractiveMinimap,
   // MiniMapProps,
 } from "react-flow-renderer";
+
 import { useDispatch } from "react-redux";
 import allActions from "../../store/index";
 
 // -----------------------------------------------------------
 const nodeTypes = { textUpdater: TextUpdaterNode };
 
-const Flow = ({
-  activeNode,
-  setActiveNode,
-  menu,
-  setMenu,
-  paramState,
-  setParamState,
-  projectId,
-  setNodesObserver,
-}) => {
+const Flow = (props) => {
+
+  const { activeNode, setActiveNode, menu, setMenu, paramState, setParamState, projectId, setNodesObserver, } = props
+
+  activeNode && console.log(activeNode);
+
   const [showMiniMap, setShowMiniMap] = React.useState(true);
   const dispatch = useDispatch();
-  const getNodeId = () => `randomnode_${+new Date()}`;
-  const initialNodes = [];
   const saveclass = useRef("save-button");
-  const initialEdges = [];
   const reactFlowWrapper = useRef(null);
+
+  const getNodeId = () => `randomnode_${+new Date()}`;
+
+  const initialNodes = [];
+  const initialEdges = [];
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [rfInstance, setRfInstance] = useState(null);
 
-  const onConnect = useCallback(
-    (params) =>
-      setEdges((eds) =>
-        addEdge(
-          {
-            ...params,
-            type: "customedge",
-            markerEnd: {
-              type: MarkerType.ArrowClosed,
-            },
-          },
-          eds
-        )
-      ),
 
-    [setEdges]
+  const onConnect = useCallback((params) =>
+    setEdges((eds) => addEdge({
+      ...params,
+      type: "customedge",
+      markerEnd: { type: MarkerType.ArrowClosed, },
+    }, eds)), [setEdges]
   );
+
   const onSave = useCallback(() => {
     if (rfInstance) {
       const flow = rfInstance.toObject();
@@ -71,9 +53,9 @@ const Flow = ({
       saveclass.current = "save-button";
     }
   }, [rfInstance]);
-  const getModelByModelIdReducer = useSelector(
-    (state) => state.getModelByModelIdReducer
-  );
+
+  const getModelByModelIdReducer = useSelector((state) => state.getModelByModelIdReducer);
+
   React.useEffect(() => {
     if (getModelByModelIdReducer.success) {
       if (getModelByModelIdReducer?.model?.data?.output_file === null) {
@@ -92,186 +74,183 @@ const Flow = ({
       delete getModelByModelIdReducer.success;
     }
   }, [getModelByModelIdReducer]);
+
+
   const onDragOver = useCallback((event, node) => {
     event.preventDefault();
     event.dataTransfer.dropEffect = "move";
   }, []);
+
+
   const paramSwitchHandler = (state) => {
     setMenu("head2");
     setActiveNode(state);
     setParamState(state);
   };
-  const onDrop = useCallback(
-    (event, node) => {
-      event.preventDefault();
-      const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
-      const type = event.dataTransfer.getData("application/reactflow");
-      const node_data = event.dataTransfer.getData("node_data");
-      paramSwitchHandler(node_data);
 
-      // check if the dropped element is valid
-      if (typeof type === "undefined" || !type) {
-        return;
-      }
-      if (projectId === undefined) {
-        return; // Do not add new edge
-      }
 
-      const position = rfInstance.project({
-        x: event.clientX - reactFlowBounds.left,
-        y: event.clientY - reactFlowBounds.top,
-      });
-      const getNodeIdCust1 = () => `randomnode_${+new Date()}`;
-      const getNodeIdCust2 = () => `randomnode_${+new Date() + 20}`;
-      const getNodeIdCust3 = () => `randomnode_${+new Date() + 40}`;
-      const custId1 = getNodeIdCust1();
-      const custId2 = getNodeIdCust2();
-      const custId3 = getNodeIdCust3();
-      const customNode = [
-        {
-          width: 150,
-          height: 39,
-          id: custId1,
-          type: "textUpdater",
-          position: {
-            x: event.clientX - reactFlowBounds.left,
-            y: event.clientY - reactFlowBounds.top,
-          },
-          data: {
-            // label: "Read File",
-            label: "DB Read",
-          },
-          selected: false,
-          positionAbsolute: {
-            x: event.clientX - reactFlowBounds.left,
-            y: event.clientY - reactFlowBounds.top,
-          },
-          dragging: false,
-          name: "cluster",
-        },
-        {
-          width: 150,
-          height: 39,
-          id: custId2,
-          type: "textUpdater",
-          position: {
-            x: event.clientX - reactFlowBounds.left + 200,
-            y: event.clientY - reactFlowBounds.top,
-          },
-          data: {
-            label: "Price",
-          },
-          selected: false,
-          positionAbsolute: {
-            x: event.clientX - reactFlowBounds.left + 200,
-            y: event.clientY - reactFlowBounds.top,
-          },
-          dragging: false,
-          name: "cluster",
-        },
-        {
-          width: 150,
-          height: 39,
-          id: custId3,
-          type: "textUpdater",
-          position: {
-            x: event.clientX - reactFlowBounds.left + 400,
-            y: event.clientY - reactFlowBounds.top,
-          },
-          data: {
-            label: "Write File",
-          },
-          selected: true,
-          positionAbsolute: {
-            x: event.clientX - reactFlowBounds.left + 400,
-            y: event.clientY - reactFlowBounds.top,
-          },
-          dragging: false,
-          name: "cluster",
-        },
-      ];
-      const customEdge = [
-        {
-          source: custId1,
-          sourceHandle: "right",
-          target: custId2,
-          targetHandle: "left",
-          // arrowHeadType: "arrow",
-          markerEnd: {
-            type: MarkerType.ArrowClosed,
-          },
-          type: "customedge",
-          id: "reactflow__edge-" + custId2 + "-" + custId1,
-        },
-        {
-          source: custId2,
-          sourceHandle: "right",
-          target: custId3,
-          targetHandle: "left",
-          // arrowHeadType: "arrow",
-          markerEnd: {
-            type: MarkerType.ArrowClosed,
-          },
-          type: "customedge",
-          id: "reactflow__edge-" + custId3 + "-" + custId2,
-        },
-      ];
+  const onDrop = useCallback((event, node) => {
 
-      if (node_data === "Price Elasticity") {
-        setNodes((nds) => nds.concat(customNode));
-        setNodesObserver((nds) => nds.concat(customNode));
-        setEdges((eds) => eds.concat(customEdge));
-      } else {
-        const newNode = {
-          id: getNodeId(),
-          type: "textUpdater",
-          position,
-          data: { label: `${node_data} ` },
-        };
-        setNodes((nds) => nds.concat(newNode));
-        setNodesObserver((nds) => nds.concat(newNode));
-      }
-    },
+    event.preventDefault();
+    const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
+    const type = event.dataTransfer.getData("application/reactflow");
+    const node_data = event.dataTransfer.getData("node_data");
+
+    paramSwitchHandler(node_data);
+
+    // check if the dropped element is valid
+    if (typeof type === "undefined" || !type) {
+      return;
+    }
+
+    if (projectId === undefined) {
+      return; // Do not add new edge
+    }
+
+    const position = rfInstance.project({
+      x: event.clientX - reactFlowBounds.left,
+      y: event.clientY - reactFlowBounds.top,
+    });
+
+    const getNodeIdCust1 = () => `randomnode_${+new Date()}`;
+    const getNodeIdCust2 = () => `randomnode_${+new Date() + 20}`;
+    const getNodeIdCust3 = () => `randomnode_${+new Date() + 40}`;
+
+    const custId1 = getNodeIdCust1();
+    const custId2 = getNodeIdCust2();
+    const custId3 = getNodeIdCust3();
+
+    const customNode = [
+      {
+        width: 150,
+        height: 39,
+        id: custId1,
+        type: "textUpdater",
+        position: {
+          x: event.clientX - reactFlowBounds.left,
+          y: event.clientY - reactFlowBounds.top,
+        },
+        data: {
+          // label: "Read File",
+          label: "DB Read",
+        },
+        selected: false,
+        positionAbsolute: {
+          x: event.clientX - reactFlowBounds.left,
+          y: event.clientY - reactFlowBounds.top,
+        },
+        dragging: false,
+        name: "cluster",
+      },
+      {
+        width: 150,
+        height: 39,
+        id: custId2,
+        type: "textUpdater",
+        position: {
+          x: event.clientX - reactFlowBounds.left + 200,
+          y: event.clientY - reactFlowBounds.top,
+        },
+        data: {
+          label: "Price",
+        },
+        selected: false,
+        positionAbsolute: {
+          x: event.clientX - reactFlowBounds.left + 200,
+          y: event.clientY - reactFlowBounds.top,
+        },
+        dragging: false,
+        name: "cluster",
+      },
+      {
+        width: 150,
+        height: 39,
+        id: custId3,
+        type: "textUpdater",
+        position: {
+          x: event.clientX - reactFlowBounds.left + 400,
+          y: event.clientY - reactFlowBounds.top,
+        },
+        data: {
+          label: "Write File",
+        },
+        selected: true,
+        positionAbsolute: {
+          x: event.clientX - reactFlowBounds.left + 400,
+          y: event.clientY - reactFlowBounds.top,
+        },
+        dragging: false,
+        name: "cluster",
+      },
+    ];
+
+    const customEdge = [
+      {
+        source: custId1,
+        sourceHandle: "right",
+        target: custId2,
+        targetHandle: "left",
+        // arrowHeadType: "arrow",
+        markerEnd: {
+          type: MarkerType.ArrowClosed,
+        },
+        type: "customedge",
+        id: "reactflow__edge-" + custId2 + "-" + custId1,
+      },
+      {
+        source: custId2,
+        sourceHandle: "right",
+        target: custId3,
+        targetHandle: "left",
+        // arrowHeadType: "arrow",
+        markerEnd: {
+          type: MarkerType.ArrowClosed,
+        },
+        type: "customedge",
+        id: "reactflow__edge-" + custId3 + "-" + custId2,
+      },
+    ];
+
+    if (node_data === "Price Elasticity") {
+      setNodes((nds) => nds.concat(customNode));
+      setNodesObserver((nds) => nds.concat(customNode));
+      setEdges((eds) => eds.concat(customEdge));
+    } else {
+      const newNode = {
+        id: getNodeId(),
+        type: "textUpdater",
+        position,
+        data: { label: `${node_data} ` },
+      };
+      setNodes((nds) => nds.concat(newNode));
+      setNodesObserver((nds) => nds.concat(newNode));
+    }
+
+  },
     [rfInstance]
   );
+
+
   useEffect(() => {
     const ab = document.getElementsByClassName("selectable");
     for (var i = 0; i < ab.length; i++) {
       ab[i].classList.remove("selected");
     }
   }, []);
-  const customEdge = ({
-    id,
-    source,
-    sourceX,
-    sourceY,
-    targetX,
-    targetY,
-    sourcePosition,
-    targetPosition,
-    style,
+
+  const customEdge = ({ id, source, sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition, style,
     target,
     // arrowHeadType,
     markerEndId,
     markerEnd,
     // markerStart,
   }) => {
-    const edgePath = getBezierPath({
-      sourceX,
-      sourceY,
-      sourcePosition,
-      targetX,
-      targetY,
-      targetPosition,
-    });
+
+    const edgePath = getBezierPath({ sourceX, sourceY, sourcePosition, targetX, targetY, targetPosition, });
     // const markerEnd = getMarkerEnd(arrowHeadType, markerEndId);
     // const markerEnd = getMarkerEnd(MarkerType.Arrow, markerEndId);
-    const [edgeCenterX, edgeCenterY] = getEdgeCenter({
-      sourceX,
-      sourceY,
-      targetX,
-      targetY,
-    });
+    const [edgeCenterX, edgeCenterY] = getEdgeCenter({ sourceX, sourceY, targetX, targetY, });
+
     return (
       <>
         <path
@@ -296,27 +275,36 @@ const Flow = ({
   useEffect(() => {
     saveclass.current = "save-button-unsaved";
   }, [nodes, edges]);
+
+
   useEffect(() => {
     onSave();
   }, [nodes, edges]);
+
+
   let newArray = ["Read", "Write", "Price"];
+
   newArray.map((e) => localStorage.setItem(e + " Counter", 0));
+
   useEffect(() => {
     // localStorage.setItem("writeFileCounter", 1);
     for (let k = 0; k < newArray.length; k++) {
       for (let i = 0; i < nodes?.length; i++) {
         if (nodes[i].data.label === newArray[k]) {
-          let counter = parseInt(
-            localStorage.getItem(newArray[k] + " Counter")
-          );
+
+          let counter = parseInt(localStorage.getItem(newArray[k] + " Counter"));
+
           if (counter !== 0) {
             nodes[i].data.label = newArray[k] + " (" + counter + ")";
           }
+
           localStorage.setItem(newArray[k] + " Counter", counter + 1);
         }
       }
     }
   }, [nodes]);
+
+
   return (
     <>
       <ReactFlowProvider>
@@ -382,10 +370,10 @@ const Flow = ({
                   return "#fff";
                 }}
                 maskColor="rgb(0,0,0, 0.1)"
-                // nodeStrokeColor="#000"
-                // draggable={true}
-                // zoomable={true}
-                // clickable={true}
+              // nodeStrokeColor="#000"
+              // draggable={true}
+              // zoomable={true}
+              // clickable={true}
               />
             ) : null}
 
@@ -399,16 +387,7 @@ const Flow = ({
 };
 
 // eslint-disable-next-line import/no-anonymous-default-export
-export default ({
-  activeNode,
-  setActiveNode,
-  menu,
-  setMenu,
-  paramState,
-  setParamState,
-  projectId,
-  setNodesObserver,
-}) => (
+export default ({ activeNode, setActiveNode, menu, setMenu, paramState, setParamState, projectId, setNodesObserver, }) => (
   <ReactFlowProvider
     activeNode={activeNode}
     setActiveNode={setActiveNode}

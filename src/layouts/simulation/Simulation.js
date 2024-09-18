@@ -9,8 +9,9 @@ import MarginSimulator from "../../utils/simulation/MarginSimulator";
 import PromoEventSimulator from "../../utils/simulation/promo/PromoEventSimulator";
 
 export default function Simulation() {
+
   const { projectName, project_id, model_id } = useParams();
-  console.log("project_id: model_id", project_id, model_id)
+  // console.log("project_id: model_id", project_id, model_id)
 
   const [isPriceSimulationLoading, setIsPriceSimulationLoading] = useState(false);
   const [retailerBrandProducts, setRetailerBrandProducts] = useState([]);
@@ -57,6 +58,7 @@ export default function Simulation() {
     doDist: "",
     fdDist: "",
   });
+
   const [promoSimulationData, setPromoSimulationData] = useState([]);
   const [discount, setDiscount] = React.useState("");
   const [lift, setLift] = React.useState({});
@@ -76,7 +78,7 @@ export default function Simulation() {
       const api = `${process.env.REACT_APP_NGROK}/insights/simulation/price/product-data?project_id=${project_id}&model_id=${model_id}&Retailer=${selectedRetailer}&Product=${product}`;
       const response = await axios.get(api);
       if (response.status === 200) {
-        console.log("response: ", response);
+        // console.log("response: ", response);
         setMarginSimulationData(response?.data?.data);
         const basePrice = !isNaN(response?.data?.data[0]?.Price_avg_last_4_weeks)
           ? response?.data?.data[0]?.Price_avg_last_4_weeks
@@ -93,6 +95,7 @@ export default function Simulation() {
       console.log("Error in fetching margin simulation data: ", error);
     }
   };
+
   /* -----end----- Margin API handler -----end----- */
 
   /* -----start----- Common handlers -----start----- */
@@ -175,6 +178,7 @@ export default function Simulation() {
 
   /* -----start----- Price change Handler -----start----- */
   const [newPriceChange, setNewPriceChange] = useState([]);
+
   const handleNewPriceOnChange = (index, event, product, type) => {
     let temp = [...newPriceChange];
     if (newPriceChange && newPriceChange.length > 0) {
@@ -197,7 +201,7 @@ export default function Simulation() {
         newPrice: event.target.value,
       });
     }
-    console.log("priceChange", temp);
+    // console.log("priceChange", temp);
     setNewPriceChange(temp);
     if (type === "product") {
       const updatedPrices = [...newPrices];
@@ -215,6 +219,7 @@ export default function Simulation() {
   /* -----start------ Impact handler function when there is a change in Price -----start----- */
   const [volumeImpact, setVolumeImpact] = useState([]);
   const [dollarImpact, setDollarImpact] = useState([]);
+
   const impactHandler = () => {
     let tempVolumeImpact = [];
     let tempDollarImpact = [];
@@ -259,9 +264,11 @@ export default function Simulation() {
       });
     crossEffectHandler(tempVolumeImpact, tempDollarImpact);
   };
+
   /* -----end------ Impact handler function when there is a change in Price -----end----- */
 
   /* -----start------ cross Effects handler function -----start----- */
+
   const crossEffectHandler = (volumeImpact, dollarImpact) => {
     let productCompetitorCrossEffects = [];
     if (volumeImpact.length > 0) {
@@ -300,7 +307,7 @@ export default function Simulation() {
           if (val.Product === ele.Product && ele.type === "competitor" && ele.NewPrice !== "") {
             let crossEffects = [];
             let comps = JSON.parse(val.Competitors).filter((comp) => comp.cross_effect > 0);
-            console.log("comps", comps, val);
+            // console.log("comps", comps, val);
             let sum = 0;
             comps.length > 0 &&
               comps.map((comp) => {
@@ -435,6 +442,7 @@ export default function Simulation() {
     setVolumeImpact(tempVolumeImpact);
     setDollarImpact(tempDollarImpact);
   };
+
   /* -----end------ cross Effects handler function -----end----- */
 
   /* -----start----- Promo Event handler -----start----- */
@@ -451,7 +459,7 @@ export default function Simulation() {
       // };
       if (response.status === 200) {
         setTimeout(() => {
-          console.log("response: ", response);
+          // console.log("response: ", response);
           setPromoSimulationData(response?.data?.data);
           const basePrice = !isNaN(response?.data?.data[0]?.Price_avg_last_4_weeks)
             ? response?.data?.data[0]?.Price_avg_last_4_weeks
@@ -470,6 +478,7 @@ export default function Simulation() {
       console.log("Error in fetching promo event simulation data: ", error);
     }
   };
+
   /* -----end----- Promo Event handler -----end----- */
 
   const handlePromoEventPriceInputChange = (event) => {
@@ -566,7 +575,7 @@ export default function Simulation() {
         delete competitorImpacts[i].percentageChangeInDollars;
       }
     });
-    console.log("Impacts:", newPriceChange, volumeImpact, dollarImpact, productImpacts, competitorImpacts);
+    // console.log("Impacts:", newPriceChange, volumeImpact, dollarImpact, productImpacts, competitorImpacts);
     setCompetitors(competitorImpacts);
     setFilteredSelectedPriceProducts(productImpacts);
   }, [volumeImpact, dollarImpact]);
@@ -627,7 +636,7 @@ export default function Simulation() {
   };
 
   function filterCompetitorsHandler(products) {
-    console.log("\n\nproducts from filterCompetitorsHandler:::::::: ", products);
+    // console.log("\n\nproducts from filterCompetitorsHandler:::::::: ", products);
 
     const seenProducts = new Set();
     const uniqueCompetitors = [];
@@ -671,7 +680,6 @@ export default function Simulation() {
           }
         }
       });
-
       return {
         ...product,
         competitorTo,
@@ -731,6 +739,7 @@ export default function Simulation() {
     const mProfit = baseMnetRev.map((netRev, index) => netRev - newUnits[index] * cogs); // Manufacture profit
     // Annual Sales
     const annualSales = newUnits.map((unit, index) => unit * basePrice * (1 + changeInPrice[index] / 100));
+
     setMarginChartData({
       ...marginChartData,
       manufacturerProfit: mProfit,
@@ -852,7 +861,7 @@ export default function Simulation() {
     ]);
   }, [promoEventPriceValues]);
 
-  console.log("\n\n\n\n TEST: ", filteredSelectedPriceProducts, competitors);
+  // console.log("\n\n\n\n TEST: ", filteredSelectedPriceProducts, competitors);
   return (
     <div className="main-content-wrapper">
       <div className="design-studio-topbar">
@@ -887,19 +896,19 @@ export default function Simulation() {
                   </select>
                 </div>
                 <div className="other-design-studio-buttons ml-3">
-                <OverlayTrigger
-                  placement="top"
-                  delay={{ show: 250, hide: 250 }}
-                  overlay={
-                    <Tooltip id="overlay-example">
-                      Save
-                    </Tooltip>
-                  }
-                >
-                  <a href="#!" className={`btn icon-btn btn-primary`}>
-                    <i class="fa-solid fa-floppy-disk alertAligns"></i>
-                  </a>
-                </OverlayTrigger>
+                  <OverlayTrigger
+                    placement="top"
+                    delay={{ show: 250, hide: 250 }}
+                    overlay={
+                      <Tooltip id="overlay-example">
+                        Save
+                      </Tooltip>
+                    }
+                  >
+                    <a href="#!" className={`btn icon-btn btn-primary`}>
+                      <i class="fa-solid fa-floppy-disk alertAligns"></i>
+                    </a>
+                  </OverlayTrigger>
                   {/* <div>
                     <a href="##" className="btn btn-primary">
                       Save
@@ -981,7 +990,7 @@ export default function Simulation() {
               handleProductChange={handleProductChange}
               handleProductsChangeForPrice={handleProductsChangeForPrice}
             />
-          )}
+          )} 
           {simulatorType === "margin" && (
             <MarginSimulator
               retailers={retailers}

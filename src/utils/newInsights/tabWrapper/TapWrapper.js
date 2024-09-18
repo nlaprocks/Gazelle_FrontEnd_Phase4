@@ -18,6 +18,7 @@ import ShareModal from "../Modals/shareModal";
 import FilterAccordion from "../filterAccordion/FilterAccordion";
 
 const TapWrapper = ({ showShareModal, setShowShareModal, sidebarState }) => {
+
   const [isInsights, setIsInsights] = useState(false);
   const [oneTimeLoader, setOneTimeLoader] = React.useState(0);
   const navigate = useNavigate();
@@ -47,9 +48,11 @@ const TapWrapper = ({ showShareModal, setShowShareModal, sidebarState }) => {
   const [filterDropDown, setFilterDropDown] = React.useState(false);
 
   const [activeIndex, setActiveIndex] = React.useState(-1);
+  
   const tabClick = (index) => {
     setActiveIndex(index);
   };
+
   React.useEffect(() => {
     if (window.location.hash) {
       window.history.replaceState(null, "", window.location.pathname);
@@ -112,22 +115,26 @@ const TapWrapper = ({ showShareModal, setShowShareModal, sidebarState }) => {
         // handle error
       });
   }, []);
+
   React.useEffect(() => {
     if (getQuestionsPerTypeReducer.success) {
       delete getQuestionsPerTypeReducer.success;
     }
   }, [getQuestionsPerTypeReducer]);
+
   React.useEffect(() => {
     if (getAllQuestionTypesReducer.success) {
       delete getAllQuestionTypesReducer.success;
     }
   }, [getAllQuestionTypesReducer]);
+
   React.useEffect(() => {
     if (getAllSlideReducer.success) {
       setNewCreatedSlides(getAllSlideReducer?.slide?.data);
       delete getAllSlideReducer.success;
     }
   }, [getAllSlideReducer]);
+
   const callingQuestionsOnReducersSuccess = (val) => {
     if (val["success"]) {
       if (activeIndex === -1) {
@@ -142,6 +149,7 @@ const TapWrapper = ({ showShareModal, setShowShareModal, sidebarState }) => {
       }
     }
   };
+
   React.useEffect(() => {
     callingQuestionsOnReducersSuccess(addSlideReducer);
   }, [addSlideReducer]);
@@ -274,95 +282,158 @@ const TapWrapper = ({ showShareModal, setShowShareModal, sidebarState }) => {
       <div className={`nla_insight-tab-wrapper ${sidebarState ? "sidebarCollapse" : ""}`} id="tapWrapper">
         <FilterAccordion InsightsBlock={InsightsBlock} />
         {/* {isInsights && ( */}
-          <>
-            <div className="nla_insight-tabs-block d-flex justify-content-between align-items-start mt-4">
-              <ul className="nav nav-tabs">
-                <li onClick={() => tabClick(-1)} className="nav-item" role="presentation">
-                  <button
-                    className={activeIndex === -1 ? "nav-link active" : "nav-link"}
-                    id="all-tab"
-                    data-bs-toggle="tab"
-                    data-bs-target="#all"
-                    type="button"
-                    role="tab"
-                    aria-controls="all"
-                    aria-selected="true"
+        <>
+          <div className="nla_insight-tabs-block d-flex justify-content-between align-items-start mt-4">
+            <ul className="nav nav-tabs">
+              <li onClick={() => tabClick(-1)} className="nav-item" role="presentation">
+                <button
+                  className={activeIndex === -1 ? "nav-link active" : "nav-link"}
+                  id="all-tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#all"
+                  type="button"
+                  role="tab"
+                  aria-controls="all"
+                  aria-selected="true"
+                >
+                  All
+                </button>
+              </li>
+              {getAllQuestionTypesReducer?.allQuestion?.data?.map((tab, index) => {
+                return (
+                  <li
+                    key={index}
+                    onClick={() => {
+                      tabClick(index);
+                      navigate(`#${tab.type}`);
+                      dispatch(allActions.getQuestionsPerTypeAction.getQuestionsPerType(model_id, tab.type));
+                    }}
+                    className="nav-item"
+                    role="presentation"
                   >
-                    All
-                  </button>
-                </li>
-                {getAllQuestionTypesReducer?.allQuestion?.data?.map((tab, index) => {
-                  return (
-                    <li
-                      key={index}
-                      onClick={() => {
-                        tabClick(index);
-                        navigate(`#${tab.type}`);
-                        dispatch(allActions.getQuestionsPerTypeAction.getQuestionsPerType(model_id, tab.type));
-                      }}
-                      className="nav-item"
-                      role="presentation"
+                    <button
+                      className={index === activeIndex ? "nav-link active" : "nav-link"}
+                      id="all-tab"
+                      data-bs-toggle="tab"
+                      data-bs-target={`#${tab.type}`}
+                      type="button"
+                      role="tab"
+                      aria-controls="all"
+                      aria-selected="true"
                     >
-                      <button
-                        className={index === activeIndex ? "nav-link active" : "nav-link"}
-                        id="all-tab"
-                        data-bs-toggle="tab"
-                        data-bs-target={`#${tab.type}`}
-                        type="button"
-                        role="tab"
-                        aria-controls="all"
-                        aria-selected="true"
-                      >
-                        {tab.type}
-                      </button>
-                    </li>
-                  );
-                })}
-              </ul>
-              <a
-                href="#!"
-                className="btn btn-outline-secondary"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setShowSlideModal(true);
-                }}
-              >
-                + Add New Slide
-              </a>
-            </div>
-            {getAllSlideReducer.loading && oneTimeLoader === 0 ? (
-              <Spinner animation="border" />
-            ) : (
-              <>
-                <div className="insights-couns-block">
-                  <div className="insights_lbl">
-                    <p className="d-inline-flex">
-                      <img src={chart} alt="chart" className="me-1" /> Insights
-                    </p>
-                    <a
-                      className="d-inline-block"
-                      href="#!"
-                      onClick={(e) => {
-                        e.preventDefault();
-                      }}
-                    >
-                      <img src={info} alt="info" />
-                    </a>
-                  </div>
-                  <p>
-                    Total <span>{adminQuestionsReducer?.question?.data?.length + newCreatedSlides?.length}</span> Insight
+                      {tab.type}
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+            <a
+              href="#!"
+              className="btn btn-outline-secondary"
+              onClick={(e) => {
+                e.preventDefault();
+                setShowSlideModal(true);
+              }}
+            >
+              + Add New Slide
+            </a>
+          </div>
+          {getAllSlideReducer.loading && oneTimeLoader === 0 ? (
+            <Spinner animation="border" />
+          ) : (
+            <>
+              <div className="insights-couns-block">
+                <div className="insights_lbl">
+                  <p className="d-inline-flex">
+                    <img src={chart} alt="chart" className="me-1" /> Insights
                   </p>
+                  <a
+                    className="d-inline-block"
+                    href="#!"
+                    onClick={(e) => {
+                      e.preventDefault();
+                    }}
+                  >
+                    <img src={info} alt="info" />
+                  </a>
                 </div>
-                <>
-                  {
-                    <div className="tab-content">
-                      {activeIndex === -1 ? (
-                        <>
-                          {adminQuestionsReducer?.question?.data?.map((val, id) => {
-                            return (
+                <p>
+                  Total <span>{adminQuestionsReducer?.question?.data?.length + newCreatedSlides?.length}</span> Insight
+                </p>
+              </div>
+              <>
+                {
+                  <div className="tab-content">
+                    {activeIndex === -1 ? (
+                      <>
+                        {adminQuestionsReducer?.question?.data?.map((val, id) => {
+                          return (
+                            <Accordion
+                              key={val.id}
+                              value={val}
+                              id={id}
+                              setAddHeadingModal={setAddHeadingModal}
+                              setShowTakeawayModal={setShowTakeawayModal}
+                              setUpdateTakeawayModal={setUpdateTakeawayModal}
+                              setCurrentBullets={setCurrentBullets}
+                              setShowAddChartModal={setShowAddChartModal}
+                              setCurrentSlideId={setCurrentSlideId}
+                              setShowUpdateChartModal={setShowUpdateChartModal}
+                              setUpdateChartData={setUpdateChartData}
+                              role="admin"
+                              callingQuestionsOnReducersSuccess={callingQuestionsOnReducersSuccess}
+                              filterDropDown={filterDropDown}
+                              setFilterDropDown={setFilterDropDown}
+                            />
+                          );
+                        })}
+                        {newCreatedSlides?.map((val, id) => {
+                          return (
+                            <Accordion
+                              key={val.id}
+                              value={val}
+                              id={id}
+                              setAddHeadingModal={setAddHeadingModal}
+                              setShowTakeawayModal={setShowTakeawayModal}
+                              setUpdateTakeawayModal={setUpdateTakeawayModal}
+                              setCurrentBullets={setCurrentBullets}
+                              setShowAddChartModal={setShowAddChartModal}
+                              setCurrentSlideId={setCurrentSlideId}
+                              setShowUpdateChartModal={setShowUpdateChartModal}
+                              setUpdateChartData={setUpdateChartData}
+                              role="users"
+                              callingQuestionsOnReducersSuccess={callingQuestionsOnReducersSuccess}
+                              filterDropDown={filterDropDown}
+                              setFilterDropDown={setFilterDropDown}
+                            />
+                          );
+                        })}
+                      </>
+                    ) : null}
+                  </div>
+                }
+                {activeIndex !== -1 ? (
+                  <div>
+                    {getQuestionsPerTypeReducer?.question?.data?.map((tab, index) => {
+                      let id;
+                      if (tab) {
+                        if (tab.type === "base") {
+                          id = index;
+                        } else if (tab.type === "promo") {
+                          id = index + 4;
+                        } else if (tab.type === "strat") {
+                          id = index + 8;
+                        } else {
+                          id = index;
+                        }
+                      } else {
+                      }
+                      return (
+                        <div key={index}>
+                          <div className="tab-content">
+                            {tab ? (
                               <Accordion
-                                key={val.id}
-                                value={val}
+                                value={tab}
                                 id={id}
                                 setAddHeadingModal={setAddHeadingModal}
                                 setShowTakeawayModal={setShowTakeawayModal}
@@ -377,80 +448,17 @@ const TapWrapper = ({ showShareModal, setShowShareModal, sidebarState }) => {
                                 filterDropDown={filterDropDown}
                                 setFilterDropDown={setFilterDropDown}
                               />
-                            );
-                          })}
-                          {newCreatedSlides?.map((val, id) => {
-                            return (
-                              <Accordion
-                                key={val.id}
-                                value={val}
-                                id={id}
-                                setAddHeadingModal={setAddHeadingModal}
-                                setShowTakeawayModal={setShowTakeawayModal}
-                                setUpdateTakeawayModal={setUpdateTakeawayModal}
-                                setCurrentBullets={setCurrentBullets}
-                                setShowAddChartModal={setShowAddChartModal}
-                                setCurrentSlideId={setCurrentSlideId}
-                                setShowUpdateChartModal={setShowUpdateChartModal}
-                                setUpdateChartData={setUpdateChartData}
-                                role="users"
-                                callingQuestionsOnReducersSuccess={callingQuestionsOnReducersSuccess}
-                                filterDropDown={filterDropDown}
-                                setFilterDropDown={setFilterDropDown}
-                              />
-                            );
-                          })}
-                        </>
-                      ) : null}
-                    </div>
-                  }
-                  {activeIndex !== -1 ? (
-                    <div>
-                      {getQuestionsPerTypeReducer?.question?.data?.map((tab, index) => {
-                        let id;
-                        if (tab) {
-                          if (tab.type === "base") {
-                            id = index;
-                          } else if (tab.type === "promo") {
-                            id = index + 4;
-                          } else if (tab.type === "strat") {
-                            id = index + 8;
-                          } else {
-                            id = index;
-                          }
-                        } else {
-                        }
-                        return (
-                          <div key={index}>
-                            <div className="tab-content">
-                              {tab ? (
-                                <Accordion
-                                  value={tab}
-                                  id={id}
-                                  setAddHeadingModal={setAddHeadingModal}
-                                  setShowTakeawayModal={setShowTakeawayModal}
-                                  setUpdateTakeawayModal={setUpdateTakeawayModal}
-                                  setCurrentBullets={setCurrentBullets}
-                                  setShowAddChartModal={setShowAddChartModal}
-                                  setCurrentSlideId={setCurrentSlideId}
-                                  setShowUpdateChartModal={setShowUpdateChartModal}
-                                  setUpdateChartData={setUpdateChartData}
-                                  role="admin"
-                                  callingQuestionsOnReducersSuccess={callingQuestionsOnReducersSuccess}
-                                  filterDropDown={filterDropDown}
-                                  setFilterDropDown={setFilterDropDown}
-                                />
-                              ) : null}
-                            </div>
+                            ) : null}
                           </div>
-                        );
-                      })}
-                    </div>
-                  ) : null}
-                </>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : null}
               </>
-            )}
-          </>
+            </>
+          )}
+        </>
         {/* )} */}
       </div>
       <AddSlideModal

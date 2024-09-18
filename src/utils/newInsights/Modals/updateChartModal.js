@@ -51,6 +51,7 @@ const UpdateChartModal = ({
   const handleClose = () => {
     setShowUpdateChartModal(false);
   };
+
   const [chart, setChart] = React.useState({
     model_id: model_id,
     // slide_id: updateChartData?.slide_id,
@@ -63,14 +64,17 @@ const UpdateChartModal = ({
     y_axis_data_point: "",
     chart_data_type: "",
   });
+
   // console.log("chart::: ", chart);
   // console.log("chart::: ", chart);
 
   // const inputDataCombinationReducer = useSelector((state) => state.inputDataCombinationReducer);
   // const outputDataCombinationReducer = useSelector((state) => state.outputDataCombinationReducer);
+
   const handleChange = (e) => {
     setChart({ ...chart, [e.target.name]: e.target.value });
   };
+
   const editChart = () => {
     setIsLoading(true);
     // dispatch(
@@ -80,6 +84,7 @@ const UpdateChartModal = ({
     //     columns: [...xAxisDataPoint, ...yAxisDataPoint],
     //   })
     // );
+
     async function fetchUserChartsData() {
       setUserChartsData({ ...userChartsData, loading: true });
       try {
@@ -139,6 +144,7 @@ const UpdateChartModal = ({
     }
     fetchUserChartsData();
   };
+
   React.useEffect(() => {
     if (userChartsData.success) {
       dispatch(
@@ -167,6 +173,7 @@ const UpdateChartModal = ({
     setXAxisDataPoint(JSON.parse(updateChartData?.x_axis_data_point));
     setYAxisDataPoint(JSON.parse(updateChartData?.y_axis_data_point));
   }, [updateChartData]);
+
   React.useEffect(() => {
     if (editChartReducer.success) {
       callingQuestionsOnReducersSuccess(editChartReducer);

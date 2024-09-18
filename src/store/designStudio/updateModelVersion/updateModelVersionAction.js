@@ -11,6 +11,7 @@ const updateModelVersionRequest = () => {
     loading: true,
   };
 };
+
 const updateModelVersionSuccess = (state) => {
   return {
     type: UPDATE_MODEL_VERSION_SUCCESS,
@@ -18,6 +19,7 @@ const updateModelVersionSuccess = (state) => {
     loading: false,
   };
 };
+
 const updateModelVersionFailure = (error) => {
   return {
     type: UPDATE_MODEL_VERSION_FAILURE,
@@ -25,7 +27,9 @@ const updateModelVersionFailure = (error) => {
     loading: false,
   };
 };
+
 const updateModelVersion = (model_id, details) => {
+  console.log(details)
   let loading = true;
   const auth = JSON.parse(localStorage.getItem("auth"));
   const config = { headers: { Authorization: `Bearer ` + auth.token } };
@@ -45,6 +49,8 @@ const updateModelVersion = (model_id, details) => {
     }
   };
 };
+
+
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
   updateModelVersionRequest,

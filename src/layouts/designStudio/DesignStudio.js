@@ -30,14 +30,19 @@ const FETCHING_DATA_STATUS = {
 };
 
 const DesignStudio = () => {
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
   let project_id = useParams().id;
+
   const { model_id } = useParams();
+
   const [nodesObserver, setNodesObserver] = React.useState([]);
+
   const [dataIsFetched, setDataIsFetched] = useState({
     status: FETCHING_DATA_STATUS.IDLE,
   });
+
   const [isModelCompeleted, setIsModelCompeleted] = useState(false);
   const [runningAnalysisChecker, setRunningAnalysisChecker] = useState(false);
   const getIsDataFetchedReducer = useSelector((state) => state.getIsDataFetchedReducer);
@@ -53,6 +58,8 @@ const DesignStudio = () => {
   const [activeNode, setActiveNode] = useState("");
   const [menu, setMenu] = useState("head1");
   const [paramState, setParamState] = useState({});
+
+
   useEffect(() => {
     if (typeof paramState === "string") {
       if (paramState.includes("Read")) {
@@ -69,9 +76,12 @@ const DesignStudio = () => {
       document.body.classList.remove("design-studio-page");
     };
   }, [paramState]);
+
+
   // Run Modal
   const [show, setShow] = useState(false);
   const [log, setLog] = useState(false);
+
   // Model Version
   const modelVerionReducer = useSelector((state) => state.getModelVersionByProjectIdReducer);
   const saveModelidReducer = useSelector((state) => state.saveModelidReducer);
@@ -80,16 +90,19 @@ const DesignStudio = () => {
     setShow(false);
     setRunningAnalysisChecker(true);
   };
+
   const handleShow = () => {
     setShow(true);
     setRunningAnalysisChecker(false);
   };
+
   const handleLogShow = () => {
     if (Number(model_id) !== 0 && model_id) {
       dispatch(allActions.getAllLogAction.getAllLog(model_id));
     }
     setLog(true);
   };
+
   //SnackBar Alert
   const [vertical, setVertical] = useState("top");
   const [horizontal, setHorizontal] = useState("center");
@@ -115,6 +128,7 @@ const DesignStudio = () => {
   const [train, setTrain] = useState();
   const [test, setTest] = useState();
   const [validate, setValidate] = useState();
+
   // useCallBack
   const setProjectNameCallback = useCallback(
     (project_name) => {
@@ -143,6 +157,7 @@ const DesignStudio = () => {
     },
     [pValue, train, test, validate, vifValue, sigValue]
   );
+
   // let reload;
   // Main UseEffect
   useEffect(() => {
@@ -179,6 +194,7 @@ const DesignStudio = () => {
     setShowCreateModal(true);
   };
 
+
   const [sideBar, setSideBar] = useState(false);
 
   const nodeSaveHandler = () => {
@@ -203,8 +219,10 @@ const DesignStudio = () => {
       }, 3000);
     }
   };
+
   const addModelReducer = useSelector((state) => state.addModelReducer);
   const addModelWithVersionReducer = useSelector((state) => state.addModelWithVersionReducer);
+
   const addModelWithVersionHandler = () => {
     const modelData = JSON.parse(localStorage.getItem("react_flow_nodes"));
     localStorage.setItem("nodesData_from_database", JSON.stringify(modelData));
@@ -220,9 +238,12 @@ const DesignStudio = () => {
     };
     dispatch(allActions.addModelWithVersionAction.addModelWithVersion(data));
   };
+
   const nodeUpdateHandler = () => {
+
     const modelData = JSON.parse(localStorage.getItem("react_flow_nodes"));
     localStorage.setItem("nodesData_from_database", JSON.stringify(modelData));
+
     const edges = modelData?.edges;
     const nodes = modelData?.nodes;
     const viewport = modelData?.viewport;
@@ -234,6 +255,7 @@ const DesignStudio = () => {
       nodes: nodes,
       viewport: viewport,
     };
+
     if (project_id || projectID) {
       dispatch(allActions.updateModelVersionAction.updateModelVersion(model_id, data));
       setModalSaved(true);
@@ -242,13 +264,14 @@ const DesignStudio = () => {
       }, 3000);
     }
   };
+
+
   const AddNodeAttributesHandler = async () => {
     const config = {
       headers: {
         "Content-Type": "application/json",
       },
     };
-
     const apiData = {
       project_id,
       node_name: "price",
@@ -259,17 +282,18 @@ const DesignStudio = () => {
         Validate: validate,
       },
     };
-
     try {
       await Api("POST", `api/add/model/node/attributes`, apiData, config);
     } catch (error) {
       console.log("Error", error.response);
     }
   };
+
   const [val, setVal] = useState(0);
   const [apiCompleted, setApiCompleted] = useState(false);
   const datastructureReducer = useSelector((state) => state.datastructureReducer);
   const runModelReducer = useSelector((state) => state.runModelReducer);
+
   const runHandler = () => {
     if (modelVerionReducer?.modelVersion?.data?.length > 0) {
       nodeUpdateHandler();
@@ -285,6 +309,7 @@ const DesignStudio = () => {
       );
     }
   };
+
   const animateProgressBar = () => {
     const intervalId = setInterval(() => {
       setVal((prev) => {
@@ -302,7 +327,9 @@ const DesignStudio = () => {
 
     return () => clearInterval(intervalId);
   };
+
   const getEventIdReducer = useSelector((state) => state.getEventIdReducer);
+
   const downloadPdf = async () => {
     try {
       const formData = new FormData();
@@ -327,6 +354,7 @@ const DesignStudio = () => {
       console.error(error);
     }
   };
+
   React.useEffect(() => {
     if (addModelWithVersionReducer?.success) {
       setModalSavedVersion(true);
@@ -339,6 +367,7 @@ const DesignStudio = () => {
       };
     }
   }, [addModelWithVersionReducer]);
+
   React.useEffect(() => {
     if (runModelReducer.success && model_id) {
       handleShow();
@@ -352,13 +381,16 @@ const DesignStudio = () => {
       delete runModelReducer.success;
     }
   }, [runModelReducer]);
+
   const getIsModelFetchedReducer = useSelector((state) => state.getIsModelFetchedReducer);
+
   React.useEffect(() => {
     if (!model_id) {
       return;
     }
     dispatch(allActions.getEventIdAction.getEventId(model_id));
   }, []);
+
   React.useEffect(() => {
     let intervalId;
     if (getIsModelFetchedReducer.success) {
@@ -399,6 +431,7 @@ const DesignStudio = () => {
     }
     return () => clearInterval(intervalId);
   }, [getIsModelFetchedReducer]);
+
   React.useEffect(() => {
     let intervalId;
     if (getIsDataFetchedReducer.success) {
@@ -427,6 +460,7 @@ const DesignStudio = () => {
     }
     return () => clearInterval(intervalId);
   }, [getIsDataFetchedReducer]);
+
   React.useEffect(() => {
     if (addModelReducer.success) {
       if (Number(model_id) === 0) {
@@ -440,6 +474,7 @@ const DesignStudio = () => {
       delete addModelReducer.success;
     }
   }, [addModelReducer]);
+
   React.useEffect(() => {
     if (saveModelidReducer.success) {
       dispatch(
@@ -453,6 +488,7 @@ const DesignStudio = () => {
       delete saveModelidReducer.success;
     }
   }, [saveModelidReducer]);
+
   const viewInsightsNavigator = () => {
     if (Number(model_id) === 0) {
       navigate(`/new-insights/${project_id}/${addModelReducer?.user?.data?.model_id}`);
@@ -500,9 +536,17 @@ const DesignStudio = () => {
   }, [model_id, project_id]);
 
   const [sidebarState, setSidebarState] = useState(false);
+
   const sidebarHandler = () => {
     setSidebarState(!sidebarState);
   };
+
+  function extractVersionNumber(versionString) {
+    const [, version] = versionString.split(" ");
+    console.log(parseInt(version))
+    return parseInt(version) || null;
+  }
+
 
   return (
     <div>
@@ -520,7 +564,6 @@ const DesignStudio = () => {
                       <span></span>
                     </div>
                   </Link>
-
                   {project?.project_name ? (
                     <>
                       {" "}
@@ -547,6 +590,12 @@ const DesignStudio = () => {
                         className="form-select"
                         value={model_id}
                         onChange={(e) => {
+                          // console.log(e.target.value); // "Version 23"
+                          // console.log(extractVersionNumber(e.target.value)); // 23
+
+                          // navigate(`/design-studio/${project_id}/${extractVersionNumber(e.target.value)}`);
+                          // window.location.reload();
+
                           navigate(`/design-studio/${project_id}/${e.target.value}`);
                           window.location.reload();
                         }}
@@ -556,15 +605,26 @@ const DesignStudio = () => {
                           return (
                             <>
                               {val?.model_version === 1 && model_id === 1 ? (
-                                <option value={val?.model_id} key={id} disabled={true}>
+                                <option value={val?.id} key={id} disabled={true}>
                                   Version {val?.model_version}
                                 </option>
                               ) : (
-                                <option value={val?.model_id} key={id}>
+                                <option value={val?.id} key={id}>
                                   Version {val?.model_version}
                                 </option>
                               )}
                             </>
+                            // <>
+                            //   {val?.model_version === 1 && model_id === 1 ? (
+                            //     <option value={val?.model_id} key={id} disabled={true}>
+                            //       Version {val?.model_version}
+                            //     </option>
+                            //   ) : (
+                            //     <option value={val?.model_id} key={id}>
+                            //       Version {val?.model_version}
+                            //     </option>
+                            //   )}
+                            // </>
                           );
                         })}
                       </select>
@@ -648,7 +708,7 @@ const DesignStudio = () => {
                           onClick={() => {
                             downloadPdf();
                           }}>
-                            <i class="fa-solid fa-file-lines alertAligns"></i>
+                          <i class="fa-solid fa-file-lines alertAligns"></i>
                           {/* <img src={output} alt="" className="inline-block" /> */}
                           {/* <img src={info} alt="" className="alertAligns" /> */}
                         </a>
@@ -672,15 +732,14 @@ const DesignStudio = () => {
                         overlay={<Tooltip id="overlay-example">Create New Project</Tooltip>}
                       >
                         <a href="#" className="btn icon-btn btn-primary"
-                        data-bs-toggle="modal"
-                        data-bs-target="#createNewProject"
-                        onClick={() => handleEditProjectModal()}>
+                          data-bs-toggle="modal"
+                          data-bs-target="#createNewProject"
+                          onClick={() => handleEditProjectModal()}>
                           <i class="fa-solid fa-plus alertAligns"></i>
                           {/* <img src={info} alt="" className="alertAligns" /> */}
                         </a>
                       </OverlayTrigger>
                     </div>
-
                     {!modelVerionReducer?.modelVersion?.data?.length > 0 ? (
                       <div hidden={project_id ? false : true}>
                         {/* <button className="btn btn-primary" onClick={nodeSaveHandler}>
@@ -708,7 +767,7 @@ const DesignStudio = () => {
                             delay={{ show: 250, hide: 250 }}
                             overlay={<Tooltip id="overlay-example">Update</Tooltip>}
                           >
-                            <a href="#!" className="btn icon-btn btn-primary"  onClick={nodeUpdateHandler}>
+                            <a href="#!" className="btn icon-btn btn-primary" onClick={nodeUpdateHandler}>
                               <i className="fa-solid fa-floppy-disk"></i>
                               {/* <img src={info} alt="" className="alertAligns" /> */}
                             </a>
@@ -730,7 +789,7 @@ const DesignStudio = () => {
                             </a>
                           </OverlayTrigger>
                         </div>
-                        <div hidden={project?.is_insight ? false : true}  className="hidden_btn">
+                        <div hidden={project?.is_insight ? false : true} className="hidden_btn">
                           {/* <button className="btn btn-primary" onClick={viewInsightsHandler}>
                             View Insights <i class="fa-solid fa-chart-simple"></i>
                           </button> */}
@@ -912,7 +971,6 @@ const DesignStudio = () => {
         </Modal.Footer>
       </Modal>
       <Footer />
-
       <CreateProject
         setLoad={setLoad}
         authData={authData}

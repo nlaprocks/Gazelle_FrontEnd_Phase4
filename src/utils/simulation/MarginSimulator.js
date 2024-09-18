@@ -1,5 +1,7 @@
 import React from "react";
 import ReactEcharts from "echarts-for-react";
+import ApexCharts from "react-apexcharts";
+
 import { Select } from "antd";
 
 export default function MarginSimulator({
@@ -18,6 +20,7 @@ export default function MarginSimulator({
   handleProductChange,
   handleMarginPriceInputChange,
 }) {
+
   const echartsReactRef = React.useRef(null);
   const productName = marginSimulationData[0]?.Product ?? "";
   const netUnitPrice = marginPriceValues?.listPrice - marginPriceValues?.edlpSpend;
@@ -248,6 +251,293 @@ export default function MarginSimulator({
     },
   ];
 
+  // new Code By Devendra Kashyap
+  // var options = {
+  //   chart: {
+  //     type: 'bar'
+  //   },
+  //   title: {
+  //     text: "Effects of Change In Price",
+  //     align: 'center',
+  //     margin: 10,
+  //     offsetX: 0,
+  //     offsetY: 0,
+  //     style: {
+  //       fontSize: '16px',
+  //     },
+  //   },
+  //   xaxis: {
+  //     title: {
+  //       text: "% Change in Price",
+  //     },
+  //     categories: [
+  //       "-25.00 %",
+  //       "-24.00 %",
+  //       "-23.00 %",
+  //       "-22.00 %",
+  //       "-21.00 %",
+  //       "-20.00 %",
+  //       "-19.00 %",
+  //       "-18.00 %",
+  //       "-17.00 %",
+  //       "-16.00 %",
+  //       "-15.00 %",
+  //       "-14.00 %",
+  //       "-13.00 %",
+  //       "-12.00 %",
+  //       "-11.00 %",
+  //       "-10.00 %",
+  //       "-9.00 %",
+  //       "-8.00 %",
+  //       "-7.00 %",
+  //       "-6.00 %",
+  //       "-5.00 %",
+  //       "-4.00 %",
+  //       "-3.00 %",
+  //       "-2.00 %",
+  //       "-1.00 %",
+  //       "0.00 %",
+  //       "1.00 %",
+  //       "2.00 %",
+  //       "3.00 %",
+  //       "4.00 %",
+  //       "5.00 %",
+  //       "6.00 %",
+  //       "7.00 %",
+  //       "8.00 %",
+  //       "9.00 %",
+  //       "10.00 %",
+  //       "11.00 %",
+  //       "12.00 %",
+  //       "13.00 %",
+  //       "14.00 %",
+  //       "15.00 %",
+  //       "16.00 %",
+  //       "17.00 %",
+  //       "18.00 %",
+  //       "19.00 %",
+  //       "20.00 %",
+  //       "21.00 %",
+  //       "22.00 %",
+  //       "23.00 %",
+  //       "24.00 %",
+  //       "25.00 %",
+  //     ]
+  //   },
+  //   yaxis: {
+  //     title: {
+  //       text: "Annual Profit ($)",
+  //     },
+  //     // labels: {
+  //     //   formatter: (value) => value.toFixed(0),
+  //     // },
+  //     axisBorder: {
+  //       show: true,
+  //       color: '#000000',
+  //       offsetX: 0,
+  //       offsetY: 0,
+  //     },
+  //   },
+  // }
+
+  const getChartOptions = (data) => ({
+    chart: {
+      type: 'bar'
+    },
+    title: {
+      text: "Effects of Change In Price",
+      align: 'center',
+      margin: 10,
+      offsetX: 0,
+      offsetY: 0,
+      style: {
+        fontSize: '16px',
+      },
+    },
+    xaxis: {
+      title: {
+        text: "% Change in Price",
+      },
+      categories: [
+        "-25.00 %",
+        "-24.00 %",
+        "-23.00 %",
+        "-22.00 %",
+        "-21.00 %",
+        "-20.00 %",
+        "-19.00 %",
+        "-18.00 %",
+        "-17.00 %",
+        "-16.00 %",
+        "-15.00 %",
+        "-14.00 %",
+        "-13.00 %",
+        "-12.00 %",
+        "-11.00 %",
+        "-10.00 %",
+        "-9.00 %",
+        "-8.00 %",
+        "-7.00 %",
+        "-6.00 %",
+        "-5.00 %",
+        "-4.00 %",
+        "-3.00 %",
+        "-2.00 %",
+        "-1.00 %",
+        "0.00 %",
+        "1.00 %",
+        "2.00 %",
+        "3.00 %",
+        "4.00 %",
+        "5.00 %",
+        "6.00 %",
+        "7.00 %",
+        "8.00 %",
+        "9.00 %",
+        "10.00 %",
+        "11.00 %",
+        "12.00 %",
+        "13.00 %",
+        "14.00 %",
+        "15.00 %",
+        "16.00 %",
+        "17.00 %",
+        "18.00 %",
+        "19.00 %",
+        "20.00 %",
+        "21.00 %",
+        "22.00 %",
+        "23.00 %",
+        "24.00 %",
+        "25.00 %",
+      ]
+    },
+    yaxis: {
+      title: {
+        text: "Annual Profit ($)",
+      },
+      // labels: {
+      //   formatter: (value) => value.toFixed(0),
+      // },
+      axisBorder: {
+        show: true,
+        color: '#000000',
+        offsetX: 0,
+        offsetY: 0,
+      },
+    },
+  });
+
+  // latest data
+  const series = [
+    {
+      name: 'Manufacturer Profit',
+      data: marginChartData?.manufacturerProfit
+    },
+    {
+      name: 'Annual Profit',
+      data: marginChartData?.annualProfit
+    }
+  ];
+
+  const options = {
+    chart: {
+      type: 'line',
+      zoom: {
+        enabled: false
+      }
+    },
+    dataLabels: {
+      enabled: false
+    },
+    stroke: {
+      curve: 'smooth'
+    },
+    title: {
+      text: "Effects of Change In Price",
+      align: 'center',
+      margin: 10,
+      offsetX: 0,
+      offsetY: 0,
+      style: {
+        fontSize: '16px',
+      },
+    },
+    grid: {
+      row: {
+        colors: ['#f3f3f3', 'transparent'], // Alternating row colors
+        opacity: 0.5
+      }
+    },
+    xaxis: {
+      title: {
+        text: "% Change in Price",
+      },
+      categories: [
+        "-25.00 %",
+        "-24.00 %",
+        "-23.00 %",
+        "-22.00 %",
+        "-21.00 %",
+        "-20.00 %",
+        "-19.00 %",
+        "-18.00 %",
+        "-17.00 %",
+        "-16.00 %",
+        "-15.00 %",
+        "-14.00 %",
+        "-13.00 %",
+        "-12.00 %",
+        "-11.00 %",
+        "-10.00 %",
+        "-9.00 %",
+        "-8.00 %",
+        "-7.00 %",
+        "-6.00 %",
+        "-5.00 %",
+        "-4.00 %",
+        "-3.00 %",
+        "-2.00 %",
+        "-1.00 %",
+        "0.00 %",
+        "1.00 %",
+        "2.00 %",
+        "3.00 %",
+        "4.00 %",
+        "5.00 %",
+        "6.00 %",
+        "7.00 %",
+        "8.00 %",
+        "9.00 %",
+        "10.00 %",
+        "11.00 %",
+        "12.00 %",
+        "13.00 %",
+        "14.00 %",
+        "15.00 %",
+        "16.00 %",
+        "17.00 %",
+        "18.00 %",
+        "19.00 %",
+        "20.00 %",
+        "21.00 %",
+        "22.00 %",
+        "23.00 %",
+        "24.00 %",
+        "25.00 %",
+      ]
+      // categories: marginChartData.manufacturerProfit.map((_, index) => `Month ${index + 1}`)
+    },
+    yaxis: {
+      title: {
+        text: "Annual Profit ($)",
+      },
+    },
+    legend: {
+      position: 'top'
+    }
+  };
+
   return (
     <div className="simluation_db">
       <div className="container-fluid">
@@ -312,7 +602,6 @@ export default function MarginSimulator({
               </Select>
             </div>
           </div>
-
           <div className="text-end">
             <div className="row">
               <div className="col-lg-8">
@@ -326,7 +615,6 @@ export default function MarginSimulator({
             </div>
           </div>
         </div>
-
         {isPriceSimulationLoading ? (
           <div>
             <p>Please wait, while we are fetching the data for you . . .</p>
@@ -336,7 +624,23 @@ export default function MarginSimulator({
             {/* <!-- Best price --> */}
             <div className="best_price_row mb-4">
               <div>
-                {MarginSimulationChart.map((val, i) => {
+                {/* // new code By Dev */}
+                <ApexCharts
+                  options={options}
+                  series={series}
+                  // options={options}
+                  // series={[
+                  //   {
+                  //     name: "Annual Sales ($)",
+                  //     data: [10000, 9000, 8000, 7000, 6000, 5000, 4000, 3000, 2000, 1000]
+                  //   },
+                  // ]}
+                  // type={chartType}
+                  height={500}
+                  width="100%"
+                />
+                {/* // old code */}
+                {/* {MarginSimulationChart.map((val, i) => {
                   return (
                     <ReactEcharts
                       key={i}
@@ -349,7 +653,7 @@ export default function MarginSimulator({
                       }}
                     />
                   );
-                })}
+                })} */}
               </div>
               <div className="left_best_price">
                 <table className="best_pr_table">

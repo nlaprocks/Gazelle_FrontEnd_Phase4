@@ -31,6 +31,7 @@ import AuditUserProjects from "../../utils/dashboard/AuditUserProjects";
 import SidebarToggle from "../../components/sidebarToggle/SidebarToggle";
 
 const Dashboard = () => {
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -102,6 +103,7 @@ const Dashboard = () => {
     dispatch(allActions.getAllCategoriesAction.getAllCategories());
     dispatch(allActions.getAllProductsAction.getAllProducts());
   }, []);
+
   React.useEffect(() => {
     if (getUserPreferenceReducer.success) {
       setUserPreference({
@@ -183,6 +185,7 @@ const Dashboard = () => {
     setStartDate(value ? value[0].toISOString() : "");
     setEndDate(value ? value[1].toISOString() : "");
   };
+
   //Search
   const searchDataHandler = async () => {
     if (customTabPinnedProject === true) {
@@ -328,10 +331,11 @@ const Dashboard = () => {
       setUniversalAlertMsg("Loading . . . .");
       try {
         const res = await Api("GET", `api/v1/project/pin-or-unpin/${project_id.id}`);
+        // console.log(res)
         if (res.status === 200) {
           setLoad(true);
           setShowUniversalAlert(false);
-          setMaxPinLength(false)
+          setMaxPinLength(false);
           setPinAlertText(res.data.message);
           setProjectPinAlert(true);
           setTimeout(() => {
@@ -358,6 +362,7 @@ const Dashboard = () => {
       getFilteredDiv.scrollIntoView({ behavior: "smooth" });
     }
   };
+
   const unsetSearchData = () => {
     setSearchByAuthor("");
     setSearchByProjectName("");
@@ -429,6 +434,7 @@ const Dashboard = () => {
       setProjectsLoading(true);
       async function fetchProjects() {
         const { data } = await Api("GET", `api/v1/project/by-user/${userID}/?page=${currentPage}&limit=${limit}`);
+        // console.log(data)
         setFilteredPinDataByDate(data?.data?.pinnedProjects);
         setFilteredUnPinData(data?.data?.unPinnedProjects);
         setTotalPages(data.data.pagination.totalPages);
@@ -444,6 +450,8 @@ const Dashboard = () => {
       setLoadPagination(true);
     }, 2000);
 
+
+    
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [load, limit, currentPage, filterVisible, customTabPinnedProject, customTabRecentProject]);
 
@@ -508,6 +516,7 @@ const Dashboard = () => {
   //Pop up model open for once
   const [isTourOpen, setIsTourOpen] = useState(false);
   const [currentStep, setStep] = useState();
+
   const steps = [
     {
       selector: "#leftSideBar",
@@ -595,6 +604,7 @@ const Dashboard = () => {
       position: "-10px",
     },
   ];
+
   useEffect(() => {
     try {
       if (currentStep === 0) {
@@ -628,7 +638,6 @@ const Dashboard = () => {
       setProjectListFilter("date_created");
     }
   };
-
   // ----------------Duplicate Project Handler-----------------------
 
   const duplicateProjectHandler = async (project_id) => {
@@ -644,7 +653,7 @@ const Dashboard = () => {
         await axios
           .get(api, config)
           .then(async function (res) {
-            console.log("Project duplicate response: ", res);
+            // console.log("Project duplicate response: ", res);
             setLoad(true);
             setShowUniversalAlert(true);
             setUniversalAlertMsg("Project duplicated successfully");
@@ -653,7 +662,7 @@ const Dashboard = () => {
             }, 3000);
           })
           .catch(function (res) {
-            console.log("data from catch 1: ", res);
+            // console.log("data from catch 1: ", res);
             if (res?.response?.data === "Project exists") {
               setShowUniversalAlert(true);
               setUniversalAlertMsg("Project name already exists");
@@ -668,16 +677,27 @@ const Dashboard = () => {
     }
   };
   const fetchNodes = async (values) => {
-    console.log(values);
     if (values.id) {
+      // console.log("values11111",values.id);
+      
       setIsLoading(true);
       dispatch(allActions.getNodesAction.getNodesState(values.id));
+      // console.log("line 677",values.Models);
+      
+      // const latestVersion = values.Models?.sort((a, b) => b.model_version - a.model_version)[0]?.id || 0;
+      // // console.log("model_version", model_version);
+      
+      
+      // console.log("latestversion",latestVersion);
+      
       setTimeout(() => {
-        navigate(`/design-studio/${values.id}/${values?.Models?.length > 0 ? values?.Models[0]?.id : 0}`);
-        setIsLoading(false);
+        navigate(`/design-studio/${values.id}/${values?.Models?.length > 0 ? values?.Models[0]?.id:""}`);
+        // navigate(`/design-studio/${values.id}/${latestVersion ? latestVersion : 0}`);
+        // setIsLoading(false);
       }, 1500);
     }
   };
+
   const deleteProjectHandler = async (project__id) => {
     setShowUniversalAlert(true);
     setUniversalAlertMsg("Deleting project . . . . .");
@@ -773,7 +793,6 @@ const Dashboard = () => {
             </nav>
           </div>
         </div>
-
         <div className={`filter_box_wrapper shadow-md ${sidebarState ? "sidebarCollapse" : ""}`} id="filter_box_wrapper">
           <div className="row align-items-center justify-content-center">
             <div className="col-lg-5">
@@ -876,7 +895,6 @@ const Dashboard = () => {
               <div className={`animate__animated animate__fadeInUp nla_grid_and_list_view_data_wrapper ${sidebarState ? "sidebarCollapse" : ""}`}>
                 <div className="tab-content" id="nav-tabContent">
                   {/* <!-- Grid view content start --> */}
-
                   <div
                     className={userPreference.view === "grid" ? `tab-pane fade show active` : "tab-pane fade "}
                     id="nav-home"
@@ -988,7 +1006,6 @@ const Dashboard = () => {
                             </div>
                           </>
                         )}
-
                         <div className={`nla_grid_view_wrapper ${userPreference.no_of_columns}`}>
                           {filteredUnPinData.length ? (
                             filteredUnPinData?.map((item, index) => (
@@ -1288,7 +1305,10 @@ const Dashboard = () => {
                                                 </div>
                                                 <div>
                                                   Design Studio{" "}
-                                                  <a href="#!" onClick={() => fetchNodes(elem)}>
+                                                  <a href="#!" onClick={() => fetchNodes(elem)
+                                                    
+                                                  }>{console.log(elem,"elems")
+                                                  }
                                                     <img src={openPencil} alt="Pencil" />{" "}
                                                   </a>
                                                 </div>
@@ -1345,7 +1365,6 @@ const Dashboard = () => {
                   ) : (
                     ""
                   )}
-
                   <AuditUserProjects
                     handleEditProjectModal={handleEditProjectModal}
                     // modelsList={modelsList}

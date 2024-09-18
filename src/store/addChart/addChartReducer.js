@@ -3,12 +3,14 @@ import {
   ADD_CHART_SUCCESS,
   ADD_CHART_FAILURE,
 } from "./addChartType";
+
 const chartState = {
   success: false,
   loading: false,
   chart: [],
   error: "",
 };
+
 const addChartReducer = (state = chartState, action) => {
   switch (action.type) {
     case ADD_CHART_REQUEST:
