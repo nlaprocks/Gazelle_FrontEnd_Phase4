@@ -179,57 +179,57 @@ export default function MarginSimulator({
       multiAxes: true,
       data: {
         labels: [
-          "-25.00 %",
-          "-24.00 %",
-          "-23.00 %",
-          "-22.00 %",
-          "-21.00 %",
-          "-20.00 %",
-          "-19.00 %",
-          "-18.00 %",
-          "-17.00 %",
-          "-16.00 %",
-          "-15.00 %",
-          "-14.00 %",
-          "-13.00 %",
-          "-12.00 %",
-          "-11.00 %",
-          "-10.00 %",
-          "-9.00 %",
-          "-8.00 %",
-          "-7.00 %",
-          "-6.00 %",
-          "-5.00 %",
-          "-4.00 %",
-          "-3.00 %",
-          "-2.00 %",
-          "-1.00 %",
-          "0.00 %",
-          "1.00 %",
-          "2.00 %",
-          "3.00 %",
-          "4.00 %",
-          "5.00 %",
-          "6.00 %",
-          "7.00 %",
-          "8.00 %",
-          "9.00 %",
-          "10.00 %",
-          "11.00 %",
-          "12.00 %",
-          "13.00 %",
-          "14.00 %",
-          "15.00 %",
-          "16.00 %",
-          "17.00 %",
-          "18.00 %",
-          "19.00 %",
-          "20.00 %",
-          "21.00 %",
-          "22.00 %",
-          "23.00 %",
-          "24.00 %",
-          "25.00 %",
+          "-25%",
+          "-24%",
+          "-23%",
+          "-22%",
+          "-21%",
+          "-20%",
+          "-19%",
+          "-18%",
+          "-17%",
+          "-16%",
+          "-15%",
+          "-14%",
+          "-13%",
+          "-12%",
+          "-11%",
+          "-10%",
+          "-9%",
+          "-8%",
+          "-7%",
+          "-6%",
+          "-5%",
+          "-4%",
+          "-3%",
+          "-2%",
+          "-1%",
+          "0%",
+          "1%",
+          "2%",
+          "3%",
+          "4%",
+          "5%",
+          "6%",
+          "7%",
+          "8%",
+          "9%",
+          "10%",
+          "11%",
+          "12%",
+          "13%",
+          "14%",
+          "15%",
+          "16%",
+          "17%",
+          "18%",
+          "19%",
+          "20%",
+          "21%",
+          "22%",
+          "23%",
+          "24%",
+          "25%",
         ],
         datasets: [
           {
@@ -428,7 +428,7 @@ export default function MarginSimulator({
     },
   });
 
-  // latest data
+  // latest code By Devendra kashyap
   const series = [
     {
       name: 'Manufacturer Profit',
@@ -538,6 +538,201 @@ export default function MarginSimulator({
     }
   };
 
+  // 17-09-2024
+  const data = {
+    manufacturerProfit: marginChartData?.manufacturerProfit,
+    annualProfit: marginChartData?.annualProfit,
+    changeInPrice: [
+      "-25%",
+      "-24%",
+      "-23%",
+      "-22%",
+      "-21%",
+      "-20%",
+      "-19%",
+      "-18%",
+      "-17%",
+      "-16%",
+      "-15%",
+      "-14%",
+      "-13%",
+      "-12%",
+      "-11%",
+      "-10%",
+      "-9%",
+      "-8%",
+      "-7%",
+      "-6%",
+      "-5%",
+      "-4%",
+      "-3%",
+      "-2%",
+      "-1%",
+      "0%",
+      "1%",
+      "2%",
+      "3%",
+      "4%",
+      "5%",
+      "6%",
+      "7%",
+      "8%",
+      "9%",
+      "10%",
+      "11%",
+      "12%",
+      "13%",
+      "14%",
+      "15%",
+      "16%",
+      "17%",
+      "18%",
+      "19%",
+      "20%",
+      "21%",
+      "22%",
+      "23%",
+      "24%",
+      "25%",
+    ]
+  }
+
+  const option45s = {
+    chart: {
+      type: 'line',
+      height: 350,
+    },
+    dataLabels: {
+      enabled: false
+    },
+    stroke: {
+      curve: 'smooth'
+    },
+    title: {
+      text: "Effects of Change In Price",
+      align: 'center',
+      margin: 10,
+      offsetX: 0,
+      offsetY: 0,
+      style: {
+        fontSize: '16px',
+      },
+    },
+    grid: {
+      row: {
+        colors: ['#f3f3f3', 'transparent'], // Alternating row colors
+        opacity: 0.5
+      }
+    },
+    xaxis: {
+      title: {
+        text: "% Change in Price",
+      },
+      categories: [
+        "-25%",
+        "-24%",
+        "-23%",
+        "-22%",
+        "-21%",
+        "-20%",
+        "-19%",
+        "-18%",
+        "-17%",
+        "-16%",
+        "-15%",
+        "-14%",
+        "-13%",
+        "-12%",
+        "-11%",
+        "-10%",
+        "-9%",
+        "-8%",
+        "-7%",
+        "-6%",
+        "-5%",
+        "-4%",
+        "-3%",
+        "-2%",
+        "-1%",
+        "0%",
+        "1%",
+        "2%",
+        "3%",
+        "4%",
+        "5%",
+        "6%",
+        "7%",
+        "8%",
+        "9%",
+        "10%",
+        "11%",
+        "12%",
+        "13%",
+        "14%",
+        "15%",
+        "16%",
+        "17%",
+        "18%",
+        "19%",
+        "20%",
+        "21%",
+        "22%",
+        "23%",
+        "24%",
+        "25%",
+      ],
+    },
+    yaxis: [
+      {
+        title: {
+          text: "Annual Profit ($)",
+        },
+      },
+      {
+        opposite: true,
+        title: {
+          text: 'Manufacturer Profit',
+        },
+      },
+    ],
+    series: [
+      {
+        name: 'Manufacturer Profit',
+        data: data.manufacturerProfit && formatArrayToTwoDecimals(data.manufacturerProfit),
+      },
+      {
+        name: 'Annual Profit',
+        // data: data.annualProfit.concat(new Array(data.changeInPrice.length - data.annualProfit.length).fill(null)),
+        data: data.annualProfit && formatArrayToTwoDecimals(data.annualProfit),
+      },
+      // {
+      //   name: 'Change in Price',
+      //   data: data.changeInPrice.map(value => parseFloat(value)),
+      //   yaxisIndex: 1,
+      // },
+    ],
+    tooltip: {
+      shared: true,
+      intersect: false,
+    },
+    legend: {
+      position: 'top'
+    }
+  };
+
+  function formatArrayToTwoDecimals(arr) {
+    console.log(arr)
+    return arr.map(num => Math.floor(num * 100) / 100);
+  }
+
+  function formatNumbersUsingToFixed(data) {
+    const formattedData = {};
+    for (const key in data) {
+      formattedData[key] = data[key].map(num => parseFloat(num.toFixed(2)));
+    }
+    return formattedData;
+  }
+
   return (
     <div className="simluation_db">
       <div className="container-fluid">
@@ -624,21 +819,20 @@ export default function MarginSimulator({
             {/* <!-- Best price --> */}
             <div className="best_price_row mb-4">
               <div>
-                {/* // new code By Dev */}
+                {/* // latests code By Dev */}
                 <ApexCharts
-                  options={options}
-                  series={series}
-                  // options={options}
-                  // series={[
-                  //   {
-                  //     name: "Annual Sales ($)",
-                  //     data: [10000, 9000, 8000, 7000, 6000, 5000, 4000, 3000, 2000, 1000]
-                  //   },
-                  // ]}
-                  // type={chartType}
+                  options={option45s}
+                  series={option45s.series}
                   height={500}
                   width="100%"
                 />
+                {/* // new code By Dev
+                <ApexCharts
+                  options={options}
+                  series={series}
+                  height={500}
+                  width="100%"
+                /> */}
                 {/* // old code */}
                 {/* {MarginSimulationChart.map((val, i) => {
                   return (
@@ -683,7 +877,6 @@ export default function MarginSimulator({
                         </div>
                       </td>
                     </tr>
-
                     <tr>
                       <td>
                         <p>EDLP Spend</p>

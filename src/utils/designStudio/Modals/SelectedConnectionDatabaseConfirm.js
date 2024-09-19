@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { memo, useState } from "react";
 import Modal from "react-bootstrap/Modal";
 import "./connectionConfirm.css";
 import { useDispatch, useSelector } from "react-redux";
@@ -14,7 +14,9 @@ const { TabPane } = Tabs;
 const requiredColumns = ["WeekEnding", "Retailer", "Product", "Total_Volume", "Dollars"];
 
 const moment = require("moment");
-const SelectedConnectionDatabaseConfirm = ({ selectedConnectionConfirmModal, setSelectedConnectionConfirmModal, handleSelectColumn }) => {
+
+const SelectedConnectionDatabaseConfirm = ({ currentTableSelected, selectedColumnsToShow, selectedConnectionConfirmModal, setSelectedConnectionConfirmModal, handleSelectColumn }) => {
+
   const [scheduleObserver, setScheduleObserver] = React.useState(false);
   const [vertical, setVertical] = useState("top");
   const [horizontal, setHorizontal] = useState("center");
@@ -25,14 +27,17 @@ const SelectedConnectionDatabaseConfirm = ({ selectedConnectionConfirmModal, set
   const { model_id } = useParams();
   const [loader, setLoader] = React.useState(false);
   const getIsDataFetchedReducer = useSelector((state) => state.getIsDataFetchedReducer);
+
   const handleClose = () => {
     setSelectedConnectionConfirmModal(false);
     setStartDate();
   };
+
   const [externalColumnAliases, setExternalColumnAliases] = useState({});
   const datastructureReducer = useSelector((state) => state.datastructureReducer);
   const databaseConfigReducer = useSelector((state) => state.saveDatabaseConfigReducer);
-  const [currentTable, setCurrentTable] = React.useState("golden_krust_full");
+  const [currentTable, setCurrentTable] = React.useState(currentTableSelected ? currentTableSelected : "golden_krust_full");
+  // const [currentTable, setCurrentTable] = React.useState("golden_krust_full");
   const [externalCurrentTable, setExternalCurrentTable] = React.useState(null);
   const [selectedTables, setSelectedTables] = useState([]);
   const [selectedColumns, setSelectedColumns] = React.useState([]);
@@ -40,10 +45,10 @@ const SelectedConnectionDatabaseConfirm = ({ selectedConnectionConfirmModal, set
 
   const selectedDatabaseConfig = () => {
     const tableIndex = selectedColumns.findIndex((item) => item.table === currentTable);
-    if (tableIndex === -1) {
-      alert("Error occurred on confirmation");
-      return;
-    }
+    // if (tableIndex === -1) {
+    //   alert("Error occurred on confirmation");
+    //   return;
+    // }
     setLoader(true);
     if (startDate) {
       const date = startDate;
@@ -127,6 +132,22 @@ const SelectedConnectionDatabaseConfirm = ({ selectedConnectionConfirmModal, set
     fetchExternalColumns();
   }, []);
 
+  // React.useEffect(() => {
+  //   // {datastructureReducer?.structure?.data?.structure?.filter((val) => val.table === currentTableSelected)[0]?.columns?.map((column, index) => {
+  //   // selectedColumnsToShow?.filter((val) => {
+  //   selectedColumnsToShow?.filter((val) => val.table === currentTableSelected)[0]?.columns?.map((column, index) => {
+  //     // const dataMapping = selectedColumns.find((tableMapping) => tableMapping.table === currentTableSelected);
+  //     // const isSelected = dataMapping?.columns?.some((columnMapping) => columnMapping.original_column === column);
+  //     // const isRequired = requiredColumns.includes(column);
+  //     // console.log(val?.table)
+  //     // console.log(column)
+
+  //   })
+  // }, [selectedColumnsToShow]);
+
+  // console.log(selectedColumnsToShow)
+  // console.log('datastructureReducer', datastructureReducer)
+
   return (
     <Modal
       show={selectedConnectionConfirmModal}
@@ -136,7 +157,7 @@ const SelectedConnectionDatabaseConfirm = ({ selectedConnectionConfirmModal, set
       className="nladatabaseparametermodal"
     >
       <Modal.Header>
-        <Modal.Title>Selected Connection Database Confirm</Modal.Title>
+        <Modal.Title>Selected Connection Database Confirm </Modal.Title>
       </Modal.Header>
       <Modal.Body style={{ maxHeight: "560px", overflowY: "auto" }}>
         <div>
@@ -165,32 +186,54 @@ const SelectedConnectionDatabaseConfirm = ({ selectedConnectionConfirmModal, set
                 </tr>
               </thead>
               <tbody>
-                {datastructureReducer?.structure?.data?.structure
-                  ?.filter((val) => val.table === currentTable)[0]
-                  ?.columns.map((column, index) => {
-                    const dataMapping = selectedColumns.find((tableMapping) => tableMapping.table === currentTable);
-                    const isSelected = dataMapping?.columns?.some(
-                      (columnMapping) => columnMapping.original_column === column
-                    );
+                {
+                  selectedColumnsToShow?.filter((val) => val.table === currentTableSelected)[0]?.columns?.map((column, index) => {
+                    const dataMapping = selectedColumns.find((tableMapping) => tableMapping.table === currentTableSelected);
+                    const isSelected = dataMapping?.columns?.some((columnMapping) => columnMapping.original_column === column);
                     const isRequired = requiredColumns.includes(column);
                     return (
                       <tr key={index}>
                         <td>
                           <div className="form-check custom-checkbox">
-                            <span>{column}</span>
+                            <span>{column?.original_column}</span>
                           </div>
                         </td>
-                        <td>{column}</td>
+                        <td>{column?.original_column}</td>
                         <td>
                           <div className="col-md-8">
                             <div className="input-box">
-                              <span>{columnAliases[column] || ""}</span>
+                              <span>{columnAliases[column?.original_column] || ""}</span>
                             </div>
                           </div>
                         </td>
                       </tr>
                     );
-                  })}
+                  })
+                }
+
+                {/* {datastructureReducer?.structure?.data?.structure?.filter((val) => val.table === currentTableSelected)[0]?.columns?.map((column, index) => {
+                  // console.log(column)
+                  const dataMapping = selectedColumns.find((tableMapping) => tableMapping.table === currentTableSelected);
+                  const isSelected = dataMapping?.columns?.some((columnMapping) => columnMapping.original_column === column);
+                  const isRequired = requiredColumns.includes(column);
+                  return (
+                    <tr key={index}>
+                      <td>
+                        <div className="form-check custom-checkbox">
+                          <span>{column}</span>
+                        </div>
+                      </td>
+                      <td>{column}</td>
+                      <td>
+                        <div className="col-md-8">
+                          <div className="input-box">
+                            <span>{columnAliases[column] || ""}</span>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })} */}
               </tbody>
             </table>
           </div>
@@ -207,4 +250,4 @@ const SelectedConnectionDatabaseConfirm = ({ selectedConnectionConfirmModal, set
   );
 };
 
-export default SelectedConnectionDatabaseConfirm;
+export default memo(SelectedConnectionDatabaseConfirm);

@@ -11,11 +11,15 @@ import RunDemo from "../../../components/pptDownloader/AllPptDownloader";
 const TopBar = ({ setShowShareModal, sidebarState }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
   const { model_id } = useParams();
+
   const [project, setProject] = React.useState([]);
   const project_id = useParams().id;
+
   // Model Version
   const getInsightsVersionReducer = useSelector((state) => state.getInsightsVersionReducer);
+
   React.useEffect(() => {
     async function fetchProject() {
       const { data } = await Api("GET", `api/v1/project/${project_id}`);
@@ -25,6 +29,9 @@ const TopBar = ({ setShowShareModal, sidebarState }) => {
     dispatch(allActions.getInsightsVersionAction.getInsightsVersion(model_id));
     // window.location.reload();
   }, []);
+
+  // console.log(getInsightsVersionReducer)
+
   return (
     <div className={`design-studio-topbar  ${sidebarState ? "sidebarCollapse" : ""}`}>
       <div className="container-fluid">

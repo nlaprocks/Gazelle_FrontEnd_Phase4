@@ -25,7 +25,7 @@ export default function Financials({ promotedPrice, units, increamentalUnits, ba
     let totalSpend = financialPriceValues.fixedFee
       ? parseFloat(financialPriceValues.fixedFee) + variableSpend
       : variableSpend;
-    console.log(variableSpend, totalSpend, financialPriceValues);
+    // console.log(variableSpend, totalSpend, financialPriceValues);
     let increamentalRevenue = increamentalUnits * promotedPrice;
     let variableContributionMargin = parseFloat(financialPriceValues.vcm);
     let increamentalProfit = increamentalUnits * variableContributionMargin - totalSpend;
@@ -276,7 +276,7 @@ export default function Financials({ promotedPrice, units, increamentalUnits, ba
     };
   };
 
-  console.log(eventResults);
+  // console.log(eventResults);
 
   return (
     <div className="simluation_db">

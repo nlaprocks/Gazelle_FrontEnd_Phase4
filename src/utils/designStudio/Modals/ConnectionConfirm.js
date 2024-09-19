@@ -14,6 +14,7 @@ import SelectedConnectionDatabaseConfirm from "./SelectedConnectionDatabaseConfi
 import axios from "axios";
 import { Tabs } from "antd";
 const { TabPane } = Tabs;
+
 const preSelectedColumns = [
   "WeekEnding",
   "Retailer",
@@ -47,10 +48,12 @@ const ConnectionConfirm = ({ connectionConfirmModal, setConnectionConfirmModal, 
   const { model_id } = useParams();
   const [loader, setLoader] = React.useState(false);
   const getIsDataFetchedReducer = useSelector((state) => state.getIsDataFetchedReducer);
+
   const handleClose = () => {
     setConnectionConfirmModal(false);
     setStartDate();
   };
+
   const datastructureReducer = useSelector((state) => state.datastructureReducer);
   const databaseConfigReducer = useSelector((state) => state.saveDatabaseConfigReducer);
   const [currentTable, setCurrentTable] = React.useState("golden_krust_full");
@@ -63,6 +66,7 @@ const ConnectionConfirm = ({ connectionConfirmModal, setConnectionConfirmModal, 
   const [selectedConnectionConfirmModal, setSelectedConnectionConfirmModal] = useState(false);
 
   const handleTableSelect = (e) => {
+    console.log(e.target.value)
     setCurrentTable(e.target.value);
     const selectedTable = e.target.value;
     const tableIndex = selectedTables.findIndex((table) => table.table === selectedTable);
@@ -70,7 +74,9 @@ const ConnectionConfirm = ({ connectionConfirmModal, setConnectionConfirmModal, 
       setSelectedTables([...selectedTables, { table: selectedTable, columns: [] }]);
     }
   };
+
   const handleTableSelectForExternalData = (e) => {
+    console.log(e.target.value)
     setExternalCurrentTable(e.target.value);
     const selectedTable = e.target.value;
     const tableIndex = selectedTables.findIndex((table) => table.table === selectedTable);
@@ -78,6 +84,7 @@ const ConnectionConfirm = ({ connectionConfirmModal, setConnectionConfirmModal, 
       setSelectedTables([...selectedTables, { table: selectedTable, columns: [] }]);
     }
   };
+
   // this function is to check if the current table all values are selected
   const isTableAllColumnsSelected = () => {
     // Get the data structure of the current table
@@ -132,7 +139,7 @@ const ConnectionConfirm = ({ connectionConfirmModal, setConnectionConfirmModal, 
       });
     }
   };
-  console.log("selectedColumns: ", selectedColumns[4]);
+
   const handleUnselectAllColumns = (currentTableVal) => {
     // Find the index of the selected table in the selectedColumns array
     const tableIndex = selectedColumns.findIndex((item) => item.table === currentTableVal[0].table);
@@ -143,10 +150,13 @@ const ConnectionConfirm = ({ connectionConfirmModal, setConnectionConfirmModal, 
       setSelectedColumns((prevState) => [...prevState.slice(0, tableIndex), ...prevState.slice(tableIndex + 1)]);
     }
   };
+
   // Handler function for selecting a column
   const handleSelectColumn = (column, val) => {
     // Find the index of the selected table in the selectedColumns array
     const tableIndex = selectedColumns.findIndex((item) => item.table === currentTable);
+    // console.log("tableIndex", tableIndex);
+    // console.log("currentTable", currentTable);
 
     if (tableIndex === -1) {
       // If the selected table is not yet in the selectedColumns array,
@@ -170,7 +180,10 @@ const ConnectionConfirm = ({ connectionConfirmModal, setConnectionConfirmModal, 
       // update its columns array with the selected column
       setSelectedColumns((prevState) => {
         const newColumns = [...prevState[tableIndex].columns];
+        // console.log(newColumns)
         const columnIndex = newColumns.findIndex((item) => item.original_column === column);
+        // console.log(columnIndex)
+        // console.log('column',column)
         if (val.checked) {
           // If the column is checked and not yet in the columns array,
           // add it to the end
@@ -201,6 +214,7 @@ const ConnectionConfirm = ({ connectionConfirmModal, setConnectionConfirmModal, 
       });
     }
   };
+
   const handleDropDownChange = (event, column) => {
     const { value } = event.target;
     const tableIndex = selectedColumns.findIndex((table) => table.table === currentTable);
@@ -219,10 +233,12 @@ const ConnectionConfirm = ({ connectionConfirmModal, setConnectionConfirmModal, 
     // Set the updated data
     setSelectedColumns(updatedData);
   };
+
   const addDatabaseConfig = () => {
     setConnectionConfirmModal(false);
     setSelectedConnectionConfirmModal(true)
   };
+
   React.useEffect(() => {
     if (databaseConfigReducer.success) {
       if (!startDate) {
@@ -240,6 +256,7 @@ const ConnectionConfirm = ({ connectionConfirmModal, setConnectionConfirmModal, 
       delete databaseConfigReducer.success;
     }
   }, [databaseConfigReducer, model_id]);
+
   React.useEffect(() => {
     if (getIsDataFetchedReducer.success) {
       const timeout = setTimeout(() => {
@@ -256,7 +273,7 @@ const ConnectionConfirm = ({ connectionConfirmModal, setConnectionConfirmModal, 
       const api = `${process.env.REACT_APP_NGROK}/client-data/external-structure`;
       const response = await axios.get(api);
       if (response.status === 200) {
-        console.log("response: ", response.data);
+        // console.log("response: ", response.data);
         setExternalColumns(response.data.data.columns);
         // setRetailerBrandProducts(response?.data?.data);
       }
@@ -298,6 +315,8 @@ const ConnectionConfirm = ({ connectionConfirmModal, setConnectionConfirmModal, 
       }
     });
   }, [currentTable]);
+
+  // console.log(selectedColumns)
 
   return (
     <>
@@ -361,8 +380,9 @@ const ConnectionConfirm = ({ connectionConfirmModal, setConnectionConfirmModal, 
           </Alert>
         </Snackbar>
       </Modal>
-
       <SelectedConnectionDatabaseConfirm
+        currentTableSelected={currentTable}
+        selectedColumnsToShow={selectedColumns}
         selectedConnectionConfirmModal={selectedConnectionConfirmModal}
         setSelectedConnectionConfirmModal={setSelectedConnectionConfirmModal}
       />

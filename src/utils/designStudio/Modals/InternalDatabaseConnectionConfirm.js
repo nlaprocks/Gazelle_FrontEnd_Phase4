@@ -277,7 +277,7 @@ const InternalDatabaseConnectionConfirm = ({
       centered
       className="nladatabaseparametermodal"
     >
-      <Modal.Header>
+      <Modal.Header>  
         <Modal.Title>Connection Confirm</Modal.Title>
       </Modal.Header>
       <Modal.Body>

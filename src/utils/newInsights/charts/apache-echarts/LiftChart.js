@@ -5,11 +5,11 @@ import Pagination from "./pagination/Pagination";
 
 const LiftChart = ({ isLoading }) => {
   const chart8Reducer = useSelector((state) => state.chart8Reducer);
-  console.log(chart8Reducer,"liftchar1");
-  
+  // console.log(chart8Reducer,"liftchar1");
+
   const chartData = chart8Reducer?.chart8Data?.data;
-  console.log(chartData,"chartdata");
-  
+  // console.log(chartData,"chartdata");
+
   const [isStacked, setIsStacked] = React.useState(false);
   const [chartType, setChartType] = React.useState('line');
 

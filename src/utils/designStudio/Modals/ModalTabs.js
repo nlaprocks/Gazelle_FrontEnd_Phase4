@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, memo } from "react";
 import "./connectionConfirm.css";
 import { Tabs } from "antd";
 import InputRange from 'react-input-range';
@@ -6,21 +6,12 @@ import "react-input-range/lib/css/index.css";
 
 const { TabPane } = Tabs;
 
-export default function ModalTabs({
-  currentTable,
-  externalCurrentTable,
-  selectedColumns,
-  datastructureReducer,
-  isTableAllColumnsSelected,
-  handleDropDownChange,
-  handleSelectColumn,
-  handleTableSelect,
-  handleTableSelectForExternalData,
-  handleSelectAllColumn,
-  handleUnselectAllColumns,
-  preSelectedColumns,
-  requiredColumns,
-}) {
+export default memo(function ModalTabs(props) {
+
+
+  const { currentTable, externalCurrentTable, selectedColumns, datastructureReducer, isTableAllColumnsSelected, handleDropDownChange, handleSelectColumn,
+    handleTableSelect, handleTableSelectForExternalData, handleSelectAllColumn, handleUnselectAllColumns, preSelectedColumns, requiredColumns, } = props
+
   const [salesValue, setSalesValue] = useState(10);
   const [marketSalesValue, setMarketSalesValue] = useState(100);
   const [isMounted, setIsMounted] = useState(false);
@@ -31,18 +22,14 @@ export default function ModalTabs({
 
   useEffect(() => {
     const initialColumnAliases = {};
-
     datastructureReducer?.structure?.data?.structure
       ?.filter((val) => val.table === currentTable || val.table === externalCurrentTable)[0]
       ?.columns.forEach((column) => {
         initialColumnAliases[column] = column;
       });
-
     setColumnAliases(initialColumnAliases);
     setExternalColumnAliases(initialColumnAliases);
-
     setIsMounted(true);
-
   }, [datastructureReducer, currentTable, externalCurrentTable]);
 
   if (!isMounted) return null; // Prevent rendering before mounting
@@ -65,23 +52,6 @@ export default function ModalTabs({
   const ModalHeader = () => {
     return (
       <div className="row padding-spacer justify-end align-items-center mb-4 ">
-        {/* <div className="col-md-3">
-          <div className="search-icon-box">
-            <input
-              type="number"
-              placeholder="Market Share (%)"
-              class="centered-placeholder"
-              step="0.01"
-              min="0"
-              max="100"
-            />
-          </div>
-        </div> */}
-        {/* <div className="col-md-3">
-          <div className="search-icon-box">
-            <input type="text" placeholder="Competitor dollar sales" class="centered-placeholder" />
-          </div>
-        </div> */}
         <div className="col-md-4 select_table-box">
           <div className="px-3">
             <label className="mb-4">Market Sales</label>
@@ -118,9 +88,8 @@ export default function ModalTabs({
     );
   };
 
+  // console.log(datastructureReducer)
   const exampleColumns = ["_id", "WeekEnding", "Retailer", "Product", "mobility_workplaces", "Mob"];
-  console.log("columnAliases: ", columnAliases);
-  console.log("currentTable: ", currentTable);
 
   return (
     <Tabs defaultActiveKey="1" tabPosition="top" size="middle" style={{ paddingLeft: "15px" }}>
@@ -143,17 +112,9 @@ export default function ModalTabs({
                             checked={isTableAllColumnsSelected()}
                             onChange={(e) => {
                               if (e.target.checked) {
-                                handleSelectAllColumn(
-                                  datastructureReducer?.structure?.data?.structure?.filter(
-                                    (val) => val.table === currentTable
-                                  )
-                                );
+                                handleSelectAllColumn(datastructureReducer?.structure?.data?.structure?.filter((val) => val.table === currentTable));
                               } else {
-                                handleUnselectAllColumns(
-                                  datastructureReducer?.structure?.data?.structure?.filter(
-                                    (val) => val.table === currentTable
-                                  )
-                                );
+                                handleUnselectAllColumns(datastructureReducer?.structure?.data?.structure?.filter((val) => val.table === currentTable));
                               }
                             }}
                           />
@@ -166,47 +127,44 @@ export default function ModalTabs({
                     </tr>
                   </thead>
                   <tbody>
-                    {datastructureReducer?.structure?.data?.structure
-                      ?.filter((val) => val.table === currentTable)[0]
-                      ?.columns.map((column, index) => {
-                        const dataMapping = selectedColumns.find((tableMapping) => tableMapping.table === currentTable);
-                        const isSelected = dataMapping?.columns?.some(
-                          (columnMapping) => columnMapping.original_column === column
-                        );
-                        const isRequired = requiredColumns.includes(column);
-                        return (
-                          <tr key={index}>
-                            <td>
-                              <div className="form-check custom-checkbox">
+                    {datastructureReducer?.structure?.data?.structure?.filter((val) => val.table === currentTable)[0]?.columns.map((column, index) => {
+                      // console.log(column)
+                      const dataMapping = selectedColumns.find((tableMapping) => tableMapping.table === currentTable);
+                      const isSelected = dataMapping?.columns?.some((columnMapping) => columnMapping.original_column === column);
+                      const isRequired = requiredColumns.includes(column);
+                      return (
+                        <tr key={index}>
+                          <td>
+                            <div className="form-check custom-checkbox">
+                              <input
+                                className="form-check-input"
+                                type="checkbox"
+                                id={`${column}-${index}`}
+                                value={column}
+                                checked={isSelected}
+                                onChange={(e) => handleSelectColumn(e.target.value, e.target)}
+                                disabled={isRequired}
+                              />
+                              <label className="form-check-label" htmlFor={`${column}-${index}`}></label>
+                            </div>
+                          </td>
+                          <td>{column}</td>
+                          <td>
+                            <div className="col-md-8">
+                              <div className="input-box">
                                 <input
-                                  className="form-check-input"
-                                  type="checkbox"
-                                  id={`${column}-${index}`}
-                                  value={column}
-                                  checked={isSelected}
-                                  onChange={(e) => handleSelectColumn(e.target.value, e.target)}
-                                  disabled={isRequired}
+                                  type="text"
+                                  value={columnAliases[column] || ""}
+                                  placeholder="Renamed Measure"
+                                  className="centered-placeholder"
+                                  onChange={(e) => handleInputChange(e, column, "internal")}
                                 />
-                                <label className="form-check-label" htmlFor={`${column}-${index}`}></label>
                               </div>
-                            </td>
-                            <td>{column}</td>
-                            <td>
-                              <div className="col-md-8">
-                                <div className="input-box">
-                                  <input
-                                    type="text"
-                                    value={columnAliases[column] || ""}
-                                    placeholder="Renamed Measure"
-                                    className="centered-placeholder"
-                                    onChange={(e) => handleInputChange(e, column, "internal")}
-                                  />
-                                </div>
-                              </div>
-                            </td>
-                          </tr>
-                        );
-                      })}
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
@@ -348,4 +306,4 @@ export default function ModalTabs({
       </TabPane>
     </Tabs>
   );
-}
+})
