@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, memo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import "../../css/style.css";
 import Footer from "../../components/footer/Footer";
@@ -264,7 +264,6 @@ const DesignStudio = () => {
       }, 3000);
     }
   };
-
 
   const AddNodeAttributesHandler = async () => {
     const config = {
@@ -987,7 +986,7 @@ const DesignStudio = () => {
       <Snackbar
         open={showUniversalAlert}
         autoHideDuration={3000}
-        key={vertical + horizontal}
+        // key={vertical + horizontal}
         anchorOrigin={{ vertical, horizontal }}
       >
         <Alert severity="success" sx={{ width: "100%" }}>
@@ -998,7 +997,7 @@ const DesignStudio = () => {
       <Snackbar
         open={saveModel}
         autoHideDuration={3000}
-        key={vertical + horizontal}
+        // key={vertical + horizontal}
         anchorOrigin={{ vertical, horizontal }}
       >
         <Alert severity="success" sx={{ width: "100%" }}>
@@ -1009,4 +1008,4 @@ const DesignStudio = () => {
   );
 };
 
-export default DesignStudio;
+export default memo(DesignStudio);

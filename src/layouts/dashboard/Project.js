@@ -69,7 +69,7 @@ export default function Project({
     }
   };
 
-  elem && console.log(elem)
+  // elem && console.log(elem)
 
   return (
     <>
@@ -99,7 +99,6 @@ export default function Project({
                 </small>
               </div>
             </div>
-
             <div className="d-flex align-items-center justify-content-between mb-3" style={{ marginTop: '-10px' }}>
               {elem.pin_project === 1 ? (
                 <div className="nla_pin-icon unpin" onClick={() => PinUnPinHandler(elem)}>
@@ -110,7 +109,6 @@ export default function Project({
                   <i className="fa-regular fa-star" style={{ color: "rgba(0, 0, 0, 0.5)" }}></i>
                 </div>
               )}
-
               <KebabMenu
                 elem={elem}
                 duplicateProjectHandler={duplicateProjectHandler}
@@ -157,7 +155,6 @@ export default function Project({
               <i className="fa-solid fa-pencil"></i>
               Design Studio
             </a>
-
             {elem.is_insight ? (
               <Link to={`/new-insights/${elem?.id}/${elem?.Models[0]?.id}`}>
                 <i className="fa-solid fa-eye"></i>

@@ -861,7 +861,6 @@ export default function Simulation() {
     ]);
   }, [promoEventPriceValues]);
 
-  // console.log("\n\n\n\n TEST: ", filteredSelectedPriceProducts, competitors);
   return (
     <div className="main-content-wrapper">
       <div className="design-studio-topbar">
@@ -990,7 +989,7 @@ export default function Simulation() {
               handleProductChange={handleProductChange}
               handleProductsChangeForPrice={handleProductsChangeForPrice}
             />
-          )} 
+          )}
           {simulatorType === "margin" && (
             <MarginSimulator
               retailers={retailers}

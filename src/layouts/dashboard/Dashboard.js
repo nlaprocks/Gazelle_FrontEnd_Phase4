@@ -116,6 +116,7 @@ const Dashboard = () => {
       delete getUserPreferenceReducer.success;
     }
   }, [getUserPreferenceReducer]);
+
   React.useEffect(() => {
     if (userPreference.view === "list") {
       customTabHandlerRecentProjects();
@@ -138,6 +139,7 @@ const Dashboard = () => {
     setCustomTabPinnedProject(true);
     setCustomTabRecentProject(false);
   };
+
   const customTabHandlerRecentProjects = async () => {
     setProjectsLoading(true);
     unsetSearchData();
@@ -180,6 +182,7 @@ const Dashboard = () => {
   const [value, setValue] = React.useState();
   const [start_date, setStartDate] = useState("");
   const [end_date, setEndDate] = useState("");
+
   const handleChange = (value) => {
     setValue(value);
     setStartDate(value ? value[0].toISOString() : "");
@@ -451,7 +454,7 @@ const Dashboard = () => {
     }, 2000);
 
 
-    
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [load, limit, currentPage, filterVisible, customTabPinnedProject, customTabRecentProject]);
 
@@ -638,6 +641,7 @@ const Dashboard = () => {
       setProjectListFilter("date_created");
     }
   };
+
   // ----------------Duplicate Project Handler-----------------------
 
   const duplicateProjectHandler = async (project_id) => {
@@ -676,22 +680,23 @@ const Dashboard = () => {
       }
     }
   };
+
   const fetchNodes = async (values) => {
     if (values.id) {
       // console.log("values11111",values.id);
-      
+
       setIsLoading(true);
       dispatch(allActions.getNodesAction.getNodesState(values.id));
       // console.log("line 677",values.Models);
-      
+
       // const latestVersion = values.Models?.sort((a, b) => b.model_version - a.model_version)[0]?.id || 0;
       // // console.log("model_version", model_version);
-      
-      
+
+
       // console.log("latestversion",latestVersion);
-      
+
       setTimeout(() => {
-        navigate(`/design-studio/${values.id}/${values?.Models?.length > 0 ? values?.Models[0]?.id:""}`);
+        navigate(`/design-studio/${values.id}/${values?.Models?.length > 0 ? values?.Models[0]?.id : ""}`);
         // navigate(`/design-studio/${values.id}/${latestVersion ? latestVersion : 0}`);
         // setIsLoading(false);
       }, 1500);
@@ -950,7 +955,6 @@ const Dashboard = () => {
                             </div>
                           </div>
                         </div>
-
                         <div className={`nla_grid_view_wrapper ${userPreference.no_of_columns}`}>
                           {filteredPinDataByDate?.length ? (
                             filteredPinDataByDate?.map((item, index) => (
@@ -1306,9 +1310,9 @@ const Dashboard = () => {
                                                 <div>
                                                   Design Studio{" "}
                                                   <a href="#!" onClick={() => fetchNodes(elem)
-                                                    
-                                                  }>{console.log(elem,"elems")
-                                                  }
+
+                                                  }>{console.log(elem, "elems")
+                                                    }
                                                     <img src={openPencil} alt="Pencil" />{" "}
                                                   </a>
                                                 </div>
