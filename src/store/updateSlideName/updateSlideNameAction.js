@@ -25,8 +25,9 @@ const updateSlideNameFailure = (error) => {
     loading: false,
   };
 };
+
 const updateSlideName = (state) => {
-  console.log("state", state);
+  // console.log("state", state);
   let loading = true;
   return async (dispatch) => {
     try {

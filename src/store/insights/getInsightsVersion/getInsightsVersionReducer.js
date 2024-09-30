@@ -3,12 +3,14 @@ import {
   GET_INSIGHTS_VERSION_SUCCESS,
   GET_INSIGHTS_VERSION_FAILURE,
 } from "./getInsightsVersionType";
+
 const initialState = {
   success: false,
   loading: false,
   insightsVersion: [],
   error: "",
 };
+
 const getInsightsVersionReducer = (state = initialState, action) => {
   switch (action.type) {
     case GET_INSIGHTS_VERSION_REQUEST:

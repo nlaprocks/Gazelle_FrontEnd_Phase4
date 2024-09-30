@@ -1586,10 +1586,12 @@ const AllPptDownloader = () => {
         // disabled={true}
         style={presentationGenerated ?  mystyle : mystyleTrue}
         href="#!"
-        className="btn btn-secondary d-inline-flex"
+        className="btn btn-outline-primary d-inline-flex items-center gap-3"
         onClick={() => {  RunDemo();}}
       >
-        Download <img src={download} alt="Download" />
+        Download 
+        <i className="fa-solid fa-file-export ms-0"></i>
+        {/* <img src={download} alt="Download" /> */}
       </a>
       <ToastContainer/>
     </>

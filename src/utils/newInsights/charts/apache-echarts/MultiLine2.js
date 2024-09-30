@@ -3,6 +3,9 @@ import ApexCharts from "react-apexcharts";
 import { useSelector } from "react-redux";
 import Pagination from "./pagination/Pagination";
 import dayjs from "dayjs";
+import isoWeek from 'dayjs/plugin/isoWeek';
+
+dayjs.extend(isoWeek);
 
 const MultiLine2 = ({ isLoading }) => {
 
@@ -13,41 +16,41 @@ const MultiLine2 = ({ isLoading }) => {
 
   const transformedData = {};
 
-  // Helper function to group data by month and calculate averages
-  const groupByMonth = (data) => {
-    const monthlyData = {};
+  dayjs.extend(isoWeek);
+
+  const groupByWeek = (data) => {
+    const weeklyData = {};
 
     data.forEach((item) => {
-      const monthYear = dayjs(item.WeekEnding).format('MMMM-YYYY'); // Format to Month-Year
+      const weekYear = dayjs(item?.WeekEnding).format('YYYY-[W]W');  // Format to Week-Year
+      // console.log(weekYear)
       const product = item.Product;
       const retailer = item.Retailer;
       const key = `${product}-${retailer}`;
 
-      if (!monthlyData[key]) {
-        monthlyData[key] = {};
-      }
+      if (!weeklyData[key]) { weeklyData[key] = {}; }
 
-      if (!monthlyData[key][monthYear]) {
-        monthlyData[key][monthYear] = { totalPrice: 0, totalUnits: 0, count: 0, Retailer: item.Retailer };
+      if (!weeklyData[key][weekYear]) {
+        weeklyData[key][weekYear] = { totalPrice: 0, totalUnits: 0, count: 0, Retailer: item.Retailer };
       }
 
       // Accumulate data for averaging
-      monthlyData[key][monthYear].totalPrice += item.Price;
-      monthlyData[key][monthYear].totalUnits += item.Total_Volume;
-      monthlyData[key][monthYear].count += 1;
+      weeklyData[key][weekYear].totalPrice += item.Price;
+      weeklyData[key][weekYear].totalUnits += item.Total_Volume;
+      weeklyData[key][weekYear].count += 1;
     });
 
-    return monthlyData;
+    return weeklyData;
   };
 
-  // Group data by month-year and calculate the averages
-  const groupedData = groupByMonth(chart5Data);
+  // Group data by week and calculate the averages
+  const groupedData = groupByWeek(chart5Data);
 
   Object.keys(groupedData).forEach((key) => {
     transformedData[key] = {
       Retailer: key.split('-')[2],
       Product: key.split('-')[0] + "-" + key.split('-')[1],
-      xAxisTitle: "Month-Year",
+      xAxisTitle: "Week-Year",
       leftyAxisTitle: "Units",
       rightyAxisTitle: "Price ($)",
       data: {
@@ -65,20 +68,95 @@ const MultiLine2 = ({ isLoading }) => {
       },
     };
 
-    Object.keys(groupedData[key]).forEach((monthYear) => {
-      const { totalPrice, totalUnits, count } = groupedData[key][monthYear];
+    Object.keys(groupedData[key]).forEach((weekYear) => {
+      const { totalPrice, totalUnits, count } = groupedData[key][weekYear];
       // Calculate averages
       const avgPrice = totalPrice / count;
       const avgUnits = totalUnits / count;
 
       // Add to the transformed data
-      transformedData[key].data.categories.push(monthYear);
+      transformedData[key].data.categories.push(weekYear);
       transformedData[key].data.series[0].data.push(avgUnits);
       transformedData[key].data.series[1].data.push(avgPrice);
     });
   });
 
   const transformedChartData = Object.values(transformedData);
+
+
+  //  old code dont touch
+
+  // Helper function to group data by month and calculate averages
+  // const groupByMonth = (data) => {
+  //   // console.log(data)
+  //   const monthlyData = {};
+
+  //   data.forEach((item) => {
+  //     // const monthYear = dayjs(item.WeekEnding).format('MMMM-YYYY'); // Format to Month-Year
+  //     const monthYear = dayjs(item?.WeekEnding).format('YYYY-[W]W');  // Format to weak
+
+  //     console.log(monthYear)
+  //     const product = item.Product;
+  //     const retailer = item.Retailer;
+  //     const key = `${product}-${retailer}`;
+
+  //     if (!monthlyData[key]) { monthlyData[key] = {}; }
+
+  //     if (!monthlyData[key][monthYear]) {
+  //       monthlyData[key][monthYear] = { totalPrice: 0, totalUnits: 0, count: 0, Retailer: item.Retailer };
+  //     }
+
+  //     // Accumulate data for averaging
+  //     monthlyData[key][monthYear].totalPrice += item.Price;
+  //     monthlyData[key][monthYear].totalUnits += item.Total_Volume;
+  //     monthlyData[key][monthYear].count += 1;
+  //   });
+
+  //   return monthlyData;
+  // };
+
+  // // Group data by month-year and calculate the averages
+  // const groupedData = groupByMonth(chart5Data);
+
+  // Object.keys(groupedData).forEach((key) => {
+  //   transformedData[key] = {
+  //     Retailer: key.split('-')[2],
+  //     Product: key.split('-')[0] + "-" + key.split('-')[1],
+  //     xAxisTitle: "Month-Year",
+  //     leftyAxisTitle: "Units",
+  //     rightyAxisTitle: "Price ($)",
+  //     data: {
+  //       categories: [],
+  //       series: [
+  //         {
+  //           name: "Units",
+  //           data: [],
+  //         },
+  //         {
+  //           name: "Price",
+  //           data: [],
+  //         },
+  //       ],
+  //     },
+  //   };
+
+  //   Object.keys(groupedData[key]).forEach((monthYear) => {
+  //     const { totalPrice, totalUnits, count } = groupedData[key][monthYear];
+  //     // Calculate averages
+  //     const avgPrice = totalPrice / count;
+  //     const avgUnits = totalUnits / count;
+
+  //     // Add to the transformed data
+  //     transformedData[key].data.categories.push(monthYear);
+  //     transformedData[key].data.series[0].data.push(avgUnits);
+  //     transformedData[key].data.series[1].data.push(avgPrice);
+  //   });
+  // });
+
+  // const transformedChartData = Object.values(transformedData);
+
+  // old code ending for year wise data 
+
 
   const getChartOptions = (data) => ({
     chart: {
@@ -91,7 +169,7 @@ const MultiLine2 = ({ isLoading }) => {
         tools: {
           download: true,
           selection: true,
-          zoom: false,
+          zoom: true,
           zoomin: true,
           zoomout: true,
           pan: true,
@@ -225,6 +303,7 @@ const MultiLine2 = ({ isLoading }) => {
   return (
     <div>
       {visibleChartData?.map((val, i) => (
+        // console.log(val),
         <div
           key={i}
           style={{
@@ -232,7 +311,6 @@ const MultiLine2 = ({ isLoading }) => {
           }}
         >
           {/* <h6 style={{ textAlign: "center" }}>this is line Chart</h6> */}
-
           <ApexCharts
             options={getChartOptions(val)}
             series={val.data.series}

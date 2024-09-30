@@ -14,15 +14,12 @@ const StackedLineChart = ({ isLoading }) => {
   useEffect(() => {
     if (chart4Data) {
       const transformedData = [];
-
       chart4Data.forEach((item) => {
         const retailer = item.Retailer;
         const product = item.Product;
-
         const existingItem = transformedData.find(
           (dataItem) => dataItem.Retailer === retailer && dataItem.Product === product
         );
-
         if (existingItem) {
           for (let i = -10; i <= 10; i += 2) {
             const keyVolume = `${i}%_BPE_Volume_Impact`;
@@ -65,18 +62,15 @@ const StackedLineChart = ({ isLoading }) => {
               ],
             },
           };
-
           for (let i = -10; i <= 10; i += 2) {
             const keyVolume = `${i}%_BPE_Volume_Impact`;
             const keyDollar = `${i}%_BPE_Dollar_Impact`;
             newItem.data.datasets[0].data.push(item[keyVolume]);
             newItem.data.datasets[1].data.push(item[keyDollar]);
           }
-
           transformedData.push(newItem);
         }
       });
-
       setChart4TransformedData(transformedData);
     }
   }, [chart4Data]);
@@ -87,7 +81,10 @@ const StackedLineChart = ({ isLoading }) => {
       height: 450,
       stacked: isStacked,
       zoom: {
-        enabled: true,
+        enabled: false,
+        zoom: false,
+        zoomin: false,
+        zoomout: false,
         type: 'xy',
       },
       toolbar: {
@@ -95,9 +92,9 @@ const StackedLineChart = ({ isLoading }) => {
         tools: {
           download: true,
           selection: true,
-          zoom: true,
-          zoomin: true,
-          zoomout: true,
+          // zoom: true,
+          // zoomin: true,
+          // zoomout: true,
           pan: true,
           reset: true,
           customIcons: [
@@ -155,7 +152,7 @@ const StackedLineChart = ({ isLoading }) => {
     },
     yaxis: {
       title: {
-        text: data.yAxisTitle,
+        text: `${data.yAxisTitle} ( % )`,
         style: {
           fontWeight: 'bold',
         },
@@ -165,7 +162,8 @@ const StackedLineChart = ({ isLoading }) => {
         color: '#000000',
       },
       labels: {
-        formatter: (value) => `${value.toFixed(2)}`,
+        formatter: (value) => `${value}%`,
+        // formatter: (value) => `${value.toFixed(2)}%`,
       },
     },
     annotations: {
@@ -183,12 +181,10 @@ const StackedLineChart = ({ isLoading }) => {
     legend: {
       show: true,
       position: 'top',
-      
       markers: {
         size: 7,
-        shape: ["circle","triangle"],
+        shape: ["circle", "triangle"],
         strokeWidth: 0,
-
       },
     },
     grid: {
@@ -202,9 +198,9 @@ const StackedLineChart = ({ isLoading }) => {
     },
     markers: {
       size: 6,
-      strokeColors:["#ff6384","#36a2eb"],
+      strokeColors: ["#ff6384", "#36a2eb"],
       strokeWidth: 1,
-      shape:["circle","triangle"],
+      shape: ["circle", "triangle"],
       hover: {
         size: 7,
       },
@@ -217,11 +213,10 @@ const StackedLineChart = ({ isLoading }) => {
       shared: true,
       intersect: false,
       y: {
-        formatter: (value) => value.toFixed(2),
+        formatter: (value) => `${value.toFixed(2)}%`,
       },
     },
-   
-    colors:["#2c99f4","#40d68e"]
+    colors: ["#2c99f4", "#40d68e"]
   });
 
   const itemsPerPage = 5;
@@ -238,6 +233,7 @@ const StackedLineChart = ({ isLoading }) => {
   return (
     <>
       {visibleChartData.map((chartData, index) => (
+        // console.log(chartData),
         <div key={index} style={{ marginBottom: index !== chart4TransformedData.length - 1 ? "50px" : "0" }}>
           <ApexCharts
             options={getApexOptions(chartData)}

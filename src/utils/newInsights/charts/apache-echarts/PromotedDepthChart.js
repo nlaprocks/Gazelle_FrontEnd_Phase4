@@ -53,7 +53,6 @@ const PromotedDepthChart = ({ isLoading }) => {
       // type: 'line',
       // height: 500,
       stacked: isStacked,
-
       zoom: {
         enabled: true,
       },
@@ -161,7 +160,7 @@ const PromotedDepthChart = ({ isLoading }) => {
 
         },
       },
-     
+
     ],
     dataLabels: {
       enabled: false,
@@ -179,9 +178,9 @@ const PromotedDepthChart = ({ isLoading }) => {
       curve: 'straight',
       width: 4
     },
-    colors:["#eb974e","#2c99f4"],
+    colors: ["#eb974e", "#2c99f4"],
     grid: {
-      show:false,
+      show: false,
       borderColor: '#e7e7e7',
       row: {
         colors: ['#f3f3f3', 'transparent'], // Takes an array of colors to alternate between

@@ -21,6 +21,7 @@ import allActions from "../../store/index";
 import Spinner from "react-bootstrap/Spinner";
 import progressModalImg from "../../assets/images/progress-status-modal-image.png";
 import AdvanceLog from "../../utils/designStudio/Modals/AdvanceLog";
+import MyVerticallyCenteredModal from "../../utils/designStudio/Modals/runModal";
 import axios from "axios";
 
 const FETCHING_DATA_STATUS = {
@@ -58,6 +59,9 @@ const DesignStudio = () => {
   const [activeNode, setActiveNode] = useState("");
   const [menu, setMenu] = useState("head1");
   const [paramState, setParamState] = useState({});
+
+  // Run Modal
+  const [modalShow, setModalShow] = React.useState(false);
 
 
   useEffect(() => {
@@ -663,15 +667,16 @@ const DesignStudio = () => {
                           ? `btn-primary`
                           : `btn-outline-secondary`
                           }`}
-                          onClick={() => {
-                            if (
-                              dataIsFetched.status === FETCHING_DATA_STATUS.FETCHED &&
-                              databaseObserver &&
-                              !isModelCompeleted
-                            ) {
-                              runHandler();
-                            }
-                          }}
+                          onClick={() => setModalShow(true)}
+                        // onClick={() => {
+                        //   if (
+                        //     dataIsFetched.status === FETCHING_DATA_STATUS.FETCHED &&
+                        //     databaseObserver &&
+                        //     !isModelCompeleted
+                        //   ) {
+                        //     runHandler();
+                        //   }
+                        // }}
                         >
                           {/* <img src={info} alt="" className="alertAligns" /> */}
                           {runModelReducer.loading ? <Spinner animation="grow" size="sm" /> : ""}
@@ -707,7 +712,7 @@ const DesignStudio = () => {
                           onClick={() => {
                             downloadPdf();
                           }}>
-                          <i class="fa-solid fa-file-lines alertAligns"></i>
+                          <i className="fa-solid fa-file-lines alertAligns"></i>
                           {/* <img src={output} alt="" className="inline-block" /> */}
                           {/* <img src={info} alt="" className="alertAligns" /> */}
                         </a>
@@ -734,7 +739,7 @@ const DesignStudio = () => {
                           data-bs-toggle="modal"
                           data-bs-target="#createNewProject"
                           onClick={() => handleEditProjectModal()}>
-                          <i class="fa-solid fa-plus alertAligns"></i>
+                          <i className="fa-solid fa-plus alertAligns"></i>
                           {/* <img src={info} alt="" className="alertAligns" /> */}
                         </a>
                       </OverlayTrigger>
@@ -790,7 +795,7 @@ const DesignStudio = () => {
                         </div>
                         <div hidden={project?.is_insight ? false : true} className="hidden_btn">
                           {/* <button className="btn btn-primary" onClick={viewInsightsHandler}>
-                            View Insights <i class="fa-solid fa-chart-simple"></i>
+                            View Insights <i className="fa-solid fa-chart-simple"></i>
                           </button> */}
                           <OverlayTrigger
                             placement="top"
@@ -798,7 +803,7 @@ const DesignStudio = () => {
                             overlay={<Tooltip id="overlay-example">View insights</Tooltip>}
                           >
                             <a href="#!" className="btn icon-btn btn-primary" onClick={viewInsightsHandler}>
-                              <i class="fa-solid fa-chart-simple alertAligns"></i>
+                              <i className="fa-solid fa-chart-simple alertAligns"></i>
                               {/* <img src={info} alt="" className="alertAligns" /> */}
                             </a>
                           </OverlayTrigger>
@@ -1004,6 +1009,11 @@ const DesignStudio = () => {
           Nodes Saved successfully!
         </Alert>
       </Snackbar>
+
+      <MyVerticallyCenteredModal
+        show={modalShow}
+        onHide={() => setModalShow(false)}
+      />
     </div>
   );
 };

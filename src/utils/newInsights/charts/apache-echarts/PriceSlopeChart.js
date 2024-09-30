@@ -220,7 +220,7 @@ const PriceSlopeChart = ({ isLoading }) => {
 
   return (
     <div >
-      <h6 style={{ textAlign: "center" }}>Price Slop chart</h6>
+      <h6 style={{ textAlign: "center" }}>Price Slope chart</h6>
       {chartData.map((val, i) => (
         <div
           // class="chart-container"

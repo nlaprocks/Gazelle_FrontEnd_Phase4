@@ -24,9 +24,10 @@ export default function CreateProject({
   setShowCreateModal,
   isNewProjectFromStudio = false,
   project_name = "",
-  setProjectNameCallback = () => {},
-  addProjectID = () => {},
+  setProjectNameCallback = () => { },
+  addProjectID = () => { },
 }) {
+
   const navigate = useNavigate();
   const userID = authData?.user_id;
 
@@ -94,6 +95,7 @@ export default function CreateProject({
     }
     return setSelectedRetailers(values);
   };
+
   const handleBrandChange = (values) => {
     setSelectedProducts([]);
     setIsAllBrandSelected(false);
@@ -107,6 +109,7 @@ export default function CreateProject({
     }
     return setSelectedBrands(values);
   };
+
   const handleProductChange = (values) => {
     setIsAllProductSelected(false);
     if (values && values.length && values.includes("all")) {
@@ -297,41 +300,119 @@ export default function CreateProject({
     }
 
     if (projectName === "") {
-      document.querySelector("#projectName").focus();
-      document.querySelector("#projectName").style.borderColor = "#eb3434";
+      const projectNameInput = document.querySelector("#projectName");
+      projectNameInput?.focus();
+      if (projectNameInput) {
+        projectNameInput.style.borderColor = "#eb3434";
+      }
     }
     if (type === "") {
-      document.querySelector("#exampleDataList").focus();
-      document.querySelector("#exampleDataList").style.borderColor = "#eb3434";
+      const projectNameInput = document.querySelector("#exampleDataList");
+      projectNameInput?.focus();
+      if (projectNameInput) {
+        projectNameInput.style.borderColor = "#eb3434";
+      }
     }
     if (client === "") {
-      document.querySelector("#selectClientt").focus();
-      document.querySelector("#selectClientt").style.borderColor = "#eb3434";
+
+      const projectNameInput = document.querySelector("#selectClientt");
+      projectNameInput?.focus();
+      if (projectNameInput) {
+        projectNameInput.style.borderColor = "#eb3434";
+      }
     }
     if (product === "") {
-      document.querySelector("#product").focus();
-      document.querySelector("#product").style.borderColor = "#eb3434";
+      const projectNameInput = document.querySelector("#product");
+      projectNameInput?.focus();
+      if (projectNameInput) {
+        projectNameInput.style.borderColor = "#eb3434";
+      }
+
     }
     if (companyLogo.length === 0) {
-      document.querySelector("#companyLogo").focus();
-      document.querySelector("#companyLogo").style.border = "1px solid #eb3434";
-      document.querySelector("#product").style.borderColor = "#eb3434";
+      const projectNameInput = document.querySelector("#companyLogo");
+      projectNameInput?.focus();
+      if (projectNameInput) {
+        projectNameInput.style.borderColor = "#eb3434";
+        projectNameInput.style.border = "1px solid #eb3434";
+      }
+
     }
     if (projectName !== "") {
-      document.querySelector("#projectName").style.borderColor = "#86b7fe";
+
+      const projectNameInput = document.querySelector("#projectName");
+
+      if (projectNameInput) {
+        projectNameInput.style.borderColor = "#86b7fe";
+      }
     }
     if (type !== "") {
-      document.querySelector("#exampleDataList").style.borderColor = "#86b7fe";
+
+      const projectNameInput = document.querySelector("#exampleDataList");
+
+      if (projectNameInput) {
+        projectNameInput.style.borderColor = "#86b7fe";
+      }
     }
     if (client !== "") {
-      document.querySelector("#selectClientt").style.borderColor = "#86b7fe";
+      const projectNameInput = document.querySelector("#selectClientt");
+
+      if (projectNameInput) {
+        projectNameInput.style.borderColor = "#86b7fe";
+      }
     }
     if (product !== "") {
-      document.querySelector("#product").style.borderColor = "#86b7fe";
+
+      const projectNameInput = document.querySelector("#product");
+
+      if (projectNameInput) {
+        projectNameInput.style.borderColor = "#86b7fe";
+      }
     }
     if (companyLogo.length > 1) {
-      document.querySelector("#companyLogo").style.borderColor = "#86b7fe";
+      const projectNameInput = document.querySelector("#companyLogo");
+
+      if (projectNameInput) {
+        projectNameInput.style.borderColor = "#86b7fe";
+      }
     }
+
+    // if (projectName === "") {
+    //   document.querySelector("#projectName").focus();
+    //   document.querySelector("#projectName").style.borderColor = "#eb3434";
+    // }
+    // if (type === "") {
+    //   document.querySelector("#exampleDataList").focus();
+    //   document.querySelector("#exampleDataList").style.borderColor = "#eb3434";
+    // }
+    // if (client === "") {
+    //   document.querySelector("#selectClientt").focus();
+    //   document.querySelector("#selectClientt").style.borderColor = "#eb3434";
+    // }
+    // if (product === "") {
+    //   document.querySelector("#product").focus();
+    //   document.querySelector("#product").style.borderColor = "#eb3434";
+    // }
+    // if (companyLogo.length === 0) {
+    //   document.querySelector("#companyLogo").focus();
+    //   document.querySelector("#companyLogo").style.border = "1px solid #eb3434";
+    //   document.querySelector("#product").style.borderColor = "#eb3434";
+    // }
+    // if (projectName !== "") {
+    //   document.querySelector("#projectName").style.borderColor = "#86b7fe";
+    // }
+    // if (type !== "") {
+    //   document.querySelector("#exampleDataList").style.borderColor = "#86b7fe";
+    // }
+    // if (client !== "") {
+    //   document.querySelector("#selectClientt").style.borderColor = "#86b7fe";
+    // }
+    // if (product !== "") {
+    //   document.querySelector("#product").style.borderColor = "#86b7fe";
+    // }
+    // if (companyLogo.length > 1) {
+    //   document.querySelector("#companyLogo").style.borderColor = "#86b7fe";
+    // }
   };
 
   React.useEffect(() => {
@@ -543,7 +624,7 @@ export default function CreateProject({
                   placeholder="Version 1"
                   onChange={(e) => setVersion(e.target.value)}
                   disabled
-                  // value="1"
+                // value="1"
                 />
               </div>
 

@@ -7,12 +7,8 @@ import { useSelector, useDispatch } from "react-redux";
 import Spinner from "react-bootstrap/Spinner";
 import { useParams } from "react-router";
 
-const AddTakeawayModal = ({
-  showTakeawayModal,
-  setShowTakeawayModal,
-  currentSlideId,
-  callingQuestionsOnReducersSuccess,
-}) => {
+const AddTakeawayModal = ({ showTakeawayModal, setShowTakeawayModal, currentSlideId, callingQuestionsOnReducersSuccess, }) => {
+
   const dispatch = useDispatch();
   const { model_id } = useParams();
 
@@ -24,18 +20,22 @@ const AddTakeawayModal = ({
     take_away_title: "Take Aways",
     take_away_description: [],
   });
+
   const addBullet = () => {
     setBullets([...bullets, { bullet: "" }]);
   };
+
   function handleInputChange(event, index) {
     const newInputFields = [...bullets];
     newInputFields[index].bullet = event.target.value;
     setBullets(newInputFields);
   }
+
   const handleClose = () => {
     setShowTakeawayModal(false);
     setBullets([{ bullet: "" }]);
   };
+
   const addTakeaway = () => {
     setTakeaway({ ...takeaway, take_away_description: bullets });
     dispatch(
@@ -45,6 +45,7 @@ const AddTakeawayModal = ({
       })
     );
   };
+
   React.useEffect(() => {
     setTakeaway({ ...takeaway, slide_id: currentSlideId });
     // eslint-disable-next-line react-hooks/exhaustive-deps

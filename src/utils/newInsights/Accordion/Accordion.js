@@ -28,22 +28,8 @@ import BarRetailor from "../charts/apache-echarts/chart1_retailer";
 // import Bar from "../charts/apache-echarts/chart1";
 
 
-const AccordionComp = ({
-  value,
-  id,
-  setAddHeadingModal,
-  setShowTakeawayModal,
-  setUpdateTakeawayModal,
-  setCurrentBullets,
-  setShowAddChartModal,
-  setCurrentSlideId,
-  setShowUpdateChartModal,
-  setUpdateChartData,
-  role,
-  callingQuestionsOnReducersSuccess,
-  filterDropDown,
-  setFilterDropDown,
-}) => {
+const AccordionComp = ({ value, id, setAddHeadingModal, setShowTakeawayModal, setUpdateTakeawayModal, setCurrentBullets, setShowAddChartModal, setCurrentSlideId,
+  setShowUpdateChartModal, setUpdateChartData, role, callingQuestionsOnReducersSuccess, filterDropDown, setFilterDropDown, }) => {
 
   const { model_id } = useParams();
   const dispatch = useDispatch();
@@ -158,7 +144,6 @@ const AccordionComp = ({
   const chart10Reducer = useSelector((state) => state.chart10Reducer);
 
 
-
   return (
     <div id="insightsAccordions" >
       <Accordion defaultActiveKey="10">
@@ -263,9 +248,7 @@ const AccordionComp = ({
                         chartModel === 'Brand' ?
                           <>
                             {/* <Chart1 isLoading={chart1Reducer?.loading} /> */}
-
                             <Bar isLoading={chart1Reducer?.loading} chartModel={chartModel} setChartModel={setChartModel} />
-
                           </>
                           :
                           <>
@@ -316,7 +299,6 @@ const AccordionComp = ({
                       </>
                     ) : id === 5 ? (
                       // **chart6
-
                       <>
                         {chart6Reducer?.chart6Data?.data?.length > 0 ? (
                           <PromotedDepthChart isLoading={chart6Reducer?.loading} />
@@ -335,7 +317,6 @@ const AccordionComp = ({
                       </>
                     ) : id === 7 ? (
                       // **chart8
-
                       <>
                         {chart8Reducer?.chart8Data?.data?.length > 0 ? (
                           <LiftChart isLoading={chart8Reducer?.loading} />
@@ -345,7 +326,6 @@ const AccordionComp = ({
                       </>
                     ) : id === 8 ? (
                       // **chart9
-
                       <>
                         {chart9Reducer?.chart9Data?.data?.length > 0 ? (
                           <ElasticityStratagyChart isLoading={chart8Reducer?.loading} />
@@ -511,9 +491,7 @@ const AccordionComp = ({
                   }}
                 >
                   <div
-                    className={
-                      notes ? "nla_add-comment position-relative" : "nla_add-comment nla_expan position-relative"
-                    }
+                    className={notes ? "nla_add-comment position-relative" : "nla_add-comment nla_expan position-relative"}
                     style={{ width: "80%" }}
                   >
                     <textarea
@@ -539,9 +517,7 @@ const AccordionComp = ({
                       ></i>
                       <i
                         className="fa-solid fa-plus"
-                        onClick={() => {
-                          setNotes(true);
-                        }}
+                        onClick={() => { setNotes(true); }}
                       ></i>
                     </div>
                   </div>

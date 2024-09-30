@@ -26,13 +26,8 @@ const generateOptions = (data, selectedValues, excludedValues) => {
   ));
 };
 
-const UpdateChartModal = ({
-  showUpdateChartModal,
-  setShowUpdateChartModal,
-  updateChartData,
-  setUpdateChartData,
-  callingQuestionsOnReducersSuccess,
-}) => {
+const UpdateChartModal = ({ showUpdateChartModal, setShowUpdateChartModal, updateChartData, setUpdateChartData, callingQuestionsOnReducersSuccess, }) => {
+
   // console.log("updateChartData::: ", updateChartData);
   const dispatch = useDispatch();
   const { id, model_id } = useParams();

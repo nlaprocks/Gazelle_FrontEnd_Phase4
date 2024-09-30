@@ -1,7 +1,6 @@
 import React, { useState, useEffect, memo } from "react";
 import "./connectionConfirm.css";
 import { Tabs } from "antd";
-import InputRange from 'react-input-range';
 import "react-input-range/lib/css/index.css";
 
 const { TabPane } = Tabs;
@@ -51,8 +50,8 @@ export default memo(function ModalTabs(props) {
 
   const ModalHeader = () => {
     return (
-      <div className="row padding-spacer justify-end align-items-center mb-4 ">
-        <div className="col-md-4 select_table-box">
+      <div className="row padding-spacer align-items-center mb-4 ">
+        {/* <div className="col-md-4 select_table-box">
           <div className="px-3">
             <label className="mb-4">Market Sales</label>
             <InputRange
@@ -75,9 +74,9 @@ export default memo(function ModalTabs(props) {
               onChange={(salesValue) => setSalesValue(salesValue)}
             />
           </div>
-        </div>
-        <div className="col-md-4 select_table-box" style={{ marginBottom: "10px" }}>
-          <select value={currentTable} onChange={(e) => handleTableSelect(e)}>
+        </div> */}
+        <div className="col-md-4 select_table-box position-relative" style={{ marginBottom: "10px" }}>
+          <select className="form-select" value={currentTable} onChange={(e) => handleTableSelect(e)}>
             <option value="">Select internal table</option>
             {datastructureReducer?.structure?.data?.structure?.map(({ table }) => (
               <option value={table}>{table}</option>

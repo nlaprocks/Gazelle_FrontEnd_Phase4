@@ -11,6 +11,7 @@ import { Modal, Button } from "react-bootstrap";
 import Api from "../../services/Api";
 
 const Login = () => {
+
   const [modalShow, setModalShow] = useState(false);
   const [showHelpModal, setHelpModal] = useState(false);
   const navigate = useNavigate();
@@ -19,6 +20,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [error, setErrorMsg] = useState("");
   const [showAlert, setShowAlert] = useState(false);
+
   const loginHandlerSub = async () => {
     try {
       setLoading(true);
@@ -34,7 +36,7 @@ const Login = () => {
       };
 
       let { data } = await Api("POST", "api/v1/auth/login", apiData, config);
-      console.log(data);
+      // console.log(data);
       if (data.code === 200) {
         localStorage.setItem("auth", JSON.stringify(data.data));
         if (data.data.role === "admin" || data.data.role === "manager") {
@@ -54,6 +56,7 @@ const Login = () => {
       }, 3000);
     }
   };
+
   const loginHandler = (e) => {
     e.preventDefault();
     if (email === "" || password === "") {

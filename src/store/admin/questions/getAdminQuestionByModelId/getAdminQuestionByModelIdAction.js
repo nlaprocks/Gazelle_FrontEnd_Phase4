@@ -38,7 +38,7 @@ const getAdminQuestionByModelId = (model_id) => {
       var res = await axios.get(api, config);
 
       const { data } = res;
-      console.log("res data: ", data);
+      // console.log("res data: ", data);
       loading = false;
       dispatch(getAdminQuestionByModelIdSuccess(data));
     } catch (error) {

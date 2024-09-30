@@ -43,7 +43,7 @@ input[type="email"]:focus {
 
 .modal-content .modal-footer {
   border-top: 0;
-  padding-bottom: 40px;
+  padding-bottom: 10px;
   justify-content: center;
   display: flex;
 }
@@ -527,6 +527,16 @@ input[type="email"]:focus {
 
 .design-studio-topbar .new-project-name .nla-name p {
   max-width: 300px;
+}
+
+.btn-outline-primary {
+  --bs-btn-color: #009bcc;
+  --bs-btn-border-color: #009bcc;
+}
+
+.btn-outline-primary:hover {
+  --bs-btn-hover-bg: #009bcc;
+  --bs-btn-hover-border-color: #009bcc;
 }
 
 /* .design-studio-topbar .btn-wrapper .btn {

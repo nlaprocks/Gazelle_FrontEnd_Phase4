@@ -38,7 +38,9 @@ const preSelectedColumns = [
 const requiredColumns = ["WeekEnding", "Retailer", "Product", "Total_Volume", "Dollars"];
 
 const moment = require("moment");
+
 const ConnectionConfirm = ({ connectionConfirmModal, setConnectionConfirmModal, tableFromDb }) => {
+
   const [scheduleObserver, setScheduleObserver] = React.useState(false);
   const [vertical, setVertical] = useState("top");
   const [horizontal, setHorizontal] = useState("center");
@@ -66,7 +68,6 @@ const ConnectionConfirm = ({ connectionConfirmModal, setConnectionConfirmModal, 
   const [selectedConnectionConfirmModal, setSelectedConnectionConfirmModal] = useState(false);
 
   const handleTableSelect = (e) => {
-    console.log(e.target.value)
     setCurrentTable(e.target.value);
     const selectedTable = e.target.value;
     const tableIndex = selectedTables.findIndex((table) => table.table === selectedTable);
@@ -76,7 +77,6 @@ const ConnectionConfirm = ({ connectionConfirmModal, setConnectionConfirmModal, 
   };
 
   const handleTableSelectForExternalData = (e) => {
-    console.log(e.target.value)
     setExternalCurrentTable(e.target.value);
     const selectedTable = e.target.value;
     const tableIndex = selectedTables.findIndex((table) => table.table === selectedTable);
@@ -316,8 +316,6 @@ const ConnectionConfirm = ({ connectionConfirmModal, setConnectionConfirmModal, 
     });
   }, [currentTable]);
 
-  // console.log(selectedColumns)
-
   return (
     <>
       <Modal
@@ -365,6 +363,16 @@ const ConnectionConfirm = ({ connectionConfirmModal, setConnectionConfirmModal, 
           </div>
         </Modal.Body>
         <Modal.Footer>
+          <button
+            type="button"
+            className="btn btn-outline-danger"
+            data-bs-dismiss="modal"
+            onClick={() => {
+              handleClose(false);
+            }}
+          >
+            Cancel
+          </button>
           <button type="button" className="btn btn-primary px-4 inline-block" onClick={addDatabaseConfig}>
             {loader ? "Loading..." : "Confirm Configuration"}
           </button>

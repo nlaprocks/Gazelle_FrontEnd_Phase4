@@ -44,7 +44,7 @@ const SelectedConnectionDatabaseConfirm = ({ currentTableSelected, selectedColum
   const [externalColumns, setExternalColumns] = React.useState([]);
 
   const selectedDatabaseConfig = () => {
-    const tableIndex = selectedColumns.findIndex((item) => item.table === currentTable);
+    // const tableIndex = selectedColumns.findIndex((item) => item.table === currentTable);
     // if (tableIndex === -1) {
     //   alert("Error occurred on confirmation");
     //   return;
@@ -63,8 +63,9 @@ const SelectedConnectionDatabaseConfirm = ({ currentTableSelected, selectedColum
     } else {
       dispatch(
         allActions.saveDatabaseConfigAction.saveDatabaseConfig({
-          database_config: [selectedColumns[tableIndex]],
+          database_config: selectedColumns,
           event_id: datastructureReducer?.structure?.data?.event_id,
+          // database_config: [selectedColumns[tableIndex]],
         })
       );
     }
@@ -132,21 +133,22 @@ const SelectedConnectionDatabaseConfirm = ({ currentTableSelected, selectedColum
     fetchExternalColumns();
   }, []);
 
-  // React.useEffect(() => {
-  //   // {datastructureReducer?.structure?.data?.structure?.filter((val) => val.table === currentTableSelected)[0]?.columns?.map((column, index) => {
-  //   // selectedColumnsToShow?.filter((val) => {
-  //   selectedColumnsToShow?.filter((val) => val.table === currentTableSelected)[0]?.columns?.map((column, index) => {
-  //     // const dataMapping = selectedColumns.find((tableMapping) => tableMapping.table === currentTableSelected);
-  //     // const isSelected = dataMapping?.columns?.some((columnMapping) => columnMapping.original_column === column);
-  //     // const isRequired = requiredColumns.includes(column);
-  //     // console.log(val?.table)
-  //     // console.log(column)
+  React.useEffect(() => {
+    // {datastructureReducer?.structure?.data?.structure?.filter((val) => val.table === currentTableSelected)[0]?.columns?.map((column, index) => {
+    // selectedColumnsToShow?.filter((val) => {
+    // selectedColumnsToShow?.filter((val) => val.table === currentTableSelected)[0]?.columns?.map((column, index) => {
+    // const dataMapping = selectedColumns.find((tableMapping) => tableMapping.table === currentTableSelected);
+    // const isSelected = dataMapping?.columns?.some((columnMapping) => columnMapping.original_column === column);
+    // const isRequired = requiredColumns.includes(column);
+    // console.log(val?.table)
+    // console.log(column)
+    // })
+    const res = selectedColumnsToShow?.filter((val) => val.table === currentTableSelected);
+    setSelectedColumns(res)
+    // console.log(res)
+  }, [selectedColumnsToShow]);
 
-  //   })
-  // }, [selectedColumnsToShow]);
-
-  // console.log(selectedColumnsToShow)
-  // console.log('datastructureReducer', datastructureReducer)
+  console.log(selectedColumnsToShow)
 
   return (
     <Modal
@@ -241,6 +243,16 @@ const SelectedConnectionDatabaseConfirm = ({ currentTableSelected, selectedColum
       </Modal.Body>
       <Modal.Footer>
         <div className="text-center">
+          <button
+            type="button"
+            className="btn btn-outline-danger"
+            data-bs-dismiss="modal"
+            onClick={() => {
+              handleClose(false);
+            }}
+          >
+            Cancel
+          </button>
           <button type="button" className="btn btn-primary px-4 inline-block max-w-40" onClick={selectedDatabaseConfig}>
             {loader ? "Loading..." : "Submit"}
           </button>

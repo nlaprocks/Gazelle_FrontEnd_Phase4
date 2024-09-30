@@ -172,16 +172,16 @@ const Header = () => {
                     </Link>
                   </li>
                   <li className={activeDesign === true ? "active" : ""}>
-                  <a
-                        href="#!"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          navigate("/design-studio");
-                          window.location.reload();
-                        }}
-                      >
-                        <span>Design Studio</span>
-                        </a>
+                    <a
+                      href="#!"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        navigate("/design-studio");
+                        window.location.reload();
+                      }}
+                    >
+                      <span>Design Studio</span>
+                    </a>
                     {/* <OverlayTrigger
                       placement="right"
                       delay={{ show: 250, hide: 250 }}
@@ -223,16 +223,7 @@ const Header = () => {
                         </div>
                     </OverlayTrigger> */}
                   </li>
-                  {/* <li className={activeDesign === true ? "active" : ""}>
-                  <OverlayTrigger
-                    placement="right"
-                    delay={{ show: 250, hide: 250 }}
-                    overlay={
-                      <Tooltip id="overlay-example">
-                        <p>Chat</p>
-                      </Tooltip>
-                    }
-                  >
+                  <li className={activeDesign === true ? "active" : ""}>
                     <a
                       href="#!"
                       onClick={(e) => {
@@ -241,13 +232,9 @@ const Header = () => {
                         window.location.reload();
                       }}
                     >
-                      <div className="icon">
-                        <i class="fa-regular fa-comment-dots"></i>
-                      </div>
                       <span>Chat</span>
                     </a>
-                  </OverlayTrigger>
-                </li> */}
+                  </li>
                 </>
               )}
             </ul>

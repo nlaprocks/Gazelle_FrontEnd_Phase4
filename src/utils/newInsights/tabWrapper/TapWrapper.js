@@ -48,7 +48,7 @@ const TapWrapper = ({ showShareModal, setShowShareModal, sidebarState }) => {
   const [filterDropDown, setFilterDropDown] = React.useState(false);
 
   const [activeIndex, setActiveIndex] = React.useState(-1);
-  
+
   const tabClick = (index) => {
     setActiveIndex(index);
   };
@@ -64,12 +64,7 @@ const TapWrapper = ({ showShareModal, setShowShareModal, sidebarState }) => {
       dispatch(allActions.getAllQuestionTypesAction.getAllQuestionTypes(model_id)),
       dispatch(allActions.getAllSlidesAction.getAllSlide(model_id)),
       dispatch(allActions.getFiltersAction.fetchFilters({ model_id: model_id })),
-      dispatch(
-        allActions.retailerBrandsProductsAction.fetchRetailerBrandsProducts({
-          project_id: id,
-          model_id: model_id,
-        })
-      ),
+      dispatch(allActions.retailerBrandsProductsAction.fetchRetailerBrandsProducts({ project_id: id, model_id: model_id, })),
       // dispatch(
       //   allActions.productsAction.fetchProducts({
       //     project_id: 511,
@@ -106,14 +101,12 @@ const TapWrapper = ({ showShareModal, setShowShareModal, sidebarState }) => {
           model_id: model_id,
         })
       ),
-    ])
-      .then((results) => {
-        // handle results
-        setOneTimeLoader(1);
-      })
-      .catch((error) => {
-        // handle error
-      });
+    ]).then((results) => {
+      // handle results
+      setOneTimeLoader(1);
+    }).catch((error) => {
+      // handle error
+    });
   }, []);
 
   React.useEffect(() => {
@@ -171,6 +164,8 @@ const TapWrapper = ({ showShareModal, setShowShareModal, sidebarState }) => {
 
   React.useEffect(() => {
     if (localChartFilter.success && localChartFilter.role === "admin") {
+
+
       dispatch(allActions.getAdminQuestionByModelIdAction.getAdminQuestionByModelId(model_id));
       dispatch(allActions.getFiltersAction.fetchFilters({ model_id: model_id }));
       setFilterDropDown(false);
@@ -459,7 +454,6 @@ const TapWrapper = ({ showShareModal, setShowShareModal, sidebarState }) => {
             </>
           )}
         </>
-        {/* )} */}
       </div>
       <AddSlideModal
         showSlideModal={showSlideModal}
@@ -506,6 +500,7 @@ const TapWrapper = ({ showShareModal, setShowShareModal, sidebarState }) => {
           loggedInUserEmail={loggedInUserEmail}
         />
       ) : null}
+
       {showUpdateChartModal ? (
         <UpdateChartModal
           showUpdateChartModal={showUpdateChartModal}

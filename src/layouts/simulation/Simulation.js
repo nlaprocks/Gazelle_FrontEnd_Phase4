@@ -905,7 +905,7 @@ export default function Simulation() {
                     }
                   >
                     <a href="#!" className={`btn icon-btn btn-primary`}>
-                      <i class="fa-solid fa-floppy-disk alertAligns"></i>
+                      <i className="fa-solid fa-floppy-disk alertAligns"></i>
                     </a>
                   </OverlayTrigger>
                   {/* <div>

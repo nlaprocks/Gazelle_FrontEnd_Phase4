@@ -146,7 +146,8 @@ const PromotionalLiftChart = ({ isLoading }) => {
         text: data.yAxisTitle,
       },
       labels: {
-        formatter: (value) => value.toFixed(0),
+        formatter: (value) => Math.round(value),
+        // formatter: (value) => value.toFixed(0),
 
       },
       axisBorder: {
@@ -192,7 +193,8 @@ const PromotionalLiftChart = ({ isLoading }) => {
       shared: true,
       intersect: false,
       y: {
-        formatter: (value) => value.toFixed(2),
+        // formatter: (value) => value.toFixed(2),
+        formatter: (value) => Math.round(value),
       },
       x: {
         formatter: function (value, { series, seriesIndex, dataPointIndex, w }) {

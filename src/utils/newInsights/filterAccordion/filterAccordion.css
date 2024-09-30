@@ -16,7 +16,7 @@
 }
 
 .filter-accordion-row-wrapper .filter-accordion-left-wrapper>div {
-  width: 25%;
+  width: 33.33%;
   margin-bottom: 0;
   position: relative;
 }
@@ -51,7 +51,9 @@
 }
 
 .filtered-accordion-ant-select .ant-select-selection-placeholder {
-  padding-left: 30px;
+  padding-left: 20px;
+  font-size: 16px;
+  font-weight: 600;
 }
 
 .filtered-accordion-ant-select .ant-select-selection-search {

@@ -5,26 +5,32 @@ import allActions from "../../../store/index";
 import Spinner from "react-bootstrap/Spinner";
 
 const ShareModal = ({ showShareModal, setShowShareModal, loggedInUserEmail }) => {
+
   const dispatch = useDispatch();
+
   const [sendEmail, setSendEmail] = React.useState({
     from_email: loggedInUserEmail,
     to_email: "",
     document: "",
   });
+
   const handleChange = (e) => {
     setSendEmail({ ...sendEmail, [e.target.name]: e.target.value });
   };
+
   const sendEmailReducer = useSelector((state) => state.sendEmailReducer);
+
   const shareProject = () => {
     dispatch(allActions.sendEmailAction.sendEmail(sendEmail));
   };
+
   React.useEffect(() => {
     if (sendEmailReducer.success) {
       setShowShareModal(false);
       delete sendEmailReducer.success;
     }
   }, [sendEmailReducer]);
-  console.log("sendEmailReducer::: ", sendEmailReducer);
+
   return (
     <Modal
       show={showShareModal}
@@ -60,7 +66,6 @@ const ShareModal = ({ showShareModal, setShowShareModal, loggedInUserEmail }) =>
                   onChange={handleChange}
                 />
               </div>
-
               <div className="nla_form_file_upload position-relative nla_form_field_block">
                 <label htmlFor="formFile" id="companyLogo" style={{ color: "#acb0b1", paddingLeft: "20px" }}>
                   {sendEmail?.document ? sendEmail?.document.name : ` Upload PPt File*`}

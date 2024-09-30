@@ -82,18 +82,19 @@ const TopBar = ({ setShowShareModal, sidebarState }) => {
                 <div>
                   <a
                     href="#!"
-                    className="btn btn-secondary d-inline-flex"
+                    className="btn btn-outline-primary d-inline-flex items-center gap-3"
                     onClick={(e) => {
                       e.preventDefault();
                       setShowShareModal(true);
                     }}
                   >
                     Share
-                    <img src={file} alt="file-plus" />
+                    <i className="fa-solid fa-file-circle-plus ms-0"></i>
+                    {/* <img src={file} alt="file-plus" /> */}
                   </a>
-                  <a href="#!" className="d-inline-block">
+                  {/* <a href="#!" className="d-inline-block">
                     <img src={info} alt="info" style={{ marginLeft: "4px" }} />
-                  </a>
+                  </a> */}
                 </div>
                 <div
                 // onClick={() => {
@@ -101,9 +102,9 @@ const TopBar = ({ setShowShareModal, sidebarState }) => {
                 // }}
                 >
                   <RunDemo />
-                  <a href="#!" className="d-inline-block">
+                  {/* <a href="#!" className="d-inline-block">
                     <img src={info} alt="info" style={{ marginLeft: "4px" }} />
-                  </a>
+                  </a> */}
                 </div>
                 <div>
                   <a href="#!" className="btn btn-primary d-inline-flex">

@@ -156,12 +156,12 @@ export default function Project({
               Design Studio
             </a>
             {elem.is_insight ? (
-              <Link to={`/new-insights/${elem?.id}/${elem?.Models[0]?.id}`}>
+              <Link to={`/new-insights/${elem?.id}/${elem?.Models[0]?.id}`} className='insights'>
                 <i className="fa-solid fa-eye"></i>
                 Insights
               </Link>
             ) : (
-              <button disabled>
+              <button disabled className='insights'>
                 <i className="fa-solid fa-eye"></i>
                 Insights
               </button>
@@ -169,6 +169,7 @@ export default function Project({
             {elem.is_insight && (
               <Link
                 to={`/simulation/${encodeURIComponent(elem?.project_name)}/${elem?.id}/${elem?.Models[0]?.id}`}
+                className='simulator'
               >
                 <i className="fa-solid fa-sliders"></i>
                 Simulator
@@ -177,6 +178,7 @@ export default function Project({
 
             <a
               href="#!"
+              className='output'
               data-bs-toggle="modal"
               data-bs-target="#outputModal"
               onClick={() => {
@@ -189,11 +191,13 @@ export default function Project({
           </div>
           <div className="card_footer">
             <p className="fst-normal">
-              <span>Created at:</span> <Moment format="MM/DD/YYYY">{elem.date_created}</Moment>
+              <span>Created at:</span> <Moment format="MM/DD/YYYY">{elem.date_created}</Moment><br />
+              {" "} <Moment format="HH:mm">{elem.date_created}</Moment>
               {/* ,{" "} <Moment format="HH:mm:ss">{elem.date_created}</Moment> */}
             </p>
             <p className="fst-normal">
-              <span>Updated at:</span> <Moment format="MM/DD/YYYY">{elem.updatedAt}</Moment>
+              <span>Updated at:</span> <Moment format="MM/DD/YYYY">{elem.updatedAt}</Moment><br />
+              {" "} <Moment format="HH:mm">{elem.updatedAt}</Moment>
               {/* ,{" "} <Moment format="HH:mm:ss">{elem.updatedAt}</Moment> */}
             </p>
           </div>

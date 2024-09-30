@@ -6,6 +6,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useParams } from "react-router";
 
 const AddSlideModal = ({ showSlideModal, setShowSlideModal, callingQuestionsOnReducersSuccess }) => {
+
   const { model_id } = useParams();
 
   const [addSlide, setAddSlide] = React.useState({
@@ -17,9 +18,11 @@ const AddSlideModal = ({ showSlideModal, setShowSlideModal, callingQuestionsOnRe
   const changeHandlerOnQuestion = (e) => {
     setAddSlide({ ...addSlide, question: e.target.value });
   };
+
   const changeHandlerOnType = (e) => {
     setAddSlide({ ...addSlide, type: e.target.value });
   };
+
   const createSlide = () => {
     if (!addSlide.type) {
       return alert("Please select slide category");
@@ -29,14 +32,18 @@ const AddSlideModal = ({ showSlideModal, setShowSlideModal, callingQuestionsOnRe
     dispatch(allActions.addSlideAction.addSlide(addSlide));
     setAddSlide({ question: "", type: "" });
   };
+
   const addSlideReducer = useSelector((state) => state.addSlideReducer);
   const getAllSlideReducer = useSelector((state) => state.getAllSlideReducer);
+
   const dispatch = useDispatch();
+
   const handleClose = () => {
     setShowSlideModal(false);
     // delete addSlideReducer.success;
     delete getAllSlideReducer.success;
   };
+
   React.useEffect(() => {
     if (addSlideReducer.success) {
       // dispatch(allActions.getAllSlidesAction.getAllSlide(model_id));
@@ -56,7 +63,7 @@ const AddSlideModal = ({ showSlideModal, setShowSlideModal, callingQuestionsOnRe
       delete addSlideReducer.success;
     }
   }, [addSlideReducer]);
-  
+
   return (
     <Modal show={showSlideModal} onHide={handleClose} centered>
       <Modal.Header>

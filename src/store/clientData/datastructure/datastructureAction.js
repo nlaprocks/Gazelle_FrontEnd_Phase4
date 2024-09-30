@@ -11,6 +11,7 @@ const datastructureRequest = (data) => {
     loading: true,
   };
 };
+
 const datastructureSuccess = (data) => {
   return {
     type: DATASTRUCTURE_SUCCESS,
@@ -18,6 +19,7 @@ const datastructureSuccess = (data) => {
     loading: false,
   };
 };
+
 const datastructureFailure = (error) => {
   return {
     type: DATASTRUCTURE_FAILURE,
@@ -25,6 +27,7 @@ const datastructureFailure = (error) => {
     loading: false,
   };
 };
+
 const datastructure = (state) => {
   let loading = true;
   return async (dispatch) => {
@@ -46,6 +49,7 @@ const datastructure = (state) => {
     }
   };
 };
+
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
   datastructureRequest,

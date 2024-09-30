@@ -18,50 +18,50 @@ const MyChart = ({ isLoading }) => {
   // Iterate through chart3Data and group by product name
 
   // useEffect(() => {
-    if (chart3Data) {
-      chart3Data.forEach((item) => {
-        const productName = item.Product;
+  if (chart3Data) {
+    chart3Data.forEach((item) => {
+      const productName = item.Product;
 
-        if (!productDataDict[productName]) {
-          productDataDict[productName] = {
-            Product: productName,
-            multiAxes: true,
-            leftyAxisTitle: "Base Price Elasticity",
-            rightyAxisTitle: "Sale Revenue (L52 weeks)",
-            series: [
-              {
-                name: "Base Price Elasticity",
-                type: "line",
-                data: [],
-                yAxisIndex: 0,
-                color: "#fa518a", // Line color
-                marker: {
-                  size: 10,
-                  colors: "#fa518a",
-                },
+      if (!productDataDict[productName]) {
+        productDataDict[productName] = {
+          Product: productName,
+          multiAxes: true,
+          leftyAxisTitle: "Base Price Elasticity",
+          rightyAxisTitle: "Sale Revenue (L52 weeks)",
+          series: [
+            {
+              name: "Base Price Elasticity",
+              type: "line",
+              data: [],
+              yAxisIndex: 0,
+              color: "#fa518a", // Line color
+              marker: {
+                size: 10,
+                colors: "#fa518a",
               },
-              {
-                name: "Total Sales (last 52 weeks)",
-                type:  chartType ,
-                data: [],
-                yAxisIndex: 1,
-                color: "#2c99f4", // Bar color
-              },
-            ],
-          };
-        }
+            },
+            {
+              name: "Total Sales (last 52 weeks)",
+              type: chartType,
+              data: [],
+              yAxisIndex: 1,
+              color: "#2c99f4", // Bar color
+            },
+          ],
+        };
+      }
 
-        productDataDict[productName].series[0].data.push({
-          x: item.Retailer,
-          y: item.Base_Price_Elasticity?.toFixed(2),
-        });
-
-        productDataDict[productName].series[1].data.push({
-          x: item.Retailer,
-          y: item.Dollar_sales_last_52_weeks?.toFixed(2),
-        });
+      productDataDict[productName].series[0].data.push({
+        x: item.Retailer,
+        y: item.Base_Price_Elasticity?.toFixed(2),
       });
-    }
+
+      productDataDict[productName].series[1].data.push({
+        x: item.Retailer,
+        y: item.Dollar_sales_last_52_weeks?.toFixed(2),
+      });
+    });
+  }
   // }, [chart3Data, chartType])
 
   const transformedData = Object.values(productDataDict);
@@ -71,7 +71,6 @@ const MyChart = ({ isLoading }) => {
   const showPagination = transformedData.length > itemsPerPage;
 
   const getDataOption = (data) => ({
-
     chart: {
       height: 500,
       // type: "bar",
@@ -137,7 +136,6 @@ const MyChart = ({ isLoading }) => {
       },
     },
     yaxis: [
-      
       {
         title: {
           text: data?.leftyAxisTitle,
@@ -152,6 +150,7 @@ const MyChart = ({ isLoading }) => {
         opposite: true,
       },
     ],
+    // series: () => { return data?.series},
     series: data?.series,
     grid: {
       show: false,
@@ -160,7 +159,6 @@ const MyChart = ({ isLoading }) => {
         colors: ['#f3f3f3', 'transparent'], // Takes an array of colors to alternate between
         opacity: 0.5,
       },
-
     },
     markers: {
       size: 5,
@@ -197,6 +195,8 @@ const MyChart = ({ isLoading }) => {
   return (
     <div>
       {visibleData.map((data, index) => (
+        // console.log(getDataOption(data).series[0]),
+        // console.log(getDataOption(data).series[0]?.data?.length),
         <div
           key={index}
           style={{

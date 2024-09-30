@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 
 
 const ElasticityStratagyChart = ({ isLoading }) => {
+
   const [chartData, setChartData] = useState([]);
   const chart9Reducer = useSelector((state) => state.chart9Reducer);
 
@@ -32,7 +33,6 @@ const ElasticityStratagyChart = ({ isLoading }) => {
           },
         };
       }
-
       chartDataMap[retailer].data.datasets.push({
         label: item.Product,
         data: [
@@ -53,6 +53,7 @@ const ElasticityStratagyChart = ({ isLoading }) => {
   };
 
   const getDataOption = (chartData) => {
+
     const datasets = chartData.data.datasets;
     // console.log(datasets, 'data')
     let maxX = Number.MIN_SAFE_INTEGER;
@@ -86,15 +87,20 @@ const ElasticityStratagyChart = ({ isLoading }) => {
     const max = absMax + absMax * buffer;
     const min = -max;
 
+    //   const xAxisFormatter = (...values) => {
+    //     return values.reverse().map(value => Number(value).toFixed(2)).join(',');
+    // };
+
     const xAxisFormatter = (value) => value.toFixed(2);
     const yAxisFormatter = (value) => value.toFixed(2);
+    // const yAxisFormatter = (value) => { console.log(value) };
 
     return {
       chart: {
         type: 'scatter',
         height: 500,
-         offsetX: 30,
-        // offsetX: 50,
+        offsetX: 30,
+        offsetY: 30,
         toolbar: {
           show: true,
           tools: {
@@ -118,14 +124,20 @@ const ElasticityStratagyChart = ({ isLoading }) => {
       },
       xaxis: {
         title: {
-          text: chartData.xAxisTitle
+          text: chartData.xAxisTitle,
+          offsetY: 0,
         },
         labels: {
-          formatter: xAxisFormatter
+          formatter: xAxisFormatter,
+          rotate: 90,
+          offsetX: 0,
+          offsetY: 0,
         },
-        reversed: true,
+        reversed: true, // Reverse the x-axis
+        stepSize: 0.50,
+        // min: 0,
         min: -3,
-        max: 0,
+        // max: 0,
         axisBorder: {
           show: true,
           color: '#000000',
@@ -145,8 +157,8 @@ const ElasticityStratagyChart = ({ isLoading }) => {
           rotate: 90,
           offsetX: 0,
           offsetY: 0,
-
         },
+        stepSize: 0.50,
         reversed: true,
         // min: -3,
         max: 0,
@@ -178,7 +190,6 @@ const ElasticityStratagyChart = ({ isLoading }) => {
         x: {
           show: false,
         },
-
       },
       annotations: {
         yaxis: [
@@ -217,15 +228,14 @@ const ElasticityStratagyChart = ({ isLoading }) => {
       legend: {
         show: false,
       },
-
       markers: {
         size: 10,
-        strokeWidth: 1, 
-        strokeColors: 'rgb(60,146,109)', 
+        strokeWidth: 1,
+        strokeColors: 'rgb(60,146,109)',
       },
       stroke: {
         show: true,
-        width:0
+        width: 0
       },
       dataLabels: {
         enabled: false
@@ -248,6 +258,7 @@ const ElasticityStratagyChart = ({ isLoading }) => {
   return (
     <div>
       {chartData.map((val, i) => (
+        // console.log(getDataOption(val).series),
         <div key={i} style={{ position: "relative", marginBottom: i !== chartData.length - 1 ? "50px" : "0" }}>
           <ApexCharts
             options={getDataOption(val)}

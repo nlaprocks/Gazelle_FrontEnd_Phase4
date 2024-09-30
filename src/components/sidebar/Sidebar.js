@@ -209,7 +209,7 @@ const Sidebar = ({ sidebarState }) => {
                       }}
                     >
                       <div className="icon">
-                        <i class="fa-regular fa-comment-dots"></i>
+                        <i className="fa-regular fa-comment-dots"></i>
                       </div>
                       <span className={sidebarState ? "sidebarCollapse" : ""}>Chat</span>
                     </a>

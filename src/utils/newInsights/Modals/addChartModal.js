@@ -25,12 +25,8 @@ const generateOptions = (data, selectedValues, excludedValues) => {
   ));
 };
 
-const AddChartModal = ({
-  showAddChartModal,
-  setShowAddChartModal,
-  currentSlideId,
-  callingQuestionsOnReducersSuccess,
-}) => {
+const AddChartModal = ({ showAddChartModal, setShowAddChartModal, currentSlideId, callingQuestionsOnReducersSuccess, }) => {
+
   const dispatch = useDispatch();
   const { id, model_id } = useParams();
   const [isLoading, setIsLoading] = React.useState(false);
@@ -50,21 +46,26 @@ const AddChartModal = ({
   const handleClose = () => {
     setShowAddChartModal(false);
   };
+
   const [chart, setChart] = React.useState({
     model_id: model_id,
     slide_id: currentSlideId,
     chart_name: "",
     chart_json: [],
     chart_type: "",
+    chart_type_Weeaks: "",
+    Aggregation: "",
     x_axis_label: "",
     x_axis_data_point: "",
     y_axis_label: "",
     y_axis_data_point: "",
     chart_data_type: "",
   });
+
   const handleChange = (e) => {
-    setChart({ ...chart, [e.target.name]: e.target.value });
+    setChart({ ...chart, ['chart_type']: e });
   };
+
   const createChart = () => {
     setIsLoading(true);
     dispatch(
@@ -92,9 +93,11 @@ const AddChartModal = ({
       delete userChartsDataReducer.success;
     }
   }, [userChartsDataReducer]);
+
   React.useEffect(() => {
     setChart({ ...chart, slide_id: currentSlideId });
   }, [currentSlideId]);
+
   React.useEffect(() => {
     if (createChartReducer.success) {
       callingQuestionsOnReducersSuccess(createChartReducer);
@@ -111,6 +114,48 @@ const AddChartModal = ({
     // Generate options for Y Axis Select, excluding X Axis selections and previously selected Y Axis values
     setYAxisOptions(generateOptions(combinedColumnsReducer?.columns?.data, xAxisDataPoint, yAxisDataPoint));
   }, [combinedColumnsReducer?.columns?.data, xAxisDataPoint, yAxisDataPoint]);
+
+  // Chart Type
+  const optionsChart = [
+    { value: "linechart", label: "Line Chart", name: "linechart" },
+    { value: "barchart", label: "Bar Chart" },
+    { value: "scatterchart", label: "Scatter Chart" },
+    { value: "radarchart", label: "Radar Chart" },
+  ];
+
+  // Aggregrate
+  const optionsAggregrate = [
+    { value: "summation", label: "Summation" },
+    { value: "average", label: "Average" },
+    { value: "minimum", label: "Minimum" },
+    { value: "maximum", label: "Maximum" },
+    { value: "count", label: "Count" },
+  ];
+
+  // Select Period
+  const optionsPeriod = [
+    { value: "quarterly", label: "Quarterly" },
+    { value: "monthly", label: "Monthly" },
+    { value: "yearly", label: "Yearly" },
+  ];
+
+  const handleChangePeriod = (value) => {
+    console.log(`selected ${value}`);
+  };
+
+  // Select Year 
+  const currentYear = new Date().getFullYear();
+  const optionsYear = [];
+  for (let i = currentYear; i > currentYear - 5; i--) {
+    optionsYear.push({
+      label: i.toString(),
+      value: i.toString(),
+    });
+  }
+
+  const handleChangeYear = (value) => {
+    console.log(`selected ${value}`);
+  };
 
   return (
     <Modal show={showAddChartModal} onHide={handleClose} centered scrollable>
@@ -129,9 +174,9 @@ const AddChartModal = ({
         </div>
         <div className="nla-add-heading-block">
           <form>
-            <div className="nla-add-heading-fiend-group">
+            <div className="input-wrapper rounded border">
               <i className="fa-solid fa-chart-simple icon-absolute"></i>
-              <select
+              {/* <select
                 className="form-select"
                 aria-label="Default select example"
                 name="chart_type"
@@ -141,14 +186,54 @@ const AddChartModal = ({
                 <option disabled value="">
                   Select Chart Type
                 </option>
-                {/* <option value="Histogram">Histogram</option> */}
+                <option value="Histogram">Histogram</option>
                 <option value="line">Line Chart</option>
                 <option value="bar">Bar Chart</option>
                 <option value="scatter">Scatter Chart</option>
                 <option value="radar">Radar Chart</option>
-                {/* <option value="Pie Chart">Pie Chart</option> */}
-                {/* <option value="Waterfall">Waterfall</option> */}
-              </select>
+                <option value="Pie Chart">Pie Chart</option>
+                <option value="Waterfall">Waterfall</option>
+              </select> */}
+              <Select
+                allowClear
+                style={{
+                  width: '100%',
+                }}
+                name="chart_type"
+                className="filtered-accordion-ant-select"
+                placeholder="Select Chart Type"
+                onChange={handleChange}
+                options={optionsChart}
+              />
+            </div>
+            <div className="input-wrapper rounded border">
+              <i className="fa-regular fa-calendar-plus icon-absolute"></i>
+              <Select
+                allowClear
+                style={{
+                  width: '100%',
+                }}
+                className="filtered-accordion-ant-select"
+                placeholder="Select Period"
+                // defaultValue={['Monthly']}
+                onChange={handleChangePeriod}
+                options={optionsPeriod}
+              />
+            </div>
+            <div className="input-wrapper rounded border">
+              <i className="fa-regular fa-calendar-days icon-absolute"></i>
+              <Select
+                mode="multiple"
+                allowClear
+                style={{
+                  width: '100%',
+                }}
+                className="filtered-accordion-ant-select"
+                placeholder="Select Year"
+                // defaultValue={['2024']}
+                onChange={handleChangeYear}
+                options={optionsYear}
+              />
             </div>
             <div className="nla-add-heading-fiend-group inp">
               <i className="fa-regular fa-x icon-absolute"></i>
@@ -168,12 +253,8 @@ const AddChartModal = ({
                 placeholder="Select X Axis Data Points"
                 prefixIcon={<SearchOutlined />}
                 value={xAxisDataPoint}
-                onChange={(values) => {
-                  setXAxisDataPoint([values]);
-                }}
-                style={{
-                  width: "100%",
-                }}
+                onChange={(values) => { setXAxisDataPoint([values]); }}
+                style={{ width: "100%", }}
                 className="filtered-accordion-ant-select show-show"
                 showSearch
               >
@@ -191,24 +272,53 @@ const AddChartModal = ({
                 onChange={handleChange}
               />
             </div>
-            <div className="input-wrapper">
-              <i className="fa-regular fa-y icon-absolute"></i>
-              <Select
-                mode="multiple"
-                placeholder="Select Y Axis Data Points"
-                prefixIcon={<SearchOutlined />}
-                value={yAxisDataPoint}
-                onChange={(values) => {
-                  // setYAxisDataPoint(values);
-                  setYAxisDataPoint(values);
-                }}
-                style={{
-                  width: "100%",
-                }}
-                className="filtered-accordion-ant-select"
-              >
-                {yAxisOptions}
-              </Select>
+            <div className="two-element-one-row">
+              <div className="input-wrapper">
+                <i className="fa-regular fa-y icon-absolute"></i>
+                <Select
+                  mode="multiple"
+                  placeholder="Select Y Axis Data Points"
+                  prefixIcon={<SearchOutlined />}
+                  value={yAxisDataPoint}
+                  onChange={(values) => {
+                    // setYAxisDataPoint(values);
+                    setYAxisDataPoint(values);
+                  }}
+                  style={{ width: "100%", }}
+                  className="filtered-accordion-ant-select"
+                >
+                  {yAxisOptions}
+                </Select>
+              </div>
+              <div className="input-wrapper rounded border">
+                <i className="fa-solid fa-object-group icon-absolute"></i>
+                {/* <select
+                  className="form-select"
+                  aria-label="Default select example"
+                  name="Aggregation"
+                  value={chart.Aggregation}
+                  onChange={handleChange}
+                >
+                  <option disabled value="">
+                    Select Aggregate
+                  </option>
+                  <option value="sum">Summation</option>
+                  <option value="avg">Average</option>
+                  <option value="min">Minimum</option>
+                  <option value="max">Maximum</option>
+                  <option value="count">Count</option>
+                </select> */}
+                <Select
+                  allowClear
+                  style={{
+                    width: '100%',
+                  }}
+                  className="filtered-accordion-ant-select"
+                  placeholder="Select Aggregrate"
+                  onChange={handleChange}
+                  options={optionsAggregrate}
+                />
+              </div>
             </div>
           </form>
         </div>

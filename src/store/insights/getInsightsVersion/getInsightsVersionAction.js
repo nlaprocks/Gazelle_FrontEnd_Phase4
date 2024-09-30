@@ -11,6 +11,7 @@ const getInsightsVersionRequest = () => {
     loading: true,
   };
 };
+
 const getInsightsVersionSuccess = (state) => {
   return {
     type: GET_INSIGHTS_VERSION_SUCCESS,
@@ -18,6 +19,7 @@ const getInsightsVersionSuccess = (state) => {
     loading: false,
   };
 };
+
 const getInsightsVersionFailure = (error) => {
   return {
     type: GET_INSIGHTS_VERSION_FAILURE,
@@ -25,10 +27,13 @@ const getInsightsVersionFailure = (error) => {
     loading: false,
   };
 };
+
 const getInsightsVersion = (model_id) => {
+
   let loading = true;
   const auth = JSON.parse(localStorage.getItem("auth"));
   const config = { headers: { Authorization: `Bearer ` + auth.token } };
+
   return async (dispatch) => {
     try {
       dispatch(getInsightsVersionRequest(loading));
@@ -45,6 +50,7 @@ const getInsightsVersion = (model_id) => {
     }
   };
 };
+
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
   getInsightsVersionRequest,

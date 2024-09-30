@@ -3,16 +3,16 @@ import Modal from "react-bootstrap/Modal";
 import "./connectionConfirm.css";
 import { useDispatch, useSelector } from "react-redux";
 import allActions from "../../../store/index";
-const InternalDatabaseConnectionConfirm = ({
-  internalSelectedDatabase,
-  internalDbConnectionConfirmModal,
-  setInternalDbConnectionConfirmModal,
-}) => {
+
+
+const InternalDatabaseConnectionConfirm = ({ internalSelectedDatabase, internalDbConnectionConfirmModal, setInternalDbConnectionConfirmModal, }) => {
+
   const dispatch = useDispatch();
   const [database, setDatabase] = React.useState([]);
   const [currentTable, setCurrentTable] = React.useState(null);
   const [selectedTables, setSelectedTables] = React.useState([]);
   const [selectedColumns, setSelectedColumns] = React.useState([]);
+
   const handleClose = () => {
     setInternalDbConnectionConfirmModal(false);
     setCurrentTable(null);
@@ -20,27 +20,17 @@ const InternalDatabaseConnectionConfirm = ({
     setSelectedColumns([]);
     setDatabase([]);
   };
-  const datastructureReducer = useSelector(
-    (state) => state.datastructureReducer
-  );
-  const mobilityDatabaseReducer = useSelector(
-    (state) => state.getMobilityDatabaseStructureReducer
-  );
-  const competitorsDatabaseReducer = useSelector(
-    (state) => state.getCompetitorsDatabaseStructureReducer
-  );
-  const saveMobilityConfigReducer = useSelector(
-    (state) => state.saveMobilityConfigReducer
-  );
-  const saveCompetitorsConfigReducer = useSelector(
-    (state) => state.saveCompetitorsConfigReducer
-  );
+
+  const datastructureReducer = useSelector((state) => state.datastructureReducer);
+  const mobilityDatabaseReducer = useSelector((state) => state.getMobilityDatabaseStructureReducer);
+  const competitorsDatabaseReducer = useSelector((state) => state.getCompetitorsDatabaseStructureReducer);
+  const saveMobilityConfigReducer = useSelector((state) => state.saveMobilityConfigReducer);
+  const saveCompetitorsConfigReducer = useSelector((state) => state.saveCompetitorsConfigReducer);
+
   const handleTableSelect = (e) => {
     setCurrentTable(e.target.value);
     const selectedTable = e.target.value;
-    const tableIndex = selectedTables.findIndex(
-      (table) => table.table === selectedTable
-    );
+    const tableIndex = selectedTables.findIndex((table) => table.table === selectedTable);
     if (tableIndex === -1) {
       setSelectedTables([
         ...selectedTables,
@@ -52,18 +42,12 @@ const InternalDatabaseConnectionConfirm = ({
   // this function is to check if the current table all values are selected is selected
   const isTableAllColumnsSelected = () => {
     // Get the data structure of the current table
-    const currentTableStructure = database.find(
-      (table) => table.table === currentTable
-    );
+    const currentTableStructure = database.find((table) => table.table === currentTable);
     // Get the selected columns for the current table
-    const tableMapping = selectedColumns.find(
-      (tableMapping) => tableMapping.table === currentTable
-    );
+    const tableMapping = selectedColumns.find((tableMapping) => tableMapping.table === currentTable);
     if (tableMapping) {
       // Get an array of column names for the selected columns
-      const selectedColumnsNames = tableMapping.columns.map(
-        (columnMapping) => columnMapping.original_column
-      );
+      const selectedColumnsNames = tableMapping.columns.map((columnMapping) => columnMapping.original_column);
 
       // // Filter the current table structure to only include selected columns
       // const filteredTableStructure = {
@@ -72,15 +56,13 @@ const InternalDatabaseConnectionConfirm = ({
       //     selectedColumnsNames.includes(column)
       //   ),
       // };
-
       // Compare the filtered data structure with the selected columns
-      const match =
-        selectedColumnsNames.length === currentTableStructure.columns.length;
+      const match = selectedColumnsNames.length === currentTableStructure.columns.length;
       return match;
     }
-
     return false;
   };
+
   // const isTableAllColumnsSelected = () => {
   //   const tableMapping = selectedColumns.find(
   //     (tableMapping) => tableMapping.table === currentTable
@@ -106,6 +88,7 @@ const InternalDatabaseConnectionConfirm = ({
 
   //   return false;
   // };
+
   const handleSelectAllColumn = (currentTableVal) => {
     const tableData = currentTableVal[0];
     const columns = tableData.columns.map((column) => ({
@@ -114,9 +97,7 @@ const InternalDatabaseConnectionConfirm = ({
     }));
 
     // Find the index of the selected table in the selectedColumns array
-    const tableIndex = selectedColumns.findIndex(
-      (item) => item.table === tableData.table
-    );
+    const tableIndex = selectedColumns.findIndex((item) => item.table === tableData.table);
 
     if (tableIndex === -1) {
       // If the selected table is not yet in the selectedColumns array,
@@ -140,12 +121,10 @@ const InternalDatabaseConnectionConfirm = ({
       });
     }
   };
+
   const handleUnselectAllColumns = (currentTableVal) => {
     // Find the index of the selected table in the selectedColumns array
-    const tableIndex = selectedColumns.findIndex(
-      (item) => item.table === currentTableVal[0].table
-    );
-
+    const tableIndex = selectedColumns.findIndex((item) => item.table === currentTableVal[0].table);
     if (tableIndex !== -1) {
       // If the selected table is already in the selectedColumns array,
       // remove it from the array
@@ -155,12 +134,11 @@ const InternalDatabaseConnectionConfirm = ({
       ]);
     }
   };
+
   // Handler function for selecting a column
   const handleSelectColumn = (column, val) => {
     // Find the index of the selected table in the selectedColumns array
-    const tableIndex = selectedColumns.findIndex(
-      (item) => item.table === currentTable
-    );
+    const tableIndex = selectedColumns.findIndex((item) => item.table === currentTable);
 
     if (tableIndex === -1) {
       // If the selected table is not yet in the selectedColumns array,
@@ -220,6 +198,7 @@ const InternalDatabaseConnectionConfirm = ({
       });
     }
   };
+
   const addDatabaseConfig = () => {
     if (internalSelectedDatabase === "Mobility") {
       dispatch(
@@ -238,6 +217,7 @@ const InternalDatabaseConnectionConfirm = ({
       );
     }
   };
+
   React.useEffect(() => {
     if (internalSelectedDatabase === "Mobility") {
       dispatch(
@@ -250,6 +230,7 @@ const InternalDatabaseConnectionConfirm = ({
       );
     }
   }, [internalSelectedDatabase]);
+
   React.useEffect(() => {
     if (mobilityDatabaseReducer.success) {
       setDatabase(mobilityDatabaseReducer?.mobilityData?.data);
@@ -260,6 +241,7 @@ const InternalDatabaseConnectionConfirm = ({
       delete competitorsDatabaseReducer.success;
     }
   }, [mobilityDatabaseReducer, competitorsDatabaseReducer]);
+
   React.useEffect(() => {
     if (saveMobilityConfigReducer.success) {
       handleClose();
@@ -270,6 +252,7 @@ const InternalDatabaseConnectionConfirm = ({
       delete saveCompetitorsConfigReducer.success;
     }
   }, [saveMobilityConfigReducer, saveCompetitorsConfigReducer]);
+
   return (
     <Modal
       show={internalDbConnectionConfirmModal}
@@ -277,7 +260,7 @@ const InternalDatabaseConnectionConfirm = ({
       centered
       className="nladatabaseparametermodal"
     >
-      <Modal.Header>  
+      <Modal.Header>
         <Modal.Title>Connection Confirm</Modal.Title>
       </Modal.Header>
       <Modal.Body>

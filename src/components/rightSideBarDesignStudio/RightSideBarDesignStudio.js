@@ -26,6 +26,7 @@ const RightSideBarDesignStudio = ({
   databaseObserver,
   setDatabaseObserver,
 }) => {
+
   const dispatch = useDispatch();
   //Project ID and User ID for Saving file
   const authData = JSON.parse(localStorage.getItem("auth"));
@@ -34,17 +35,20 @@ const RightSideBarDesignStudio = ({
   const [internalDbConnectionConfirmModal, setInternalDbConnectionConfirmModal] = useState(false);
   const { model_id, id } = useParams();
   const user_id = authData?.user_id;
+
   const onDragStart = (event, node_type, node_label) => {
     event.dataTransfer.setData("application/reactflow", node_type);
     event.dataTransfer.setData("node_data", node_label);
     event.dataTransfer.effectAllowed = "move";
   };
+
   const listOfDatabasesReducer = useSelector((state) => state.listOfDatabasesReducer);
 
   //File
   const [uploadProjectFile, setUploadFile] = useState(null);
   const [fileUploaded, setFileUploaded] = useState(false);
   const clientCsvFileReducer = useSelector((state) => state.clientCsvFileReducer);
+
   React.useEffect(() => {
     if (uploadProjectFile) {
       dispatch(
@@ -57,6 +61,7 @@ const RightSideBarDesignStudio = ({
       );
     }
   }, [uploadProjectFile]);
+
   React.useEffect(() => {
     if (clientCsvFileReducer.success) {
       setFileUploaded(true);
@@ -69,6 +74,7 @@ const RightSideBarDesignStudio = ({
       };
     }
   }, [clientCsvFileReducer]);
+
   //Price Parameters
   const [pValue, setPValue] = useState(0.05);
   const [vifValue, setVifValue] = useState(5);
@@ -76,6 +82,7 @@ const RightSideBarDesignStudio = ({
   const [train, setTrain] = useState(70);
   const [test, setTest] = useState(20);
   const [validate, setValidate] = useState(10);
+
   setPriceParameters(pValue, train, test, validate, vifValue, sigValue);
 
   function onMenuClick() {
@@ -85,11 +92,13 @@ const RightSideBarDesignStudio = ({
       setMenu("head1");
     }
   }
+
   const paramSwitchHandler = (props) => {
     setMenu("head2");
     setActiveNode(props?.node_name);
     setParamState(props?.node_name);
   };
+
   const sideBarHandler = () => {
     sideBar === false ? setSideBar(true) : setSideBar(false);
   };
@@ -108,6 +117,7 @@ const RightSideBarDesignStudio = ({
   const [selectedDatabase, setSelectedDatabase] = useState("");
   const [internalSelectedDatabase, setInternalSelectedDatabase] = useState("");
   const [formValues, setFormValues] = useState({});
+
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     const newFormValues = { ...formValues, [name]: value };
@@ -116,6 +126,7 @@ const RightSideBarDesignStudio = ({
     }
     setFormValues(newFormValues);
   };
+
   const handleDatabaseConnect = () => {
     const body = {
       username: "nlaapi",
@@ -134,10 +145,12 @@ const RightSideBarDesignStudio = ({
       })
     );
   };
+
   React.useEffect(() => {
     dispatch(allActions.databaseRequirementsAction.databaseRequirements());
     dispatch(allActions.getAllOperatorsWithNodesAction.getAllOperatorsWithNodes());
   }, []);
+
   React.useEffect(() => {
     if (databaseRequirementsReducer.success) {
       const requirements = databaseRequirementsReducer?.requirements?.data?.[0];
@@ -146,6 +159,7 @@ const RightSideBarDesignStudio = ({
       delete databaseRequirementsReducer.success;
     }
   }, [databaseRequirementsReducer]);
+
   React.useEffect(() => {
     if (datastructureReducer.success) {
       setDatabaseObserver(true);
@@ -156,6 +170,9 @@ const RightSideBarDesignStudio = ({
       delete datastructureReducer.success;
     }
   }, [datastructureReducer]);
+
+  // console.log(selectedDatabase)
+
   return (
     <div
       className={sideBar === false ? `right_sidebar` : `right_sidebar nla_rightside-bar-small`}
@@ -222,7 +239,7 @@ const RightSideBarDesignStudio = ({
                 role="tab"
                 aria-controls="pills-home"
                 aria-selected="true"
-                // onClick={nodeStateHandler}
+              // onClick={nodeStateHandler}
               >
                 <i className="fa-solid fa-user-gear"></i> <span>Operators</span>
               </button>
@@ -288,7 +305,6 @@ const RightSideBarDesignStudio = ({
                 <strong>Keyboard Shortcuts</strong>
               </h6>
               <strong>Node and Line Delete</strong>
-
               <p className="mt-2">MAC: Delete</p>
               <p className="">Window: Backspace button</p>
             </div>
@@ -304,7 +320,7 @@ const RightSideBarDesignStudio = ({
             >
               <div className="parameters-content">
                 {new RegExp(`^Read File(\\s*\\(\\d+\\))?$`).test(activeNode) ||
-                new RegExp(`^Write File(\\s*\\(\\d+\\))?$`).test(activeNode) ? (
+                  new RegExp(`^Write File(\\s*\\(\\d+\\))?$`).test(activeNode) ? (
                   <>
                     <h5>Modify {paramState.name ? paramState.name : "null"} Parameters</h5>
 
@@ -352,7 +368,7 @@ const RightSideBarDesignStudio = ({
                   </>
                 ) : null}
                 {new RegExp(`^DB Read(\\s*\\(\\d+\\))?$`).test(activeNode) ||
-                new RegExp(`^DB Write(\\s*\\(\\d+\\))?$`).test(activeNode) ? (
+                  new RegExp(`^DB Write(\\s*\\(\\d+\\))?$`).test(activeNode) ? (
                   <>
                     <div>
                       <hr></hr>
@@ -403,14 +419,14 @@ const RightSideBarDesignStudio = ({
                               </option>
                               {databaseConfig
                                 ? Object.keys(databaseConfig)
-                                    .filter((key) => key !== "_id")
-                                    .map((val, index) => {
-                                      return (
-                                        <option value={val} key={index}>
-                                          {val}
-                                        </option>
-                                      );
-                                    })
+                                  .filter((key) => key !== "_id")
+                                  .map((val, index) => {
+                                    return (
+                                      <option value={val} key={index}>
+                                        {val}
+                                      </option>
+                                    );
+                                  })
                                 : null}
                             </select>
                           </div>

@@ -3,12 +3,14 @@ import {
   SAVE_DATABASE_CONFIG_SUCCESS,
   SAVE_DATABASE_CONFIG_FAILURE,
 } from "./saveDatabaseConfigType";
+
 const IState = {
   success: false,
   loading: false,
   dbConfig: [],
   error: "",
 };
+
 const saveDatabaseConfigReducer = (state = IState, action) => {
   switch (action.type) {
     case SAVE_DATABASE_CONFIG_REQUEST:

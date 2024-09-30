@@ -4,6 +4,7 @@ import Loading from "../components/loading/Loading";
 
 const LoginPage = lazy(() => import("../pages/loginPage/LoginPage.js"));
 const DashboardPage = lazy(() => import("../pages/dashboardPage/DashboardPage.js"));
+const ChatPage = lazy(() => import("../pages/chat/ChatPage.js"));
 const DesignStudioPage = lazy(() => import("../pages/designStudioPage/DesignStudioPage.js"));
 const ProtectedRoute = lazy(() => import("../protectedRoute/ProtectedRoute.js"));
 const ProtectedRouteAdmin = lazy(() => import("../protectedRoute/ProtectedRouteAdmin.js"));
@@ -25,6 +26,7 @@ const Config = () => {
         <Routes>
           <Route exact path="/login" element={<LoginPage />}></Route>
           <Route exact path="/dashboard" element={<ProtectedRoute component={DashboardPage}></ProtectedRoute>}></Route>
+          <Route exact path="/chat" element={<ProtectedRoute component={ChatPage}></ProtectedRoute>}></Route>
           {/* <Route
             exact
             path="/insights/:id"
