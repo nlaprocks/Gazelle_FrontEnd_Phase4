@@ -3767,7 +3767,8 @@ header .theme-title h1 span {
 }
 
 :where(.css-dev-only-do-not-override-1pg9a38).ant-input-affix-wrapper>input.ant-input {
-  margin-bottom: 0;
+  margin-bottom: 4px;
+  margin-left: 5px;
 }
 
 .ant-picker-dropdown.ant-picker-dropdown-range {
