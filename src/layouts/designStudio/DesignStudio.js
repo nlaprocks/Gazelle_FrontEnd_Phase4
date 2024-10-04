@@ -299,6 +299,7 @@ const DesignStudio = () => {
 
   const runHandler = () => {
     if (modelVerionReducer?.modelVersion?.data?.length > 0) {
+      setModalShow(false);
       nodeUpdateHandler();
     }
     if (Number(model_id) !== 0) {
@@ -876,7 +877,7 @@ const DesignStudio = () => {
       </div>
       <AdvanceLog log={log} setLog={setLog} />
       <Modal show={show} onHide={handleClose} centered className="runModal">
-        <Modal.Header>
+        <Modal.Header closeButton>
           <Modal.Title>Progress Status</Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -902,7 +903,7 @@ const DesignStudio = () => {
         </Modal.Body>
         <Modal.Footer>
           {val === 100 ? (
-            <div>
+            <div className="flex w-full">
               <button
                 type="button"
                 className="btn btn-outline-primary runInBg"
@@ -911,7 +912,7 @@ const DesignStudio = () => {
                 id="process_status_modal"
                 onClick={viewInsightsNavigator}
               >
-                View Insights
+                Insights
               </button>
               <button
                 type="button"
@@ -921,7 +922,7 @@ const DesignStudio = () => {
                 id="process_status_modal"
                 onClick={viewSimulationNavigator}
               >
-                View Simulator
+                Simulator
               </button>
               <button
                 type="button"
@@ -931,7 +932,7 @@ const DesignStudio = () => {
                 id="process_status_modal"
                 onClick={downloadPdf}
               >
-                View Statistical Report
+                Statistical Report
               </button>
 
               {/* <button
@@ -1013,6 +1014,7 @@ const DesignStudio = () => {
       <MyVerticallyCenteredModal
         show={modalShow}
         onHide={() => setModalShow(false)}
+        onRun={runHandler}
       />
     </div>
   );

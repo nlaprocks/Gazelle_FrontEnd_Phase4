@@ -6,19 +6,8 @@ import { CalendarOutlined, DollarOutlined } from '@ant-design/icons';
 import { Input } from "antd";
 import { DatePicker } from 'antd';
 
-const MyVerticallyCenteredModal = (props) => {
+const MyVerticallyCenteredModal = ({ onRun, ...props }) => {
     const { RangePicker } = DatePicker;
-
-    // Select Period
-    const optionsPeriod = [
-        { value: "quarterly", label: "Quarterly" },
-        { value: "monthly", label: "Monthly" },
-        { value: "yearly", label: "Yearly" },
-    ];
-
-    const handleChangePeriod = (value) => {
-        console.log(`selected ${value}`);
-    };
 
     return (
         <Modal
@@ -59,7 +48,7 @@ const MyVerticallyCenteredModal = (props) => {
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="secondary" onClick={props.onHide}>Cancel</Button>
-                <Button type="button" className="btn btn-primary">Run</Button>
+                <Button type="button" className="btn btn-primary" onClick={onRun}>Run</Button>
             </Modal.Footer>
         </Modal>
     );
