@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 const Header = () => {
   const navigate = useNavigate();
   const [activeDesign, setActiveDesign] = useState(false);
+  const [activeChat, setActiveChat] = useState(false);
   const [activeDash, setActiveDash] = useState(false);
   const location = useLocation();
   const [notifState, notifSetState] = useState(false);
@@ -30,6 +31,8 @@ const Header = () => {
     } else if (location.pathname === "/design-studio") {
       setActiveDash(false);
       setActiveDesign(true);
+    } else if (location.pathname === "/chat") {
+      setActiveChat(true);
     }
     if (location.pathname.includes("/admin")) {
       setPath(location.pathname);
@@ -223,7 +226,7 @@ const Header = () => {
                         </div>
                     </OverlayTrigger> */}
                   </li>
-                  <li className={activeDesign === true ? "active" : ""}>
+                  <li className={activeChat === true ? "active" : ""}>
                     <a
                       href="#!"
                       onClick={(e) => {

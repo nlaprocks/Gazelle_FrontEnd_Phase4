@@ -668,16 +668,16 @@ const DesignStudio = () => {
                           ? `btn-primary`
                           : `btn-outline-secondary`
                           }`}
-                          onClick={() => setModalShow(true)}
-                        // onClick={() => {
-                        //   if (
-                        //     dataIsFetched.status === FETCHING_DATA_STATUS.FETCHED &&
-                        //     databaseObserver &&
-                        //     !isModelCompeleted
-                        //   ) {
-                        //     runHandler();
-                        //   }
-                        // }}
+                          // onClick={() => setModalShow(true)}
+                          onClick={() => {
+                            if (
+                              dataIsFetched.status === FETCHING_DATA_STATUS.FETCHED &&
+                              databaseObserver &&
+                              !isModelCompeleted
+                            ) {
+                              runHandler();
+                            }
+                          }}
                         >
                           {/* <img src={info} alt="" className="alertAligns" /> */}
                           {runModelReducer.loading ? <Spinner animation="grow" size="sm" /> : ""}
@@ -878,7 +878,7 @@ const DesignStudio = () => {
       <AdvanceLog log={log} setLog={setLog} />
       <Modal show={show} onHide={handleClose} centered className="runModal">
         <Modal.Header closeButton>
-          <Modal.Title>Progress Status</Modal.Title>
+          <Modal.Title className="ms-auto">Progress Status</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div className="nla_modal_banenr">
@@ -1011,11 +1011,11 @@ const DesignStudio = () => {
         </Alert>
       </Snackbar>
 
-      <MyVerticallyCenteredModal
+      {/* <MyVerticallyCenteredModal
         show={modalShow}
         onHide={() => setModalShow(false)}
         onRun={runHandler}
-      />
+      /> */}
     </div>
   );
 };
