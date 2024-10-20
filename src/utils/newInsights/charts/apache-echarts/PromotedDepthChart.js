@@ -54,7 +54,7 @@ const PromotedDepthChart = ({ isLoading }) => {
       // height: 500,
       stacked: isStacked,
       zoom: {
-        enabled: true,
+        enabled: false,
       },
       toolbar: {
         show: true,
@@ -62,8 +62,8 @@ const PromotedDepthChart = ({ isLoading }) => {
           download: true,
           selection: true,
           zoom: false,
-          zoomin: true,
-          zoomout: true,
+          zoomin: false,
+          zoomout: false,
           pan: true,
           reset: true,
           customIcons: [
@@ -144,7 +144,7 @@ const PromotedDepthChart = ({ isLoading }) => {
           offsetY: 0,
         },
         labels: {
-          formatter: (value) => value.toFixed(0),
+          formatter: (value) => value.toFixed(2),
 
         },
       },

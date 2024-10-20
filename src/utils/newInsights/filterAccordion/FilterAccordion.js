@@ -169,13 +169,14 @@ const FilterAccordion = ({ InsightsBlock }) => {
       filterProducts();
     }
   }, [selectedRetailers, selectedBrands, retailerBrandsProducts]);
+  // console.log(selectedProducts,"selectedproducts")
 
   return (
     <>
       <div className="tab-content w-100">
         <Card defaultActiveKey="10" className="border-0 bg-transparent">
           <div className="max-w-lg">
-            <h4>Apply Filtersa</h4>
+            <h4>Apply Filters</h4>
             {/* <p>In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the visual form of a document or a typeface without relying.</p> */}
           </div>
           <Card.Body eventKey="0">
@@ -312,13 +313,14 @@ const FilterAccordion = ({ InsightsBlock }) => {
                       // .filter((product) => !selectedProducts.includes(product))
                       .sort()
                       .map((product) => (
+                        
                         <Select.Option
                           key={product}
                           value={product}
                           className="custom-tooltip-option"
                           data-tooltip={product}
                         >
-                          {product}
+                          {/* {product} */}
                         </Select.Option>
                       ))}
                   </Select>

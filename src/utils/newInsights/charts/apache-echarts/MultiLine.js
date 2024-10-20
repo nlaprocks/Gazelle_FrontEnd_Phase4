@@ -162,8 +162,8 @@ const StackedLineChart = ({ isLoading }) => {
         color: '#000000',
       },
       labels: {
-        formatter: (value) => `${value}%`,
-        // formatter: (value) => `${value.toFixed(2)}%`,
+        // formatter: (value) => `${value}%`,
+        formatter: (value) => `${value.toFixed(2)}%`,
       },
     },
     annotations: {
@@ -177,6 +177,7 @@ const StackedLineChart = ({ isLoading }) => {
     series: data.data.datasets.map((dataset) => ({
       name: dataset.label,
       data: dataset.data,
+     
     })),
     legend: {
       show: true,
@@ -212,9 +213,23 @@ const StackedLineChart = ({ isLoading }) => {
     tooltip: {
       shared: true,
       intersect: false,
+             // Old Code
+      // y: {
+      //   formatter: (value) => `${value.toFixed(2)}%`,
+      // },
+
+        //New Code      
       y: {
-        formatter: (value) => `${value.toFixed(2)}%`,
-      },
+        formatter: (value) => {
+          if (value < 1) {
+            console.log(value,"values")
+            return `${(value * 100).toFixed(0)}%`; 
+          }                                       
+          return `${value.toFixed(2)}%`;
+        },
+      }
+      
+      
     },
     colors: ["#2c99f4", "#40d68e"]
   });
@@ -229,7 +244,8 @@ const StackedLineChart = ({ isLoading }) => {
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
-
+  
+// console.log(chart4Reducer,"chartreducers")
   return (
     <>
       {visibleChartData.map((chartData, index) => (

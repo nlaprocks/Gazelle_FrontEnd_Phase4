@@ -304,7 +304,7 @@ header .theme-title h1 span {
   top: 0;
   left: 0;
   right: 0;
-  z-index: 9;
+  z-index: 15;
 }
 
 .dashboard_header li {
@@ -3782,4 +3782,17 @@ header .theme-title h1 span {
 
 :where(.css-dev-only-do-not-override-1pg9a38).ant-picker-range .ant-picker-active-bar {
   background: #009bcc;
+}
+
+.ant-tabs .ant-tabs-tab:hover .ant-tabs-tab-btn,
+.ant-tabs .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: #009bcc;
+}
+
+.ant-tabs .ant-tabs-ink-bar {
+  background: #009bcc;
+}
+
+.nla-add-heading-block .ant-input {
+  margin-bottom: 0;
 }

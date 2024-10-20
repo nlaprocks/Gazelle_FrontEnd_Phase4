@@ -17,31 +17,61 @@ const MultiLine2 = ({ isLoading }) => {
   const transformedData = {};
 
   dayjs.extend(isoWeek);
+             // old code data show by according to weeks
+  // const groupByWeek = (data) => {
+  //   // console.log(data,"data")
+  //   const weeklyData = {};
 
+  //   data.forEach((item) => {
+  //     const weekYear = dayjs(item?.WeekEnding).format('YYYY-[W]W');  // Format to Week-Year
+  //     console.log(weekYear)
+  //     const product = item.Product;
+  //     const retailer = item.Retailer;
+  //     const key = `${product}-${retailer}`;
+
+  //     if (!weeklyData[key]) { weeklyData[key] = {}; }
+
+  //     if (!weeklyData[key][weekYear]) {
+  //       weeklyData[key][weekYear] = { totalPrice: 0, totalUnits: 0, count: 0, Retailer: item.Retailer };
+  //     }
+
+  //     // Accumulate data for averaging
+  //     weeklyData[key][weekYear].totalPrice += item.Price;
+  //     weeklyData[key][weekYear].totalUnits += item.Total_Volume;
+  //     weeklyData[key][weekYear].count += 1;
+  //   });
+
+  //   return weeklyData;
+  // };
+
+   // New code data show by according to date
   const groupByWeek = (data) => {
+    // console.log(data,"datas")
     const weeklyData = {};
-
+  
     data.forEach((item) => {
-      const weekYear = dayjs(item?.WeekEnding).format('YYYY-[W]W');  // Format to Week-Year
-      // console.log(weekYear)
+      const weekEnding = item?.WeekEnding;  
       const product = item.Product;
       const retailer = item.Retailer;
       const key = `${product}-${retailer}`;
-
-      if (!weeklyData[key]) { weeklyData[key] = {}; }
-
-      if (!weeklyData[key][weekYear]) {
-        weeklyData[key][weekYear] = { totalPrice: 0, totalUnits: 0, count: 0, Retailer: item.Retailer };
+  
+      if (!weeklyData[key]) { 
+        weeklyData[key] = {}; 
       }
-
-      // Accumulate data for averaging
-      weeklyData[key][weekYear].totalPrice += item.Price;
-      weeklyData[key][weekYear].totalUnits += item.Total_Volume;
-      weeklyData[key][weekYear].count += 1;
+  
+      if (!weeklyData[key][weekEnding]) {
+        weeklyData[key][weekEnding] = { totalPrice: 0, totalUnits: 0, count: 0, Retailer: item.Retailer };
+      }
+  
+      
+      weeklyData[key][weekEnding].totalPrice += item.Price;
+      weeklyData[key][weekEnding].totalUnits += item.Total_Volume;
+      weeklyData[key][weekEnding].count += 1;
     });
-
+  
     return weeklyData;
   };
+  
 
   // Group data by week and calculate the averages
   const groupedData = groupByWeek(chart5Data);
@@ -162,16 +192,16 @@ const MultiLine2 = ({ isLoading }) => {
     chart: {
       stacked: isStacked,
       zoom: {
-        enabled: true,
+        enabled: false,
       },
       toolbar: {
         show: true,
         tools: {
           download: true,
           selection: true,
-          zoom: true,
-          zoomin: true,
-          zoomout: true,
+          zoom: false,
+          zoomin: false,
+          zoomout: false,
           pan: true,
           reset: true,
           customIcons: [

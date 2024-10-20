@@ -226,6 +226,23 @@ const Header = () => {
                         </div>
                     </OverlayTrigger> */}
                   </li>
+{/* 
+                  <li className={activeChat === true ? "active" : ""}>
+                    <a
+                      href="#!"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        navigate("/new-insights");
+                        window.location.reload();
+                      }}
+                    >
+                      <span>Insights</span>
+                    </a>
+                  </li> */}
+
+
+
+
                   <li className={activeChat === true ? "active" : ""}>
                     <a
                       href="#!"

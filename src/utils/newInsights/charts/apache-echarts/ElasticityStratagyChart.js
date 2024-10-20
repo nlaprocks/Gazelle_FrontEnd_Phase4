@@ -1,21 +1,17 @@
-import { width } from "@mui/system";
 import React, { useEffect, useRef, useState } from "react";
-import ApexCharts from "react-apexcharts";
+import ReactECharts from "echarts-for-react";
 import { useSelector } from "react-redux";
 
-
 const ElasticityStratagyChart = ({ isLoading }) => {
-
   const [chartData, setChartData] = useState([]);
   const chart9Reducer = useSelector((state) => state.chart9Reducer);
-
+  const chartDataMap = {};
   React.useEffect(() => {
     if (chart9Reducer && chart9Reducer.chart9Data) {
       const newData = transformData(chart9Reducer.chart9Data.data);
       setChartData(newData);
     }
   }, [chart9Reducer]);
-
   const transformData = (data) => {
     const chartDataMap = {};
 
@@ -33,6 +29,7 @@ const ElasticityStratagyChart = ({ isLoading }) => {
           },
         };
       }
+
       chartDataMap[retailer].data.datasets.push({
         label: item.Product,
         data: [
@@ -52,15 +49,18 @@ const ElasticityStratagyChart = ({ isLoading }) => {
     return Object.values(chartDataMap);
   };
 
-  const getDataOption = (chartData) => {
+  // Convert the map into an array
+  const transformedChartData = Object.values(chartDataMap);
 
+  const getDataOption = (chartData) => {
     const datasets = chartData.data.datasets;
-    // console.log(datasets, 'data')
+
     let maxX = Number.MIN_SAFE_INTEGER;
     let maxY = Number.MIN_SAFE_INTEGER;
     let minX = Number.MAX_SAFE_INTEGER;
     let minY = Number.MAX_SAFE_INTEGER;
 
+    // Loop through datasets and their data to find min and max values
     datasets.forEach((dataset) => {
       dataset.data.forEach((point) => {
         const { x, y } = point;
@@ -81,205 +81,275 @@ const ElasticityStratagyChart = ({ isLoading }) => {
       });
     });
 
+    // Calculate the absolute maximum value from min and max
     const absMax = Math.max(Math.abs(minX), Math.abs(maxX), Math.abs(minY), Math.abs(maxY));
 
+    // Set axis min and max values with a buffer (e.g., 10%)
     const buffer = 0.1;
     const max = absMax + absMax * buffer;
     const min = -max;
 
-    //   const xAxisFormatter = (...values) => {
-    //     return values.reverse().map(value => Number(value).toFixed(2)).join(',');
-    // };
+    const xAxisFormatter = (value) => {
+      return value.toFixed(2); // Limit to 2 decimal places if values exist after the decimal point
+    };
 
-    const xAxisFormatter = (value) => value.toFixed(2);
-    const yAxisFormatter = (value) => value.toFixed(2);
-    // const yAxisFormatter = (value) => { console.log(value) };
+    const yAxisFormatter = (value) => {
+      return value.toFixed(2); // Limit to 2 decimal places if values exist after the decimal point
+    };
 
     return {
-      chart: {
-        type: 'scatter',
-        height: 500,
-        offsetX: 30,
-        offsetY: 30,
-        toolbar: {
-          show: true,
-          tools: {
-            download: true,
-            selection: true,
-            zoom: true,
-            zoomin: true,
-            zoomout: true,
-            pan: true,
-            reset: true,
-          },
-        },
-      },
       title: {
-        text: chartData.Retailer,
-        align: 'center',
-        margin: 20,
-        style: {
-          fontSize: '16px'
-        }
-      },
-      xaxis: {
-        title: {
-          text: chartData.xAxisTitle,
-          offsetY: 0,
-        },
-        labels: {
-          formatter: xAxisFormatter,
-          rotate: 90,
-          offsetX: 0,
-          offsetY: 0,
-        },
-        reversed: true, // Reverse the x-axis
-        stepSize: 0.50,
-        // min: 0,
-        min: -3,
-        // max: 0,
-        axisBorder: {
-          show: true,
-          color: '#000000',
-          height: 1,
-          width: '100%',
-          offsetX: 0,
-          offsetY: 0
+        text: `${chartData.Retailer}`,
+        left: "center",
+        top: 0,
+        textStyle: {
+          fontSize: 16,
         },
       },
-      yaxis: {
-        title: {
-          text: chartData.yAxisTitle,
-          offsetX: 0,
-        },
-        labels: {
-          formatter: yAxisFormatter,
-          rotate: 90,
-          offsetX: 0,
-          offsetY: 0,
-        },
-        stepSize: 0.50,
-        reversed: true,
-        // min: -3,
-        max: 0,
-        axisBorder: {
-          show: true,
-          color: '#000000',
-          offsetX: -5,
-          offsetY: 0
-        },
-      },
-      series: datasets.map((dataset) => ({
-        name: dataset.label,
-        data: dataset.data.map((point) => [point.x, point.y]),
-        // color: dataset.backgroundColor
-      })),
       tooltip: {
-        custom: function ({ series, seriesIndex, dataPointIndex, w }) {
-          const dataItem = chartData.data.datasets[seriesIndex].data[dataPointIndex];
-          const originalX = dataItem.x.toFixed(2);
-          const originalY = dataItem.y.toFixed(2);
-          return `
-      <div style="border: 1px solid grey; padding: 10px; background-color: white;">
-        ${w.globals.seriesNames[seriesIndex]}<br />
-        Base Price Elasticity: ${originalX}<br />
-        Promo Price Elasticity: ${originalY}
-      </div>
-    `;
+        trigger: "item",
+        axisPointer: {
+          type: "shadow",
         },
-        x: {
-          show: false,
+        formatter: (params) => {
+          const datasetIndex = params.seriesIndex;
+          const dataItem = chartData.data.datasets[datasetIndex].data[params.dataIndex];
+          const originalX = dataItem.x.toFixed(2); // Inverse the transformation
+          const originalY = dataItem.y.toFixed(2); // Inverse the transformation
+
+          return `${chartData.data.datasets[datasetIndex].label}<br />Base Price Elasticity: ${originalX}<br />Promo Price Elasticity: ${originalY}`;
         },
       },
-      annotations: {
-        yaxis: [
-          {
-            y: -1.5,
-            borderColor: '#93969E',
-            strokeDashArray: 0,
-            // label: {
-            //   text: 'Your Markline Name'
-            // }
-          }
-        ],
-        xaxis: [
-          {
-            x: -1,
-            borderColor: '#93969E',
-            strokeDashArray: 0,
-
-            // label: {
-            //   text: 'Your Markline Name',
-            //   style: {
-            //     color: '#93969E'
-            //   }
-            // }
-          }
-        ]
+      dataZoom: [
+        {
+          type: "slider", // The type of data zoom, 'slider' for a slider bar
+          xAxisIndex: [0], // Enable data zoom for the first X axis (index 0)
+          start: 0, // The start position of the data zoom, 0% in this case
+          end: 100, // The end position of the data zoom, 100% in this case
+          // bottom: -30,
+        },
+        {
+          type: "slider", // The type of data zoom, 'slider' for a slider bar
+          yAxisIndex: [0], // Enable data zoom for the first Y axis (index 0)
+          start: 0, // The start position of the data zoom, 0% in this case
+          end: 100, // The end position of the data zoom, 100% in this case
+          right: 50,
+        },
+      ],
+      toolbox: {
+        show: true,
+        orient: "vertical",
+        left: "right",
+        top: "center",
+        feature: {
+          saveAsImage: { show: true },
+        },
       },
       grid: {
-        show: false,
-        borderColor: '#e7e7e7',
-        row: {
-          colors: ['#f3f3f3', 'transparent'], // Takes an array of colors to alternate between
-          opacity: 0.5,
+        right: 100,
+        containLabel: true,
+      },
+      xAxis: {
+        type: "value",
+        name: chartData.xAxisTitle,
+        boundaryGap: false,
+        axisTick: {
+          show: false, // Hide the small ticks at the top of the x-axis
+        },
+        splitLine: {
+          show: true, // Show y-axis grid lines
+        },
+        nameLocation: "middle",
+        nameGap: 25,
+        nameTextStyle: {
+          fontWeight: "bold", // Set font to bold
+        },
+        inverse: true,
+        max: 0,
+        min: -2,
+        // max,
+        // min,
+        axisLabel: {
+          formatter: xAxisFormatter, // Apply the formatter to x-axis labels
         },
       },
-      legend: {
-        show: false,
+      yAxis: {
+        type: "value",
+        name: chartData.yAxisTitle,
+        splitLine: {
+          show: true,
+        },
+        axisTick: {
+          show: false, // Hide the small ticks at the top of the x-axis
+        },
+        axisLabel: {
+          rotate: 90, // Rotate labels by 90 degrees
+          align: "center", // Align labels to the center
+          formatter: yAxisFormatter,
+        },
+        nameLocation: "middle",
+        nameRotate: 90,
+        nameGap: 40,
+        nameTextStyle: {
+          fontWeight: "bold",
+        },
+        inverse: true,
+        // max,
+        // min,
+        max: 0,
+        min: -3,
+        offset: 10,
       },
-      markers: {
-        size: 10,
-        strokeWidth: 1,
-        strokeColors: 'rgb(60,146,109)',
-      },
-      stroke: {
-        show: true,
-        width: 0
-      },
-      dataLabels: {
-        enabled: false
-      },
-      noData: {
-        text: "No Data Available To Show",
-        align: 'center',
-        verticalAlign: 'middle',
-        offsetX: 0,
-        offsetY: 0,
-        style: {
-          // color: undefined,
-          fontSize: '14px',
-          // fontFamily: undefined
-        }
-      },
+      series: chartData.data.datasets.map((dataset) => ({
+        name: dataset.label,
+        data: dataset.data.map((point) => [point.x, point.y]),
+        type: "scatter",
+        symbolSize: 20,
+        itemStyle: {
+          borderColor: dataset.borderColor,
+          backgroundColor: dataset.backgroundColor,
+        },
+        emphasis: {
+          focus: "series",
+        },
+        markLine: {
+          data: [
+            {
+              xAxis: -1,
+              name: "Your Markline Name",
+              label: {
+                show: false,
+              },
+              lineStyle: {
+                color: "#93969E",
+                type: "solid",
+                width: 1,
+              },
+              emphasis: {
+                label: {
+                  show: false,
+                },
+                lineStyle: {
+                  width: 1,
+                },
+              },
+              tooltip: {
+                show: false,
+              },
+            },
+            {
+              yAxis: -1.5,
+              name: "Your Markline Name",
+              label: {
+                show: false,
+              },
+              lineStyle: {
+                color: "#93969E",
+                type: "solid",
+                width: 1,
+              },
+              emphasis: {
+                label: {
+                  show: false,
+                },
+                lineStyle: {
+                  width: 1,
+                },
+              },
+              tooltip: {
+                show: false,
+              },
+            },
+          ],
+          symbol: ["none", "none"],
+        },
+      })),
+
+      graphic: [
+        {
+          type: "text",
+          left: "14%",
+          top: "14%",
+          style: {
+            text: "Hi-Lo",
+            fill: "rgb(255, 205, 86)", // Text color
+            fontSize: 16,
+            fontWeight: "bold",
+          },
+        },
+        {
+          type: "text",
+          right: "14%",
+          top: "14%",
+          style: {
+            text: "Price Disruptor",
+            fill: "rgb(75, 192, 192)", // Text color
+            fontSize: 16,
+            fontWeight: "bold",
+          },
+        },
+        {
+          type: "text",
+          left: "14%",
+          bottom: "18%",
+          style: {
+            text: "Margin Builder",
+            fill: "rgb(153, 102, 255)", // Text color
+            fontSize: 16,
+            fontWeight: "bold",
+          },
+        },
+        {
+          type: "text",
+          right: "14%",
+          bottom: "18%",
+          style: {
+            text: "EDLP",
+            fill: "rgb(54, 162, 235)", // Text color
+            fontSize: 16,
+            fontWeight: "bold",
+          },
+        },
+      ],
     };
   };
+  const chartRef = useRef(null);
+  useEffect(() => {
+    // if (chartRef.current && chartRef.current.getEchartsInstance) {
+    //   const chartInstance = chartRef.current.getEchartsInstance();
+    //   chartInstance.clear();
+    //   if (chartInstance) {
+    //     // chartInstance.setOption(getDataOption(chartData));
+    //   }
+    // }
+    if (chartRef.current && chartRef.current.getEchartsInstance) {
+      const chartInstance = chartRef.current.getEchartsInstance();
+      chartInstance.clear();
+      if (chartInstance) {
+        chartData.forEach((val, i) => {
+          chartInstance.setOption(getDataOption(val));
+        });
+      }
+    }
+  }, [chartData]);
 
   return (
     <div>
-      {chartData.map((val, i) => (
-        // console.log(getDataOption(val).series),
-        <div key={i} style={{ position: "relative", marginBottom: i !== chartData.length - 1 ? "50px" : "0" }}>
-          <ApexCharts
-            options={getDataOption(val)}
-            series={getDataOption(val).series}
-            type="scatter"
-            height={500}
+      {chartData.map((val, i) => {
+        return (
+          <ReactECharts
+            key={i}
+            option={getDataOption(val)}
+            showLoading={isLoading}
+            style={{
+              width: "100%",
+              height: "500px",
+              marginBottom: i !== transformedChartData.length - 1 ? "50px" : "0",
+            }}
+            ref={chartRef}
           />
-          <div style={{ position: "absolute", top: "16%", left: "12%", color: "rgb(255, 205, 86)", fontWeight: "bold" }}>
-            Hi-Lo
-          </div>
-          <div style={{ position: "absolute", top: "16%", right: "14%", color: "rgb(75, 192, 192)", fontWeight: "bold" }}>
-            Price Disruptor
-          </div>
-          <div style={{ position: "absolute", bottom: "16%", left: "12%", color: "rgb(153, 102, 255)", fontWeight: "bold" }}>
-            Margin Builder
-          </div>
-          <div style={{ position: "absolute", bottom: "16%", right: "14%", color: "rgb(54, 162, 235)", fontWeight: "bold" }}>
-            EDLP
-          </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 };

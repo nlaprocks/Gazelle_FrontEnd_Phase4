@@ -30,8 +30,11 @@ import EditProject from "../../utils/dashboard/EditProject";
 import AuditUserProjects from "../../utils/dashboard/AuditUserProjects";
 import SidebarToggle from "../../components/sidebarToggle/SidebarToggle";
 
-const Dashboard = () => {
+import { toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
+const Dashboard = () => {
+  
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -702,24 +705,88 @@ const Dashboard = () => {
       }, 1500);
     }
   };
+                     //Old Code
+  // const deleteProjectHandler = async (project__id) => {
+  //   setShowUniversalAlert(true);
+  //   setUniversalAlertMsg("Deleting project . . . . .");
+  //   confirm("are you sure you want to delete project")
+  //   try {
+  //     var res = await Api("DELETE", `api/v1/project/delete/${project__id}`);
+  //     if (res.status === 200) {
+  //       setShowUniversalAlert(false);
+  //       setLoad(true);
+  //       setShowUniversalAlert(true);
+  //       setUniversalAlertMsg(res?.data?.message);
+  //       setTimeout(() => {
+  //         setShowUniversalAlert(false);
+  //       }, 3000);
+  //     }
+  //   } catch (error) {
+  //     console.log("Error", error.response);
+  //   }
+  // };
 
+  
+             //New Code
   const deleteProjectHandler = async (project__id) => {
-    setShowUniversalAlert(true);
-    setUniversalAlertMsg("Deleting project . . . . .");
-    try {
-      var res = await Api("DELETE", `api/v1/project/delete/${project__id}`);
-      if (res.status === 200) {
-        setShowUniversalAlert(false);
-        setLoad(true);
-        setShowUniversalAlert(true);
-        setUniversalAlertMsg(res?.data?.message);
-        setTimeout(() => {
-          setShowUniversalAlert(false);
-        }, 3000);
+    const confirmDelete = async () => {
+      toast.dismiss(); 
+      setShowUniversalAlert(true);
+      setUniversalAlertMsg("Deleting project . . . . .");
+  
+      try {
+        const res = await Api("DELETE", `api/v1/project/delete/${project__id}`);
+        if (res.status === 200) {
+      
+          toast.success(res?.data?.message, {
+            position: 'top-center',
+            autoClose: 3000, 
+          });
+  
+          setShowUniversalAlert(false); 
+  
+   
+          setLoad(true); 
+          setTimeout(() => {
+            setLoad(false); 
+          }, 3000); 
+        }
+      } catch (error) {
+        console.log("Error", error.response);
+        
+       
+        toast.error("Error deleting project", {
+          position: 'top-center',
+          autoClose: 3000,
+        });
+  
+        setShowUniversalAlert(false); 
       }
-    } catch (error) {
-      console.log("Error", error.response);
-    }
+    };
+  
+    const cancelDelete = () => {
+      toast.dismiss(); 
+      toast.info("Project deletion canceled", { position: 'top-center' });
+    };
+  
+    // Custom toast with Yes/No buttons
+    toast.warn(
+      <div>
+        <p>Are you sure you want to delete it?</p>
+        <button onClick={confirmDelete} style={{ marginRight: '10px', backgroundColor: 'green', color: 'white',padding:"10px",borderRadius:"30%" }}>
+          Yes
+        </button>
+        <button onClick={cancelDelete} style={{ backgroundColor: 'red', color: 'white',padding:"10px",borderRadius:"30%" }}>
+          No
+        </button>
+      </div>,
+      {
+        position: 'top-center',
+        autoClose: false, // Keep the toast open until the user interacts
+        closeOnClick: false, // Don't close on click elsewhere
+        draggable: false, // Disable dragging
+      }
+    );
   };
 
   const [sidebarState, setSidebarState] = useState(false);

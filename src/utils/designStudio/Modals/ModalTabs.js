@@ -86,8 +86,9 @@ export default memo(function ModalTabs(props) {
       </div>
     );
   };
-
-  // console.log(datastructureReducer)
+  // const filterdValue = datastructureReducer?.structure?.data?.structure?.filter((value)=>{value.isSelected === 'IsSelected'})
+  // console.log(filterdValue)
+  // console.log(datastructureReducer, "datasturcuts")
   const exampleColumns = ["_id", "WeekEnding", "Retailer", "Product", "mobility_workplaces", "Mob"];
 
   return (
@@ -125,7 +126,8 @@ export default memo(function ModalTabs(props) {
                       <th>Renamed Measure</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  {/* <tbody>
+                    
                     {datastructureReducer?.structure?.data?.structure?.filter((val) => val.table === currentTable)[0]?.columns.map((column, index) => {
                       // console.log(column)
                       const dataMapping = selectedColumns.find((tableMapping) => tableMapping.table === currentTable);
@@ -139,8 +141,8 @@ export default memo(function ModalTabs(props) {
                                 className="form-check-input"
                                 type="checkbox"
                                 id={`${column}-${index}`}
-                                value={column}
                                 checked={isSelected}
+                                value={column}
                                 onChange={(e) => handleSelectColumn(e.target.value, e.target)}
                                 disabled={isRequired}
                               />
@@ -164,7 +166,63 @@ export default memo(function ModalTabs(props) {
                         </tr>
                       );
                     })}
+                  </tbody> */}
+
+                  <tbody>
+                    {datastructureReducer?.structure?.data?.structure?.filter((val) => val.table === currentTable)[0]?.columns.sort((a, b) => {
+                      // console.log(b,"b")
+                        const dataMapping = selectedColumns.find((tableMapping) => tableMapping.table === currentTable);
+                        const isSelectedA = dataMapping?.columns?.some((columnMapping) => columnMapping.original_column === a);
+                        const isSelectedB = dataMapping?.columns?.some((columnMapping) => columnMapping.original_column === b);
+                        // console.log(isSelectedA)
+
+                        return isSelectedA === isSelectedB ? 0 : isSelectedA ? -1 : 1;
+                      }).map((column, index) => {
+                        const dataMapping = selectedColumns.find((tableMapping) => tableMapping.table === currentTable);
+                        const isSelected = dataMapping?.columns?.some((columnMapping) => columnMapping.original_column === column);
+                        const isRequired = requiredColumns.includes(column);
+
+                        return (
+                          <tr key={index}>
+
+                            <td>
+                              <div className="form-check custom-checkbox">
+                                <input
+                                  className="form-check-input"
+                                  type="checkbox"
+                                  id={`${column}-${index}`}
+                                  checked={isSelected}
+                                  value={column}
+                                  onChange={(e) => handleSelectColumn(e.target.value, e.target)}
+                                  disabled={isRequired}
+                                />
+                                <label className="form-check-label" htmlFor={`${column}-${index}`}></label>
+                              </div>
+                            </td>
+
+
+                            <td>{column}</td>
+
+                            {/* Input Box for Renaming */}
+                            <td>
+                              <div className="col-md-8">
+                                <div className="input-box">
+                                  <input
+                                    type="text"
+                                    value={columnAliases[column] || ""}
+                                    placeholder="Renamed Measure"
+                                    className="centered-placeholder"
+                                    onChange={(e) => handleInputChange(e, column, "internal")}
+                                  />
+                                </div>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
                   </tbody>
+
+
                 </table>
               </div>
             </>

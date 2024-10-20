@@ -212,9 +212,15 @@ const AccordionComp = ({ value, id, setAddHeadingModal, setShowTakeawayModal, se
                         />
                       ) : null}
                     </div>
-                    <div className="btn btn-primary">
-                      {id !== 8 ? <RunDemo value={value} id={id} role={role} /> : null}
-                    </div>
+                    {
+                      id !== 8 ?
+                        <div className="btn btn-primary">
+                          <RunDemo value={value} id={id} role={role} />
+                        </div>
+                        :
+                        <></>
+                    }
+                    
                     {role !== "admin" ? (
                       <button className="btn btn-danger deleteSlideBtn">
                         <a

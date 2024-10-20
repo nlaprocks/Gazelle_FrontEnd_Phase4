@@ -81,7 +81,7 @@ const LiftChart = ({ isLoading }) => {
       // height: 400,
       stacked: isStacked,
       zoom: {
-        enabled: true,
+        enabled: false,
       },
       toolbar: {
         show: true,

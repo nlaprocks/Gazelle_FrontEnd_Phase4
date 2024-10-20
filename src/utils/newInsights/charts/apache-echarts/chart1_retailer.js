@@ -2,7 +2,8 @@ import React, { useRef, useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import ReactECharts from "echarts-for-react";
 import ReactApexCharts from 'react-apexcharts';
-import { bgcolor, height, maxHeight, maxWidth, minWidth, padding, width } from "@mui/system";
+import { bgcolor, height, maxHeight, maxWidth, minWidth, padding, positions, width } from "@mui/system";
+import zIndex from "@mui/material/styles/zIndex";
 
 
 const BarRetailor = ({ isLoading, chartModel, setChartModel }) => {
@@ -14,7 +15,6 @@ const BarRetailor = ({ isLoading, chartModel, setChartModel }) => {
   const [isStacked, setIsStacked] = useState(false);
   // Create an empty object to store the grouped data
   const groupedData = {};
-
   // Iterate through the data and group it by "Retailer"
   chart1Reducer?.chart1Data?.data?.forEach((item) => {
     const retailer = item.Retailer;
@@ -116,6 +116,20 @@ const BarRetailor = ({ isLoading, chartModel, setChartModel }) => {
               },
             ]
           },
+        },
+        zoom: {
+          enabled: false,
+          type: 'x',
+          resetIcon: {
+              offsetX: -10,
+              offsetY: 0,
+              fillColor: '#fff',
+              strokeColor: '#37474F'
+          },
+          selection: {
+              background: '#90CAF9',
+              border: '#0D47A1'
+          }    
         }
       },
       dataLabels: {
@@ -127,6 +141,32 @@ const BarRetailor = ({ isLoading, chartModel, setChartModel }) => {
         // colors: [...new Set(borderColor)].slice(0, 2),
         // colors:["#ea580c","#ef4444","#2a97f2","#40d68e"]
         colors: [
+          "#0e7490",
+          "#65a30d",
+          "#0891b2",
+          "#f97316",
+          "#ef4444",
+          "#0284c7",
+          "#3b82f6",
+          "#8b5cf6",
+          "#d946ef",
+          "#f43f5e",
+          "#d5ffb6",
+          "#e5b8ff",
+          "#ff8ac0",
+          "#fff6a9",
+          "#a3e0ff",
+          "#6d618c",
+          "#255972",
+          "#2c7787",
+          "#3184bc",
+          "#dcf0ff",
+          "#ec8580",
+          "#ffab70",
+          "#efce80",
+          "#acd98d",
+          "#7cbb92",
+          "#334155",
           "#FF0000",
           "#008000",
           "#0000FF",
@@ -275,11 +315,17 @@ const BarRetailor = ({ isLoading, chartModel, setChartModel }) => {
           }
         },
         labels: {
+          formatter: function (value) {
+                return `${value.toFixed(2)}$`; // Format Y-axis as currency
+              },
           maxWidth: '160px',
           offsetX: 0,
           offsetY: 0,
           style: {
-            fontSize: '10px'
+            fontSize: '10px',
+            positions:"relative",
+            top:"100px",
+             zIndex:"-99"
           },
           // formatter: function (value) {
           //   return value.toFixed(0); // Remove decimal places
@@ -342,6 +388,32 @@ const BarRetailor = ({ isLoading, chartModel, setChartModel }) => {
       },
       // colors: [...new Set(bgColor)].slice(0, 2)
       colors: [
+        "#0e7490",
+        "#65a30d",
+        "#0891b2",
+        "#f97316",
+        "#ef4444",
+        "#0284c7",
+        "#3b82f6",
+        "#8b5cf6",
+        "#d946ef",
+        "#f43f5e",
+        "#d5ffb6",
+        "#e5b8ff",
+        "#ff8ac0",
+        "#fff6a9",
+        "#a3e0ff",
+        "#6d618c",
+        "#255972",
+        "#2c7787",
+        "#3184bc",
+        "#dcf0ff",
+        "#ec8580",
+        "#ffab70",
+        "#efce80",
+        "#acd98d",
+        "#7cbb92",
+        "#334155",
         "#FF0000",
         "#008000",
         "#0000FF",
@@ -451,20 +523,22 @@ const BarRetailor = ({ isLoading, chartModel, setChartModel }) => {
   // console.log(chartData)
   return (
     <div style={{ position: "relative" }}>
-      <div>
-        <label>
+      <div className="d-flex justify-content-center">
+        <label className="mx-2 mb-3 text-bold">
           <input
             type="radio"
             value="Brand"
+            className="mx-1 "
             checked={chartModel === "Brand"}
             onChange={() => setChartModel("Brand")}
           />
           Brand Charts
         </label>
-        <label>
+        <label className="mx-2 mb-3">
           <input
             type="radio"
             value="retailer"
+            className="mx-1"
             checked={chartModel === "retailer"}
             onChange={() => setChartModel("retailer")}
           />

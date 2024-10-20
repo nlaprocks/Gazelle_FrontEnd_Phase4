@@ -1,4 +1,4 @@
-import React, { memo, useState } from "react";
+import React, { useState } from "react";
 import Modal from "react-bootstrap/Modal";
 import "./connectionConfirm.css";
 import { useDispatch, useSelector } from "react-redux";
@@ -9,82 +9,32 @@ import "react-calendar/dist/Calendar.css";
 import "react-clock/dist/Clock.css";
 import axios from "axios";
 import { Tabs } from "antd";
+import { Input } from "antd";
+import { DatePicker } from 'antd';
+import { CalendarOutlined, DollarOutlined } from '@ant-design/icons';
 
 const { TabPane } = Tabs;
 const requiredColumns = ["WeekEnding", "Retailer", "Product", "Total_Volume", "Dollars"];
 
 const moment = require("moment");
-
-const SelectedConnectionDatabaseConfirm = ({ currentTableSelected, selectedColumnsToShow, selectedConnectionConfirmModal, setSelectedConnectionConfirmModal, handleSelectColumn }) => {
-
+const SelectedConnectionDatabaseConfirm = ({ selectedConnectionConfirmModal, setSelectedConnectionConfirmModal, handleSelectColumn, connectDbConnecttion,selectedColumns,currentTables }) => {
+  const { RangePicker } = DatePicker;
   const [scheduleObserver, setScheduleObserver] = React.useState(false);
-  const [vertical, setVertical] = useState("top");
-  const [horizontal, setHorizontal] = useState("center");
   const [startDate, setStartDate] = React.useState();
-  const minDate = new Date();
   const [columnAliases, setColumnAliases] = useState({});
   const dispatch = useDispatch();
   const { model_id } = useParams();
   const [loader, setLoader] = React.useState(false);
   const getIsDataFetchedReducer = useSelector((state) => state.getIsDataFetchedReducer);
-
   const handleClose = () => {
     setSelectedConnectionConfirmModal(false);
     setStartDate();
   };
-
-  const [externalColumnAliases, setExternalColumnAliases] = useState({});
   const datastructureReducer = useSelector((state) => state.datastructureReducer);
   const databaseConfigReducer = useSelector((state) => state.saveDatabaseConfigReducer);
-  const [currentTable, setCurrentTable] = React.useState(currentTableSelected ? currentTableSelected : "golden_krust_full");
   // const [currentTable, setCurrentTable] = React.useState("golden_krust_full");
-  const [externalCurrentTable, setExternalCurrentTable] = React.useState(null);
-  const [selectedTables, setSelectedTables] = useState([]);
-  const [selectedColumns, setSelectedColumns] = React.useState([]);
+  // const [selectedColumns, setSelectedColumns] = React.useState([]);
   const [externalColumns, setExternalColumns] = React.useState([]);
-
-  const selectedDatabaseConfig = () => {
-    // const tableIndex = selectedColumns.findIndex((item) => item.table === currentTable);
-    // if (tableIndex === -1) {
-    //   alert("Error occurred on confirmation");
-    //   return;
-    // }
-    setLoader(true);
-    if (startDate) {
-      const date = startDate;
-      const formattedDate = moment(date).subtract(5, "hours").format("YYYY-MM-DD HH:mm:ss");
-      dispatch(
-        allActions.saveDatabaseConfigAction.saveDatabaseConfig({
-          database_config: selectedColumns,
-          event_id: datastructureReducer?.structure?.data?.event_id,
-          schedule_timestamp: formattedDate,
-        })
-      );
-    } else {
-      dispatch(
-        allActions.saveDatabaseConfigAction.saveDatabaseConfig({
-          database_config: selectedColumns,
-          event_id: datastructureReducer?.structure?.data?.event_id,
-          // database_config: [selectedColumns[tableIndex]],
-        })
-      );
-    }
-  };
-
-  const handleInputChange = (e, column, tab) => {
-    if (tab === "internal") {
-      setColumnAliases((prevColumnAliases) => ({
-        ...prevColumnAliases,
-        [column]: e.target.value,
-      }));
-    }
-    if (tab === "external") {
-      setExternalColumnAliases((prevColumnAliases) => ({
-        ...prevColumnAliases,
-        [column]: e.target.value,
-      }));
-    }
-  };
 
   React.useEffect(() => {
     if (databaseConfigReducer.success) {
@@ -133,23 +83,6 @@ const SelectedConnectionDatabaseConfirm = ({ currentTableSelected, selectedColum
     fetchExternalColumns();
   }, []);
 
-  React.useEffect(() => {
-    // {datastructureReducer?.structure?.data?.structure?.filter((val) => val.table === currentTableSelected)[0]?.columns?.map((column, index) => {
-    // selectedColumnsToShow?.filter((val) => {
-    // selectedColumnsToShow?.filter((val) => val.table === currentTableSelected)[0]?.columns?.map((column, index) => {
-    // const dataMapping = selectedColumns.find((tableMapping) => tableMapping.table === currentTableSelected);
-    // const isSelected = dataMapping?.columns?.some((columnMapping) => columnMapping.original_column === column);
-    // const isRequired = requiredColumns.includes(column);
-    // console.log(val?.table)
-    // console.log(column)
-    // })
-    const res = selectedColumnsToShow?.filter((val) => val.table === currentTableSelected);
-    setSelectedColumns(res)
-    // console.log(res)
-  }, [selectedColumnsToShow]);
-
-  console.log(selectedColumnsToShow)
-
   return (
     <Modal
       show={selectedConnectionConfirmModal}
@@ -158,8 +91,8 @@ const SelectedConnectionDatabaseConfirm = ({ currentTableSelected, selectedColum
       centered
       className="nladatabaseparametermodal"
     >
-      <Modal.Header>
-        <Modal.Title>Selected Connection Database Confirm </Modal.Title>
+      <Modal.Header closeButton>
+        <Modal.Title className="ms-auto">Selected Connection Database Confirm</Modal.Title>
       </Modal.Header>
       <Modal.Body style={{ maxHeight: "560px", overflowY: "auto" }}>
         <div>
@@ -179,6 +112,24 @@ const SelectedConnectionDatabaseConfirm = ({ currentTableSelected, selectedColum
             </div>
           </div>
 
+          <div className="nla-add-heading-block mt-6">
+            <form>
+              <div className="row border-y mb-4 pt-6 ps-7">
+                <div className="col-md-4 col-12 relative nla_form_project_name position-relative nla_form_field_block mb-4">
+                  <i className="fa-regular fa-calendar-plus"></i>
+                  <Input size="large" value="" placeholder="Enter Market share" prefix={<CalendarOutlined />} />
+                </div>
+                <div className="col-md-4 col-12 relative nla_form_project_name position-relative nla_form_field_block mb-4">
+                  <i className="fa-regular fa-calendar-plus"></i>
+                  <Input size="large" value="" placeholder="Sales Revenue" prefix={<DollarOutlined />} />
+                </div>
+                <div className="col-md-4 col-12 relative nla_form_project_name position-relative nla_form_field_block">
+                  <RangePicker className="w-full h-[40px]" />
+                </div>
+              </div>
+            </form>
+          </div>
+
           <div className="table-responsivev" style={{ maxHeight: "300px", overflowY: "auto" }}>
             <table className="table">
               <thead className="table-head">
@@ -187,56 +138,75 @@ const SelectedConnectionDatabaseConfirm = ({ currentTableSelected, selectedColum
                   <th>Renamed Measure</th>
                 </tr>
               </thead>
-              <tbody>
-                {
-                  selectedColumnsToShow?.filter((val) => val.table === currentTableSelected)[0]?.columns?.map((column, index) => {
-                    const dataMapping = selectedColumns.find((tableMapping) => tableMapping.table === currentTableSelected);
-                    const isSelected = dataMapping?.columns?.some((columnMapping) => columnMapping.original_column === column);
+              {/* <tbody>
+                {datastructureReducer?.structure?.data?.structure
+                  ?.filter((val) => val.table === currentTable)[0]
+                  ?.columns.map((column, index) => {
+                    console.log(column,"columns")
+                    const dataMapping = selectedColumns.find((tableMapping) => tableMapping.table === currentTable);
+                    const isSelected = dataMapping?.columns?.some(
+                      (columnMapping) => columnMapping.original_column === column
+                    );
                     const isRequired = requiredColumns.includes(column);
                     return (
                       <tr key={index}>
                         <td>
                           <div className="form-check custom-checkbox">
-                            <span>{column?.original_column}</span>
+                            <span>{column}</span>
                           </div>
                         </td>
-                        <td>{column?.original_column}</td>
+                        <td>{column}</td>
                         <td>
                           <div className="col-md-8">
                             <div className="input-box">
-                              <span>{columnAliases[column?.original_column] || ""}</span>
+                              <span>{columnAliases[column] || ""}</span>
                             </div>
                           </div>
                         </td>
                       </tr>
                     );
-                  })
-                }
+                  })}
+              </tbody> */}
+                  <tbody>
+              
 
-                {/* {datastructureReducer?.structure?.data?.structure?.filter((val) => val.table === currentTableSelected)[0]?.columns?.map((column, index) => {
-                  // console.log(column)
-                  const dataMapping = selectedColumns.find((tableMapping) => tableMapping.table === currentTableSelected);
-                  const isSelected = dataMapping?.columns?.some((columnMapping) => columnMapping.original_column === column);
-                  const isRequired = requiredColumns.includes(column);
-                  return (
-                    <tr key={index}>
-                      <td>
-                        <div className="form-check custom-checkbox">
-                          <span>{column}</span>
-                        </div>
-                      </td>
-                      <td>{column}</td>
-                      <td>
-                        <div className="col-md-8">
-                          <div className="input-box">
-                            <span>{columnAliases[column] || ""}</span>
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })} */}
-              </tbody>
+              {
+                selectedColumns
+                  .filter((val) => val.table === currentTables)
+                  
+                  .map((tableData) => { 
+                    console.log("Mapped tableData:", tableData); 
+                    return tableData.columns.map((column, columnIndex) => {
+                     
+                      const originalColumn = column.original_column;
+                      // const mappedColumn = column.mapped_column || ""; 
+              
+                      return (
+                        <tr key={columnIndex}>
+                          <td>
+                            <div className="form-check custom-checkbox">
+                              <span>{originalColumn}</span>
+                            </div>
+                          </td>
+                          <td>{originalColumn}</td>
+                          <td>
+                            <div className="col-md-8">
+                              <div className="input-box">
+                                {/* <span>{columnAliases[originalColumn] || ""}</span> */}
+                              </div>
+                            </div>
+                          </td>
+                          <td>
+                            {/* <span>{mappedColumn}</span> */}
+                          </td>
+                        </tr>
+                      );
+                    });
+                  })
+              }
+              
+                            </tbody>
+              
             </table>
           </div>
         </div>
@@ -253,7 +223,7 @@ const SelectedConnectionDatabaseConfirm = ({ currentTableSelected, selectedColum
           >
             Cancel
           </button>
-          <button type="button" className="btn btn-primary px-4 inline-block max-w-40" onClick={selectedDatabaseConfig}>
+          <button type="button" className="btn btn-primary px-4 inline-block max-w-40" onClick={connectDbConnecttion}>
             {loader ? "Loading..." : "Submit"}
           </button>
         </div>
@@ -262,4 +232,4 @@ const SelectedConnectionDatabaseConfirm = ({ currentTableSelected, selectedColum
   );
 };
 
-export default memo(SelectedConnectionDatabaseConfirm);
+export default SelectedConnectionDatabaseConfirm;

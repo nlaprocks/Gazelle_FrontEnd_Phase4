@@ -7,6 +7,7 @@ import { useParams } from "react-router-dom";
 import "react-datetime-picker/dist/DateTimePicker.css";
 import "react-calendar/dist/Calendar.css";
 import "react-clock/dist/Clock.css";
+import SelectedConnectionDatabaseConfirm from "./SelectedConnectionDatabaseConfirm";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import ModalTabs from "./ModalTabs";
@@ -58,6 +59,9 @@ const ConnectionConfirm = ({ connectionConfirmModal, setConnectionConfirmModal, 
   const [selectedColumns, setSelectedColumns] = React.useState([]);
   const [externalColumns, setExternalColumns] = React.useState([]);
 
+  // connection Confirm Modal
+  const [selectedConnectionConfirmModal, setSelectedConnectionConfirmModal] = useState(false);
+
   const handleTableSelect = (e) => {
     setCurrentTable(e.target.value);
     const selectedTable = e.target.value;
@@ -104,7 +108,7 @@ const ConnectionConfirm = ({ connectionConfirmModal, setConnectionConfirmModal, 
 
   const handleSelectAllColumn = (currentTableVal) => {
     const tableData = currentTableVal[0];
-    console.log("\n tableData: ", tableData);
+    // console.log("\n tableData: ", tableData);
     const columns = tableData.columns.map((column) => ({
       original_column: column,
       mapped_column: column,
@@ -112,7 +116,7 @@ const ConnectionConfirm = ({ connectionConfirmModal, setConnectionConfirmModal, 
 
     // Find the index of the selected table in the selectedColumns array
     const tableIndex = selectedColumns.findIndex((item) => item.table === tableData.table);
-    console.log("tableIndex: ", tableIndex);
+    // console.log("tableIndex: ", tableIndex);
 
     if (tableIndex === -1) {
       // If the selected table is not yet in the selectedColumns array,
@@ -136,7 +140,7 @@ const ConnectionConfirm = ({ connectionConfirmModal, setConnectionConfirmModal, 
       });
     }
   };
-  console.log("selectedColumns: ", selectedColumns[4]);
+  // console.log("selectedColumns: ", selectedColumns[4]);
   const handleUnselectAllColumns = (currentTableVal) => {
     // Find the index of the selected table in the selectedColumns array
     const tableIndex = selectedColumns.findIndex((item) => item.table === currentTableVal[0].table);
@@ -223,6 +227,12 @@ const ConnectionConfirm = ({ connectionConfirmModal, setConnectionConfirmModal, 
     // Set the updated data
     setSelectedColumns(updatedData);
   };
+
+  const openConnectionConfirmModal = () => {
+    setConnectionConfirmModal(false);
+    setSelectedConnectionConfirmModal(true)
+  }
+
   const addDatabaseConfig = () => {
     const tableIndex = selectedColumns.findIndex((item) => item.table === currentTable);
     if (tableIndex === -1) {
@@ -247,6 +257,7 @@ const ConnectionConfirm = ({ connectionConfirmModal, setConnectionConfirmModal, 
           event_id: datastructureReducer?.structure?.data?.event_id,
         })
       );
+      setSelectedConnectionConfirmModal(false);
     }
   };
   React.useEffect(() => {
@@ -282,12 +293,12 @@ const ConnectionConfirm = ({ connectionConfirmModal, setConnectionConfirmModal, 
       const api = `${process.env.REACT_APP_NGROK}/client-data/external-structure`;
       const response = await axios.get(api);
       if (response.status === 200) {
-        console.log("response: ", response.data);
+        // console.log("response: ", response.data);
         setExternalColumns(response.data.data.columns);
         // setRetailerBrandProducts(response?.data?.data);
       }
     } catch (error) {
-      console.log("Error in fetching columns", error);
+      // console.log("Error in fetching columns", error);
     }
   };
 
@@ -326,77 +337,86 @@ const ConnectionConfirm = ({ connectionConfirmModal, setConnectionConfirmModal, 
   }, [currentTable]);
 
   return (
-    <Modal
-      show={connectionConfirmModal}
-      // show={true}
-      onHide={handleClose}
-      centered
-      className="nladatabaseparametermodal"
-    >
-      <Modal.Header closeButton>
-        <Modal.Title className="ms-auto">Connection Confirm</Modal.Title>
-      </Modal.Header>
-      <Modal.Body style={{ maxHeight: "550px", overflowY: "auto" }}>
-        <div>
-          <div className="row align-items-center">
-            <div className="col-md-4 nla_modal_banenr">
-              <img
-                src={require("../../../assets/images/data-connection-image.png")}
-                alt="placeholder"
-                className="img-fluid"
-                style={{ width: "25%", height: "25%" }}
-              />
-            </div>
-            <div className="col-md-8 db_coonection-text">
-              <h4>Database connection successfully</h4>
-              <p className="mx-auto">
-                DB Connection is successfully confirmed. <br /> Select Table field and confirm items.
-              </p>
-            </div>
-          </div>
-          <ModalTabs
-            currentTable={currentTable}
-            externalCurrentTable={externalCurrentTable}
-            selectedColumns={selectedColumns}
-            datastructureReducer={datastructureReducer}
-            isTableAllColumnsSelected={isTableAllColumnsSelected}
-            handleDropDownChange={handleDropDownChange}
-            handleSelectColumn={handleSelectColumn}
-            handleTableSelect={handleTableSelect}
-            handleTableSelectForExternalData={handleTableSelectForExternalData}
-            handleSelectAllColumn={handleSelectAllColumn}
-            handleUnselectAllColumns={handleUnselectAllColumns}
-            preSelectedColumns={preSelectedColumns}
-            requiredColumns={requiredColumns}
-          />
-        </div>
-      </Modal.Body>
-      <Modal.Footer>
-        <button
-          type="button"
-          className="btn btn-outline-danger"
-          data-bs-dismiss="modal"
-          onClick={() => {
-            handleClose(false);
-          }}
-        >
-          Cancel
-        </button>
-        <button type="button" className="btn btn-outline-primary" onClick={addDatabaseConfig}>
-          {loader ? "Loading..." : "Confirm Configuration"}
-        </button>
-      </Modal.Footer>
-      <Snackbar
-        open={scheduleObserver}
-        autoHideDuration={3000}
-        key="projectCreatedAlert"
-        anchorOrigin={{ vertical, horizontal }}
+    <>
+      <Modal
+        show={connectionConfirmModal}
+        // show={true}
+        onHide={handleClose}
+        centered
+        className="nladatabaseparametermodal"
       >
-        <Alert severity="success" sx={{ width: "100%" }}>
-          Data Fetching Scheduling
-        </Alert>
-      </Snackbar>
-    </Modal>
+        <Modal.Header closeButton>
+          <Modal.Title className="ms-auto">Connection Confirms</Modal.Title>
+        </Modal.Header>
+        <Modal.Body style={{ maxHeight: "550px", overflowY: "auto" }}>
+          <div>
+            <div className="row align-items-center">
+              <div className="col-md-4 nla_modal_banenr">
+                <img
+                  src={require("../../../assets/images/data-connection-image.png")}
+                  alt="placeholder"
+                  className="img-fluid"
+                  style={{ width: "25%", height: "25%" }}
+                />
+              </div>
+              <div className="col-md-8 db_coonection-text">
+                <h4>Database connection successfully</h4>
+                <p className="mx-auto">
+                  DB Connection is successfully confirmed. <br /> Select Table field and confirm items.
+                </p>
+              </div>
+            </div>
+            <ModalTabs
+              currentTable={currentTable}
+              externalCurrentTable={externalCurrentTable}
+              selectedColumns={selectedColumns}
+              datastructureReducer={datastructureReducer}
+              isTableAllColumnsSelected={isTableAllColumnsSelected}
+              handleDropDownChange={handleDropDownChange}
+              handleSelectColumn={handleSelectColumn}
+              handleTableSelect={handleTableSelect}
+              handleTableSelectForExternalData={handleTableSelectForExternalData}
+              handleSelectAllColumn={handleSelectAllColumn}
+              handleUnselectAllColumns={handleUnselectAllColumns}
+              preSelectedColumns={preSelectedColumns}
+              requiredColumns={requiredColumns}
+            />
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <button
+            type="button"
+            className="btn btn-outline-danger"
+            data-bs-dismiss="modal"
+            onClick={() => {
+              handleClose(false);
+            }}
+          >
+            Cancel
+          </button>
+          <button type="button" className="btn btn-outline-primary" onClick={openConnectionConfirmModal}>
+            {loader ? "Loading..." : "Confirm Configuration"}
+          </button>
+        </Modal.Footer>
+        <Snackbar
+          open={scheduleObserver}
+          autoHideDuration={3000}
+          key="projectCreatedAlert"
+          anchorOrigin={{ vertical, horizontal }}
+        >
+          <Alert severity="success" sx={{ width: "100%" }}>
+            Data Fetching Scheduling
+          </Alert>
+        </Snackbar>
+      </Modal>
+      <SelectedConnectionDatabaseConfirm
+        selectedConnectionConfirmModal={selectedConnectionConfirmModal}
+        setSelectedConnectionConfirmModal={setSelectedConnectionConfirmModal}
+        connectDbConnecttion={addDatabaseConfig}
+        selectedColumns={selectedColumns}
+        currentTables={currentTable}
+      />
+    </>
   );
 };
 

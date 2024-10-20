@@ -14,6 +14,7 @@ const PriceSlopeChart = ({ isLoading }) => {
 
   useEffect(() => {
     if (chart2Reducer.success && chart2Reducer.chart2Data) {
+      // console.log(chart2Reducer.chart2Data.data); // Check if the data is correct
       const transformedData = transformData(chart2Reducer.chart2Data.data);
       setChartData(transformedData);
     }
@@ -217,7 +218,7 @@ const PriceSlopeChart = ({ isLoading }) => {
       },
     };
   };
-
+// console.log(chartData,"chartdata")
   return (
     <div >
       <h6 style={{ textAlign: "center" }}>Price Slope chart</h6>

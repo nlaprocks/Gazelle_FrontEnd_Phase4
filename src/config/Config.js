@@ -1,6 +1,9 @@
 import React, { Suspense, lazy } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Loading from "../components/loading/Loading";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const LoginPage = lazy(() => import("../pages/loginPage/LoginPage.js"));
 const DashboardPage = lazy(() => import("../pages/dashboardPage/DashboardPage.js"));
@@ -19,9 +22,12 @@ const ProjectManagement = lazy(() => import("../pages/admin/projectManagement"))
 const SchedulingManagement = lazy(() => import("../pages/admin/SchedulingManagement"));
 const SimulationPage = lazy(() => import("../pages/simulation/SimulationPage"));
 
+
 const Config = () => {
+  
   return (
     <Router>
+       <ToastContainer />
       <Suspense fallback={<Loading />}>
         <Routes>
           <Route exact path="/login" element={<LoginPage />}></Route>
@@ -32,6 +38,8 @@ const Config = () => {
             path="/insights/:id"
             element={<ProtectedRoute component={InsightsPage}></ProtectedRoute>}
           ></Route> */}
+
+          
           <Route
             exact
             path="/new-insights/:id/:model_id"
@@ -47,6 +55,7 @@ const Config = () => {
             path="/design-studio"
             element={<ProtectedRoute component={DesignStudioPage}></ProtectedRoute>}
           ></Route>
+
           <Route
             exact
             path="/simulation/:projectName/:project_id/:model_id"

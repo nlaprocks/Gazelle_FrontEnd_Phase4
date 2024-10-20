@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import ApexCharts from "react-apexcharts";
 import { useSelector } from "react-redux";
 import Pagination from "./pagination/Pagination";
+import { width } from "@mui/system";
 
 const MyChart = ({ isLoading }) => {
   const chart3Reducer = useSelector((state) => state.chart3Reducer);
@@ -59,8 +60,20 @@ const MyChart = ({ isLoading }) => {
       productDataDict[productName].series[1].data.push({
         x: item.Retailer,
         y: item.Dollar_sales_last_52_weeks?.toFixed(2),
+        // // y: item.Dollar_sales_last_52_weeks ? Number(item.Dollar_sales_last_52_weeks.toFixed(2)) : null
+  //       y: item.Dollar_sales_last_52_weeks
+  //       ? Number(item.Dollar_sales_last_52_weeks).toLocaleString('en-IN', {
+  //           minimumFractionDigits: 2,  
+  // maximumFractionDigits: 4,  
+  // minimumIntegerDigits: 3,  
+  //         })
+  //       : null
       });
-    });
+
+  });
+
+
+    
   }
   // }, [chart3Data, chartType])
 
@@ -70,9 +83,16 @@ const MyChart = ({ isLoading }) => {
   const visibleData = transformedData.slice(startIndex, endIndex);
   const showPagination = transformedData.length > itemsPerPage;
 
+  
   const getDataOption = (data) => ({
+    
     chart: {
       height: 500,
+      width:"200%",
+      zoom: {
+        enabled: false,
+      },
+      
       // type: "bar",
       // stacked: isStacked,
       toolbar: {
@@ -114,8 +134,16 @@ const MyChart = ({ isLoading }) => {
     tooltip: {
       shared: true,
       intersect: false,
+      // y: {
+      //   formatter: function (value) {
+      //     return value.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 });
+      //   }
+      // }
     },
     dataLabels: {
+      // formatter: function (value) {
+      //   return value ? value.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : value;
+      // },
       enabled: false,
     },
     legend: {
@@ -135,6 +163,24 @@ const MyChart = ({ isLoading }) => {
         },
       },
     },
+    // yaxis: [
+    //   {
+    //     title: {
+    //       text: data?.leftyAxisTitle,
+    //     },
+    //     opposite: false,
+    //     reversed: true,
+    //   },
+    //   {
+    //     title: {
+    //       text: data?.rightyAxisTitle 
+    //         ? Number(data.rightyAxisTitle).toLocaleString('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2, maximumFractionDigits: 2 }) 
+    //         : ''
+    //     },
+    //     opposite: true,
+    //   },
+    // ],
+    
     yaxis: [
       {
         title: {
@@ -151,7 +197,7 @@ const MyChart = ({ isLoading }) => {
       },
     ],
     // series: () => { return data?.series},
-    series: data?.series,
+    series: data?.series||[],
     grid: {
       show: false,
       borderColor: '#e7e7e7',
@@ -191,11 +237,11 @@ const MyChart = ({ isLoading }) => {
       }
     },
   });
-
+//  console.log(chart3Reducer,"chartreducer")
   return (
     <div>
       {visibleData.map((data, index) => (
-        // console.log(getDataOption(data).series[0]),
+        // console.log(getDataOption(data).series[1]),
         // console.log(getDataOption(data).series[0]?.data?.length),
         <div
           key={index}

@@ -31,6 +31,7 @@ const Bar = ({ isLoading, chartModel, setChartModel }) => {
       groupedData[brand][retailer].data.push({
         // y: parseFloat(item.Price_avg_last_4_weeks?.toFixed(2)),
         // y: parseInt(item.Price_avg_last_4_weeks),
+        
         y: Math.round(item.Price_avg_last_4_weeks),
         x: item.Product,
       });
@@ -43,6 +44,7 @@ const Bar = ({ isLoading, chartModel, setChartModel }) => {
 
     setChartDataArray(newDataArray);
   }, [chart1Reducer]);
+  
 
   return (
     <div>
@@ -100,6 +102,20 @@ const Bar = ({ isLoading, chartModel, setChartModel }) => {
                   },
                 ]
               },
+            },
+            zoom: {
+              enabled: false,
+              type: 'x',
+              resetIcon: {
+                  offsetX: -10,
+                  offsetY: 0,
+                  fillColor: '#fff',
+                  strokeColor: '#37474F'
+              },
+              selection: {
+                  background: '#90CAF9',
+                  border: '#0D47A1'
+              }    
             }
           },
           dataLabels: {
@@ -110,6 +126,32 @@ const Bar = ({ isLoading, chartModel, setChartModel }) => {
             width: 1,
             // colors: ["#2a97f2", "#40d68e", "#ea580c", "#ef4444"]
             colors: [
+              "#0e7490",
+              "#65a30d",
+              "#0891b2",
+              "#f97316",
+              "#ef4444",
+              "#0284c7",
+              "#3b82f6",
+              "#8b5cf6",
+              "#d946ef",
+              "#f43f5e",
+              "#d5ffb6",
+              "#e5b8ff",
+              "#ff8ac0",
+              "#fff6a9",
+              "#a3e0ff",
+              "#6d618c",
+              "#255972",
+              "#2c7787",
+              "#3184bc",
+              "#dcf0ff",
+              "#ec8580",
+              "#ffab70",
+              "#efce80",
+              "#acd98d",
+              "#7cbb92",
+              "#334155",
               "#FF0000",
               "#008000",
               "#0000FF",
@@ -247,6 +289,7 @@ const Bar = ({ isLoading, chartModel, setChartModel }) => {
             },
           },
           yaxis: {
+            showForNullSeries: false,
             title: {
               text: 'Price Mean',
               offsetX: -5,
@@ -256,6 +299,9 @@ const Bar = ({ isLoading, chartModel, setChartModel }) => {
               }
             },
             labels: {
+              formatter: function (value) {
+                return `${value.toFixed(2)}$`; // Format Y-axis as currency
+              },
               maxWidth: '160px',
               offsetX: 0,
               offsetY: 0,
@@ -326,6 +372,32 @@ const Bar = ({ isLoading, chartModel, setChartModel }) => {
           //   '#FF5733', // Color 12
           // ],
           colors: [
+            "#0e7490",
+            "#65a30d",
+            "#0891b2",
+            "#f97316",
+            "#ef4444",
+            "#0284c7",
+            "#3b82f6",
+            "#8b5cf6",
+            "#d946ef",
+            "#f43f5e",
+            "#d5ffb6",
+            "#e5b8ff",
+            "#ff8ac0",
+            "#fff6a9",
+            "#a3e0ff",
+            "#6d618c",
+            "#255972",
+            "#2c7787",
+            "#3184bc",
+            "#dcf0ff",
+            "#ec8580",
+            "#ffab70",
+            "#efce80",
+            "#acd98d",
+            "#7cbb92",
+            "#334155",
             "#FF0000",
             "#008000",
             "#0000FF",
@@ -433,24 +505,26 @@ const Bar = ({ isLoading, chartModel, setChartModel }) => {
 
         return (
           <div key={index} style={{ marginBottom: '50px' }}>
-            <div>
-              <label>
+            <div className="d-flex justify-content-center">
+            <label className="mx-2 mb-3 text-bold">
                 <input
                   type="radio"
                   value="Brand"
+                  className="mx-1 "
                   checked={chartModel === "Brand"}
                   onChange={() => setChartModel("Brand")}
                 />
-                Brand Charts
+                Brand View
               </label>
-              <label>
+              <label className="mx-2 mb-3">
                 <input
                   type="radio"
                   value="retailer"
+                  className="mx-1 "
                   checked={chartModel === "retailer"}
                   onChange={() => setChartModel("retailer")}
                 />
-                Retailer Charts
+                Retailer View
               </label>
             </div>
             <h6 style={{ textAlign: "center" }}>{chartData.brand}</h6>

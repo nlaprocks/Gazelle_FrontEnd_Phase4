@@ -22,7 +22,7 @@ const ProfitCurvesChart = () => {
         type: chartType,
         stacked: isStacked,
         zoom: {
-          enabled: true,
+          enabled: false,
         },
         toolbar: {
           show: true,
