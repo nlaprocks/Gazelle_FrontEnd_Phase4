@@ -20,15 +20,27 @@ export default function MarginSimulator({
   handleProductChange,
   handleMarginPriceInputChange,
 }) {
-
   const echartsReactRef = React.useRef(null);
   const productName = marginSimulationData[0]?.Product ?? "";
-  const netUnitPrice = marginPriceValues?.listPrice - marginPriceValues?.edlpSpend;
-  const manufacturerMargin = ((netUnitPrice - marginPriceValues?.cogs) / marginPriceValues?.listPrice) * 100;
-  const retailerMargin = ((marginPriceValues?.basePrice - netUnitPrice) / marginPriceValues?.basePrice) * 100;
+  const netUnitPrice =
+    marginPriceValues?.listPrice - marginPriceValues?.edlpSpend;
+  const manufacturerMargin =
+    ((netUnitPrice - marginPriceValues?.cogs) / marginPriceValues?.listPrice) *
+    100;
+  const retailerMargin =
+    ((marginPriceValues?.basePrice - netUnitPrice) /
+      marginPriceValues?.basePrice) *
+    100;
 
   const getOption = (data) => {
-    const { Product, Retailer, xAxisTitle, leftyAxisTitle, rightyAxisTitle, data: chartData } = data;
+    const {
+      Product,
+      Retailer,
+      xAxisTitle,
+      leftyAxisTitle,
+      rightyAxisTitle,
+      data: chartData,
+    } = data;
     const datasets = chartData.datasets;
     const labels = chartData.labels;
     return {
@@ -153,10 +165,15 @@ export default function MarginSimulator({
           ondrag: (params) => {
             // Handle drag event
             const { echarts } = echartsReactRef.current;
-            const chart = echarts.getInstanceByDom(echartsReactRef.current.getEchartsInstance().getDom());
+            const chart = echarts.getInstanceByDom(
+              echartsReactRef.current.getEchartsInstance().getDom()
+            );
 
             // Calculate new position based on params.event.offsetX and params.event.offsetY
-            const newPosition = chart.convertFromPixel("grid", [params.event.offsetX, params.event.offsetY]);
+            const newPosition = chart.convertFromPixel("grid", [
+              params.event.offsetX,
+              params.event.offsetY,
+            ]);
 
             // Update the position of the draggable element
             chart.setOption({
@@ -342,16 +359,16 @@ export default function MarginSimulator({
 
   const getChartOptions = (data) => ({
     chart: {
-      type: 'bar'
+      type: "bar",
     },
     title: {
       text: "Effects of Change In Price",
-      align: 'center',
+      align: "center",
       margin: 10,
       offsetX: 0,
       offsetY: 0,
       style: {
-        fontSize: '16px',
+        fontSize: "16px",
       },
     },
     xaxis: {
@@ -410,7 +427,7 @@ export default function MarginSimulator({
         "23.00 %",
         "24.00 %",
         "25.00 %",
-      ]
+      ],
     },
     yaxis: {
       title: {
@@ -421,7 +438,7 @@ export default function MarginSimulator({
       // },
       axisBorder: {
         show: true,
-        color: '#000000',
+        color: "#000000",
         offsetX: 0,
         offsetY: 0,
       },
@@ -431,43 +448,43 @@ export default function MarginSimulator({
   // latest code By Devendra kashyap
   const series = [
     {
-      name: 'Manufacturer Profit',
-      data: marginChartData?.manufacturerProfit
+      name: "Manufacturer Profit",
+      data: marginChartData?.manufacturerProfit,
     },
     {
-      name: 'Annual Profit',
-      data: marginChartData?.annualProfit
-    }
+      name: "Annual Profit",
+      data: marginChartData?.annualProfit,
+    },
   ];
 
   const options = {
     chart: {
-      type: 'line',
+      type: "line",
       zoom: {
-        enabled: false
-      }
+        enabled: false,
+      },
     },
     dataLabels: {
-      enabled: false
+      enabled: false,
     },
     stroke: {
-      curve: 'smooth'
+      curve: "smooth",
     },
     title: {
       text: "Effects of Change In Price",
-      align: 'center',
+      align: "center",
       margin: 10,
       offsetX: 0,
       offsetY: 0,
       style: {
-        fontSize: '16px',
+        fontSize: "16px",
       },
     },
     grid: {
       row: {
-        colors: ['#f3f3f3', 'transparent'], // Alternating row colors
-        opacity: 0.5
-      }
+        colors: ["#f3f3f3", "transparent"], // Alternating row colors
+        opacity: 0.5,
+      },
     },
     xaxis: {
       title: {
@@ -525,7 +542,7 @@ export default function MarginSimulator({
         "23.00 %",
         "24.00 %",
         "25.00 %",
-      ]
+      ],
       // categories: marginChartData.manufacturerProfit.map((_, index) => `Month ${index + 1}`)
     },
     yaxis: {
@@ -534,8 +551,8 @@ export default function MarginSimulator({
       },
     },
     legend: {
-      position: 'top'
-    }
+      position: "top",
+    },
   };
 
   // 17-09-2024
@@ -594,35 +611,35 @@ export default function MarginSimulator({
       "23%",
       "24%",
       "25%",
-    ]
-  }
+    ],
+  };
 
   const option45s = {
     chart: {
-      type: 'line',
+      type: "line",
       height: 350,
     },
     dataLabels: {
-      enabled: false
+      enabled: false,
     },
     stroke: {
-      curve: 'smooth'
+      curve: "smooth",
     },
     title: {
       text: "Effects of Change In Price",
-      align: 'center',
+      align: "center",
       margin: 10,
       offsetX: 0,
       offsetY: 0,
       style: {
-        fontSize: '16px',
+        fontSize: "16px",
       },
     },
     grid: {
       row: {
-        colors: ['#f3f3f3', 'transparent'], // Alternating row colors
-        opacity: 0.5
-      }
+        colors: ["#f3f3f3", "transparent"], // Alternating row colors
+        opacity: 0.5,
+      },
     },
     xaxis: {
       title: {
@@ -691,17 +708,19 @@ export default function MarginSimulator({
       {
         opposite: true,
         title: {
-          text: 'Manufacturer Profit',
+          text: "Manufacturer Profit ($)",
         },
       },
     ],
     series: [
       {
-        name: 'Manufacturer Profit',
-        data: data.manufacturerProfit && formatArrayToTwoDecimals(data.manufacturerProfit),
+        name: "Manufacturer Profit",
+        data:
+          data.manufacturerProfit &&
+          formatArrayToTwoDecimals(data.manufacturerProfit),
       },
       {
-        name: 'Annual Profit',
+        name: "Annual Profit",
         // data: data.annualProfit.concat(new Array(data.changeInPrice.length - data.annualProfit.length).fill(null)),
         data: data.annualProfit && formatArrayToTwoDecimals(data.annualProfit),
       },
@@ -716,19 +735,19 @@ export default function MarginSimulator({
       intersect: false,
     },
     legend: {
-      position: 'top'
-    }
+      position: "top",
+    },
   };
 
   function formatArrayToTwoDecimals(arr) {
-    console.log(arr)
-    return arr.map(num => Math.floor(num * 100) / 100);
+    console.log(arr);
+    return arr.map((num) => Math.floor(num * 100) / 100);
   }
 
   function formatNumbersUsingToFixed(data) {
     const formattedData = {};
     for (const key in data) {
-      formattedData[key] = data[key].map(num => parseFloat(num.toFixed(2)));
+      formattedData[key] = data[key].map((num) => parseFloat(num.toFixed(2)));
     }
     return formattedData;
   }
@@ -748,10 +767,13 @@ export default function MarginSimulator({
                     width: "90%",
                   }}
                   className="filtered-accordion-ant-select"
-                  maxTagCount="responsive"
-                >
+                  maxTagCount="responsive">
                   {retailers?.map((item) => (
-                    <Select.Option key={item} value={item} className="custom-tooltip-option" data-tooltip={item}>
+                    <Select.Option
+                      key={item}
+                      value={item}
+                      className="custom-tooltip-option"
+                      data-tooltip={item}>
                       {item}
                     </Select.Option>
                   ))}
@@ -768,10 +790,13 @@ export default function MarginSimulator({
                   width: "90%",
                 }}
                 className="filtered-accordion-ant-select"
-                maxTagCount="responsive"
-              >
+                maxTagCount="responsive">
                 {brands?.map((item) => (
-                  <Select.Option key={item} value={item} className="custom-tooltip-option" data-tooltip={item}>
+                  <Select.Option
+                    key={item}
+                    value={item}
+                    className="custom-tooltip-option"
+                    data-tooltip={item}>
                     {item}
                   </Select.Option>
                 ))}
@@ -787,10 +812,13 @@ export default function MarginSimulator({
                   width: "90%",
                 }}
                 className="filtered-accordion-ant-select"
-                maxTagCount="responsive"
-              >
+                maxTagCount="responsive">
                 {products?.map((item) => (
-                  <Select.Option key={item} value={item} className="custom-tooltip-option" data-tooltip={item}>
+                  <Select.Option
+                    key={item}
+                    value={item}
+                    className="custom-tooltip-option"
+                    data-tooltip={item}>
                     {item}
                   </Select.Option>
                 ))}
@@ -800,7 +828,10 @@ export default function MarginSimulator({
           <div className="text-end">
             <div className="row">
               <div className="col-lg-8">
-                <input className="form-control form-control-sm" id="formFileSm" type="file"></input>
+                <input
+                  className="form-control form-control-sm"
+                  id="formFileSm"
+                  type="file"></input>
               </div>
               <div className=" col-lg-4">
                 <a href="" className="btn btn-primary btn-retailer">
@@ -853,7 +884,9 @@ export default function MarginSimulator({
                 <table className="best_pr_table">
                   <thead>
                     <tr>
-                      <th colSpan="2" style={{ backgroundColor: "#174F73", color: "#fff" }}>
+                      <th
+                        colSpan="2"
+                        style={{ backgroundColor: "#174F73", color: "#fff" }}>
                         Best price
                       </th>
                     </tr>
@@ -872,8 +905,7 @@ export default function MarginSimulator({
                             name="listPrice"
                             value={marginPriceValues.listPrice}
                             onChange={handleMarginPriceInputChange}
-                            min={0}
-                          ></input>
+                            min={0}></input>
                         </div>
                       </td>
                     </tr>
@@ -890,8 +922,7 @@ export default function MarginSimulator({
                             name="edlpSpend"
                             value={marginPriceValues.edlpSpend}
                             onChange={handleMarginPriceInputChange}
-                            min={0}
-                          ></input>
+                            min={0}></input>
                         </div>
                       </td>
                     </tr>
@@ -908,8 +939,7 @@ export default function MarginSimulator({
                             name="netUnitPrice"
                             value={netUnitPrice}
                             onChange={handleMarginPriceInputChange}
-                            readOnly
-                          ></input>
+                            readOnly></input>
                         </div>
                       </td>
                     </tr>
@@ -925,8 +955,7 @@ export default function MarginSimulator({
                             className="margin_simu_input"
                             name="cogs"
                             value={marginPriceValues.cogs}
-                            onChange={handleMarginPriceInputChange}
-                          ></input>
+                            onChange={handleMarginPriceInputChange}></input>
                         </div>
                       </td>
                     </tr>
@@ -943,11 +972,12 @@ export default function MarginSimulator({
                             name="basePriceElasticity"
                             value={
                               marginPriceValues?.basePriceElasticity
-                                ? marginPriceValues?.basePriceElasticity?.toFixed(2)
+                                ? marginPriceValues?.basePriceElasticity?.toFixed(
+                                    2
+                                  )
                                 : 0
                             }
-                            onChange={handleMarginPriceInputChange}
-                          ></input>
+                            onChange={handleMarginPriceInputChange}></input>
                         </div>
                       </td>
                     </tr>
@@ -962,9 +992,12 @@ export default function MarginSimulator({
                             placeholder="Enter the value"
                             className="margin_simu_input"
                             name="basePrice"
-                            value={marginPriceValues?.basePrice ? marginPriceValues?.basePrice?.toFixed(2) : 0}
-                            onChange={handleMarginPriceInputChange}
-                          ></input>
+                            value={
+                              marginPriceValues?.basePrice
+                                ? marginPriceValues?.basePrice?.toFixed(2)
+                                : 0
+                            }
+                            onChange={handleMarginPriceInputChange}></input>
                         </div>
                       </td>
                     </tr>
@@ -991,13 +1024,17 @@ export default function MarginSimulator({
                           <p>{productName}</p>
                         </td>
                         <td>
-                          <p>{netUnitPrice}</p>
+                          <p>$ {netUnitPrice}</p>
                         </td>
                         <td>
-                          <p>{marginPriceValues?.edlpSpend}</p>
+                          <p>$ {marginPriceValues?.edlpSpend}</p>
                         </td>
                         <td>
-                          <p>{manufacturerMargin ? manufacturerMargin.toFixed(2) : "-"}</p>
+                          <p>
+                            {manufacturerMargin
+                              ? manufacturerMargin.toFixed(2)
+                              : "-"}
+                          </p>
                         </td>
                       </tr>
                     </tbody>
@@ -1021,13 +1058,23 @@ export default function MarginSimulator({
                           <p>{productName}</p>
                         </td>
                         <td>
-                          <p>{netUnitPrice ? netUnitPrice.toFixed(2) : "-"}</p>
+                          <p>
+                            {netUnitPrice
+                              ? "$ " + netUnitPrice.toFixed(2)
+                              : "-"}
+                          </p>
                         </td>
                         <td>
-                          <p>{marginPriceValues?.basePrice ? marginPriceValues?.basePrice.toFixed(2) : "-"}</p>
+                          <p>
+                            {marginPriceValues?.basePrice
+                              ? "$ " + marginPriceValues?.basePrice.toFixed(2)
+                              : "-"}
+                          </p>
                         </td>
                         <td>
-                          <p>{retailerMargin ? retailerMargin.toFixed(2) : "-"}</p>
+                          <p>
+                            {retailerMargin ? retailerMargin.toFixed(2) : "-"}
+                          </p>
                         </td>
                       </tr>
                     </tbody>

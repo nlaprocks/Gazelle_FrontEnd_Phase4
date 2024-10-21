@@ -9,11 +9,11 @@ import MarginSimulator from "../../utils/simulation/MarginSimulator";
 import PromoEventSimulator from "../../utils/simulation/promo/PromoEventSimulator";
 
 export default function Simulation() {
-
   const { projectName, project_id, model_id } = useParams();
   // console.log("project_id: model_id", project_id, model_id)
 
-  const [isPriceSimulationLoading, setIsPriceSimulationLoading] = useState(false);
+  const [isPriceSimulationLoading, setIsPriceSimulationLoading] =
+    useState(false);
   const [retailerBrandProducts, setRetailerBrandProducts] = useState([]);
   const [priceSimulationData, setPriceSimulationData] = useState([]);
   const [marginSimulationData, setMarginSimulationData] = useState([]);
@@ -22,7 +22,8 @@ export default function Simulation() {
   const [simulatorType, setSimulatorType] = React.useState("price");
   // Price simulation states
   const [selectedProducts, setSelectedProducts] = useState([]);
-  const [filteredSelectedPriceProducts, setFilteredSelectedPriceProducts] = useState([]);
+  const [filteredSelectedPriceProducts, setFilteredSelectedPriceProducts] =
+    useState([]);
   const [newPrices, setNewPrices] = useState([]);
   const [showProductResults, setShowProductResults] = useState(false);
   const [showCompetitorResults, setShowCompetitorResults] = useState(false);
@@ -68,8 +69,12 @@ export default function Simulation() {
 
   // Margin Simulator
   const retailers = Object?.keys(retailerBrandProducts);
-  let brands = selectedRetailer ? Object?.keys(retailerBrandProducts[selectedRetailer]) : [];
-  let products = selectedBrand ? retailerBrandProducts[selectedRetailer][selectedBrand] : [];
+  let brands = selectedRetailer
+    ? Object?.keys(retailerBrandProducts[selectedRetailer])
+    : [];
+  let products = selectedBrand
+    ? retailerBrandProducts[selectedRetailer][selectedBrand]
+    : [];
 
   /* -----start----- Margin API handler -----start----- */
   const marginSimulationApiHandler = async (product) => {
@@ -80,7 +85,9 @@ export default function Simulation() {
       if (response.status === 200) {
         // console.log("response: ", response);
         setMarginSimulationData(response?.data?.data);
-        const basePrice = !isNaN(response?.data?.data[0]?.Price_avg_last_4_weeks)
+        const basePrice = !isNaN(
+          response?.data?.data[0]?.Price_avg_last_4_weeks
+        )
           ? response?.data?.data[0]?.Price_avg_last_4_weeks
           : 0;
         setMarginPriceValues((prevInputValues) => ({
@@ -230,12 +237,19 @@ export default function Simulation() {
           //Volume Impact
           let Product = ele.Product;
           let PercentageChangeInPrice =
-            ((ele.newPrice - ele.Price_avg_last_4_weeks) * 100) / ele.Price_avg_last_4_weeks;
+            ((ele.newPrice - ele.Price_avg_last_4_weeks) * 100) /
+            ele.Price_avg_last_4_weeks;
+
           let NewUnits =
             ele.total_units_sum +
-            ele.total_units_sum * ((1 + PercentageChangeInPrice / 100) ** ele.Base_Price_Elasticity - 1);
+            ele.total_units_sum *
+              ((1 + PercentageChangeInPrice / 100) **
+                ele.Base_Price_Elasticity -
+                1);
+
           let ChangeInUnits = NewUnits - ele.total_units_sum;
-          let PercentageChangeInUnits = (ChangeInUnits * 100) / ele.total_units_sum;
+          let PercentageChangeInUnits =
+            (ChangeInUnits * 100) / ele.total_units_sum;
           tempVolumeImpact.push({
             Product: Product,
             Base_Price_Elasticity: ele.Base_Price_Elasticity,
@@ -244,12 +258,30 @@ export default function Simulation() {
             type: ele.type,
             NewUnits: ele.newPrice != 0 ? NewUnits : 0,
             ChangeInUnits: ele.newPrice != 0 ? ChangeInUnits : 0,
-            PercentageChangeInUnits: ele.newPrice != 0 ? PercentageChangeInUnits : 0,
+            PercentageChangeInUnits:
+              ele.newPrice != 0 ? PercentageChangeInUnits : 0,
+            NewVolume:
+              ele.newPrice != 0
+                ? NewUnits *
+                  Product.match(/[+-]?\d+(\.\d+)?/g)[
+                    Product.match(/[+-]?\d+(\.\d+)?/g).length - 2
+                  ]
+                : 0,
+            ChangeInVolume:
+              ele.newPrice != 0
+                ? ChangeInUnits *
+                  Product.match(/[+-]?\d+(\.\d+)?/g)[
+                    Product.match(/[+-]?\d+(\.\d+)?/g).length - 2
+                  ]
+                : 0,
           });
           //Dollar Impact
           let NewDollars = NewUnits * ele.newPrice;
-          let ChangeInDollars = NewDollars - ele.total_units_sum * ele.Price_avg_last_4_weeks;
-          let PercentageChangeInDollars = (ChangeInDollars * 100) / (ele.total_units_sum * ele.Price_avg_last_4_weeks);
+          let ChangeInDollars =
+            NewDollars - ele.total_units_sum * ele.Price_avg_last_4_weeks;
+          let PercentageChangeInDollars =
+            (ChangeInDollars * 100) /
+            (ele.total_units_sum * ele.Price_avg_last_4_weeks);
           tempDollarImpact.push({
             Product: Product,
             NewPrice: ele.newPrice,
@@ -258,10 +290,12 @@ export default function Simulation() {
             type: ele.type,
             NewDollars: ele.newPrice != 0 ? NewDollars : 0,
             ChangeInDollars: ele.newPrice != 0 ? ChangeInDollars : 0,
-            PercentageChangeInDollars: ele.newPrice != 0 ? PercentageChangeInDollars : 0,
+            PercentageChangeInDollars:
+              ele.newPrice != 0 ? PercentageChangeInDollars : 0,
           });
         }
       });
+    console.log(tempVolumeImpact, tempDollarImpact);
     crossEffectHandler(tempVolumeImpact, tempDollarImpact);
   };
 
@@ -278,7 +312,9 @@ export default function Simulation() {
           if (val.Product === ele.Product && ele.type === "product") {
             let crossEffects = [];
             let sum = 0;
-            let comps = JSON.parse(val.Competitors).filter((comp) => comp.cross_effect > 0);
+            let comps = JSON.parse(val.Competitors).filter(
+              (comp) => comp.cross_effect > 0
+            );
             comps.length > 0 &&
               comps.map((comp) => {
                 if (comp.cross_effect > 0) {
@@ -292,21 +328,43 @@ export default function Simulation() {
                 }
               });
             crossEffects.map((eff, i) => {
+              let productOunces =
+                comps[i].competitor.match(/[+-]?\d+(\.\d+)?/g)[
+                  comps[i].competitor.match(/[+-]?\d+(\.\d+)?/g).length - 2
+                ];
+              // productCompetitorCrossEffects.push({
+              //   competitor: comps[i].competitor,
+              //   crossEffectValue:
+              //     ele.ChangeInUnits < 0
+              //       ? (eff * Math.abs(ele.ChangeInUnits)) / comps.length
+              //       : -(eff * Math.abs(ele.ChangeInUnits)) / comps.length,
+              // });
+
               productCompetitorCrossEffects.push({
                 competitor: comps[i].competitor,
                 crossEffectValue:
-                  ele.ChangeInUnits < 0
-                    ? (eff * Math.abs(ele.ChangeInUnits)) / comps.length
-                    : -(eff * Math.abs(ele.ChangeInUnits)) / comps.length,
+                  ele.ChangeInVolume < 0
+                    ? (eff * Math.abs(ele.ChangeInVolume)) /
+                      comps.length /
+                      productOunces
+                    : -(eff * Math.abs(ele.ChangeInVolume)) /
+                      comps.length /
+                      productOunces,
               });
             });
           }
         });
         //gets cross effect values within competitor products
         competitors.map((val) => {
-          if (val.Product === ele.Product && ele.type === "competitor" && ele.NewPrice !== "") {
+          if (
+            val.Product === ele.Product &&
+            ele.type === "competitor" &&
+            ele.NewPrice !== ""
+          ) {
             let crossEffects = [];
-            let comps = JSON.parse(val.Competitors).filter((comp) => comp.cross_effect > 0);
+            let comps = JSON.parse(val.Competitors).filter(
+              (comp) => comp.cross_effect > 0
+            );
             // console.log("comps", comps, val);
             let sum = 0;
             comps.length > 0 &&
@@ -322,23 +380,40 @@ export default function Simulation() {
                 }
               });
             crossEffects.map((eff, i) => {
+              let productOunces =
+                comps[i].competitor.match(/[+-]?\d+(\.\d+)?/g)[
+                  comps[i].competitor.match(/[+-]?\d+(\.\d+)?/g).length - 2
+                ];
+              // productCompetitorCrossEffects.push({
+              //   competitor: comps[i].competitor,
+              //   crossEffectValue:
+              //     ele.ChangeInUnits < 0
+              //       ? (eff * Math.abs(ele.ChangeInUnits)) / comps.length
+              //       : -(eff * Math.abs(ele.ChangeInUnits)) / comps.length,
+              // });
               productCompetitorCrossEffects.push({
                 competitor: comps[i].competitor,
                 crossEffectValue:
-                  ele.ChangeInUnits < 0
-                    ? (eff * Math.abs(ele.ChangeInUnits)) / comps.length
-                    : -(eff * Math.abs(ele.ChangeInUnits)) / comps.length,
+                  ele.ChangeInVolume < 0
+                    ? (eff * Math.abs(ele.ChangeInVolume)) /
+                      comps.length /
+                      productOunces
+                    : -(eff * Math.abs(ele.ChangeInVolume)) /
+                      comps.length /
+                      productOunces,
               });
             });
           }
         });
       });
     }
+
     productCompetitorCrossEffects.map((ele, i) => {
       for (let j = i + 1; j < productCompetitorCrossEffects.length; j++) {
         if (productCompetitorCrossEffects[j].competitor === ele.competitor) {
           productCompetitorCrossEffects[i].crossEffectValue =
-            productCompetitorCrossEffects[i].crossEffectValue + productCompetitorCrossEffects[j].crossEffectValue;
+            productCompetitorCrossEffects[i].crossEffectValue +
+            productCompetitorCrossEffects[j].crossEffectValue;
           productCompetitorCrossEffects.splice(j, 1);
         }
       }
@@ -352,18 +427,25 @@ export default function Simulation() {
             tempVolumeImpact[id] = {
               ...volumeImpact[id],
               NewUnits: volumeImpact[id].NewUnits + ele.crossEffectValue,
-              ChangeInUnits: volumeImpact[id].ChangeInUnits + ele.crossEffectValue,
+              ChangeInUnits:
+                volumeImpact[id].ChangeInUnits + ele.crossEffectValue,
               PercentageChangeInUnits:
-                ((volumeImpact[id].ChangeInUnits + ele.crossEffectValue) * 100) / volumeImpact[id].total_units_sum,
+                ((volumeImpact[id].ChangeInUnits + ele.crossEffectValue) *
+                  100) /
+                volumeImpact[id].total_units_sum,
             };
             tempDollarImpact[id] = {
               ...tempDollarImpact[id],
-              NewDollars: (volumeImpact[id].NewUnits + ele.crossEffectValue) * parseInt(volumeImpact[id].NewPrice),
+              NewDollars:
+                (volumeImpact[id].NewUnits + ele.crossEffectValue) *
+                parseInt(volumeImpact[id].NewPrice),
               ChangeInDollars:
-                (volumeImpact[id].NewUnits + ele.crossEffectValue) * parseInt(volumeImpact[id].NewPrice) -
+                (volumeImpact[id].NewUnits + ele.crossEffectValue) *
+                  parseInt(volumeImpact[id].NewPrice) -
                 tempDollarImpact[id].totalDollars,
               PercentageChangeInDollars:
-                (((volumeImpact[id].NewUnits + ele.crossEffectValue) * parseInt(volumeImpact[id].NewPrice) -
+                (((volumeImpact[id].NewUnits + ele.crossEffectValue) *
+                  parseInt(volumeImpact[id].NewPrice) -
                   tempDollarImpact[id].totalDollars) *
                   100) /
                 tempDollarImpact[id].totalDollars,
@@ -379,7 +461,8 @@ export default function Simulation() {
             let Product = prod.Product;
             let NewUnits = prod.total_units_sum + ele.crossEffectValue;
             let ChangeInUnits = NewUnits - prod.total_units_sum;
-            let PercentageChangeInUnits = (ChangeInUnits * 100) / prod.total_units_sum;
+            let PercentageChangeInUnits =
+              (ChangeInUnits * 100) / prod.total_units_sum;
             tempVolumeImpact.push({
               Product: Product,
               Base_Price_Elasticity: prod.Base_Price_Elasticity,
@@ -391,9 +474,11 @@ export default function Simulation() {
               PercentageChangeInUnits: PercentageChangeInUnits,
             });
             let NewDollars = NewUnits * prod.Price_avg_last_4_weeks;
-            let ChangeInDollars = NewDollars - prod.total_units_sum * prod.Price_avg_last_4_weeks;
+            let ChangeInDollars =
+              NewDollars - prod.total_units_sum * prod.Price_avg_last_4_weeks;
             let PercentageChangeInDollars =
-              (ChangeInDollars * 100) / (prod.total_units_sum * prod.Price_avg_last_4_weeks);
+              (ChangeInDollars * 100) /
+              (prod.total_units_sum * prod.Price_avg_last_4_weeks);
             tempDollarImpact.push({
               Product: Product,
               NewPrice: "",
@@ -411,7 +496,8 @@ export default function Simulation() {
             let Product = prod.Product;
             let NewUnits = prod.total_units_sum + ele.crossEffectValue;
             let ChangeInUnits = NewUnits - prod.total_units_sum;
-            let PercentageChangeInUnits = (ChangeInUnits * 100) / prod.total_units_sum;
+            let PercentageChangeInUnits =
+              (ChangeInUnits * 100) / prod.total_units_sum;
             tempVolumeImpact.push({
               Product: Product,
               Base_Price_Elasticity: prod.Base_Price_Elasticity,
@@ -423,9 +509,11 @@ export default function Simulation() {
               PercentageChangeInUnits: PercentageChangeInUnits,
             });
             let NewDollars = NewUnits * prod.Price_avg_last_4_weeks;
-            let ChangeInDollars = NewDollars - prod.total_units_sum * prod.Price_avg_last_4_weeks;
+            let ChangeInDollars =
+              NewDollars - prod.total_units_sum * prod.Price_avg_last_4_weeks;
             let PercentageChangeInDollars =
-              (ChangeInDollars * 100) / (prod.total_units_sum * prod.Price_avg_last_4_weeks);
+              (ChangeInDollars * 100) /
+              (prod.total_units_sum * prod.Price_avg_last_4_weeks);
             tempDollarImpact.push({
               Product: Product,
               NewPrice: "",
@@ -461,12 +549,15 @@ export default function Simulation() {
         setTimeout(() => {
           // console.log("response: ", response);
           setPromoSimulationData(response?.data?.data);
-          const basePrice = !isNaN(response?.data?.data[0]?.Price_avg_last_4_weeks)
+          const basePrice = !isNaN(
+            response?.data?.data[0]?.Price_avg_last_4_weeks
+          )
             ? response?.data?.data[0]?.Price_avg_last_4_weeks
             : 0;
           setPromoEventPriceValues((prevInputValues) => ({
             ...prevInputValues,
-            promoPriceElasticity: response?.data?.data[0]?.Promo_Price_Elasticity,
+            promoPriceElasticity:
+              response?.data?.data[0]?.Promo_Price_Elasticity,
             basePrice: basePrice,
             total_units_sum: response?.data?.data[0]?.total_units_sum / 52,
           }));
@@ -595,22 +686,27 @@ export default function Simulation() {
 
   /* -----start------ Summary of Price Simulator -----start------ */
   //Computes Summary of the price simulator
-  const calculatePriceSimulatorProductSummary = (filteredSelectedPriceProducts, newPrices) => {
+  const calculatePriceSimulatorProductSummary = (
+    filteredSelectedPriceProducts,
+    newPrices
+  ) => {
     let totalNewWeeklyDollars = 0;
     let totalChangeWeeklyDollars = 0;
     let totalPercentageChangeWeeklyDollars = 0;
     for (let index = 0; index < filteredSelectedPriceProducts.length; index++) {
       totalNewWeeklyDollars +=
-        !isNaN(filteredSelectedPriceProducts[index].newDollars) && filteredSelectedPriceProducts[index].newDollars
+        !isNaN(filteredSelectedPriceProducts[index].newDollars) &&
+        filteredSelectedPriceProducts[index].newDollars
           ? filteredSelectedPriceProducts[index].newDollars
           : 0;
       totalChangeWeeklyDollars +=
         !isNaN(filteredSelectedPriceProducts[index].changeInDollars) &&
-          filteredSelectedPriceProducts[index].changeInDollars
+        filteredSelectedPriceProducts[index].changeInDollars
           ? filteredSelectedPriceProducts[index].changeInDollars
           : 0;
     }
-    totalPercentageChangeWeeklyDollars += (totalChangeWeeklyDollars * 100) / totalNewWeeklyDollars;
+    totalPercentageChangeWeeklyDollars +=
+      (totalChangeWeeklyDollars * 100) / totalNewWeeklyDollars;
     return {
       totalNewWeeklyDollars,
       totalChangeWeeklyDollars,
@@ -618,10 +714,19 @@ export default function Simulation() {
     };
   };
   // Brand summary calculation
-  const { totalNewWeeklyDollars, totalChangeWeeklyDollars, totalPercentageChangeWeeklyDollars } =
-    calculatePriceSimulatorProductSummary(filteredSelectedPriceProducts, newPrices);
+  const {
+    totalNewWeeklyDollars,
+    totalChangeWeeklyDollars,
+    totalPercentageChangeWeeklyDollars,
+  } = calculatePriceSimulatorProductSummary(
+    filteredSelectedPriceProducts,
+    newPrices
+  );
   //Competitor Summary calculation
-  const competitorSummary = calculatePriceSimulatorProductSummary(competitors, competitorNewPrice);
+  const competitorSummary = calculatePriceSimulatorProductSummary(
+    competitors,
+    competitorNewPrice
+  );
   /* -----end------ Summary of Price Simulator -----end------ */
 
   /*======================= END ===================================== PRICE SIMULATOR ================================= END ========================*/
@@ -669,13 +774,16 @@ export default function Simulation() {
         if (otherProduct.Product !== product.Product) {
           const otherCompetitors = JSON.parse(otherProduct.Competitors);
           const isCompetitor = otherCompetitors.some(
-            (competitor) => competitor.competitor === product.Product && competitor.cross_effect > 0
+            (competitor) =>
+              competitor.competitor === product.Product &&
+              competitor.cross_effect > 0
           );
           if (isCompetitor) {
             competitorTo.push({
               Product: otherProduct.Product,
-              crossEffect: otherCompetitors.find((competitor) => competitor.competitor === product.Product)
-                .cross_effect,
+              crossEffect: otherCompetitors.find(
+                (competitor) => competitor.competitor === product.Product
+              ).cross_effect,
             });
           }
         }
@@ -691,8 +799,7 @@ export default function Simulation() {
   useEffect(() => {
     const fetchRetailerBrandProductApiHandler = async () => {
       try {
-        const api = `${process.env.REACT_APP_NGROK
-          }/insights/retailer_brands_products?project_id=${project_id}&model_id=${model_id}`;
+        const api = `${process.env.REACT_APP_NGROK}/insights/retailer_brands_products?project_id=${project_id}&model_id=${model_id}`;
         const response = await axios.get(api);
         if (response.status === 200) {
           setRetailerBrandProducts(response?.data?.data);
@@ -706,7 +813,9 @@ export default function Simulation() {
 
   useEffect(() => {
     // Filter data based on selected retailers
-    const filteredData = priceSimulationData?.filter((item) => selectedProducts.includes(item.Product));
+    const filteredData = priceSimulationData?.filter((item) =>
+      selectedProducts.includes(item.Product)
+    );
     setFilteredSelectedPriceProducts(filteredData);
     filterCompetitorsHandler(filteredData);
     setNewPrices([]);
@@ -718,8 +827,9 @@ export default function Simulation() {
   // Margin simulater useEffect
   useEffect(() => {
     const changeInPrice = [
-      -25, -24, -23, -22, -21, -20, -19, -18, -17, -16, -15, -14, -13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2,
-      -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
+      -25, -24, -23, -22, -21, -20, -19, -18, -17, -16, -15, -14, -13, -12, -11,
+      -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+      11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
     ];
     const TotalVolume = marginSimulationData[0]?.total_units_sum;
     const BasePriceElasticity = marginPriceValues.basePriceElasticity;
@@ -729,16 +839,23 @@ export default function Simulation() {
 
     // Formula
     const newUnits = changeInPrice.map(
-      (change) => TotalVolume + TotalVolume * ((1 + change / 100) ** BasePriceElasticity - 1)
+      (change) =>
+        TotalVolume +
+        TotalVolume * ((1 + change / 100) ** BasePriceElasticity - 1)
     ); // Volume (pounds)
     const baseMrev = newUnits.map((unit) => unit * listPrice);
     const baseMtrade = changeInPrice.map(
-      (change, index) => newUnits[index] * (basePrice - basePrice * (1 + change / 100))
+      (change, index) =>
+        newUnits[index] * (basePrice - basePrice * (1 + change / 100))
     );
     const baseMnetRev = baseMrev.map((rev, index) => rev - baseMtrade[index]);
-    const mProfit = baseMnetRev.map((netRev, index) => netRev - newUnits[index] * cogs); // Manufacture profit
+    const mProfit = baseMnetRev.map(
+      (netRev, index) => netRev - newUnits[index] * cogs
+    ); // Manufacture profit
     // Annual Sales
-    const annualSales = newUnits.map((unit, index) => unit * basePrice * (1 + changeInPrice[index] / 100));
+    const annualSales = newUnits.map(
+      (unit, index) => unit * basePrice * (1 + changeInPrice[index] / 100)
+    );
 
     setMarginChartData({
       ...marginChartData,
@@ -750,40 +867,70 @@ export default function Simulation() {
   // Promo
   useEffect(() => {
     let discount =
-      ((promoEventPriceValues?.basePrice - promoEventPriceValues?.promoPrice) * 100) / promoEventPriceValues?.basePrice;
+      ((promoEventPriceValues?.basePrice - promoEventPriceValues?.promoPrice) *
+        100) /
+      promoEventPriceValues?.basePrice;
 
     let lift = {
       tprLift:
-        promoEventPriceValues?.tprDist === 0 || promoEventPriceValues?.tprDist === ""
+        promoEventPriceValues?.tprDist === 0 ||
+        promoEventPriceValues?.tprDist === ""
           ? 0
-          : ((1 + -discount / 100) ** promoEventPriceValues?.promoPriceElasticity - 1) * promoEventPriceValues?.tprDist,
+          : ((1 + -discount / 100) **
+              promoEventPriceValues?.promoPriceElasticity -
+              1) *
+            promoEventPriceValues?.tprDist,
       foLift:
-        promoEventPriceValues?.foDist === 0 || promoEventPriceValues?.foDist === ""
+        promoEventPriceValues?.foDist === 0 ||
+        promoEventPriceValues?.foDist === ""
           ? 0
           : ((1 + -discount / 100) **
-            (promoEventPriceValues?.promoPriceElasticity *
-              Math.exp((promoSimulationData[0]?.Feature * promoEventPriceValues?.foDist) / 100)) -
-            1) *
-          100 -
-          ((1 + -discount / 100) ** promoEventPriceValues?.promoPriceElasticity - 1) * promoEventPriceValues?.tprDist,
+              (promoEventPriceValues?.promoPriceElasticity *
+                Math.exp(
+                  (promoSimulationData[0]?.Feature *
+                    promoEventPriceValues?.foDist) /
+                    100
+                )) -
+              1) *
+              100 -
+            ((1 + -discount / 100) **
+              promoEventPriceValues?.promoPriceElasticity -
+              1) *
+              promoEventPriceValues?.tprDist,
       doLift:
-        promoEventPriceValues?.doDist === 0 && promoEventPriceValues?.doDist === ""
+        promoEventPriceValues?.doDist === 0 &&
+        promoEventPriceValues?.doDist === ""
           ? 0
           : ((1 + -discount / 100) **
-            (promoEventPriceValues?.promoPriceElasticity *
-              Math.exp((promoSimulationData[0]?.Display * promoEventPriceValues?.doDist) / 100)) -
-            1) *
-          100 -
-          ((1 + -discount / 100) ** promoEventPriceValues?.promoPriceElasticity - 1) * promoEventPriceValues?.tprDist,
+              (promoEventPriceValues?.promoPriceElasticity *
+                Math.exp(
+                  (promoSimulationData[0]?.Display *
+                    promoEventPriceValues?.doDist) /
+                    100
+                )) -
+              1) *
+              100 -
+            ((1 + -discount / 100) **
+              promoEventPriceValues?.promoPriceElasticity -
+              1) *
+              promoEventPriceValues?.tprDist,
       fdLift:
-        promoEventPriceValues?.fdDist === 0 || promoEventPriceValues?.fdDist === ""
+        promoEventPriceValues?.fdDist === 0 ||
+        promoEventPriceValues?.fdDist === ""
           ? 0
           : ((1 + -discount / 100) **
-            (promoEventPriceValues?.promoPriceElasticity *
-              Math.exp((promoSimulationData[0]?.Feature_And_Display * promoEventPriceValues?.fdDist) / 100)) -
-            1) *
-          100 -
-          ((1 + -discount / 100) ** promoEventPriceValues?.promoPriceElasticity - 1) * promoEventPriceValues?.tprDist,
+              (promoEventPriceValues?.promoPriceElasticity *
+                Math.exp(
+                  (promoSimulationData[0]?.Feature_And_Display *
+                    promoEventPriceValues?.fdDist) /
+                    100
+                )) -
+              1) *
+              100 -
+            ((1 + -discount / 100) **
+              promoEventPriceValues?.promoPriceElasticity -
+              1) *
+              promoEventPriceValues?.tprDist,
     };
     let units = {
       tprUnits: (lift?.tprLift / 100) * promoEventPriceValues?.total_units_sum,
@@ -809,11 +956,25 @@ export default function Simulation() {
         rightyAxisTitle: "",
         multiAxes: true,
         data: {
-          labels: ["TPR", "Feature Only", "Display Only", "Feature and Display", "Event Increamental"],
+          labels: [
+            "TPR",
+            "Feature Only",
+            "Display Only",
+            "Feature and Display",
+            "Event Incremental",
+          ],
           datasets: [
             {
               label: "",
-              data: lift ? [0, lift.tprLift.toFixed(2), lift.tprLift.toFixed(2), lift.tprLift.toFixed(2), 0] : [],
+              data: lift
+                ? [
+                    0,
+                    lift.tprLift.toFixed(2),
+                    lift.tprLift.toFixed(2),
+                    lift.tprLift.toFixed(2),
+                    0,
+                  ]
+                : [],
               borderColor: "rgb(75, 192, 192)",
               backgroundColor: "rgb(75, 192, 192,0.5)",
               yAxisID: "left-y-axis",
@@ -847,9 +1008,20 @@ export default function Simulation() {
               yAxisID: "left-y-axis",
             },
             {
-              label: "Event Increamental",
+              label: "Event Incremental",
               data: lift
-                ? ["-", "-", "-", "-", (lift.tprLift + lift.foLift + lift.doLift + lift.fdLift).toFixed(2)]
+                ? [
+                    "-",
+                    "-",
+                    "-",
+                    "-",
+                    (
+                      lift.tprLift +
+                      lift.foLift +
+                      lift.doLift +
+                      lift.fdLift
+                    ).toFixed(2),
+                  ]
                 : [],
               borderColor: "rgb(75, 192, 192)",
               backgroundColor: "rgb(75, 192, 192,0.5)",
@@ -887,8 +1059,7 @@ export default function Simulation() {
                     aria-label=".form-select-lg example"
                     onChange={handleSimulatorChange}
                     defaultValue="price"
-                    disabled={isPriceSimulationLoading}
-                  >
+                    disabled={isPriceSimulationLoading}>
                     <option value="price">Price</option>
                     <option value="margin">Margin</option>
                     <option value="promo">Promo</option>
@@ -898,12 +1069,7 @@ export default function Simulation() {
                   <OverlayTrigger
                     placement="top"
                     delay={{ show: 250, hide: 250 }}
-                    overlay={
-                      <Tooltip id="overlay-example">
-                        Save
-                      </Tooltip>
-                    }
-                  >
+                    overlay={<Tooltip id="overlay-example">Save</Tooltip>}>
                     <a href="#!" className={`btn icon-btn btn-primary`}>
                       <i className="fa-solid fa-floppy-disk alertAligns"></i>
                     </a>
@@ -980,7 +1146,9 @@ export default function Simulation() {
               isPriceSimulationLoading={isPriceSimulationLoading}
               totalNewWeeklyDollars={totalNewWeeklyDollars}
               totalChangeWeeklyDollars={totalChangeWeeklyDollars}
-              totalPercentageChangeWeeklyDollars={totalPercentageChangeWeeklyDollars}
+              totalPercentageChangeWeeklyDollars={
+                totalPercentageChangeWeeklyDollars
+              }
               competitorSummary={competitorSummary}
               isAllProductSelected={isAllProductSelected}
               handleNewPriceOnChange={handleNewPriceOnChange}
@@ -1023,7 +1191,9 @@ export default function Simulation() {
               handleRetailerChange={handleRetailerChange}
               handleBrandChange={handleBrandChange}
               handleProductChange={handleProductChange}
-              handlePromoEventPriceInputChange={handlePromoEventPriceInputChange}
+              handlePromoEventPriceInputChange={
+                handlePromoEventPriceInputChange
+              }
               discount={discount}
               units={units}
               lift={lift}

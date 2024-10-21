@@ -62,7 +62,6 @@ export default function PromoEventSimulator({
   //         enable: true,
   //       },
 
-
   //       toolbar: {
   //         show: true,
   //         tools: {
@@ -71,7 +70,6 @@ export default function PromoEventSimulator({
   //           zoom: true,
   //           zoomin:true,
   //           zoomout:true,
-
 
   //           customIcons: [
   //             {
@@ -119,8 +117,6 @@ export default function PromoEventSimulator({
   //           },
   //         },
   //       },
-
-
 
   //     },
 
@@ -192,7 +188,6 @@ export default function PromoEventSimulator({
   //       // y: {
   //       //   show: true, // Show crosshair on y-axis
   //       // },
-
 
   //       // axisPointer: {
   //       //   type: "cross", // Use crosshair for both axes
@@ -274,7 +269,7 @@ export default function PromoEventSimulator({
           },
         },
         stroke: {
-          curve: 'smooth',
+          curve: "smooth",
           width: 2,
         },
         zoom: {
@@ -303,13 +298,13 @@ export default function PromoEventSimulator({
           },
         },
         labels: {
-          formatter: (val) => isNaN(val) ? '-' : `${val} `,
+          formatter: (val) => (isNaN(val) ? "-" : `${val} `),
         },
         crosshairs: {
           show: true,
-          position: 'back',
+          position: "back",
           stroke: {
-            color: '#000',
+            color: "#000",
             width: 1,
             dashArray: 1,
           },
@@ -327,10 +322,10 @@ export default function PromoEventSimulator({
       dataLabels: {
         enabled: true,
         formatter: function (val) {
-          return isNaN(val) ? '' : val;
+          return isNaN(val) ? "" : val;
         },
         style: {
-          colors: ['#000000'],
+          colors: ["#000000"],
         },
       },
       grid: {
@@ -343,17 +338,19 @@ export default function PromoEventSimulator({
     // console.log(data?.data?.datasets)
     //  data?.data?.datasets?.map((item) => ( console.log(item) ));
 
-    return data?.data?.datasets?.filter((_, index) => index !== 0).map((dataset, index) => ({
-      name: dataset.label,
-      data: dataset.data || [],
-      type: dataset.type || chartType,
-      dataLabels: {
-        enabled: true,
-        style: {
-          colors: ['#000000'],
-        }
-      }
-    }));
+    return data?.data?.datasets
+      ?.filter((_, index) => index !== 0)
+      .map((dataset, index) => ({
+        name: dataset.label,
+        data: dataset.data || [],
+        type: dataset.type || chartType,
+        dataLabels: {
+          enabled: true,
+          style: {
+            colors: ["#000000"],
+          },
+        },
+      }));
   };
 
   return (
@@ -371,15 +368,13 @@ export default function PromoEventSimulator({
                     width: "90%",
                   }}
                   className="filtered-accordion-ant-select"
-                  maxTagCount="responsive"
-                >
+                  maxTagCount="responsive">
                   {retailers?.map((item) => (
                     <Select.Option
                       key={item}
                       value={item}
                       className="custom-tooltip-option"
-                      data-tooltip={item}
-                    >
+                      data-tooltip={item}>
                       {item}
                     </Select.Option>
                   ))}
@@ -396,15 +391,13 @@ export default function PromoEventSimulator({
                   width: "90%",
                 }}
                 className="filtered-accordion-ant-select"
-                maxTagCount="responsive"
-              >
+                maxTagCount="responsive">
                 {brands?.map((item) => (
                   <Select.Option
                     key={item}
                     value={item}
                     className="custom-tooltip-option"
-                    data-tooltip={item}
-                  >
+                    data-tooltip={item}>
                     {item}
                   </Select.Option>
                 ))}
@@ -420,15 +413,13 @@ export default function PromoEventSimulator({
                   width: "90%",
                 }}
                 className="filtered-accordion-ant-select"
-                maxTagCount="responsive"
-              >
+                maxTagCount="responsive">
                 {products?.map((item) => (
                   <Select.Option
                     key={item}
                     value={item}
                     className="custom-tooltip-option"
-                    data-tooltip={item}
-                  >
+                    data-tooltip={item}>
                     {item}
                   </Select.Option>
                 ))}
@@ -442,8 +433,7 @@ export default function PromoEventSimulator({
                 <input
                   className="form-control form-control-sm"
                   id="formFileSm"
-                  type="file"
-                ></input>
+                  type="file"></input>
               </div>
               <div className=" col-lg-4">
                 <a href="" className="btn btn-primary btn-retailer">
@@ -485,14 +475,13 @@ export default function PromoEventSimulator({
               <div className="left_best_price shadow-none">
                 <table
                   className="best_pr_table"
-                //   style={{ height: "30vh", width: "25vh" }}
+                  //   style={{ height: "30vh", width: "25vh" }}
                 >
                   <thead>
                     <tr>
                       <th
                         colSpan="2"
-                        style={{ backgroundColor: "#174F73", color: "#fff" }}
-                      >
+                        style={{ backgroundColor: "#174F73", color: "#fff" }}>
                         Event
                       </th>
                     </tr>
@@ -517,8 +506,7 @@ export default function PromoEventSimulator({
                                   : promoEventPriceValues?.basePrice
                                 : 0
                             }
-                            onChange={handlePromoEventPriceInputChange}
-                          ></input>
+                            onChange={handlePromoEventPriceInputChange}></input>
                         </div>
                       </td>
                     </tr>
@@ -535,8 +523,7 @@ export default function PromoEventSimulator({
                             name="promoPrice"
                             value={promoEventPriceValues.promoPrice}
                             onChange={handlePromoEventPriceInputChange}
-                            min={0}
-                          ></input>
+                            min={0}></input>
                         </div>
                       </td>
                     </tr>
@@ -557,8 +544,7 @@ export default function PromoEventSimulator({
                               discount.toFixed(2)
                             }
                             onChange={handlePromoEventPriceInputChange}
-                            readOnly
-                          ></input>
+                            readOnly></input>
                         </div>
                       </td>
                     </tr>
@@ -578,13 +564,12 @@ export default function PromoEventSimulator({
                                 ? typeof promoEventPriceValues?.total_units_sum ===
                                   "number"
                                   ? promoEventPriceValues?.total_units_sum.toFixed(
-                                    2
-                                  )
+                                      2
+                                    )
                                   : promoEventPriceValues?.total_units_sum
                                 : 0
                             }
-                            onChange={handlePromoEventPriceInputChange}
-                          ></input>
+                            onChange={handlePromoEventPriceInputChange}></input>
                         </div>
                       </td>
                     </tr>
@@ -601,8 +586,7 @@ export default function PromoEventSimulator({
                             name="tprDist"
                             value={promoEventPriceValues.tprDist}
                             onChange={handlePromoEventPriceInputChange}
-                            min={0}
-                          ></input>
+                            min={0}></input>
                         </div>
                       </td>
                     </tr>
@@ -619,8 +603,7 @@ export default function PromoEventSimulator({
                             className="margin_simu_input"
                             name="doDist"
                             value={promoEventPriceValues?.doDist}
-                            onChange={handlePromoEventPriceInputChange}
-                          ></input>
+                            onChange={handlePromoEventPriceInputChange}></input>
                         </div>
                       </td>
                     </tr>
@@ -636,8 +619,7 @@ export default function PromoEventSimulator({
                             className="margin_simu_input"
                             name="foDist"
                             value={promoEventPriceValues?.foDist}
-                            onChange={handlePromoEventPriceInputChange}
-                          ></input>
+                            onChange={handlePromoEventPriceInputChange}></input>
                         </div>
                       </td>
                     </tr>
@@ -653,8 +635,7 @@ export default function PromoEventSimulator({
                             className="margin_simu_input"
                             name="fdDist"
                             value={promoEventPriceValues?.fdDist}
-                            onChange={handlePromoEventPriceInputChange}
-                          ></input>
+                            onChange={handlePromoEventPriceInputChange}></input>
                         </div>
                       </td>
                     </tr>
@@ -689,33 +670,33 @@ export default function PromoEventSimulator({
                                   {i === 0
                                     ? "TPR"
                                     : i === 1
-                                      ? "Feature Only"
-                                      : i === 2
-                                        ? "Display Only"
-                                        : "Feature and Display"}
+                                    ? "Feature Only"
+                                    : i === 2
+                                    ? "Display Only"
+                                    : "Feature and Display"}
                                 </p>
                               </td>
                               <td>
                                 <p>
                                   {i === 0
                                     ? promoEventPriceValues.tprDist
-                                      ? promoEventPriceValues.tprDist
+                                      ? promoEventPriceValues.tprDist + " %"
                                       : "-"
                                     : i === 1
-                                      ? promoEventPriceValues.foDist
-                                        ? promoEventPriceValues.foDist
-                                        : "-"
-                                      : i === 2
-                                        ? promoEventPriceValues.doDist
-                                          ? promoEventPriceValues.doDist
-                                          : "-"
-                                        : promoEventPriceValues.fdDist
-                                          ? promoEventPriceValues.fdDist
-                                          : "-"}
+                                    ? promoEventPriceValues.foDist
+                                      ? promoEventPriceValues.foDist + " %"
+                                      : "-"
+                                    : i === 2
+                                    ? promoEventPriceValues.doDist
+                                      ? promoEventPriceValues.doDist + " %"
+                                      : "-"
+                                    : promoEventPriceValues.fdDist
+                                    ? promoEventPriceValues.fdDist + " %"
+                                    : "-"}
                                 </p>
                               </td>
                               <td>
-                                <p>{value ? value.toFixed(2) : "-"}</p>
+                                <p>{value ? value.toFixed(2) + " %" : "-"}</p>
                               </td>
                               <td>
                                 <p>
@@ -724,35 +705,35 @@ export default function PromoEventSimulator({
                                       ? units.tprUnits.toFixed(2)
                                       : "-"
                                     : i === 1
-                                      ? units.foUnits
-                                        ? units.foUnits.toFixed(2)
-                                        : "-"
-                                      : i === 2
-                                        ? units.doUnits
-                                          ? units.doUnits.toFixed(2)
-                                          : "-"
-                                        : units.fdUnits
-                                          ? units.fdUnits.toFixed(2)
-                                          : "-"}
+                                    ? units.foUnits
+                                      ? units.foUnits.toFixed(2)
+                                      : "-"
+                                    : i === 2
+                                    ? units.doUnits
+                                      ? units.doUnits.toFixed(2)
+                                      : "-"
+                                    : units.fdUnits
+                                    ? units.fdUnits.toFixed(2)
+                                    : "-"}
                                 </p>
                               </td>
                               <td>
                                 <p>
                                   {i === 0
                                     ? dollars.tprDollars
-                                      ? dollars.tprDollars.toFixed(2)
+                                      ? "$ " + dollars.tprDollars.toFixed(2)
                                       : "-"
                                     : i === 1
-                                      ? dollars.foDollars
-                                        ? dollars.foDollars.toFixed(2)
-                                        : "-"
-                                      : i === 2
-                                        ? dollars.doDollars
-                                          ? dollars.doDollars.toFixed(2)
-                                          : "-"
-                                        : dollars.fdDollars
-                                          ? dollars.fdDollars.toFixed(2)
-                                          : "-"}
+                                    ? dollars.foDollars
+                                      ? "$ " + dollars.foDollars.toFixed(2)
+                                      : "-"
+                                    : i === 2
+                                    ? dollars.doDollars
+                                      ? "$ " + dollars.doDollars.toFixed(2)
+                                      : "-"
+                                    : dollars.fdDollars
+                                    ? "$ " + dollars.fdDollars.toFixed(2)
+                                    : "-"}
                                 </p>
                               </td>
                             </tr>
@@ -761,28 +742,28 @@ export default function PromoEventSimulator({
 
                       <tr>
                         <td colSpan={2} style={{ textAlign: "center" }}>
-                          <p>Event Increamental</p>
+                          <p>Event Incremental</p>
                         </td>
                         <td>
                           <p>
                             {lift
                               ? !isNaN(
-                                lift.tprLift +
-                                lift.foLift +
-                                lift.doLift +
-                                lift.fdLift
-                              ) &&
-                                lift.tprLift +
-                                lift.foLift +
-                                lift.doLift +
-                                lift.fdLift !==
-                                0
-                                ? (
                                   lift.tprLift +
+                                    lift.foLift +
+                                    lift.doLift +
+                                    lift.fdLift
+                                ) &&
+                                lift.tprLift +
                                   lift.foLift +
                                   lift.doLift +
-                                  lift.fdLift
-                                ).toFixed(2)
+                                  lift.fdLift !==
+                                  0
+                                ? (
+                                    lift.tprLift +
+                                    lift.foLift +
+                                    lift.doLift +
+                                    lift.fdLift
+                                  ).toFixed(2) + " %"
                                 : "-"
                               : "-"}
                           </p>
@@ -791,22 +772,22 @@ export default function PromoEventSimulator({
                           <p>
                             {units
                               ? !isNaN(
-                                units.tprUnits +
-                                units.foUnits +
-                                units.doUnits +
-                                units.fdUnits
-                              ) &&
-                                units.tprUnits +
-                                units.foUnits +
-                                units.doUnits +
-                                units.fdUnits !==
-                                0
-                                ? (
                                   units.tprUnits +
+                                    units.foUnits +
+                                    units.doUnits +
+                                    units.fdUnits
+                                ) &&
+                                units.tprUnits +
                                   units.foUnits +
                                   units.doUnits +
-                                  units.fdUnits
-                                ).toFixed(2)
+                                  units.fdUnits !==
+                                  0
+                                ? (
+                                    units.tprUnits +
+                                    units.foUnits +
+                                    units.doUnits +
+                                    units.fdUnits
+                                  ).toFixed(2)
                                 : "-"
                               : "-"}
                           </p>
@@ -815,22 +796,23 @@ export default function PromoEventSimulator({
                           <p>
                             {dollars
                               ? !isNaN(
-                                dollars.tprDollars +
-                                dollars.foDollars +
-                                dollars.doDollars +
-                                dollars.fdDollars
-                              ) &&
-                                dollars.tprDollars +
-                                dollars.foDollars +
-                                dollars.doDollars +
-                                dollars.fdDollars !==
-                                0
-                                ? (
                                   dollars.tprDollars +
+                                    dollars.foDollars +
+                                    dollars.doDollars +
+                                    dollars.fdDollars
+                                ) &&
+                                dollars.tprDollars +
                                   dollars.foDollars +
                                   dollars.doDollars +
-                                  dollars.fdDollars
-                                ).toFixed(2)
+                                  dollars.fdDollars !==
+                                  0
+                                ? "$ " +
+                                  (
+                                    dollars.tprDollars +
+                                    dollars.foDollars +
+                                    dollars.doDollars +
+                                    dollars.fdDollars
+                                  ).toFixed(2)
                                 : "-"
                               : "-"}
                           </p>
@@ -844,23 +826,23 @@ export default function PromoEventSimulator({
                           <p>
                             {lift
                               ? !isNaN(
-                                lift.tprLift +
-                                lift.foLift +
-                                lift.doLift +
-                                lift.fdLift
-                              ) &&
-                                lift.tprLift +
-                                lift.foLift +
-                                lift.doLift +
-                                lift.fdLift !==
-                                0
-                                ? (
                                   lift.tprLift +
+                                    lift.foLift +
+                                    lift.doLift +
+                                    lift.fdLift
+                                ) &&
+                                lift.tprLift +
                                   lift.foLift +
                                   lift.doLift +
-                                  lift.fdLift +
-                                  100
-                                ).toFixed(2)
+                                  lift.fdLift !==
+                                  0
+                                ? (
+                                    lift.tprLift +
+                                    lift.foLift +
+                                    lift.doLift +
+                                    lift.fdLift +
+                                    100
+                                  ).toFixed(2) + " %"
                                 : "-"
                               : "-"}
                           </p>
@@ -869,25 +851,25 @@ export default function PromoEventSimulator({
                           <p>
                             {units && promoEventPriceValues?.total_units_sum
                               ? !isNaN(
-                                units.tprUnits +
-                                units.foUnits +
-                                units.doUnits +
-                                units.fdUnits
-                              ) &&
-                                units.tprUnits +
-                                units.foUnits +
-                                units.doUnits +
-                                units.fdUnits !==
-                                0
-                                ? (
                                   units.tprUnits +
+                                    units.foUnits +
+                                    units.doUnits +
+                                    units.fdUnits
+                                ) &&
+                                units.tprUnits +
                                   units.foUnits +
                                   units.doUnits +
-                                  units.fdUnits +
-                                  parseInt(
-                                    promoEventPriceValues?.total_units_sum
-                                  )
-                                ).toFixed(2)
+                                  units.fdUnits !==
+                                  0
+                                ? (
+                                    units.tprUnits +
+                                    units.foUnits +
+                                    units.doUnits +
+                                    units.fdUnits +
+                                    parseInt(
+                                      promoEventPriceValues?.total_units_sum
+                                    )
+                                  ).toFixed(2)
                                 : "-"
                               : "-"}
                           </p>
@@ -895,27 +877,28 @@ export default function PromoEventSimulator({
                         <td>
                           <p>
                             {dollars &&
-                              promoEventPriceValues?.total_units_sum &&
-                              promoEventPriceValues?.promoPrice
+                            promoEventPriceValues?.total_units_sum &&
+                            promoEventPriceValues?.promoPrice
                               ? !isNaN(
-                                dollars.tprDollars +
-                                dollars.foDollars +
-                                dollars.doDollars +
-                                dollars.fdDollars
-                              ) &&
-                                dollars.tprDollars +
-                                dollars.foDollars +
-                                dollars.doDollars +
-                                dollars.fdDollars !==
-                                0
-                                ? (
                                   dollars.tprDollars +
+                                    dollars.foDollars +
+                                    dollars.doDollars +
+                                    dollars.fdDollars
+                                ) &&
+                                dollars.tprDollars +
                                   dollars.foDollars +
                                   dollars.doDollars +
-                                  dollars.fdDollars +
-                                  promoEventPriceValues?.total_units_sum *
-                                  promoEventPriceValues?.promoPrice
-                                ).toFixed(2)
+                                  dollars.fdDollars !==
+                                  0
+                                ? "$ " +
+                                  (
+                                    dollars.tprDollars +
+                                    dollars.foDollars +
+                                    dollars.doDollars +
+                                    dollars.fdDollars +
+                                    promoEventPriceValues?.total_units_sum *
+                                      promoEventPriceValues?.promoPrice
+                                  ).toFixed(2)
                                 : "-"
                               : "-"}
                           </p>
@@ -953,21 +936,6 @@ export default function PromoEventSimulator({
     </div>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // import React from "react";
 // import ReactEcharts from "echarts-for-react";
