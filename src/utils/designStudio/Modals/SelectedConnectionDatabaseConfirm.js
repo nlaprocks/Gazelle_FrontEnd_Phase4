@@ -11,13 +11,14 @@ import axios from "axios";
 import { Tabs } from "antd";
 import { Input } from "antd";
 import { DatePicker } from 'antd';
+import { Select } from 'antd';
 import { CalendarOutlined, DollarOutlined } from '@ant-design/icons';
 
 const { TabPane } = Tabs;
 const requiredColumns = ["WeekEnding", "Retailer", "Product", "Total_Volume", "Dollars"];
-
+const { Option } = Select;
 const moment = require("moment");
-const SelectedConnectionDatabaseConfirm = ({ selectedConnectionConfirmModal, setSelectedConnectionConfirmModal, handleSelectColumn, connectDbConnecttion,selectedColumns,currentTables }) => {
+const SelectedConnectionDatabaseConfirm = ({ selectedConnectionConfirmModal, setSelectedConnectionConfirmModal, handleSelectColumn, connectDbConnecttion, selectedColumns, currentTables }) => {
   const { RangePicker } = DatePicker;
   const [scheduleObserver, setScheduleObserver] = React.useState(false);
   const [startDate, setStartDate] = React.useState();
@@ -114,17 +115,32 @@ const SelectedConnectionDatabaseConfirm = ({ selectedConnectionConfirmModal, set
 
           <div className="nla-add-heading-block mt-6">
             <form>
-              <div className="row border-y mb-4 pt-6 ps-7">
+              <div className="row border-y mb-4 pt-6 ps-7 items-center">
                 <div className="col-md-4 col-12 relative nla_form_project_name position-relative nla_form_field_block mb-4">
-                  <i className="fa-regular fa-calendar-plus"></i>
-                  <Input size="large" value="" placeholder="Enter Market share" prefix={<CalendarOutlined />} />
+                  <Input size="large" placeholder="Cumulative Share of Brand's Revenue(%)" prefix={<CalendarOutlined />} />
+                  {/* <Input size="large" value="" placeholder="Cumulative Share of Brand's Revenue(%)" prefix={<CalendarOutlined />} /> */}
                 </div>
                 <div className="col-md-4 col-12 relative nla_form_project_name position-relative nla_form_field_block mb-4">
-                  <i className="fa-regular fa-calendar-plus"></i>
-                  <Input size="large" value="" placeholder="Sales Revenue" prefix={<DollarOutlined />} />
+                  <Input size="large" placeholder="Minimum Dollar Sales(L52 Weeks)" prefix={<DollarOutlined />} />
                 </div>
-                <div className="col-md-4 col-12 relative nla_form_project_name position-relative nla_form_field_block">
-                  <RangePicker className="w-full h-[40px]" />
+                <div className="col-md-4 col-12 relative nla_form_project_name position-relative nla_form_field_block mb-4">
+                  <Select
+                    showSearch
+                    style={{
+                      width: "100%",
+                      height: "40px",
+                    }}
+                    placeholder="Select No of Weeks"
+                    optionFilterProp="children"
+                    filterOption={(input, option) =>
+                      option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                    }
+                  >
+                    <Option value="52">52</Option>
+                    <Option value="104">104</Option>
+                    <Option value="156">156</Option>
+                    <Option value="208">208</Option>
+                  </Select>
                 </div>
               </div>
             </form>
@@ -167,46 +183,44 @@ const SelectedConnectionDatabaseConfirm = ({ selectedConnectionConfirmModal, set
                     );
                   })}
               </tbody> */}
-                  <tbody>
-              
+              <tbody>
+                {
+                  selectedColumns
+                    .filter((val) => val.table === currentTables)
 
-              {
-                selectedColumns
-                  .filter((val) => val.table === currentTables)
-                  
-                  .map((tableData) => { 
-                    console.log("Mapped tableData:", tableData); 
-                    return tableData.columns.map((column, columnIndex) => {
-                     
-                      const originalColumn = column.original_column;
-                      // const mappedColumn = column.mapped_column || ""; 
-              
-                      return (
-                        <tr key={columnIndex}>
-                          <td>
-                            <div className="form-check custom-checkbox">
-                              <span>{originalColumn}</span>
-                            </div>
-                          </td>
-                          <td>{originalColumn}</td>
-                          <td>
-                            <div className="col-md-8">
-                              <div className="input-box">
-                                {/* <span>{columnAliases[originalColumn] || ""}</span> */}
+                    .map((tableData) => {
+                      console.log("Mapped tableData:", tableData);
+                      return tableData.columns.map((column, columnIndex) => {
+
+                        const originalColumn = column.original_column;
+                        // const mappedColumn = column.mapped_column || ""; 
+
+                        return (
+                          <tr key={columnIndex}>
+                            <td>
+                              <div className="form-check custom-checkbox">
+                                <span>{originalColumn}</span>
                               </div>
-                            </div>
-                          </td>
-                          <td>
-                            {/* <span>{mappedColumn}</span> */}
-                          </td>
-                        </tr>
-                      );
-                    });
-                  })
-              }
-              
-                            </tbody>
-              
+                            </td>
+                            <td>{originalColumn}</td>
+                            <td>
+                              <div className="col-md-8">
+                                <div className="input-box">
+                                  {/* <span>{columnAliases[originalColumn] || ""}</span> */}
+                                </div>
+                              </div>
+                            </td>
+                            <td>
+                              {/* <span>{mappedColumn}</span> */}
+                            </td>
+                          </tr>
+                        );
+                      });
+                    })
+                }
+
+              </tbody>
+
             </table>
           </div>
         </div>
