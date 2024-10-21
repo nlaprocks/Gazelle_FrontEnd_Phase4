@@ -63,7 +63,8 @@ const AddChartModal = ({ showAddChartModal, setShowAddChartModal, currentSlideId
   });
 
   const handleChange = (e) => {
-    setChart({ ...chart, ['chart_type']: e });
+    setChart({ ...chart, ['chart_type']: e});
+  
   };
 
   const createChart = () => {
@@ -93,6 +94,7 @@ const AddChartModal = ({ showAddChartModal, setShowAddChartModal, currentSlideId
       delete userChartsDataReducer.success;
     }
   }, [userChartsDataReducer]);
+  console.log(chart.chart_json,"chart_json")
 
   React.useEffect(() => {
     setChart({ ...chart, slide_id: currentSlideId });
@@ -140,7 +142,7 @@ const AddChartModal = ({ showAddChartModal, setShowAddChartModal, currentSlideId
   ];
 
   const handleChangePeriod = (value) => {
-    console.log(`selected ${value}`);
+    // console.log(`selected ${value}`);
   };
 
   // Select Year 
@@ -152,11 +154,26 @@ const AddChartModal = ({ showAddChartModal, setShowAddChartModal, currentSlideId
       value: i.toString(),
     });
   }
+  // React.useEffect(() => {
+  //   setChart({
+  //     ...chart,
+  //     slide_id: chart?.slide_id,
+  //     chart_type: chart?.chart_type,
+  //     x_axis_label: chart?.x_axis_label,
+  //     x_axis_data_point: JSON.parse(chart?.x_axis_data_point),
+  //     y_axis_label: chart?.y_axis_label,
+  //     y_axis_data_point: JSON.parse(chart?.y_axis_data_point),
+  //     chart_id: chart?.id,
+  //   });
+  //   setXAxisDataPoint(JSON.parse(chart?.x_axis_data_point));
+  //   setYAxisDataPoint(JSON.parse(chart?.y_axis_data_point));
+  // }, [chart]);
+
 
   const handleChangeYear = (value) => {
-    console.log(`selected ${value}`);
+    // console.log(`selected ${value}`);
   };
-
+console.log(getFiltersReducer,"getfilterreducers")
   return (
     <Modal show={showAddChartModal} onHide={handleClose} centered scrollable>
       <Modal.Header>
@@ -176,24 +193,7 @@ const AddChartModal = ({ showAddChartModal, setShowAddChartModal, currentSlideId
           <form>
             <div className="input-wrapper rounded border">
               <i className="fa-solid fa-chart-simple icon-absolute"></i>
-              {/* <select
-                className="form-select"
-                aria-label="Default select example"
-                name="chart_type"
-                value={chart.chart_type}
-                onChange={handleChange}
-              >
-                <option disabled value="">
-                  Select Chart Type
-                </option>
-                <option value="Histogram">Histogram</option>
-                <option value="line">Line Chart</option>
-                <option value="bar">Bar Chart</option>
-                <option value="scatter">Scatter Chart</option>
-                <option value="radar">Radar Chart</option>
-                <option value="Pie Chart">Pie Chart</option>
-                <option value="Waterfall">Waterfall</option>
-              </select> */}
+           
               <Select
                 allowClear
                 style={{
@@ -343,3 +343,4 @@ const AddChartModal = ({ showAddChartModal, setShowAddChartModal, currentSlideId
 };
 
 export default AddChartModal;
+

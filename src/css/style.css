@@ -304,7 +304,7 @@ header .theme-title h1 span {
   top: 0;
   left: 0;
   right: 0;
-  z-index: 15;
+  z-index: 9;
 }
 
 .dashboard_header li {

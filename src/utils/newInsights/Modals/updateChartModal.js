@@ -61,7 +61,6 @@ const UpdateChartModal = ({ showUpdateChartModal, setShowUpdateChartModal, updat
   });
 
   // console.log("chart::: ", chart);
-  // console.log("chart::: ", chart);
 
   // const inputDataCombinationReducer = useSelector((state) => state.inputDataCombinationReducer);
   // const outputDataCombinationReducer = useSelector((state) => state.outputDataCombinationReducer);

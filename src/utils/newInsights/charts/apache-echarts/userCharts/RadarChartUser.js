@@ -2,6 +2,7 @@ import React from "react";
 import ReactECharts from "echarts-for-react";
 
 const RadarChart = ({ data }) => {
+  console.log("radaruser")
   console.log("data::: ", data);
   const chartRef = React.useRef(null);
 

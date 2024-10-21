@@ -329,7 +329,7 @@ const MultiLine2 = ({ isLoading }) => {
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
-
+//  console.log(chart5Data,"chartdata5")
   return (
     <div>
       {visibleChartData?.map((val, i) => (

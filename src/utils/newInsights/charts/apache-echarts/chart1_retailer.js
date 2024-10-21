@@ -316,7 +316,7 @@ const BarRetailor = ({ isLoading, chartModel, setChartModel }) => {
         },
         labels: {
           formatter: function (value) {
-                return `${value.toFixed(2)}$`; // Format Y-axis as currency
+                return `$${value.toFixed(2)}`; // Format Y-axis as currency
               },
           maxWidth: '160px',
           offsetX: 0,
