@@ -5,7 +5,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { Tooltip, OverlayTrigger, Badge, Modal } from "react-bootstrap";
 import moment from "moment";
 import Tour from "reactour";
-import Sidebar from "../../components/sidebar/Sidebar";
 import "../../css/style.css";
 import list from "../../assets/images/ionic-ios-list.svg";
 import feather from "../../assets/images/feather-info.svg";
@@ -28,13 +27,10 @@ import Project from "./Project";
 import CreateProject from "../../utils/dashboard/CreateProject";
 import EditProject from "../../utils/dashboard/EditProject";
 import AuditUserProjects from "../../utils/dashboard/AuditUserProjects";
-import SidebarToggle from "../../components/sidebarToggle/SidebarToggle";
-
-import { toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
 const Dashboard = () => {
-  
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -61,8 +57,6 @@ const Dashboard = () => {
   const [projectsOrderByPin, setProjectsOrderByPin] = useState([]);
 
   //Pagination
-
-  const [searchResultPage, setSearchResultPage] = useState(1);
   const [limit, setLimit] = useState(10);
 
   const [projectsLoading, setProjectsLoading] = useState(true);
@@ -96,6 +90,22 @@ const Dashboard = () => {
     no_of_columns: "",
   });
   const getUserPreferenceReducer = useSelector((state) => state.getUserPreferenceReducer);
+
+  // Delete project confirm modal
+  const [showDeleteProject, setShowDeleteProject] = useState(false);
+  const [currentProjectId, setCurrentProjectId] = useState(null);
+
+  // Function to show the delete confirmation modal
+  const handleShowDeleteModal = (project__id) => {
+    setCurrentProjectId(project__id);
+    setShowDeleteProject(true);
+  };
+
+  // Function to close the modal
+  const handleCloseCancel = () => {
+    setShowDeleteProject(false);
+    setCurrentProjectId(null);
+  };
 
   const handleShow = () => {
     setShowCreateModal(true);
@@ -266,7 +276,6 @@ const Dashboard = () => {
       }
     } else if (customTabRecentProject === true) {
       if (project_name !== "" && start_date !== "" && end_date !== "" && searchByAuthor === "") {
-        // const res = await Api("POST", `api/project/search/?page=${currentFilterPage}&limit=${limit}`, apiData, config);
         const res = await Api(
           "GET",
           `api/v1/project/search/${user_id}?page=${currentFilterPage}&limit=${limit}&project_name=${project_name}&start_date=${start_date}&end_date=${end_date}`
@@ -376,7 +385,6 @@ const Dashboard = () => {
     setFilteredData("");
     setFilterVisible(false);
     setCurrentPage(1);
-    // setOrderByPinPage(1);
   };
 
   //Pagination for All Products --------------------------------
@@ -440,7 +448,6 @@ const Dashboard = () => {
       setProjectsLoading(true);
       async function fetchProjects() {
         const { data } = await Api("GET", `api/v1/project/by-user/${userID}/?page=${currentPage}&limit=${limit}`);
-        // console.log(data)
         setFilteredPinDataByDate(data?.data?.pinnedProjects);
         setFilteredUnPinData(data?.data?.unPinnedProjects);
         setTotalPages(data.data.pagination.totalPages);
@@ -456,20 +463,15 @@ const Dashboard = () => {
       setLoadPagination(true);
     }, 2000);
 
-
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [load, limit, currentPage, filterVisible, customTabPinnedProject, customTabRecentProject]);
 
   useEffect(() => {
     if (filterVisible) {
-      // setCurrentPage(1);
       searchDataHandler();
     }
   }, [currentFilterPage]);
 
   useEffect(() => {
-    // scroll();
   }, [load, scroll]);
 
   useEffect(() => {
@@ -479,16 +481,12 @@ const Dashboard = () => {
   }, [limit, currentFilterPage]);
 
   useEffect(() => {
-    // setLoadPagination(false);
     if (filterVisible) {
       return;
     }
     if (customTabPinnedProject === false && filterVisible === false) {
       customTabHandlerRecentProjects();
     }
-    // setTimeout(() => {
-    //   setLoadPagination(true);
-    // }, 2000);
   }, [limit, orderByPinPage, load, projectListFilter]);
 
   const handleEditProjectModal = (project_id) => {
@@ -575,15 +573,13 @@ const Dashboard = () => {
           </div>
         </div>
       ),
-      // position: [160, 250],
+
       style: {
         position: "absolute",
         left: "0px",
         top: "20px",
         maxWidth: "340px",
         width: "100%",
-        // webkitTransform: "none",
-        // transform: "translate(128px,360px)",
       },
     },
     {
@@ -646,7 +642,6 @@ const Dashboard = () => {
   };
 
   // ----------------Duplicate Project Handler-----------------------
-
   const duplicateProjectHandler = async (project_id) => {
     if (project_id) {
       try {
@@ -660,7 +655,6 @@ const Dashboard = () => {
         await axios
           .get(api, config)
           .then(async function (res) {
-            // console.log("Project duplicate response: ", res);
             setLoad(true);
             setShowUniversalAlert(true);
             setUniversalAlertMsg("Project duplicated successfully");
@@ -686,113 +680,35 @@ const Dashboard = () => {
 
   const fetchNodes = async (values) => {
     if (values.id) {
-      // console.log("values11111",values.id);
-
       setIsLoading(true);
       dispatch(allActions.getNodesAction.getNodesState(values.id));
-      // console.log("line 677",values.Models);
-
-      // const latestVersion = values.Models?.sort((a, b) => b.model_version - a.model_version)[0]?.id || 0;
-      // // console.log("model_version", model_version);
-
-
-      // console.log("latestversion",latestVersion);
-
       setTimeout(() => {
         navigate(`/design-studio/${values.id}/${values?.Models?.length > 0 ? values?.Models[0]?.id : ""}`);
-        // navigate(`/design-studio/${values.id}/${latestVersion ? latestVersion : 0}`);
-        // setIsLoading(false);
       }, 1500);
     }
   };
-                     //Old Code
-  const deleteProjectHandler = async (project__id) => {
-    setShowUniversalAlert(true);
-    let conform=confirm("are you sure you want to delete project")
-    if(!conform){
-      setShowUniversalAlert(false);
-    }
-    else{
+
+  //Old Code
+  const handleConfirmDelete = async (project__id) => {
     try {
-      var res = await Api("DELETE", `api/v1/project/delete/${project__id}`);
+      const res = await Api("DELETE", `api/v1/project/delete/${currentProjectId}`);
       if (res.status === 200) {
-        setShowUniversalAlert(false);
-        setLoad(true);
+        // Show success or update the state as needed
+        setLoad(true); // Set reload or other necessary state changes
         setShowUniversalAlert(true);
-        setUniversalAlertMsg(res?.data?.message);
-        setUniversalAlertMsg("Deleting project . . . . .");
+        setUniversalAlertMsg(res?.data?.message || "Project deleted successfully.");
+
         setTimeout(() => {
           setShowUniversalAlert(false);
         }, 3000);
       }
     } catch (error) {
-      console.log("Error", error.response);
+      console.error("Error", error.response);
+    } finally {
+      setShowDeleteProject(false); // Close the modal after deletion
     }
-  }
   };
 
-  
-             //New Code
-  // const deleteProjectHandler = async (project__id) => {
-  //   const confirmDelete = async (project__id) => {
-  //     toast.dismiss(); 
-  //     setShowUniversalAlert(true);
-  //     setUniversalAlertMsg("Deleting project . . . . .");
-  
-  //     try {
-  //       const res = await Api("DELETE", `api/v1/project/delete/${project__id}`);
-  //       if (res.status === 200) {
-      
-  //         toast.success(res?.data?.message, {
-  //           position: 'top-center',
-  //           autoClose: 3000, 
-  //         });
-  
-  //         setShowUniversalAlert(false); 
-  
-   
-  //         setLoad(true); 
-  //         setTimeout(() => {
-  //           setLoad(false); 
-  //         }, 3000); 
-  //       }
-  //     } catch (error) {
-  //       console.log("Error", error.response);
-        
-       
-  //       toast.error("Error deleting project", {
-  //         position: 'top-center',
-  //         autoClose: 3000,
-  //       });
-  
-  //       setShowUniversalAlert(false); 
-  //     }
-  //   };
-  
-  //   const cancelDelete = () => {
-  //     toast.dismiss(); 
-  //     toast.info("Project deletion canceled", { position: 'top-center' });
-  //   };
-  
-  //   // Custom toast with Yes/No buttons
-  //   toast.warn(
-  //     <div>
-  //       <p>Are you sure you want to delete it?</p>
-  //       <button onClick={confirmDelete} style={{ marginRight: '10px', backgroundColor: 'green', color: 'white',padding:"10px",borderRadius:"30%" }}>
-  //         Yes
-  //       </button>
-  //       <button onClick={cancelDelete} style={{ backgroundColor: 'red', color: 'white',padding:"10px",borderRadius:"30%" }}>
-  //         No
-  //       </button>
-  //     </div>,
-  //     {
-  //       position: 'top-center',
-  //       autoClose: false, // Keep the toast open until the user interacts
-  //       closeOnClick: false, // Don't close on click elsewhere
-  //       draggable: false, // Disable dragging
-  //     }
-  //   );
-  // };
 
   const [sidebarState, setSidebarState] = useState(false);
 
@@ -803,8 +719,6 @@ const Dashboard = () => {
   return (
     <div>
       <Header />
-      {/* <Sidebar sidebarState={sidebarState} /> */}
-      {/* <SidebarToggle sidebarState={sidebarState} sidebarHandler={sidebarHandler} /> */}
       <Tour
         steps={steps}
         isOpen={isTourOpen}
@@ -904,57 +818,10 @@ const Dashboard = () => {
                 onClick={() => searchDataHandler()}
               />
             </div>
-            {/* <div className="col-lg-2 ms-auto">
-              <div className="nla_tabbing">
-                <nav>
-                  <div className="nav nav-tabs" id="nav-tab" role="tablist">
-                    <button
-                      className={userPreference?.view === "grid" ? `nav-link active` : `nav-link`}
-                      id="nav-home-tab"
-                      data-bs-toggle="tab"
-                      data-bs-target="#nav-home"
-                      type="button"
-                      role="tab"
-                      aria-controls="nav-home"
-                      aria-selected="true"
-                      onClick={customTabHandlerPinnedProjects}
-                    >
-                      <i className="fa-solid fa-layer-group"></i>
-                    </button>
-                    <button
-                      className={userPreference?.view === "list" ? `nav-link active` : `nav-link`}
-                      id="nav-profile-tab"
-                      data-bs-toggle="tab"
-                      data-bs-target="#nav-profile"
-                      type="button"
-                      role="tab"
-                      aria-controls="nav-profile"
-                      aria-selected="false"
-                      onClick={() => {
-                        dispatch(
-                          allActions.addUsersPreferenceAction.addUsersPreference({
-                            ...userPreference,
-                            view: "list",
-                          })
-                        );
-                        setUserPreference({
-                          ...userPreference,
-                          view: "list",
-                        });
-                        customTabHandlerRecentProjects();
-                      }}
-                    >
-                      <i className="fa-solid fa-list-ul"></i>
-                    </button>
-                  </div>
-                </nav>
-              </div>
-            </div> */}
           </div>
         </div>
 
         <div className="">
-          {/* <!-- Grid and list view block --> */}
           {projectsLoading ? (
             <div
               className="mb-0 mt-0 text-center"
@@ -985,7 +852,6 @@ const Dashboard = () => {
                           <div className="row align-items-center">
                             <div
                               className="col-lg-5"
-                            // style={filteredPinDataByDate?.length === 0 ? { visibility: "hidden" } : null}
                             >
                               <p className="mb-0">
                                 Pinned Projects
@@ -1005,15 +871,6 @@ const Dashboard = () => {
                                 <button onClick={handleShow}>
                                   <span className="btn-primary rounded-pill icon-btn "> + </span> Create New Project
                                 </button>
-                                {/* <OverlayTrigger
-                                  placement="top"
-                                  delay={{ show: 250, hide: 250 }}
-                                  overlay={<Tooltip id="overlay-example">Create new project</Tooltip>}
-                                >
-                                  <a href="#!">
-                                    <img src={feather} alt="" className="alertAligns" />
-                                  </a>
-                                </OverlayTrigger> */}
                               </div>
                               <CreateProject
                                 showCreateModal={showCreateModal}
@@ -1036,7 +893,7 @@ const Dashboard = () => {
                                 PinUnPinHandler={PinUnPinHandler}
                                 duplicateProjectHandler={duplicateProjectHandler}
                                 handleEditProjectModal={handleEditProjectModal}
-                                deleteProjectHandler={deleteProjectHandler}
+                                deleteProjectHandler={handleShowDeleteModal}
                                 fetchNodes={fetchNodes}
                                 setUniversalAlertMsg={setUniversalAlertMsg}
                                 setShowUniversalAlert={setShowUniversalAlert}
@@ -1091,7 +948,7 @@ const Dashboard = () => {
                                 PinUnPinHandler={PinUnPinHandler}
                                 duplicateProjectHandler={duplicateProjectHandler}
                                 handleEditProjectModal={handleEditProjectModal}
-                                deleteProjectHandler={deleteProjectHandler}
+                                deleteProjectHandler={handleShowDeleteModal}
                                 fetchNodes={fetchNodes}
                                 setUniversalAlertMsg={setUniversalAlertMsg}
                                 setShowUniversalAlert={setShowUniversalAlert}
@@ -1144,7 +1001,7 @@ const Dashboard = () => {
                                     PinUnPinHandler={PinUnPinHandler}
                                     duplicateProjectHandler={duplicateProjectHandler}
                                     handleEditProjectModal={handleEditProjectModal}
-                                    deleteProjectHandler={deleteProjectHandler}
+                                    deleteProjectHandler={handleShowDeleteModal}
                                     fetchNodes={fetchNodes}
                                   />
                                 ))
@@ -1158,6 +1015,26 @@ const Dashboard = () => {
                         )}
                       </>
                     )}
+                    {/* Modal for confirming deletion */}
+                    <Modal show={showDeleteProject} onHide={handleCloseCancel} centered>
+                      <Modal.Header closeButton>
+                        <Modal.Title>Delete Project</Modal.Title>
+                      </Modal.Header>
+                      <Modal.Body>
+                        <div className="nla_modal_body_title text-center">
+                          <h5>Are you sure?</h5>
+                          <p>Pressing Yes will delete the project.</p>
+                        </div>
+                      </Modal.Body>
+                      <Modal.Footer>
+                        <button type="button" className="btn btn-outline-secondary" onClick={handleCloseCancel}>
+                          No
+                        </button>
+                        <button type="button" className="btn btn-primary" onClick={handleConfirmDelete}>
+                          Yes
+                        </button>
+                      </Modal.Footer>
+                    </Modal>
                   </div>
                   {/* <!-- Grid view content end -->
                     <!-- List view content start --> */}
@@ -1189,15 +1066,6 @@ const Dashboard = () => {
                                 <button className="btn btn-primary px-4" onClick={handleShow}>
                                   + Create New Project
                                 </button>
-                                {/* <OverlayTrigger
-                                  placement="top"
-                                  delay={{ show: 250, hide: 250 }}
-                                  overlay={<Tooltip id="overlay-example">Create new project</Tooltip>}
-                                >
-                                  <a href="#!">
-                                    <img src={feather} alt="" className="alertAligns" />
-                                  </a>
-                                </OverlayTrigger> */}
                               </div>
                             </div>
                           </div>
@@ -1236,11 +1104,7 @@ const Dashboard = () => {
                                         <p style={{ paddingLeft: "21px" }}>
                                           {
                                             moment(elem?.date_created).format("MM-DD-YYYY")
-                                            // new Date(
-                                            //   elem?.date_created
-                                            // ).toLocaleDateString() + ""
                                           }
-                                          {/* {elem?.date_created?.toLocaleString() + ""} */}
                                         </p>
                                       </div>
                                     </div>
@@ -1345,10 +1209,7 @@ const Dashboard = () => {
                                       <ul>
                                         {filteredData !== ""
                                           ? filteredData?.map((elem, id) => (
-                                            <li
-                                              // className="active"
-                                              key={id}
-                                            >
+                                            <li key={id} >
                                               <div className="nla_modal">
                                                 <i
                                                   className="fa-solid fa-thumbtack"
@@ -1365,11 +1226,7 @@ const Dashboard = () => {
                                                 <p style={{ paddingLeft: "21px" }}>
                                                   {
                                                     moment(elem?.date_created).format("MM-DD-YYYY")
-                                                    // new Date(
-                                                    //   elem?.date_created
-                                                    // ).toLocaleDateString() + ""
                                                   }
-                                                  {/* {elem?.date_created?.toLocaleString() + ""} */}
                                                 </p>
                                               </div>
                                               <div className="nla_action">
@@ -1448,7 +1305,7 @@ const Dashboard = () => {
                     columnState={userPreference.no_of_columns}
                     fetchNodes={fetchNodes}
                     duplicateProjectHandler={duplicateProjectHandler}
-                    deleteProjectHandler={deleteProjectHandler}
+                    deleteProjectHandler={handleShowDeleteModal}
                   />
 
                   {/* <!-- List view content end --> */}
@@ -1539,7 +1396,6 @@ const Dashboard = () => {
                           });
                         }}
                       >
-                        {/* <option value="5">5 Project</option> */}
                         <option value="10">10 Project</option>
                         <option value="15">15 Project</option>
                         <option value="20">20 Project</option>
@@ -1560,7 +1416,6 @@ const Dashboard = () => {
                           <option value="nla-col-3">3 Column</option>
                           <option value="nla-col-4" defaultValue={"nla-col-4"}>4 Column</option>
                           <option value="nla-col-5">5 Column</option>
-                          {/* <option value="nla-col-6">6 Column</option> */}
                         </select>
                       </div>
                     )}

@@ -2,12 +2,10 @@ import React, { useState, useRef, useEffect } from 'react';
 import "../../css/style.css";
 import { Link } from "react-router-dom";
 import { Badge, OverlayTrigger, Tooltip } from "react-bootstrap";
-// import { Tooltip, OverlayTrigger, Badge } from "react-bootstrap";
 import modelSearchIntroImage from '../../assets/images/model-search-intro-image.png';
 import KebabMenu from '../../components/KebabMenu/KebabMenu';
 import moment from "moment";
 import Moment from "react-moment";
-import info from "../../assets/images/feather-info.svg";
 import output from "../../assets/images/icon-output.svg";
 import axios from 'axios';
 import { Alert, Snackbar } from '@mui/material';
@@ -117,39 +115,6 @@ export default function Project({
               />
             </div>
           </div>
-
-          {/* <div className="nla_shared_link_block">
-
-          <OverlayTrigger
-            placement="top"
-            delay={{ show: 250, hide: 250 }}
-            overlay={<Tooltip id={`tooltip-top`}>Duplicate</Tooltip>}
-          >
-            <a href="#!" onClick={() => duplicateProjectHandler(elem?.id)}>
-              <i className="fa-regular fa-copy"></i>
-            </a>
-          </OverlayTrigger>
-
-          <OverlayTrigger
-            placement="top"
-            delay={{ show: 250, hide: 250 }}
-            overlay={<Tooltip id={`tooltip-top`}>Edit</Tooltip>}
-          >
-            <a href="#!" onClick={() => handleEditProjectModal(elem?.id)}>
-              <i className="fa-solid fa-pen"></i>
-            </a>
-          </OverlayTrigger>
-
-          <OverlayTrigger
-            placement="top"
-            delay={{ show: 250, hide: 250 }}
-            overlay={<Tooltip id={`tooltip-top`}>Delete</Tooltip>}
-          >
-            <a href="#!" onClick={() => deleteProjectHandler(elem?.id)}>
-              <i className="fa-solid fa-trash"></i>
-            </a>
-          </OverlayTrigger>
-        </div> */}
           <div className="nla_additional_links">
             <a href="#!" onClick={() => fetchNodes(elem)}>
               <i className="fa-solid fa-pencil"></i>
@@ -203,18 +168,6 @@ export default function Project({
           </div>
         </div>
       </div>
-      {/* <div className='alertPDF'>
-      <Snackbar
-        open={showUniversalAlert}
-        autoHideDuration={3000}
-        key={'openalert'}
-        anchorOrigin={{ vertical, horizontal }}
-      >
-        <Alert severity="success" sx={{ width: "100%" }}>
-          {alertMsg}
-        </Alert>
-      </Snackbar>
-      </div> */}
     </>
   );
 }
