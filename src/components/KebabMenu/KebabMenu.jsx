@@ -4,7 +4,7 @@ const KebabMenu = ({
     elem,
     duplicateProjectHandler,
     handleEditProjectModal,
-    deleteProjectHandler,
+    deleteProjectHandler
 }) => {
     const [isOpen, setIsOpen] = useState(false);
     const menuRef = useRef();
