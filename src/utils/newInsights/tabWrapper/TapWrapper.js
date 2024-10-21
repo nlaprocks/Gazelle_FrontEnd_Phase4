@@ -270,6 +270,7 @@ const TapWrapper = ({ showShareModal, setShowShareModal, sidebarState }) => {
   const InsightsBlock = () => {
     setIsInsights(prevState => !prevState);
   };
+// console.log(showAddChartModal,"setshowchartmodels");
 
   return (
     <div>

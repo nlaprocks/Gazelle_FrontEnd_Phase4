@@ -304,7 +304,7 @@ header .theme-title h1 span {
   top: 0;
   left: 0;
   right: 0;
-  z-index: 15;
+  z-index: 9;
 }
 
 .dashboard_header li {
@@ -3795,4 +3795,8 @@ header .theme-title h1 span {
 
 .nla-add-heading-block .ant-input {
   margin-bottom: 0;
+}
+
+:where(.css-dev-only-do-not-override-14i19y2).ant-input-affix-wrapper >input.ant-input, :where(.css-dev-only-do-not-override-14i19y2).ant-input-affix-wrapper >textarea.ant-input {
+  font-weight: 400;
 }

@@ -67,6 +67,9 @@ export default function MarginSimulator({
       ],
       toolbox: {
         show: true,
+        zoom: false,
+        zoomin: false,
+        zoomout: false,
         orient: "horizontal",
         left: "left",
         top: "top",
@@ -344,6 +347,9 @@ export default function MarginSimulator({
     chart: {
       type: 'bar'
     },
+    zoom:{
+    enabled:false
+    },
     title: {
       text: "Effects of Change In Price",
       align: 'center',
@@ -600,14 +606,24 @@ export default function MarginSimulator({
   const option45s = {
     chart: {
       type: 'line',
-      height: 350,
-    },
+
+      zoom: {
+        enable: false,
+      },
+      zoom: false,
+      zoomin: false,
+      zoomout: false,
+    
+    // zoom: {
+    //   enable: true,
+    // },
     dataLabels: {
       enabled: false
     },
     stroke: {
       curve: 'smooth'
     },
+  },
     title: {
       text: "Effects of Change In Price",
       align: 'center',
@@ -714,6 +730,12 @@ export default function MarginSimulator({
     tooltip: {
       shared: true,
       intersect: false,
+      zoom:{
+        enable:true,
+      },
+      zoom: false,
+      zoomin: false,
+      zoomout: false,
     },
     legend: {
       position: 'top'
@@ -721,7 +743,7 @@ export default function MarginSimulator({
   };
 
   function formatArrayToTwoDecimals(arr) {
-    console.log(arr)
+    // console.log(arr)
     return arr.map(num => Math.floor(num * 100) / 100);
   }
 

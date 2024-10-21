@@ -706,88 +706,93 @@ const Dashboard = () => {
     }
   };
                      //Old Code
-  // const deleteProjectHandler = async (project__id) => {
-  //   setShowUniversalAlert(true);
-  //   setUniversalAlertMsg("Deleting project . . . . .");
-  //   confirm("are you sure you want to delete project")
-  //   try {
-  //     var res = await Api("DELETE", `api/v1/project/delete/${project__id}`);
-  //     if (res.status === 200) {
-  //       setShowUniversalAlert(false);
-  //       setLoad(true);
-  //       setShowUniversalAlert(true);
-  //       setUniversalAlertMsg(res?.data?.message);
-  //       setTimeout(() => {
-  //         setShowUniversalAlert(false);
-  //       }, 3000);
-  //     }
-  //   } catch (error) {
-  //     console.log("Error", error.response);
-  //   }
-  // };
+  const deleteProjectHandler = async (project__id) => {
+    setShowUniversalAlert(true);
+    let conform=confirm("are you sure you want to delete project")
+    if(!conform){
+      setShowUniversalAlert(false);
+    }
+    else{
+    try {
+      var res = await Api("DELETE", `api/v1/project/delete/${project__id}`);
+      if (res.status === 200) {
+        setShowUniversalAlert(false);
+        setLoad(true);
+        setShowUniversalAlert(true);
+        setUniversalAlertMsg(res?.data?.message);
+        setUniversalAlertMsg("Deleting project . . . . .");
+        setTimeout(() => {
+          setShowUniversalAlert(false);
+        }, 3000);
+      }
+    } catch (error) {
+      console.log("Error", error.response);
+    }
+  }
+  };
 
   
              //New Code
-  const deleteProjectHandler = async (project__id) => {
-    const confirmDelete = async () => {
-      toast.dismiss(); 
-      setShowUniversalAlert(true);
-      setUniversalAlertMsg("Deleting project . . . . .");
+  // const deleteProjectHandler = async (project__id) => {
+  //   const confirmDelete = async (project__id) => {
+  //     toast.dismiss(); 
+  //     setShowUniversalAlert(true);
+  //     setUniversalAlertMsg("Deleting project . . . . .");
   
-      try {
-        const res = await Api("DELETE", `api/v1/project/delete/${project__id}`);
-        if (res.status === 200) {
+  //     try {
+  //       const res = await Api("DELETE", `api/v1/project/delete/${project__id}`);
+  //       if (res.status === 200) {
       
-          toast.success(res?.data?.message, {
-            position: 'top-center',
-            autoClose: 3000, 
-          });
+  //         toast.success(res?.data?.message, {
+  //           position: 'top-center',
+  //           autoClose: 3000, 
+  //         });
   
-          setShowUniversalAlert(false); 
+  //         setShowUniversalAlert(false); 
   
    
-          setLoad(true); 
-          setTimeout(() => {
-            setLoad(false); 
-          }, 3000); 
-        }
-      } catch (error) {
-        console.log("Error", error.response);
+  //         setLoad(true); 
+  //         setTimeout(() => {
+  //           setLoad(false); 
+  //         }, 3000); 
+  //       }
+  //     } catch (error) {
+  //       console.log("Error", error.response);
         
        
-        toast.error("Error deleting project", {
-          position: 'top-center',
-          autoClose: 3000,
-        });
+  //       toast.error("Error deleting project", {
+  //         position: 'top-center',
+  //         autoClose: 3000,
+  //       });
   
-        setShowUniversalAlert(false); 
-      }
-    };
+  //       setShowUniversalAlert(false); 
+  //     }
+  //   };
   
-    const cancelDelete = () => {
-      toast.dismiss(); 
-      toast.info("Project deletion canceled", { position: 'top-center' });
-    };
+  //   const cancelDelete = () => {
+  //     toast.dismiss(); 
+  //     toast.info("Project deletion canceled", { position: 'top-center' });
+  //   };
   
-    // Custom toast with Yes/No buttons
-    toast.warn(
-      <div>
-        <p>Are you sure you want to delete it?</p>
-        <button onClick={confirmDelete} style={{ marginRight: '10px', backgroundColor: 'green', color: 'white',padding:"10px",borderRadius:"30%" }}>
-          Yes
-        </button>
-        <button onClick={cancelDelete} style={{ backgroundColor: 'red', color: 'white',padding:"10px",borderRadius:"30%" }}>
-          No
-        </button>
-      </div>,
-      {
-        position: 'top-center',
-        autoClose: false, // Keep the toast open until the user interacts
-        closeOnClick: false, // Don't close on click elsewhere
-        draggable: false, // Disable dragging
-      }
-    );
-  };
+  //   // Custom toast with Yes/No buttons
+  //   toast.warn(
+  //     <div>
+  //       <p>Are you sure you want to delete it?</p>
+  //       <button onClick={confirmDelete} style={{ marginRight: '10px', backgroundColor: 'green', color: 'white',padding:"10px",borderRadius:"30%" }}>
+  //         Yes
+  //       </button>
+  //       <button onClick={cancelDelete} style={{ backgroundColor: 'red', color: 'white',padding:"10px",borderRadius:"30%" }}>
+  //         No
+  //       </button>
+  //     </div>,
+  //     {
+  //       position: 'top-center',
+  //       autoClose: false, // Keep the toast open until the user interacts
+  //       closeOnClick: false, // Don't close on click elsewhere
+  //       draggable: false, // Disable dragging
+  //     }
+  //   );
+  // };
 
   const [sidebarState, setSidebarState] = useState(false);
 

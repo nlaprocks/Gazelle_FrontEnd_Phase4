@@ -161,9 +161,20 @@ const StackedLineChart = ({ isLoading }) => {
         show: true,
         color: '#000000',
       },
-      labels: {
+      labels: {   // Old Code
         // formatter: (value) => `${value}%`,
-        formatter: (value) => `${value.toFixed(2)}%`,
+        
+        // formatter: (value) => `${value.toFixed(2)}%`,
+
+            // New Code
+        formatter: (value) => {
+          // Check if value is close to zero
+          if (Math.abs(value) < 0.001) {
+            return `0.00%`;
+          }
+          
+          return `${value.toFixed(2)}%`;
+        }
       },
     },
     annotations: {

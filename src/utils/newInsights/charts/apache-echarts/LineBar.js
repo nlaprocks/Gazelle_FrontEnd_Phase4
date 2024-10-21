@@ -59,8 +59,8 @@ const MyChart = ({ isLoading }) => {
 
       productDataDict[productName].series[1].data.push({
         x: item.Retailer,
-        y: item.Dollar_sales_last_52_weeks?.toFixed(2),
-        // // y: item.Dollar_sales_last_52_weeks ? Number(item.Dollar_sales_last_52_weeks.toFixed(2)) : null
+        y: `${item.Dollar_sales_last_52_weeks?.toFixed(2) }`+"$",
+        // y: item.Dollar_sales_last_52_weeks ? Number(item.Dollar_sales_last_52_weeks.toFixed(2)) : null
   //       y: item.Dollar_sales_last_52_weeks
   //       ? Number(item.Dollar_sales_last_52_weeks).toLocaleString('en-IN', {
   //           minimumFractionDigits: 2,  
@@ -82,7 +82,7 @@ const MyChart = ({ isLoading }) => {
   const endIndex = startIndex + itemsPerPage;
   const visibleData = transformedData.slice(startIndex, endIndex);
   const showPagination = transformedData.length > itemsPerPage;
-
+// console.log(chart3Data,"chartdata")
   
   const getDataOption = (data) => ({
     
@@ -134,16 +134,14 @@ const MyChart = ({ isLoading }) => {
     tooltip: {
       shared: true,
       intersect: false,
-      // y: {
-      //   formatter: function (value) {
-      //     return value.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 });
-      //   }
-      // }
+      y: {
+        formatter: function (value) {
+          return value.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 });
+        }
+      }
     },
     dataLabels: {
-      // formatter: function (value) {
-      //   return value ? value.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : value;
-      // },
+    
       enabled: false,
     },
     legend: {
@@ -163,6 +161,7 @@ const MyChart = ({ isLoading }) => {
         },
       },
     },
+  
     // yaxis: [
     //   {
     //     title: {
@@ -180,22 +179,35 @@ const MyChart = ({ isLoading }) => {
     //     opposite: true,
     //   },
     // ],
-    
     yaxis: [
       {
         title: {
-          text: data?.leftyAxisTitle,
+          text: data?.leftyAxisTitle || "Base Price Elasticity", 
         },
-        opposite: false,
-        reversed: true
+        opposite: false, 
+        reversed: true, 
+        labels: {
+          formatter: function (value) {
+            return `$${Number(value).toLocaleString('en-US')}`;
+          },
+        },
       },
       {
         title: {
-          text: data?.rightyAxisTitle,
+          text: data?.rightyAxisTitle || "Sale Revenue (L52 weeks)", 
         },
-        opposite: true,
+        opposite: true, 
+        labels: {
+          formatter: function (value) {
+            return `$${Number(value).toLocaleString('en-US')}`; 
+          },
+        },
       },
     ],
+    
+
+
+
     // series: () => { return data?.series},
     series: data?.series||[],
     grid: {
@@ -241,8 +253,7 @@ const MyChart = ({ isLoading }) => {
   return (
     <div>
       {visibleData.map((data, index) => (
-        // console.log(getDataOption(data).series[1]),
-        // console.log(getDataOption(data).series[0]?.data?.length),
+       
         <div
           key={index}
           style={{
