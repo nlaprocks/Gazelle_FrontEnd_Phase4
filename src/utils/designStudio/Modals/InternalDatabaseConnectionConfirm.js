@@ -30,6 +30,7 @@ const InternalDatabaseConnectionConfirm = ({ internalSelectedDatabase, internalD
   const handleTableSelect = (e) => {
     setCurrentTable(e.target.value);
     const selectedTable = e.target.value;
+    // dispatch(setCurrentTable(selectedTable));
     const tableIndex = selectedTables.findIndex((table) => table.table === selectedTable);
     if (tableIndex === -1) {
       setSelectedTables([
@@ -252,7 +253,7 @@ const InternalDatabaseConnectionConfirm = ({ internalSelectedDatabase, internalD
       delete saveCompetitorsConfigReducer.success;
     }
   }, [saveMobilityConfigReducer, saveCompetitorsConfigReducer]);
-
+console.log(database,"database")
   return (
     <Modal
       show={internalDbConnectionConfirmModal}

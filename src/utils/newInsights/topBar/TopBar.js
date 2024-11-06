@@ -117,6 +117,16 @@ const TopBar = ({ setShowShareModal, sidebarState }) => {
 
               </div>
               <div className="other-design-studio-buttons">
+              <div>
+                  <a
+                    href={`/simulation/${encodeURIComponent(project)}/${project_id}/${model_id}`}
+                    className="btn btn-outline-primary d-inline-flex items-center gap-3"
+                  >
+                    Simulator
+                    <i className="fa-solid fa-file-circle-plus ms-0"></i>
+                  </a>
+                </div>
+
                 <div>
                   <a
                     href="#!"

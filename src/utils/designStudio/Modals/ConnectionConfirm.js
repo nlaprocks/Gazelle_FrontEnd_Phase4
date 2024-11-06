@@ -12,6 +12,8 @@ import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import ModalTabs from "./ModalTabs";
 import axios from "axios";
+import { UPDATE_FORM_DATA } from "../../../store/formData/formType";
+import { SET_CURRENT_TABLE } from "../../../store/tableData/tableType";
 
 const preSelectedColumns = [
   "WeekEnding",
@@ -22,7 +24,7 @@ const preSelectedColumns = [
   "%Increase_in_Vol_by_Merch',_PR_Only",
   "Wtd_Avg_%_PR",
   "Dollars_Price_Reduct_Only",
-  "TPCW",
+  //   "TPCW",
   "Volume_Price_Reduct_Only",
   "Dollars_Feat_Only",
   "Volume_Feat_Only",
@@ -34,10 +36,70 @@ const preSelectedColumns = [
   "Brand",
 ];
 
-const requiredColumns = ["WeekEnding", "Retailer", "Product", "Total_Volume", "Dollars"];
+const feature_map = {
+  WeekEnding: "Frequency", // Time - Frequency
+  Retailer: "Geography", // Geography
+  Product: "Product", // Product
+  Brand: "Brand", // Brand
+
+  Total_Volume: "Volume", // Volume
+  Dollars: "Dollars", // Dollars
+
+  "%Increase_in_Vol_by_Merch',_PR_Only": "Lift", // Lift
+  "Wtd_Avg_%_PR": "Discount", // Discount
+  Dollars_Price_Reduct_Only: "Dollars_TPR", // Dollars_TPR
+
+  // 'Total_Pts_Cumu_Wks':'Distribution',
+  // 'TPCW': 'Distribution',  // Distribution
+  // TDP: "Distribution",
+  Volume_Price_Reduct_Only: "Volume_TPR", // Volume_TPR
+  Dollars_Feat_Only: "Dollars_FO", // Dollars_FO
+  Volume_Feat_Only: "Volume_FO", // Volume_FO
+
+  Dollars_Disp_Only: "Dollars_DO", // Dollars_DO
+  Volume_Disp_Only: "Volume_DO", // Volume_DO
+
+  "Dollars_F&D": "Dollars_FD", // Dollars_FD
+  "Volume_F&D": "Volume_FD", // Volume_FD
+  Units: "Units",
+};
+
+let data = JSON.parse(localStorage.getItem("auth"));
+
+console.log(data);
+
+const requiredColumns = [
+  "WeekEnding",
+  "Retailer",
+  "Product",
+  "Total_Volume",
+  "Dollars", //changes
+  "WeekEnding",
+  "Retailer",
+  "Product",
+  "Total_Volume",
+  "Dollars",
+  "%Increase_in_Vol_by_Merch',_PR_Only",
+  "Wtd_Avg_%_PR",
+  "Dollars_Price_Reduct_Only",
+  //   "TPCW",
+  "Volume_Price_Reduct_Only",
+  "Dollars_Feat_Only",
+  "Volume_Feat_Only",
+  "Dollars_Disp_Only",
+  "Volume_Disp_Only",
+  "Dollars_F&D",
+  "Volume_F&D",
+  "Units",
+  "Brand",
+];
 
 const moment = require("moment");
-const ConnectionConfirm = ({ connectionConfirmModal, setConnectionConfirmModal, tableFromDb }) => {
+const ConnectionConfirm = ({
+  connectionConfirmModal,
+  setConnectionConfirmModal,
+  tableFromDb,
+}) => {
   const [scheduleObserver, setScheduleObserver] = React.useState(false);
   const [vertical, setVertical] = useState("top");
   const [horizontal, setHorizontal] = useState("center");
@@ -46,49 +108,81 @@ const ConnectionConfirm = ({ connectionConfirmModal, setConnectionConfirmModal, 
   const dispatch = useDispatch();
   const { model_id } = useParams();
   const [loader, setLoader] = React.useState(false);
-  const getIsDataFetchedReducer = useSelector((state) => state.getIsDataFetchedReducer);
+
+  const getIsDataFetchedReducer = useSelector(
+    (state) => state.getIsDataFetchedReducer
+  );
+
   const handleClose = () => {
     setConnectionConfirmModal(false);
     setStartDate();
   };
-  const datastructureReducer = useSelector((state) => state.datastructureReducer);
-  const databaseConfigReducer = useSelector((state) => state.saveDatabaseConfigReducer);
+
+  const datastructureReducer = useSelector(
+    (state) => state.datastructureReducer
+  );
+  const databaseConfigReducer = useSelector(
+    (state) => state.saveDatabaseConfigReducer
+  );
+
   const [currentTable, setCurrentTable] = React.useState("golden_krust_full");
+
   const [externalCurrentTable, setExternalCurrentTable] = React.useState(null);
   const [selectedTables, setSelectedTables] = useState([]);
   const [selectedColumns, setSelectedColumns] = React.useState([]);
   const [externalColumns, setExternalColumns] = React.useState([]);
 
   // connection Confirm Modal
-  const [selectedConnectionConfirmModal, setSelectedConnectionConfirmModal] = useState(false);
+  const [selectedConnectionConfirmModal, setSelectedConnectionConfirmModal] =
+    useState(false);
 
   const handleTableSelect = (e) => {
     setCurrentTable(e.target.value);
+
+    dispatch({ type: SET_CURRENT_TABLE, payload: e.target.value });
     const selectedTable = e.target.value;
-    const tableIndex = selectedTables.findIndex((table) => table.table === selectedTable);
+    const tableIndex = selectedTables.findIndex(
+      (table) => table.table === selectedTable
+    );
     if (tableIndex === -1) {
-      setSelectedTables([...selectedTables, { table: selectedTable, columns: [] }]);
+      setSelectedTables([
+        ...selectedTables,
+        { table: selectedTable, columns: [] },
+      ]);
     }
   };
   const handleTableSelectForExternalData = (e) => {
     setExternalCurrentTable(e.target.value);
     const selectedTable = e.target.value;
-    const tableIndex = selectedTables.findIndex((table) => table.table === selectedTable);
+    const tableIndex = selectedTables.findIndex(
+      (table) => table.table === selectedTable
+    );
     if (tableIndex === -1) {
-      setSelectedTables([...selectedTables, { table: selectedTable, columns: [] }]);
+      setSelectedTables([
+        ...selectedTables,
+        { table: selectedTable, columns: [] },
+      ]);
     }
   };
   // this function is to check if the current table all values are selected
   const isTableAllColumnsSelected = () => {
     // Get the data structure of the current table
-    const currentTableStructure = datastructureReducer.structure.data.structure.find(
-      (table) => table.table === currentTable
-    );
+    const currentTableStructure =
+      datastructureReducer.structure.data.structure.find(
+        (table) => table.table === currentTable
+      );
+    console.log(datastructureReducer.structure, "datastrudc");
+    // console.log(databaseConfigReducer,"datab");
+
     // Get the selected columns for the current table
-    const tableMapping = selectedColumns.find((tableMapping) => tableMapping.table === currentTable);
+    const tableMapping = selectedColumns.find(
+      (tableMapping) => tableMapping.table === currentTable
+    );
     if (tableMapping) {
       // Get an array of column names for the selected columns
-      const selectedColumnsNames = tableMapping.columns.map((columnMapping) => columnMapping.original_column);
+      const selectedColumnsNames = tableMapping.columns.map(
+        (columnMapping) => columnMapping.original_column
+      );
 
       // // Filter the current table structure to only include selected columns
       // const filteredTableStructure = {
@@ -99,11 +193,45 @@ const ConnectionConfirm = ({ connectionConfirmModal, setConnectionConfirmModal, 
       // };
 
       // Compare the filtered data structure with the selected columns
-      const match = selectedColumnsNames?.length === currentTableStructure?.columns?.length;
+      const match =
+        selectedColumnsNames?.length === currentTableStructure?.columns?.length;
       return match;
     }
 
     return false;
+  };
+
+  const handleInternalInputChange = (value, column) => {
+    // Find the index of the selected table in the selectedColumns array
+    const tableIndex = selectedColumns.findIndex(
+      (item) => item.table === currentTable
+    );
+    console.log({ tableIndex });
+
+    setSelectedColumns((prevState) => {
+      const newColumns = [...prevState[tableIndex].columns];
+      const columnIndex = newColumns.findIndex(
+        (item) => item.original_column === column
+      );
+
+      // update the mapped_column of the column
+      newColumns[columnIndex].mapped_column = value;
+
+      // If the columns array for the current table is empty, remove the object from the array
+      if (newColumns.length === 0) {
+        return [
+          ...prevState.slice(0, tableIndex),
+          ...prevState.slice(tableIndex + 1),
+        ];
+      } else {
+        // Otherwise, update the columns array for the current table
+        return [
+          ...prevState.slice(0, tableIndex),
+          { table: currentTable, columns: newColumns },
+          ...prevState.slice(tableIndex + 1),
+        ];
+      }
+    });
   };
 
   const handleSelectAllColumn = (currentTableVal) => {
@@ -115,7 +243,9 @@ const ConnectionConfirm = ({ connectionConfirmModal, setConnectionConfirmModal, 
     }));
 
     // Find the index of the selected table in the selectedColumns array
-    const tableIndex = selectedColumns.findIndex((item) => item.table === tableData.table);
+    const tableIndex = selectedColumns.findIndex(
+      (item) => item.table === tableData.table
+    );
     // console.log("tableIndex: ", tableIndex);
 
     if (tableIndex === -1) {
@@ -143,18 +273,25 @@ const ConnectionConfirm = ({ connectionConfirmModal, setConnectionConfirmModal, 
   // console.log("selectedColumns: ", selectedColumns[4]);
   const handleUnselectAllColumns = (currentTableVal) => {
     // Find the index of the selected table in the selectedColumns array
-    const tableIndex = selectedColumns.findIndex((item) => item.table === currentTableVal[0].table);
+    const tableIndex = selectedColumns.findIndex(
+      (item) => item.table === currentTableVal[0].table
+    );
 
     if (tableIndex !== -1) {
       // If the selected table is already in the selectedColumns array,
       // remove it from the array
-      setSelectedColumns((prevState) => [...prevState.slice(0, tableIndex), ...prevState.slice(tableIndex + 1)]);
+      setSelectedColumns((prevState) => [
+        ...prevState.slice(0, tableIndex),
+        ...prevState.slice(tableIndex + 1),
+      ]);
     }
   };
   // Handler function for selecting a column
   const handleSelectColumn = (column, val) => {
     // Find the index of the selected table in the selectedColumns array
-    const tableIndex = selectedColumns.findIndex((item) => item.table === currentTable);
+    const tableIndex = selectedColumns.findIndex(
+      (item) => item.table === currentTable
+    );
 
     if (tableIndex === -1) {
       // If the selected table is not yet in the selectedColumns array,
@@ -178,7 +315,9 @@ const ConnectionConfirm = ({ connectionConfirmModal, setConnectionConfirmModal, 
       // update its columns array with the selected column
       setSelectedColumns((prevState) => {
         const newColumns = [...prevState[tableIndex].columns];
-        const columnIndex = newColumns.findIndex((item) => item.original_column === column);
+        const columnIndex = newColumns.findIndex(
+          (item) => item.original_column === column
+        );
         if (val.checked) {
           // If the column is checked and not yet in the columns array,
           // add it to the end
@@ -197,7 +336,10 @@ const ConnectionConfirm = ({ connectionConfirmModal, setConnectionConfirmModal, 
         }
         // If the columns array for the current table is empty, remove the object from the array
         if (newColumns.length === 0) {
-          return [...prevState.slice(0, tableIndex), ...prevState.slice(tableIndex + 1)];
+          return [
+            ...prevState.slice(0, tableIndex),
+            ...prevState.slice(tableIndex + 1),
+          ];
         } else {
           // Otherwise, update the columns array for the current table
           return [
@@ -211,11 +353,15 @@ const ConnectionConfirm = ({ connectionConfirmModal, setConnectionConfirmModal, 
   };
   const handleDropDownChange = (event, column) => {
     const { value } = event.target;
-    const tableIndex = selectedColumns.findIndex((table) => table.table === currentTable);
+    const tableIndex = selectedColumns.findIndex(
+      (table) => table.table === currentTable
+    );
     // Make a copy of the columns array for the selected table
     const updatedColumns = [...selectedColumns[tableIndex].columns];
     // Find the index of the column in the columns array
-    const columnToUpdateIndex = updatedColumns.findIndex((col) => col.original_column === column);
+    const columnToUpdateIndex = updatedColumns.findIndex(
+      (col) => col.original_column === column
+    );
     // Update the mapped_column property with the selected value
     updatedColumns[columnToUpdateIndex].mapped_column = value;
     // Make a copy of the data array and update the columns array for the selected table
@@ -230,11 +376,15 @@ const ConnectionConfirm = ({ connectionConfirmModal, setConnectionConfirmModal, 
 
   const openConnectionConfirmModal = () => {
     setConnectionConfirmModal(false);
-    setSelectedConnectionConfirmModal(true)
-  }
+    setSelectedConnectionConfirmModal(true);
+  };
 
-  const addDatabaseConfig = () => {
-    const tableIndex = selectedColumns.findIndex((item) => item.table === currentTable);
+  const addDatabaseConfig = (formData) => {
+    dispatch({ type: UPDATE_FORM_DATA, payload: formData });
+
+    const tableIndex = selectedColumns.findIndex(
+      (item) => item.table === currentTable
+    );
     if (tableIndex === -1) {
       alert("Error occurred on confirmation");
       return;
@@ -242,7 +392,9 @@ const ConnectionConfirm = ({ connectionConfirmModal, setConnectionConfirmModal, 
     setLoader(true);
     if (startDate) {
       const date = startDate;
-      const formattedDate = moment(date).subtract(5, "hours").format("YYYY-MM-DD HH:mm:ss");
+      const formattedDate = moment(date)
+        .subtract(5, "hours")
+        .format("YYYY-MM-DD HH:mm:ss");
       dispatch(
         allActions.saveDatabaseConfigAction.saveDatabaseConfig({
           database_config: selectedColumns,
@@ -260,7 +412,10 @@ const ConnectionConfirm = ({ connectionConfirmModal, setConnectionConfirmModal, 
       setSelectedConnectionConfirmModal(false);
     }
   };
+
   React.useEffect(() => {
+    // console.log("adsfsdfsd")
+    // dispatch({ type: SET_CURRENT_TABLE, payload: "golden_krust_full" });
     if (databaseConfigReducer.success) {
       if (!startDate) {
         dispatch(allActions.getIsDataFetchedAction.getIsDataFetched(model_id));
@@ -277,6 +432,7 @@ const ConnectionConfirm = ({ connectionConfirmModal, setConnectionConfirmModal, 
       delete databaseConfigReducer.success;
     }
   }, [databaseConfigReducer, model_id]);
+
   React.useEffect(() => {
     if (getIsDataFetchedReducer.success) {
       const timeout = setTimeout(() => {
@@ -309,11 +465,13 @@ const ConnectionConfirm = ({ connectionConfirmModal, setConnectionConfirmModal, 
   React.useEffect(() => {
     const preSelectedColumnsData = preSelectedColumns.map((column) => ({
       original_column: column,
-      mapped_column: column,
+      mapped_column: feature_map[column],
     }));
 
     setSelectedColumns((prevState) => {
-      const tableIndex = prevState.findIndex((item) => item.table === currentTable);
+      const tableIndex = prevState.findIndex(
+        (item) => item.table === currentTable
+      );
       if (tableIndex === -1) {
         // If the selected table is not yet in the selectedColumns array,
         // add it with the pre-selected columns
@@ -336,6 +494,7 @@ const ConnectionConfirm = ({ connectionConfirmModal, setConnectionConfirmModal, 
     });
   }, [currentTable]);
 
+  //  console.log(currentTable,"currentable")
   return (
     <>
       <Modal
@@ -343,8 +502,7 @@ const ConnectionConfirm = ({ connectionConfirmModal, setConnectionConfirmModal, 
         // show={true}
         onHide={handleClose}
         centered
-        className="nladatabaseparametermodal"
-      >
+        className="nladatabaseparametermodal">
         <Modal.Header closeButton>
           <Modal.Title className="ms-auto">Connection Confirms</Modal.Title>
         </Modal.Header>
@@ -362,7 +520,8 @@ const ConnectionConfirm = ({ connectionConfirmModal, setConnectionConfirmModal, 
               <div className="col-md-8 db_coonection-text">
                 <h4>Database connection successfully</h4>
                 <p className="mx-auto">
-                  DB Connection is successfully confirmed. <br /> Select Table field and confirm items.
+                  DB Connection is successfully confirmed. <br /> Select Table
+                  field and confirm items.
                 </p>
               </div>
             </div>
@@ -375,11 +534,14 @@ const ConnectionConfirm = ({ connectionConfirmModal, setConnectionConfirmModal, 
               handleDropDownChange={handleDropDownChange}
               handleSelectColumn={handleSelectColumn}
               handleTableSelect={handleTableSelect}
-              handleTableSelectForExternalData={handleTableSelectForExternalData}
+              handleTableSelectForExternalData={
+                handleTableSelectForExternalData
+              }
               handleSelectAllColumn={handleSelectAllColumn}
               handleUnselectAllColumns={handleUnselectAllColumns}
               preSelectedColumns={preSelectedColumns}
               requiredColumns={requiredColumns}
+              handleInternalInputChange={handleInternalInputChange}
             />
           </div>
         </Modal.Body>
@@ -390,11 +552,13 @@ const ConnectionConfirm = ({ connectionConfirmModal, setConnectionConfirmModal, 
             data-bs-dismiss="modal"
             onClick={() => {
               handleClose(false);
-            }}
-          >
+            }}>
             Cancel
           </button>
-          <button type="button" className="btn btn-outline-primary" onClick={openConnectionConfirmModal}>
+          <button
+            type="button"
+            className="btn btn-outline-primary"
+            onClick={openConnectionConfirmModal}>
             {loader ? "Loading..." : "Confirm Configuration"}
           </button>
         </Modal.Footer>
@@ -402,8 +566,7 @@ const ConnectionConfirm = ({ connectionConfirmModal, setConnectionConfirmModal, 
           open={scheduleObserver}
           autoHideDuration={3000}
           key="projectCreatedAlert"
-          anchorOrigin={{ vertical, horizontal }}
-        >
+          anchorOrigin={{ vertical, horizontal }}>
           <Alert severity="success" sx={{ width: "100%" }}>
             Data Fetching Scheduling
           </Alert>

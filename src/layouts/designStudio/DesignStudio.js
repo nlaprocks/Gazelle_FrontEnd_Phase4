@@ -22,6 +22,8 @@ import Spinner from "react-bootstrap/Spinner";
 import progressModalImg from "../../assets/images/progress-status-modal-image.png";
 import AdvanceLog from "../../utils/designStudio/Modals/AdvanceLog";
 import MyVerticallyCenteredModal from "../../utils/designStudio/Modals/runModal";
+import formReducer from "../../store/formData/formReducer";
+import tableReducer from "../../store/tableData/tableReducer";
 import axios from "axios";
 
 const FETCHING_DATA_STATUS = {
@@ -48,6 +50,10 @@ const DesignStudio = () => {
   const [runningAnalysisChecker, setRunningAnalysisChecker] = useState(false);
   const getIsDataFetchedReducer = useSelector((state) => state.getIsDataFetchedReducer);
   const [databaseObserver, setDatabaseObserver] = React.useState(false);
+  const formReducer = useSelector((state) => state.formReducer);
+  const formData = useSelector((state) => state.formReducer.formData);
+  const currentTable = useSelector((state) => state.tableReducer.currentTable)
+  console.log(currentTable)
 
   //User
   const authData = JSON.parse(localStorage.getItem("auth"));
@@ -63,6 +69,10 @@ const DesignStudio = () => {
   // Run Modal
   const [modalShow, setModalShow] = React.useState(false);
 
+  const handleFormSubmit = (data) => {
+    // console.log("Form Data Submitted:", data);
+
+  };
 
   useEffect(() => {
     if (typeof paramState === "string") {
@@ -133,6 +143,7 @@ const DesignStudio = () => {
   const [test, setTest] = useState();
   const [validate, setValidate] = useState();
 
+
   // useCallBack
   const setProjectNameCallback = useCallback(
     (project_name) => {
@@ -143,7 +154,7 @@ const DesignStudio = () => {
 
   const addProjectID = useCallback(
     (project_id) => {
-      console.log("project_id", project_id);
+      // console.log("project_id", project_id);
       setProjectID(project_id);
     },
     [projectID]
@@ -297,18 +308,25 @@ const DesignStudio = () => {
   const datastructureReducer = useSelector((state) => state.datastructureReducer);
   const runModelReducer = useSelector((state) => state.runModelReducer);
 
+  // console.log(runModelReducer, "runmodelreducer")
+
   const runHandler = () => {
     if (modelVerionReducer?.modelVersion?.data?.length > 0) {
       setModalShow(false);
       nodeUpdateHandler();
     }
     if (Number(model_id) !== 0) {
+      // console.log("hellos")
       dispatch(
         allActions.runModelAction.runModel({
           project_id: project_id,
           vif: vifValue,
           sig_value: sigValue,
           model_id: model_id,
+          cumulativeShare: formData.cumulativeShare,
+          minDollarSales: formData.minDollarSales,
+          weeks: formData.weeks,
+          tablename: currentTable
         })
       );
     }
@@ -547,7 +565,7 @@ const DesignStudio = () => {
 
   function extractVersionNumber(versionString) {
     const [, version] = versionString.split(" ");
-    console.log(parseInt(version))
+    // console.log(parseInt(version))
     return parseInt(version) || null;
   }
 
@@ -1010,6 +1028,10 @@ const DesignStudio = () => {
           Nodes Saved successfully!
         </Alert>
       </Snackbar>
+
+
+
+      {/* <DesignStudio onFormSubmit={handleFormSubmit} /> */}
 
       {/* <MyVerticallyCenteredModal
         show={modalShow}

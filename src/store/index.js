@@ -127,6 +127,11 @@ import combinedColumnsAction from "./insights/phase3Charts/userCharts/combinedCo
 import userChartsDataAction from "./insights/phase3Charts/userCharts/userChartsData/userChartsDataAction";
 // Local filters
 import filterChartAction from "./insights/localFilters/chartFilteration/filterChartAction";
+// src/redux/actionTypes.js
+export const UPDATE_FORM_DATA = "UPDATE_FORM_DATA";
+
+
+
 const allActions = {
   addModelAction,
   addModelWithVersionAction,

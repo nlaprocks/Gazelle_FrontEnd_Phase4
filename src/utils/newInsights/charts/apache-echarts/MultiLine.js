@@ -164,17 +164,17 @@ const StackedLineChart = ({ isLoading }) => {
       labels: {   // Old Code
         // formatter: (value) => `${value}%`,
         
-        // formatter: (value) => `${value.toFixed(2)}%`,
+        formatter: (value) => `${value.toFixed(2)*100}%`,
 
             // New Code
-        formatter: (value) => {
-          // Check if value is close to zero
-          if (Math.abs(value) < 0.001) {
-            return `0.00%`;
-          }
+        // formatter: (value) => {
+        //   // Check if value is close to zero
+        //   if (Math.abs(value) < 0.001) {
+        //     return `0.00%`;
+        //   }
           
-          return `${value.toFixed(2)}%`;
-        }
+        //   return `${value.toFixed(2)}%`;
+        // }
       },
     },
     annotations: {
@@ -202,10 +202,7 @@ const StackedLineChart = ({ isLoading }) => {
     grid: {
       show: false,
       borderColor: '#e7e7e7',
-      row: {
-        colors: ['#f3f3f3', 'transparent'], // Takes an array of colors to alternate between
-        opacity: 0.5,
-      },
+      
 
     },
     markers: {
@@ -233,8 +230,8 @@ const StackedLineChart = ({ isLoading }) => {
       y: {
         formatter: (value) => {
           if (value < 1) {
-            console.log(value,"values")
-            return `${(value * 100).toFixed(0)}%`; 
+            // console.log(value,"values")
+            return `${(value * 100).toFixed(2)}%`; 
           }                                       
           return `${value.toFixed(2)}%`;
         },

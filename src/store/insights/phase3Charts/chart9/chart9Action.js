@@ -46,7 +46,7 @@ const fetchChart9Data = ({
         api += `&Product=${productParam}`;
       }
     
-      // Add retailers to the API URL if the array is not empty
+      // // Add retailers to the API URL if the array is not empty
       if (retailers && retailers.length > 0) {
         const retailerParam = retailers.map(retailer => encodeURIComponent(retailer)).join(encodeURIComponent(','));
         api += `&Retailer=${retailerParam}`;

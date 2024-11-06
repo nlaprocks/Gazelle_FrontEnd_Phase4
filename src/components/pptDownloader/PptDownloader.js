@@ -283,8 +283,15 @@ const PptDownloader = ({ value, id, role }) => {
                 series.labels.push(product);
                 series.values.push(price);
               }
+              // Added by apurv below else condition
+              else {
+                series.labels.push(product);
+                series.values.push(price);
+              }
             });
           });
+          console.log({ chartData });
+
           generateCommonUIElements(slide, value, pptx);
           slide.addChart(pptx.charts.BAR, chartData, {
             x: 0.35,
@@ -294,6 +301,7 @@ const PptDownloader = ({ value, id, role }) => {
             showGridlines: false,
             valGridLine: { color: "cc6699", style: "none", size: 1 },
             catAxisTitle: "Product",
+            catAxisLabelFontSize: 8,
             valAxisTitle: "Price Mean",
             showCatAxisTitle: true,
             showValAxisTitle: true,

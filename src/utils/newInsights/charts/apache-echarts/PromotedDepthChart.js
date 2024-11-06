@@ -182,10 +182,7 @@ const PromotedDepthChart = ({ isLoading }) => {
     grid: {
       show: false,
       borderColor: '#e7e7e7',
-      row: {
-        colors: ['#f3f3f3', 'transparent'], // Takes an array of colors to alternate between
-        opacity: 0.5,
-      },
+      
     },
   });
 

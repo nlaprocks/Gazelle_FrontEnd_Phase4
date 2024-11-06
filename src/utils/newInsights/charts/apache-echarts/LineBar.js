@@ -60,6 +60,8 @@ const MyChart = ({ isLoading }) => {
       productDataDict[productName].series[1].data.push({
         x: item.Retailer,
         y: `${item.Dollar_sales_last_52_weeks?.toFixed(2) }`+"$",
+        // y: item.Dollar_sales_last_52_weeks?.toFixed(2) 
+
         // y: item.Dollar_sales_last_52_weeks ? Number(item.Dollar_sales_last_52_weeks.toFixed(2)) : null
   //       y: item.Dollar_sales_last_52_weeks
   //       ? Number(item.Dollar_sales_last_52_weeks).toLocaleString('en-IN', {
@@ -136,8 +138,10 @@ const MyChart = ({ isLoading }) => {
       intersect: false,
       y: {
         formatter: function (value) {
-          return value.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 });
+          // return value.toLocaleString('en-US', { style: 'currency', currency: 'INR', minimumFractionDigits: 2 });
+          return value
         }
+        
       }
     },
     dataLabels: {
@@ -188,7 +192,7 @@ const MyChart = ({ isLoading }) => {
         reversed: true, 
         labels: {
           formatter: function (value) {
-            return `$${Number(value).toLocaleString('en-US')}`;
+            return `${Number(value).toLocaleString('en-US')}`;
           },
         },
       },
@@ -213,10 +217,10 @@ const MyChart = ({ isLoading }) => {
     grid: {
       show: false,
       borderColor: '#e7e7e7',
-      row: {
-        colors: ['#f3f3f3', 'transparent'], // Takes an array of colors to alternate between
-        opacity: 0.5,
-      },
+      // row: {
+      //   colors: ['#f3f3f3', 'transparent'], // Takes an array of colors to alternate between
+      //   opacity: 0.5,
+      // },
     },
     markers: {
       size: 5,

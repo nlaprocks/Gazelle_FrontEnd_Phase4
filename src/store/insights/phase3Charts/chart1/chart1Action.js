@@ -32,7 +32,7 @@ const fetchChart1Data = ({ project_id, model_id, products, retailers, brands, da
       let api = `${process.env.REACT_APP_NGROK}/insights/chart1?project_id=${encodeURIComponent(
         project_id
       )}&model_id=${encodeURIComponent(model_id)}`;
-
+                      //old code 
       // Add products to the API URL if the array is not empty
       if (products && products.length > 0) {
         const productParam = products.map((product) => encodeURIComponent(product)).join(encodeURIComponent(","));
@@ -75,6 +75,7 @@ const fetchChart1Data = ({ project_id, model_id, products, retailers, brands, da
 
       const res = await axios.get(api);
       const { data } = res;
+      // console.log("data1",data)
       loading = false;
       dispatch(chart1Success(data));
     } catch (error) {

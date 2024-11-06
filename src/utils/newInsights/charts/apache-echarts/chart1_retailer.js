@@ -35,7 +35,9 @@ const BarRetailor = ({ isLoading, chartModel, setChartModel }) => {
     groupedData[retailer].data.push({
       // y: parseFloat(item.Price_avg_last_4_weeks?.toFixed(2)),
       // y: parseInt(item.Price_avg_last_4_weeks),
-      y: Math.round(item.Price_avg_last_4_weeks),
+        //  old
+      // y: Math.round(item.Price_avg_last_4_weeks),
+      y: item.Price_avg_last_4_weeks,
       x: item.Product,
     });
   });
@@ -360,10 +362,7 @@ const BarRetailor = ({ isLoading, chartModel, setChartModel }) => {
       grid: {
         show: false,
         borderColor: '#e7e7e7',
-        row: {
-          colors: ['#f3f3f3', 'transparent'], // Takes an array of colors to alternate between
-          opacity: 0.5,
-        },
+        
       },
       noData: {
         text: "No Data Available To Show",

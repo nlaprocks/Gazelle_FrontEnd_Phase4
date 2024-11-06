@@ -166,7 +166,7 @@ const ElasticityStratagyChart = ({ isLoading }) => {
         },
         inverse: true,
         max: 0,
-        min: -2,
+        min: -4,
         // max,
         // min,
         axisLabel: {
@@ -197,7 +197,7 @@ const ElasticityStratagyChart = ({ isLoading }) => {
         // max,
         // min,
         max: 0,
-        min: -3,
+        min: -4,
         offset: 10,
       },
       series: chartData.data.datasets.map((dataset) => ({
@@ -215,7 +215,7 @@ const ElasticityStratagyChart = ({ isLoading }) => {
         markLine: {
           data: [
             {
-              xAxis: -1,
+              xAxis: -2,
               name: "Your Markline Name",
               label: {
                 show: false,
@@ -238,7 +238,7 @@ const ElasticityStratagyChart = ({ isLoading }) => {
               },
             },
             {
-              yAxis: -1.5,
+              yAxis: -2,
               name: "Your Markline Name",
               label: {
                 show: false,
