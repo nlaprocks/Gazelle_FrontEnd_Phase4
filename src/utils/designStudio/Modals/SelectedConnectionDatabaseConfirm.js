@@ -10,15 +10,33 @@ import "react-clock/dist/Clock.css";
 import axios from "axios";
 import { Tabs } from "antd";
 import { Input } from "antd";
-import { DatePicker } from 'antd';
-import { Select } from 'antd';
-import { CalendarOutlined, DollarOutlined } from '@ant-design/icons';
+import { DatePicker } from "antd";
+import { Select } from "antd";
+import { CalendarOutlined, DollarOutlined } from "@ant-design/icons";
+// import { updateFormData } from "../redux/actions";
+import { updateFormData } from "../../../store/formData/formAction";
+import { UPDATE_FORM_DATA } from "../../../store/formData/formType";
 
 const { TabPane } = Tabs;
-const requiredColumns = ["WeekEnding", "Retailer", "Product", "Total_Volume", "Dollars"];
+const requiredColumns = [
+  "WeekEnding",
+  "Retailer",
+  "Product",
+  "Total_Volume",
+  "Dollars",
+];
 const { Option } = Select;
 const moment = require("moment");
-const SelectedConnectionDatabaseConfirm = ({ selectedConnectionConfirmModal, setSelectedConnectionConfirmModal, handleSelectColumn, connectDbConnecttion, selectedColumns, currentTables }) => {
+
+const SelectedConnectionDatabaseConfirm = ({
+  selectedConnectionConfirmModal,
+  setSelectedConnectionConfirmModal,
+  handleSelectColumn,
+  connectDbConnecttion,
+  selectedColumns,
+  currentTables,
+  onFormSubmit,
+}) => {
   const { RangePicker } = DatePicker;
   const [scheduleObserver, setScheduleObserver] = React.useState(false);
   const [startDate, setStartDate] = React.useState();
@@ -26,13 +44,21 @@ const SelectedConnectionDatabaseConfirm = ({ selectedConnectionConfirmModal, set
   const dispatch = useDispatch();
   const { model_id } = useParams();
   const [loader, setLoader] = React.useState(false);
-  const getIsDataFetchedReducer = useSelector((state) => state.getIsDataFetchedReducer);
+  const getIsDataFetchedReducer = useSelector(
+    (state) => state.getIsDataFetchedReducer
+  );
+
   const handleClose = () => {
     setSelectedConnectionConfirmModal(false);
     setStartDate();
   };
-  const datastructureReducer = useSelector((state) => state.datastructureReducer);
-  const databaseConfigReducer = useSelector((state) => state.saveDatabaseConfigReducer);
+
+  const datastructureReducer = useSelector(
+    (state) => state.datastructureReducer
+  );
+  const databaseConfigReducer = useSelector(
+    (state) => state.saveDatabaseConfigReducer
+  );
   // const [currentTable, setCurrentTable] = React.useState("golden_krust_full");
   // const [selectedColumns, setSelectedColumns] = React.useState([]);
   const [externalColumns, setExternalColumns] = React.useState([]);
@@ -71,7 +97,7 @@ const SelectedConnectionDatabaseConfirm = ({ selectedConnectionConfirmModal, set
       const api = `${process.env.REACT_APP_NGROK}/client-data/external-structure`;
       const response = await axios.get(api);
       if (response.status === 200) {
-        console.log("response: ", response.data);
+        // console.log("response: ", response.data);
         setExternalColumns(response.data.data.columns);
         // setRetailerBrandProducts(response?.data?.data);
       }
@@ -84,16 +110,52 @@ const SelectedConnectionDatabaseConfirm = ({ selectedConnectionConfirmModal, set
     fetchExternalColumns();
   }, []);
 
+  //runmode
+
+  const [formData, setFormData] = useState({
+    cumulativeShare: "100",
+    minDollarSales: "0",
+    weeks: "104",
+  });
+
+  // Handle input changes
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  // Handle select change
+  const handleSelectChange = (value) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      weeks: value,
+    }));
+  };
+
+  // Submit form data to parent component
+  const handleSubmit = (e) => {
+    // console.log(formData)
+    // e.preventDefault();
+    // onFormSubmit(formData);
+
+    dispatch({ type: UPDATE_FORM_DATA, payload: formData });
+    // dispatch(updateFormData(formData));
+  };
+
   return (
     <Modal
       show={selectedConnectionConfirmModal}
       // show={true}
       onHide={handleClose}
       centered
-      className="nladatabaseparametermodal"
-    >
+      className="nladatabaseparametermodal">
       <Modal.Header closeButton>
-        <Modal.Title className="ms-auto">Selected Connection Database Confirm</Modal.Title>
+        <Modal.Title className="ms-auto">
+          Selected Connection Database Confirm
+        </Modal.Title>
       </Modal.Header>
       <Modal.Body style={{ maxHeight: "560px", overflowY: "auto" }}>
         <div>
@@ -107,21 +169,34 @@ const SelectedConnectionDatabaseConfirm = ({ selectedConnectionConfirmModal, set
               <div>
                 <h4>Database connection successfully</h4>
                 <p className="mx-auto">
-                  DB Connection is Database Name
+                  {/* DB Connection is Database Name */}
                 </p>
               </div>
             </div>
           </div>
 
           <div className="nla-add-heading-block mt-6">
-            <form>
+            <form onSubmit={handleSubmit}>
               <div className="row border-y mb-4 pt-6 ps-7 items-center">
                 <div className="col-md-4 col-12 relative nla_form_project_name position-relative nla_form_field_block mb-4">
-                  <Input size="large" placeholder="Cumulative Share of Brand's Revenue(%)" prefix={<CalendarOutlined />} />
-                  {/* <Input size="large" value="" placeholder="Cumulative Share of Brand's Revenue(%)" prefix={<CalendarOutlined />} /> */}
+                  <Input
+                    size="large"
+                    name="cumulativeShare"
+                    placeholder="Cumulative Share of Brand's Revenue(%)"
+                    prefix={<CalendarOutlined />}
+                    value={formData.cumulativeShare}
+                    onChange={handleChange}
+                  />
                 </div>
                 <div className="col-md-4 col-12 relative nla_form_project_name position-relative nla_form_field_block mb-4">
-                  <Input size="large" placeholder="Minimum Dollar Sales(L52 Weeks)" prefix={<DollarOutlined />} />
+                  <Input
+                    size="large"
+                    name="minDollarSales"
+                    placeholder="Minimum Dollar Sales(L52 Weeks)"
+                    prefix={<DollarOutlined />}
+                    value={formData.minDollarSales}
+                    onChange={handleChange}
+                  />
                 </div>
                 <div className="col-md-4 col-12 relative nla_form_project_name position-relative nla_form_field_block mb-4">
                   <Select
@@ -130,12 +205,12 @@ const SelectedConnectionDatabaseConfirm = ({ selectedConnectionConfirmModal, set
                       width: "100%",
                       height: "40px",
                     }}
-                    placeholder="Select No of Weeks"
-                    optionFilterProp="children"
-                    filterOption={(input, option) =>
-                      option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                    }
-                  >
+                    // defaultValue="Select No of Weeks"
+                    // placeholder="Select No of Weeks"
+                    placeholder="select it"
+                    value={formData.weeks}
+                    onChange={handleSelectChange}
+                    optionFilterProp="children">
                     <Option value="52">52</Option>
                     <Option value="104">104</Option>
                     <Option value="156">156</Option>
@@ -143,10 +218,15 @@ const SelectedConnectionDatabaseConfirm = ({ selectedConnectionConfirmModal, set
                   </Select>
                 </div>
               </div>
+              {/* <button type="submit" className="btn btn-primary">
+        Submit
+      </button> */}
             </form>
           </div>
 
-          <div className="table-responsivev" style={{ maxHeight: "300px", overflowY: "auto" }}>
+          <div
+            className="table-responsivev"
+            style={{ maxHeight: "300px", overflowY: "auto" }}>
             <table className="table">
               <thead className="table-head">
                 <tr>
@@ -184,43 +264,36 @@ const SelectedConnectionDatabaseConfirm = ({ selectedConnectionConfirmModal, set
                   })}
               </tbody> */}
               <tbody>
-                {
-                  selectedColumns
-                    .filter((val) => val.table === currentTables)
+                {selectedColumns
+                  .filter((val) => val.table === currentTables)
 
-                    .map((tableData) => {
-                      console.log("Mapped tableData:", tableData);
-                      return tableData.columns.map((column, columnIndex) => {
+                  .map((tableData) => {
+                    // console.log("Mapped tableData:", tableData);
+                    return tableData.columns.map((column, columnIndex) => {
+                      const originalColumn = column.original_column;
+                      const mappedColumn = column.mapped_column || "";
 
-                        const originalColumn = column.original_column;
-                        // const mappedColumn = column.mapped_column || ""; 
-
-                        return (
-                          <tr key={columnIndex}>
-                            <td>
-                              <div className="form-check custom-checkbox">
-                                <span>{originalColumn}</span>
+                      return (
+                        <tr key={columnIndex}>
+                          <td>
+                            <div className="form-check custom-checkbox">
+                              <span>{originalColumn}</span>
+                            </div>
+                          </td>
+                          <td>{mappedColumn}</td>
+                          <td>
+                            <div className="col-md-8">
+                              <div className="input-box">
+                                {/* <span>{columnAliases[originalColumn] || ""}</span> */}
                               </div>
-                            </td>
-                            <td>{originalColumn}</td>
-                            <td>
-                              <div className="col-md-8">
-                                <div className="input-box">
-                                  {/* <span>{columnAliases[originalColumn] || ""}</span> */}
-                                </div>
-                              </div>
-                            </td>
-                            <td>
-                              {/* <span>{mappedColumn}</span> */}
-                            </td>
-                          </tr>
-                        );
-                      });
-                    })
-                }
-
+                            </div>
+                          </td>
+                          <td>{/* <span>{mappedColumn}</span> */}</td>
+                        </tr>
+                      );
+                    });
+                  })}
               </tbody>
-
             </table>
           </div>
         </div>
@@ -233,11 +306,13 @@ const SelectedConnectionDatabaseConfirm = ({ selectedConnectionConfirmModal, set
             data-bs-dismiss="modal"
             onClick={() => {
               handleClose(false);
-            }}
-          >
+            }}>
             Cancel
           </button>
-          <button type="button" className="btn btn-primary px-4 inline-block max-w-40" onClick={connectDbConnecttion}>
+          <button
+            type="button"
+            className="btn btn-primary px-4 inline-block max-w-40"
+            onClick={() => connectDbConnecttion(formData)}>
             {loader ? "Loading..." : "Submit"}
           </button>
         </div>

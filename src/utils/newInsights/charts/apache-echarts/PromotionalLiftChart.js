@@ -197,10 +197,10 @@ const PromotionalLiftChart = ({ isLoading }) => {
     grid: {
       show: false,
       borderColor: '#e7e7e7',
-      row: {
-        colors: ['#f3f3f3', 'transparent'], // Takes an array of colors to alternate between
-        opacity: 0.5,
-      },
+      // row: {
+      //   colors: ['#f3f3f3', 'transparent'], // Takes an array of colors to alternate between
+      //   opacity: 0.5,
+      // },
     },
     colors: ["#2c99f4", "#fa518a", "#f9be56", "#b386e1"],
     tooltip: {

@@ -127,6 +127,10 @@ const AllPptDownloader = () => {
               series.labels.push(product);
               series.values.push(price);
             }
+            else {
+              series.labels.push(product);
+              series.values.push(price);
+            }
           });
         });
         generateCommonUIElements(slide, adminQuestionsReducer?.question?.data[0], pptx);
@@ -138,6 +142,7 @@ const AllPptDownloader = () => {
           showGridlines: false,
           valGridLine: { color: "cc6699", style: "none", size: 1 },
           catAxisTitle: "Product",
+          catAxisLabelFontSize: 8,
           valAxisTitle: "Price Mean",
           showCatAxisTitle: true,
           showValAxisTitle: true,
@@ -1380,6 +1385,9 @@ const AllPptDownloader = () => {
             h: 5.3,
             showValAxisTitle: false,
             lineSize: 0,
+            valGridLine: { style: "none" },
+            catGridLine: { style: "none" },
+            showGridlines: false,
             // catAxisTitle: "Base Price Elasticity",
             catAxisTitleColor: "428442",
             catAxisTitleFontSize: 14,

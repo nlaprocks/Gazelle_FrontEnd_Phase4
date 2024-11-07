@@ -58,19 +58,32 @@ export default function PriceSimulatorRow({
                           <OverlayTrigger
                             placement="top"
                             delay={{ show: 250, hide: 250 }}
-                            overlay={<Tooltip id="overlay-example">{product.Product}</Tooltip>}
-                          >
+                            overlay={
+                              <Tooltip id="overlay-example">
+                                {product.Product}
+                              </Tooltip>
+                            }>
                             <p>{product.Product}</p>
                           </OverlayTrigger>
                         </td>
                         <td>
-                          <p>{!isNaN(Price_avg_last_4_weeks) ? Price_avg_last_4_weeks.toFixed(2) : "-"}</p>
+                          <p>
+                            {!isNaN(Price_avg_last_4_weeks)
+                              ? Price_avg_last_4_weeks.toFixed(2)
+                              : "-"}
+                          </p>
                         </td>
                         <td>
-                          <p>{!isNaN(total_units_sum) ? total_units_sum.toFixed(2) : "-"}</p>
+                          <p>
+                            {!isNaN(total_units_sum)
+                              ? total_units_sum.toFixed(2)
+                              : "-"}
+                          </p>
                         </td>
                         <td>
-                          <p>{!isNaN(totalVolume) ? totalVolume.toFixed(2) : "-"}</p>
+                          <p>
+                            {!isNaN(totalVolume) ? totalVolume.toFixed(2) : "-"}
+                          </p>
                         </td>
 
                         <td>
@@ -81,14 +94,20 @@ export default function PriceSimulatorRow({
                               value={newPrice[index] || ""}
                               placeholder="Enter new price:($)"
                               className="simu_input"
-                              onChange={(event) => handleNewPriceOnChange(index, event, product, type)}
+                              onChange={(event) =>
+                                handleNewPriceOnChange(
+                                  index,
+                                  event,
+                                  product,
+                                  type
+                                )
+                              }
                               onKeyDown={(e) => {
                                 if (e.key === "-") {
                                   e.preventDefault();
                                 }
                               }}
-                              min={1}
-                            ></input>
+                              min={1}></input>
                           </div>
                         </td>
                         <td>
@@ -113,36 +132,40 @@ export default function PriceSimulatorRow({
                         <td>
                           <p>
                             {newPrice[index] && !showResults
-                              ? product?.percentageChangeInVolume?.toFixed(2) + "%"
+                              ? product?.percentageChangeInVolume?.toFixed(2) +
+                                "%"
                               : showResults && product?.percentageChangeInVolume
-                              ? product?.percentageChangeInVolume?.toFixed(2) + "%"
+                              ? product?.percentageChangeInVolume?.toFixed(2) +
+                                "%"
                               : "-"}
                           </p>
                         </td>
                         <td>
                           <p>
                             {newPrice[index] && !showResults
-                              ? product?.newDollars?.toFixed(2) + "$"
+                              ? "$" + product?.newDollars?.toFixed(2)
                               : showResults && product?.percentageChangeInVolume
-                              ? product?.newDollars?.toFixed(2) + "$"
+                              ? "$" + product?.newDollars?.toFixed(2)
                               : "-"}
                           </p>
                         </td>
                         <td>
                           <p>
                             {newPrice[index] && !showResults
-                              ? product?.changeInDollars?.toFixed(2) + "$"
+                              ? "$" + product?.changeInDollars?.toFixed(2)
                               : showResults && product?.percentageChangeInVolume
-                              ? product?.changeInDollars?.toFixed(2)
+                              ? "$" + product?.changeInDollars?.toFixed(2)
                               : "-"}
                           </p>
                         </td>
                         <td>
                           <p>
                             {newPrice[index] && !showResults
-                              ? product?.percentageChangeInDollars?.toFixed(2) + "%"
+                              ? product?.percentageChangeInDollars?.toFixed(2) +
+                                "%"
                               : showResults && product?.percentageChangeInVolume
-                              ? product?.percentageChangeInDollars?.toFixed(2) + "%"
+                              ? product?.percentageChangeInDollars?.toFixed(2) +
+                                "%"
                               : "-"}
                           </p>
                         </td>
@@ -178,8 +201,7 @@ export default function PriceSimulatorRow({
                               e.preventDefault();
                             }
                           }}
-                          min={1}
-                        ></input>
+                          min={1}></input>
                       </div>
                     </td>
                     {/* 3rd section */}

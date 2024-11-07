@@ -32,7 +32,10 @@ const Bar = ({ isLoading, chartModel, setChartModel }) => {
         // y: parseFloat(item.Price_avg_last_4_weeks?.toFixed(2)),
         // y: parseInt(item.Price_avg_last_4_weeks),
         
-        y: Math.round(item.Price_avg_last_4_weeks),
+                   //old
+        // y: Math.round(item.Price_avg_last_4_weeks),
+                   //New
+        y:item.Price_avg_last_4_weeks,
         x: item.Product,
       });
     });
@@ -67,7 +70,7 @@ const Bar = ({ isLoading, chartModel, setChartModel }) => {
 
         const options = {
           chart: {
-            height: 450,
+            height: 500,
             stacked: isStacked,
             toolbar: {
               tools: {
@@ -112,10 +115,7 @@ const Bar = ({ isLoading, chartModel, setChartModel }) => {
                   fillColor: '#fff',
                   strokeColor: '#37474F'
               },
-              selection: {
-                  background: '#90CAF9',
-                  border: '#0D47A1'
-              }    
+                
             }
           },
           dataLabels: {
@@ -335,10 +335,7 @@ const Bar = ({ isLoading, chartModel, setChartModel }) => {
           grid: {
             show: false,
             borderColor: '#e7e7e7',
-            row: {
-              colors: ['#f3f3f3', 'transparent'],
-              opacity: 0.5,
-            },
+            
           },
           noData: {
             text: "No Data Available To Show",

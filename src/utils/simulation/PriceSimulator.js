@@ -44,10 +44,13 @@ export default function PriceSimulator({
                       minWidth: "100%",
                     }}
                     className="filtered-accordion-ant-select"
-                    maxTagCount="responsive"
-                  >
+                    maxTagCount="responsive">
                     {retailers?.map((item) => (
-                      <Select.Option key={item} value={item} className="custom-tooltip-option" data-tooltip={item}>
+                      <Select.Option
+                        key={item}
+                        value={item}
+                        className="custom-tooltip-option"
+                        data-tooltip={item}>
                         {item}
                       </Select.Option>
                     ))}
@@ -63,10 +66,13 @@ export default function PriceSimulator({
                       minWidth: "100%",
                     }}
                     className="filtered-accordion-ant-select"
-                    maxTagCount="responsive"
-                  >
+                    maxTagCount="responsive">
                     {brands?.map((item) => (
-                      <Select.Option key={item} value={item} className="custom-tooltip-option" data-tooltip={item}>
+                      <Select.Option
+                        key={item}
+                        value={item}
+                        className="custom-tooltip-option"
+                        data-tooltip={item}>
                         {item}
                       </Select.Option>
                     ))}
@@ -82,9 +88,11 @@ export default function PriceSimulator({
                       minWidth: "100%",
                     }}
                     className="filtered-accordion-ant-select"
-                    maxTagCount="responsive"
-                  >
-                    <Select.Option key="select-all" value="select-all" className="text-primary">
+                    maxTagCount="responsive">
+                    <Select.Option
+                      key="select-all"
+                      value="select-all"
+                      className="text-primary">
                       {!isAllProductSelected ? "Select all" : "Unselect all"}
                     </Select.Option>
                     {products.map((product, index) => (
@@ -123,10 +131,18 @@ export default function PriceSimulator({
                       <p>{selectedBrand || "Brand"}</p>
                     </td>
                     <td>
-                      <p>{totalNewWeeklyDollars ? totalNewWeeklyDollars.toFixed(2) + " $" : "-"}</p>
+                      <p>
+                        {totalNewWeeklyDollars
+                          ? "$ " + totalNewWeeklyDollars.toFixed(2)
+                          : "-"}
+                      </p>
                     </td>
                     <td>
-                      <p>{totalChangeWeeklyDollars ? totalChangeWeeklyDollars.toFixed(2) + " $" : "-"}</p>
+                      <p>
+                        {totalChangeWeeklyDollars
+                          ? "$ " + totalChangeWeeklyDollars.toFixed(2)
+                          : "-"}
+                      </p>
                     </td>
                     <td>
                       <p>
@@ -136,7 +152,7 @@ export default function PriceSimulator({
                       </p>
                     </td>
                   </tr>
-                  <tr>
+                  {/* <tr>
                     <td>
                       <p>Competitors in brand</p>
                     </td>
@@ -161,7 +177,7 @@ export default function PriceSimulator({
                           : "-"}
                       </p>
                     </td>
-                  </tr>
+                  </tr> */}
                   <tr>
                     <td>
                       <p>Competitors outside brand</p>
@@ -169,21 +185,27 @@ export default function PriceSimulator({
                     <td>
                       <p>
                         {competitorSummary.totalNewWeeklyDollars
-                          ? competitorSummary.totalNewWeeklyDollars.toFixed(2) + " $"
+                          ? "$ " +
+                            competitorSummary.totalNewWeeklyDollars.toFixed(2)
                           : "-"}
                       </p>
                     </td>
                     <td>
                       <p>
                         {competitorSummary.totalChangeWeeklyDollars
-                          ? competitorSummary.totalChangeWeeklyDollars.toFixed(2) + " $"
+                          ? "$ " +
+                            competitorSummary.totalChangeWeeklyDollars.toFixed(
+                              2
+                            )
                           : "-"}
                       </p>
                     </td>
                     <td>
                       <p>
                         {competitorSummary.totalPercentageChangeWeeklyDollars
-                          ? competitorSummary.totalPercentageChangeWeeklyDollars.toFixed(2) + " %"
+                          ? competitorSummary.totalPercentageChangeWeeklyDollars.toFixed(
+                              2
+                            ) + " %"
                           : "-"}
                       </p>
                     </td>

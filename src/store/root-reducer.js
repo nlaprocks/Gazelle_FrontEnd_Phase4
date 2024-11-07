@@ -125,6 +125,9 @@ import userChartsDataReducer from "./insights/phase3Charts/userCharts/userCharts
 
 // Local filters
 import filterChartReducer from "./insights/localFilters/chartFilteration/filterChartReducer";
+import formReducer from "./formData/formReducer";
+import tableReducer from "./tableData/tableReducer";
+
 const rootReducer = combineReducers({
   addModelReducer,
   addModelWithVersionReducer,
@@ -244,5 +247,7 @@ const rootReducer = combineReducers({
   retailerBrandsProductsReducer,
   combinedColumnsReducer,
   userChartsDataReducer,
+  formReducer,
+  tableReducer,
 });
 export default rootReducer;

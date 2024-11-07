@@ -1,3 +1,4 @@
+
 import React from "react";
 import Modal from "react-bootstrap/Modal";
 import { useSelector, useDispatch } from "react-redux";
@@ -36,7 +37,7 @@ const ApplyFilter = ({ showApplyFilterModal, setShowApplyFilterModal, InsightsBl
     const formattedDate = `${month}/${day}/${dateObject.getFullYear()}`;
     return formattedDate;
   }
-
+// console.log(getFiltersReducer,"getfilterreducer")
   const [dateRange, setDateRange] = React.useState({
     startDate: null,
     endDate: null,
@@ -150,6 +151,7 @@ const ApplyFilter = ({ showApplyFilterModal, setShowApplyFilterModal, InsightsBl
       filterProducts();
     }
   }, [selectedRetailers, selectedBrands, retailerBrandsProducts]);
+// }, []);
 
 
   return (
@@ -379,3 +381,4 @@ const ApplyFilter = ({ showApplyFilterModal, setShowApplyFilterModal, InsightsBl
 };
 
 export default ApplyFilter;
+

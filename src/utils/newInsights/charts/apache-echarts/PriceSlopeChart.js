@@ -194,10 +194,10 @@ const PriceSlopeChart = ({ isLoading }) => {
       grid: {
         show: false,
         borderColor: '#e7e7e7',
-        row: {
-          colors: ['#f3f3f3', 'transparent'],
-          opacity: 0.5,
-        },
+        // row: {
+        //   colors: ['#f3f3f3', 'transparent'],
+        //   opacity: 0.5,
+        // },
       },
       legend: {
         show: false,
