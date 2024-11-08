@@ -287,8 +287,8 @@ const BarRetailor = ({ isLoading, chartModel, setChartModel }) => {
             console.log(value);
             const maxLabelLength = 10;
             if (value?.length > maxLabelLength) {
-              return value.substring(0, maxLabelLength - 3) + "...";
-              // return value;
+              // return value.substring(0, maxLabelLength - 3) + "...";
+              return value;
             }
             return value;
           }
