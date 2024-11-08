@@ -206,8 +206,15 @@ input.simu_input::placeholder {
 }
 
 .sim_retailer_main .sim_drop {
-  width: 300px;
+  max-width: 32%;
+  /* width: 300px; */
   /* border: 1px solid #174F73; */
+}
+
+@media screen and (max-width: 1300px) {
+  .sim_retailer_main .sim_drop {
+    max-width: 30%;
+  }
 }
 
 .sim_retailer_row1 {
