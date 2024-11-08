@@ -1264,7 +1264,7 @@ export default function MarginSimulator({
     {
       xAxisTitle: "% Change in Price",
       leftyAxisTitle: "Manufacturer Profit ($)",
-      rightyAxisTitle: "Annual Profit ($)",
+      rightyAxisTitle: "Annual Dollar Sales($)",
       multiAxes: true,
       data: {
         labels: [
@@ -1954,7 +1954,7 @@ export default function MarginSimulator({
     yaxis: [
       {
         title: {
-          text: "Annual Profit ($)",
+          text: "Annual Dollar Sales ($)",
         },
       },
       {
@@ -1970,7 +1970,7 @@ export default function MarginSimulator({
         data: data.manufacturerProfit && formatArrayToTwoDecimals(data.manufacturerProfit),
       },
       {
-        name: 'Annual Profit',
+        name: 'Annual Dollar Sales',
         // data: data.annualProfit.concat(new Array(data.changeInPrice.length - data.annualProfit.length).fill(null)),
         data: data.annualProfit && formatArrayToTwoDecimals(data.annualProfit),
       },

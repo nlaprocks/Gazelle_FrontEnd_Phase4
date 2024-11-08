@@ -82,7 +82,7 @@ export default function PriceSimulatorRow({
                         </td>
                         <td>
                           <p>
-                            {!isNaN(totalVolume) ? totalVolume.toFixed(2) : "-"}
+                            ${!isNaN(totalVolume) ? totalVolume.toFixed(2) : "-"}
                           </p>
                         </td>
 

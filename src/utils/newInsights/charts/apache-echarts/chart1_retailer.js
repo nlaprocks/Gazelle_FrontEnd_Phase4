@@ -16,6 +16,7 @@ const BarRetailor = ({ isLoading, chartModel, setChartModel }) => {
   // Create an empty object to store the grouped data
   const groupedData = {};
   // Iterate through the data and group it by "Retailer"
+  console.log( chart1Reducer?.chart1Data?.data,"dchasadf")
   chart1Reducer?.chart1Data?.data?.forEach((item) => {
     const retailer = item.Retailer;
     // console.log("item: ", chart1Reducer?.chart1Data?.data.length)
@@ -38,7 +39,7 @@ const BarRetailor = ({ isLoading, chartModel, setChartModel }) => {
         //  old
       // y: Math.round(item.Price_avg_last_4_weeks),
       y: item.Price_avg_last_4_weeks,
-      x: item.Product,
+      x: item.Retailer,
     });
   });
 
@@ -283,15 +284,17 @@ const BarRetailor = ({ isLoading, chartModel, setChartModel }) => {
             fontSize: '10px'
           },
           formatter: function (value) {
+            console.log(value);
             const maxLabelLength = 10;
             if (value?.length > maxLabelLength) {
               return value.substring(0, maxLabelLength - 3) + "...";
+              // return value;
             }
             return value;
           }
         },
         title: {
-          text: 'Product',
+          text: 'Retailers ',
           // offsetY: 100,
           style: {
             fontWeight: 'bold'
