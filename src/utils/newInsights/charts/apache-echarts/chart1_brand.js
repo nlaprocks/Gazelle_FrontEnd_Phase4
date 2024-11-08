@@ -266,10 +266,10 @@ const Bar = ({ isLoading, chartModel, setChartModel }) => {
                 fontSize: '10px'
               },
               formatter: function (value) {
-                const maxLabelLength = 10;
+                const maxLabelLength = 15;
                 if (value?.length > maxLabelLength) {
-                  // return value.substring(0, maxLabelLength - 3) + "...";
-                  return value
+                  return value.substring(0, maxLabelLength - 3) + "...";
+                  
                 }
                 return value;
               }
