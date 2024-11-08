@@ -349,7 +349,7 @@ export default function PromoEventSimulator({
                             name="promoPrice"
                             value={promoEventPriceValues.promoPrice}
                             onChange={handlePromoEventPriceInputChange}
-                            min={0}
+                            // min={0}
                           ></input>
                         </div>
                       </td>

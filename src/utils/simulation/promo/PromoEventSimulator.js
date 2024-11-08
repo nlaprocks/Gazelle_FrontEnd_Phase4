@@ -526,11 +526,11 @@ export default function PromoEventSimulator({
                                                                                     : "-"
                                                                                 : promoEventPriceValues.fdDist
                                                                                     ? promoEventPriceValues.fdDist
-                                                                                    : "-"}
+                                                                                    : "-"}%
                                                                 </p>
                                                             </td>
                                                             <td>
-                                                                <p>{value ? value.toFixed(2) : "-"}</p>
+                                                                <p>{value ? value.toFixed(2) : "-"}%</p>
                                                             </td>
                                                             <td>
                                                                 <p>
@@ -552,7 +552,7 @@ export default function PromoEventSimulator({
                                                                 </p>
                                                             </td>
                                                             <td>
-                                                                <p>
+                                                                <p>$
                                                                     {i === 0
                                                                         ? dollars.tprDollars
                                                                             ? dollars.tprDollars.toFixed(2)
@@ -585,7 +585,7 @@ export default function PromoEventSimulator({
                                                                 lift.tprLift + lift.foLift + lift.doLift + lift.fdLift !== 0
                                                                 ? (lift.tprLift + lift.foLift + lift.doLift + lift.fdLift).toFixed(2)
                                                                 : "-"
-                                                            : "-"}
+                                                            : "-"}%
                                                     </p>
                                                 </td>
                                                 <td>
@@ -600,7 +600,7 @@ export default function PromoEventSimulator({
                                                 </td>
                                                 <td>
                                                     <p>
-                                                        {dollars
+                                                        ${dollars
                                                             ? !isNaN(
                                                                 dollars.tprDollars + dollars.foDollars + dollars.doDollars + dollars.fdDollars
                                                             ) &&
@@ -627,7 +627,7 @@ export default function PromoEventSimulator({
                                                                 lift.tprLift + lift.foLift + lift.doLift + lift.fdLift !== 0
                                                                 ? (lift.tprLift + lift.foLift + lift.doLift + lift.fdLift + 100).toFixed(2)
                                                                 : "-"
-                                                            : "-"}
+                                                            : "-"}%
                                                     </p>
                                                 </td>
                                                 <td>
@@ -648,7 +648,7 @@ export default function PromoEventSimulator({
                                                 </td>
                                                 <td>
                                                     <p>
-                                                        {dollars && promoEventPriceValues?.total_units_sum && promoEventPriceValues?.promoPrice
+                                                        ${dollars && promoEventPriceValues?.total_units_sum && promoEventPriceValues?.promoPrice
                                                             ? !isNaN(
                                                                 dollars.tprDollars + dollars.foDollars + dollars.doDollars + dollars.fdDollars
                                                             ) &&

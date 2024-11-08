@@ -248,7 +248,7 @@ export default function Financials({ promotedPrice, units, increamentalUnits, ba
                     max: Math.ceil(maxValue + padding),
                     labels: {
                         formatter: (value) => {
-                            if (value === null || value === undefined) return '-';
+                            if (value === null || value === undefined) return ;
                             return value.toFixed(2) + ' $';
                         },
                         style: {
@@ -263,7 +263,7 @@ export default function Financials({ promotedPrice, units, increamentalUnits, ba
                     max: Math.ceil(maxValue + padding),
                     labels: {
                         formatter: (value) => {
-                            if (value === null || value === undefined) return '-';
+                            if (value === null || value === undefined) return ;
                             return value.toFixed(2) + ' $';
                         },
                         style: {
@@ -278,7 +278,7 @@ export default function Financials({ promotedPrice, units, increamentalUnits, ba
                     max: Math.ceil(maxValue + padding),
                     labels: {
                         formatter: (value) => {
-                            if (value === null || value === undefined) return '-';
+                            if (value === null || value === undefined) return ;
                             return value.toFixed(2) + ' $';
                         },
                         style: {
@@ -293,7 +293,7 @@ export default function Financials({ promotedPrice, units, increamentalUnits, ba
                     },
                     labels: {
                         formatter: (value) => {
-                            if (value === null || value === undefined) return '-';
+                            if (value === null || value === undefined) return ;
                             return value.toFixed(2) + ' %';
                         }
                     },
@@ -309,7 +309,7 @@ export default function Financials({ promotedPrice, units, increamentalUnits, ba
             dataLabels: {
                 enabled: true,
                 formatter: function (val, opts) {
-                    if (val === null || val === undefined || val === 0) return '-';
+                    if (val === null || val === undefined || val === 0) return ;
 
                     // Safely check if the series is percentage-based
                     const isPercentage = ['Sales ROI', 'Retail Promo Margin %'].includes(opts.w.globals.seriesNames[opts.seriesIndex]);

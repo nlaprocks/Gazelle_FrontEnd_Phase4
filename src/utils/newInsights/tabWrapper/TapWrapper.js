@@ -271,6 +271,7 @@ const TapWrapper = ({ showShareModal, setShowShareModal, sidebarState }) => {
     setIsInsights(prevState => !prevState);
   };
 // console.log(showAddChartModal,"setshowchartmodels");
+console.log(adminQuestionsReducer,"getallsdfksd")
 
   return (
     <div>

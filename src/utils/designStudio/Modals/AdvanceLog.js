@@ -4,8 +4,10 @@ import { useSelector } from "react-redux";
 import Moment from "react-moment";
 import Spinner from "react-bootstrap/Spinner";
 const AdvanceLog = ({ log, setLog }) => {
+  
   const handleLogClose = () => setLog(false);
   const getAllLogReducer = useSelector((state) => state.getAllLogReducer);
+
   return (
     <Modal show={log} onHide={handleLogClose} centered className="logModal">
       <Modal.Header>

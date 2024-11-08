@@ -603,7 +603,7 @@ export default function PromoEventSimulator({
                                     dollars.foDollars +
                                     dollars.doDollars +
                                     dollars.fdDollars
-                                  ).toFixed(2)
+                                  ).toFixed(2) 
                                 : "-"
                               : "-"}
                           </p>
