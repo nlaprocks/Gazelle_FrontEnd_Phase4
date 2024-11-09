@@ -43,22 +43,22 @@ export default function Financials({ promotedPrice, units, increamentalUnits, ba
         setEventResults([
             {
                 name: "Gross Revenue",
-                value: !isNaN(grossRevenue) && parseFloat(grossRevenue) !== 0 ? grossRevenue.toFixed(2) + "$" : "-",
+                value: !isNaN(grossRevenue) && parseFloat(grossRevenue) !== 0 ? "$" + grossRevenue.toFixed(2) : "-",
             },
             {
                 name: "Total Spend",
-                value: !isNaN(totalSpend) ? totalSpend.toFixed(2) + "$" : "-",
+                value: !isNaN(totalSpend) ?  "$" + totalSpend.toFixed(2) : "-",
             },
             {
                 name: "Incremental Revenue",
                 value:
                     !isNaN(increamentalRevenue) && parseFloat(increamentalRevenue) !== 0
-                        ? increamentalRevenue.toFixed(2) + "$"
+                        ?  "$" + increamentalRevenue.toFixed(2)
                         : "-",
             },
             {
                 name: "Incremental Profit",
-                value: !isNaN(increamentalProfit) ? increamentalProfit.toFixed(2) + "$" : "-",
+                value: !isNaN(increamentalProfit) ? "$" +  increamentalProfit.toFixed(2) : "-",
             },
             {
                 name: "Sales ROI",
@@ -74,7 +74,7 @@ export default function Financials({ promotedPrice, units, increamentalUnits, ba
             },
             {
                 name: "Retail Profit",
-                value: !isNaN(retailerProfit) && parseFloat(retailerProfit) !== 0 ? retailerProfit.toFixed(2) + "$" : "-",
+                value: !isNaN(retailerProfit) && parseFloat(retailerProfit) !== 0 ? "$" +  retailerProfit.toFixed(2) : "-",
             },
         ]);
         setFinancialsChartData([{
@@ -132,11 +132,11 @@ export default function Financials({ promotedPrice, units, increamentalUnits, ba
         return {
             chart: {
                 type: chartType, // Default chart type
-                // zoom: {
-                //     enable: false,
-                // },
-                // zoomin: false,
-                // zoomout: false,
+                zoom: {
+                    enable: false,
+                },
+                zoomin: false,
+                zoomout: false,
 
                 toolbar: {
                     show: true,
@@ -249,7 +249,7 @@ export default function Financials({ promotedPrice, units, increamentalUnits, ba
                     labels: {
                         formatter: (value) => {
                             if (value === null || value === undefined) return ;
-                            return value.toFixed(2) + ' $';
+                            return ' $'+ value.toFixed(2);
                         },
                         style: {
                             colors: ['#000']
@@ -264,7 +264,7 @@ export default function Financials({ promotedPrice, units, increamentalUnits, ba
                     labels: {
                         formatter: (value) => {
                             if (value === null || value === undefined) return ;
-                            return value.toFixed(2) + ' $';
+                            return "$" + value.toFixed(2) ;
                         },
                         style: {
                             colors: ['#000']
@@ -279,7 +279,7 @@ export default function Financials({ promotedPrice, units, increamentalUnits, ba
                     labels: {
                         formatter: (value) => {
                             if (value === null || value === undefined) return ;
-                            return value.toFixed(2) + ' $';
+                            return "$" + value.toFixed(2) ;
                         },
                         style: {
                             colors: ['#000']
@@ -314,7 +314,10 @@ export default function Financials({ promotedPrice, units, increamentalUnits, ba
                     // Safely check if the series is percentage-based
                     const isPercentage = ['Sales ROI', 'Retail Promo Margin %'].includes(opts.w.globals.seriesNames[opts.seriesIndex]);
 
-                    return val.toFixed(2) + (isPercentage ? ' %' : ' $');
+                    // return val.toFixed(2) + (isPercentage ? ' %' : ' $');
+                    // return  (isPercentage ? ' %' : ' $')+val.toFixed(2);
+                    return isPercentage ? (val.toFixed(2) + ' %') : ('$' + val.toFixed(2));
+
                 },
                 style: {
                     colors: ['#000']
