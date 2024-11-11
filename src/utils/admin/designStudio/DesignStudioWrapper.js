@@ -49,10 +49,10 @@ const DesignStudioWrapper = ({ showAddQuestionModal, setShowAddQuestionModal }) 
                     <tr>
                       <th>Operators</th>
                       <th>Nodes</th>
-                      <th className="text-center lastCell text-center sorting_disabled dtfc-fixed-right">
+                      <th className="lastCell text-center sorting_disabled dtfc-fixed-right">
                         Nodes Actions
                       </th>
-                      <th className="text-center lastCell text-center sorting_disabled dtfc-fixed-right">
+                      <th className="lastCell text-center sorting_disabled dtfc-fixed-right">
                         Operator Actions
                       </th>
                     </tr>
