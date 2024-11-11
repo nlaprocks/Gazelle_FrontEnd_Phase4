@@ -18,7 +18,7 @@ const BarRetailor = ({ isLoading, chartModel, setChartModel }) => {
   // Iterate through the data and group it by "Retailer"
   console.log( chart1Reducer?.chart1Data?.data,"dchasadf")
   chart1Reducer?.chart1Data?.data?.forEach((item) => {
-    const retailer = item.Retailer;
+    const retailer = item.Product;
     // console.log("item: ", chart1Reducer?.chart1Data?.data.length)
 
     // Check if the retailer key exists in the groupedData object
@@ -288,9 +288,6 @@ const BarRetailor = ({ isLoading, chartModel, setChartModel }) => {
             const maxLabelLength = 15;
             if (value?.length > maxLabelLength) {
               return value.substring(0, maxLabelLength - 3) + "...";
-              
-            }
-            return value;
           }
         },
         title: {
@@ -360,6 +357,7 @@ const BarRetailor = ({ isLoading, chartModel, setChartModel }) => {
         }
       },
       legend: {
+        show:false,
         position: 'top'
       },
       grid: {

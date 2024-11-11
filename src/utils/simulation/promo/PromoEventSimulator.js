@@ -26,7 +26,8 @@ export default function PromoEventSimulator({
 }) {
     const echartsReactRef = React.useRef(null);
     const productName = promoSimulationData[0]?.Product ?? "";
-    console.log(promoSimulationData, discount, lift, units, dollars);
+    // console.log(promoSimulationData, discount, lift, units, dollars);
+
     //   let summary = Object.values(lift).map((i, value) => {
     //     return {
     //       name: "TPR",
@@ -35,6 +36,7 @@ export default function PromoEventSimulator({
     //       dollars: Object.values(dollars)[i].toFixed(2),
     //     };
     //   });
+
     const getOption = (data) => {
         const { Product, Retailer, xAxisTitle, leftyAxisTitle, rightyAxisTitle, data: chartData } = data;
         const datasets = chartData.datasets;
@@ -94,7 +96,9 @@ export default function PromoEventSimulator({
                 type: "category",
                 splitLine: { show: false },
                 boundaryGap: true,
-                data: labels,
+                //   data:  labels ,     old code
+                // data: promoEventPriceValues.tprDist ? labels : labels,     New Code
+                data: promoEventPriceValues.tprDist && promoEventPriceValues.tprDist.length > 0 ? labels : ["promotion"],  // New Lates Code
                 interval: 0,
                 name: xAxisTitle,
                 axisLabel: {
@@ -196,6 +200,8 @@ export default function PromoEventSimulator({
             ],
         };
     };
+
+    console.log(promoEventPriceValues.tprDist)
 
     return (
         <div className="simluation_db">

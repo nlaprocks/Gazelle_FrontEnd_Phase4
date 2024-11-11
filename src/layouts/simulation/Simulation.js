@@ -243,9 +243,9 @@ export default function Simulation() {
           let NewUnits =
             ele.total_units_sum +
             ele.total_units_sum *
-              ((1 + PercentageChangeInPrice / 100) **
-                ele.Base_Price_Elasticity -
-                1);
+            ((1 + PercentageChangeInPrice / 100) **
+              ele.Base_Price_Elasticity -
+              1);
 
           let ChangeInUnits = NewUnits - ele.total_units_sum;
           let PercentageChangeInUnits =
@@ -263,16 +263,16 @@ export default function Simulation() {
             NewVolume:
               ele.newPrice != 0
                 ? NewUnits *
-                  Product.match(/[+-]?\d+(\.\d+)?/g)[
-                    Product.match(/[+-]?\d+(\.\d+)?/g).length - 2
-                  ]
+                Product.match(/[+-]?\d+(\.\d+)?/g)[
+                Product.match(/[+-]?\d+(\.\d+)?/g).length - 2
+                ]
                 : 0,
             ChangeInVolume:
               ele.newPrice != 0
                 ? ChangeInUnits *
-                  Product.match(/[+-]?\d+(\.\d+)?/g)[
-                    Product.match(/[+-]?\d+(\.\d+)?/g).length - 2
-                  ]
+                Product.match(/[+-]?\d+(\.\d+)?/g)[
+                Product.match(/[+-]?\d+(\.\d+)?/g).length - 2
+                ]
                 : 0,
           });
           //Dollar Impact
@@ -330,7 +330,7 @@ export default function Simulation() {
             crossEffects.map((eff, i) => {
               let productOunces =
                 comps[i].competitor.match(/[+-]?\d+(\.\d+)?/g)[
-                  comps[i].competitor.match(/[+-]?\d+(\.\d+)?/g).length - 2
+                comps[i].competitor.match(/[+-]?\d+(\.\d+)?/g).length - 2
                 ];
               // productCompetitorCrossEffects.push({
               //   competitor: comps[i].competitor,
@@ -345,11 +345,11 @@ export default function Simulation() {
                 crossEffectValue:
                   ele.ChangeInVolume < 0
                     ? (eff * Math.abs(ele.ChangeInVolume)) /
-                      comps.length /
-                      productOunces
+                    comps.length /
+                    productOunces
                     : -(eff * Math.abs(ele.ChangeInVolume)) /
-                      comps.length /
-                      productOunces,
+                    comps.length /
+                    productOunces,
               });
             });
           }
@@ -382,7 +382,7 @@ export default function Simulation() {
             crossEffects.map((eff, i) => {
               let productOunces =
                 comps[i].competitor.match(/[+-]?\d+(\.\d+)?/g)[
-                  comps[i].competitor.match(/[+-]?\d+(\.\d+)?/g).length - 2
+                comps[i].competitor.match(/[+-]?\d+(\.\d+)?/g).length - 2
                 ];
               // productCompetitorCrossEffects.push({
               //   competitor: comps[i].competitor,
@@ -396,11 +396,11 @@ export default function Simulation() {
                 crossEffectValue:
                   ele.ChangeInVolume < 0
                     ? (eff * Math.abs(ele.ChangeInVolume)) /
-                      comps.length /
-                      productOunces
+                    comps.length /
+                    productOunces
                     : -(eff * Math.abs(ele.ChangeInVolume)) /
-                      comps.length /
-                      productOunces,
+                    comps.length /
+                    productOunces,
               });
             });
           }
@@ -441,7 +441,7 @@ export default function Simulation() {
                 parseInt(volumeImpact[id].NewPrice),
               ChangeInDollars:
                 (volumeImpact[id].NewUnits + ele.crossEffectValue) *
-                  parseInt(volumeImpact[id].NewPrice) -
+                parseInt(volumeImpact[id].NewPrice) -
                 tempDollarImpact[id].totalDollars,
               PercentageChangeInDollars:
                 (((volumeImpact[id].NewUnits + ele.crossEffectValue) *
@@ -574,10 +574,8 @@ export default function Simulation() {
 
   const handlePromoEventPriceInputChange = (event) => {
     const { name, value } = event.target;
-    setPromoEventPriceValues((prevInputValues) => ({
-      ...prevInputValues,
-      [name]: value,
-    }));
+    // console.log(name)
+    setPromoEventPriceValues((prevInputValues) => ({ ...prevInputValues, [name]: value, }));
   };
 
   /* -----start------ updating the state of the respective products with their impacts -----start------ */
@@ -696,12 +694,12 @@ export default function Simulation() {
     for (let index = 0; index < filteredSelectedPriceProducts.length; index++) {
       totalNewWeeklyDollars +=
         !isNaN(filteredSelectedPriceProducts[index].newDollars) &&
-        filteredSelectedPriceProducts[index].newDollars
+          filteredSelectedPriceProducts[index].newDollars
           ? filteredSelectedPriceProducts[index].newDollars
           : 0;
       totalChangeWeeklyDollars +=
         !isNaN(filteredSelectedPriceProducts[index].changeInDollars) &&
-        filteredSelectedPriceProducts[index].changeInDollars
+          filteredSelectedPriceProducts[index].changeInDollars
           ? filteredSelectedPriceProducts[index].changeInDollars
           : 0;
     }
@@ -874,63 +872,63 @@ export default function Simulation() {
     let lift = {
       tprLift:
         promoEventPriceValues?.tprDist === 0 ||
-        promoEventPriceValues?.tprDist === ""
+          promoEventPriceValues?.tprDist === ""
           ? 0
           : ((1 + -discount / 100) **
-              promoEventPriceValues?.promoPriceElasticity -
-              1) *
-            promoEventPriceValues?.tprDist,
+            promoEventPriceValues?.promoPriceElasticity -
+            1) *
+          promoEventPriceValues?.tprDist,
       foLift:
         promoEventPriceValues?.foDist === 0 ||
-        promoEventPriceValues?.foDist === ""
+          promoEventPriceValues?.foDist === ""
           ? 0
           : ((1 + -discount / 100) **
-              (promoEventPriceValues?.promoPriceElasticity *
-                Math.exp(
-                  (promoSimulationData[0]?.Feature *
-                    promoEventPriceValues?.foDist) /
-                    100
-                )) -
-              1) *
-              100 -
-            ((1 + -discount / 100) **
-              promoEventPriceValues?.promoPriceElasticity -
-              1) *
-              promoEventPriceValues?.tprDist,
+            (promoEventPriceValues?.promoPriceElasticity *
+              Math.exp(
+                (promoSimulationData[0]?.Feature *
+                  promoEventPriceValues?.foDist) /
+                100
+              )) -
+            1) *
+          100 -
+          ((1 + -discount / 100) **
+            promoEventPriceValues?.promoPriceElasticity -
+            1) *
+          promoEventPriceValues?.tprDist,
       doLift:
         promoEventPriceValues?.doDist === 0 &&
-        promoEventPriceValues?.doDist === ""
+          promoEventPriceValues?.doDist === ""
           ? 0
           : ((1 + -discount / 100) **
-              (promoEventPriceValues?.promoPriceElasticity *
-                Math.exp(
-                  (promoSimulationData[0]?.Display *
-                    promoEventPriceValues?.doDist) /
-                    100
-                )) -
-              1) *
-              100 -
-            ((1 + -discount / 100) **
-              promoEventPriceValues?.promoPriceElasticity -
-              1) *
-              promoEventPriceValues?.tprDist,
+            (promoEventPriceValues?.promoPriceElasticity *
+              Math.exp(
+                (promoSimulationData[0]?.Display *
+                  promoEventPriceValues?.doDist) /
+                100
+              )) -
+            1) *
+          100 -
+          ((1 + -discount / 100) **
+            promoEventPriceValues?.promoPriceElasticity -
+            1) *
+          promoEventPriceValues?.tprDist,
       fdLift:
         promoEventPriceValues?.fdDist === 0 ||
-        promoEventPriceValues?.fdDist === ""
+          promoEventPriceValues?.fdDist === ""
           ? 0
           : ((1 + -discount / 100) **
-              (promoEventPriceValues?.promoPriceElasticity *
-                Math.exp(
-                  (promoSimulationData[0]?.Feature_And_Display *
-                    promoEventPriceValues?.fdDist) /
-                    100
-                )) -
-              1) *
-              100 -
-            ((1 + -discount / 100) **
-              promoEventPriceValues?.promoPriceElasticity -
-              1) *
-              promoEventPriceValues?.tprDist,
+            (promoEventPriceValues?.promoPriceElasticity *
+              Math.exp(
+                (promoSimulationData[0]?.Feature_And_Display *
+                  promoEventPriceValues?.fdDist) /
+                100
+              )) -
+            1) *
+          100 -
+          ((1 + -discount / 100) **
+            promoEventPriceValues?.promoPriceElasticity -
+            1) *
+          promoEventPriceValues?.tprDist,
     };
     let units = {
       tprUnits: (lift?.tprLift / 100) * promoEventPriceValues?.total_units_sum,
@@ -968,12 +966,12 @@ export default function Simulation() {
               label: "",
               data: lift
                 ? [
-                    0,
-                    lift.tprLift.toFixed(2),
-                    lift.tprLift.toFixed(2),
-                    lift.tprLift.toFixed(2),
-                    0,
-                  ]
+                  0,
+                  lift.tprLift.toFixed(2),
+                  lift.tprLift.toFixed(2),
+                  lift.tprLift.toFixed(2),
+                  0,
+                ]
                 : [],
               borderColor: "rgb(75, 192, 192)",
               backgroundColor: "rgb(75, 192, 192,0.5)",
@@ -1011,17 +1009,17 @@ export default function Simulation() {
               label: "Event Incremental",
               data: lift
                 ? [
-                    "-",
-                    "-",
-                    "-",
-                    "-",
-                    (
-                      lift.tprLift +
-                      lift.foLift +
-                      lift.doLift +
-                      lift.fdLift
-                    ).toFixed(2),
-                  ]
+                  "-",
+                  "-",
+                  "-",
+                  "-",
+                  (
+                    lift.tprLift +
+                    lift.foLift +
+                    lift.doLift +
+                    lift.fdLift
+                  ).toFixed(2),
+                ]
                 : [],
               borderColor: "rgb(75, 192, 192)",
               backgroundColor: "rgb(75, 192, 192,0.5)",

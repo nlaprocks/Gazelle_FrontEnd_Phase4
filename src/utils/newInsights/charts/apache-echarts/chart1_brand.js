@@ -269,9 +269,6 @@ const Bar = ({ isLoading, chartModel, setChartModel }) => {
                 const maxLabelLength = 15;
                 if (value?.length > maxLabelLength) {
                   return value.substring(0, maxLabelLength - 3) + "...";
-                  
-                }
-                return value;
               }
             },
             title: {
