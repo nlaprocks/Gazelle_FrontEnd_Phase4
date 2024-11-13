@@ -16,7 +16,7 @@ const BarRetailor = ({ isLoading, chartModel, setChartModel }) => {
   // Create an empty object to store the grouped data
   const groupedData = {};
   // Iterate through the data and group it by "Retailer"
-  console.log( chart1Reducer?.chart1Data?.data,"dchasadf")
+  console.log(chart1Reducer?.chart1Data?.data, "dchasadf")
   chart1Reducer?.chart1Data?.data?.forEach((item) => {
     const retailer = item.Product;
     // console.log("item: ", chart1Reducer?.chart1Data?.data.length)
@@ -36,7 +36,7 @@ const BarRetailor = ({ isLoading, chartModel, setChartModel }) => {
     groupedData[retailer].data.push({
       // y: parseFloat(item.Price_avg_last_4_weeks?.toFixed(2)),
       // y: parseInt(item.Price_avg_last_4_weeks),
-        //  old
+      //  old
       // y: Math.round(item.Price_avg_last_4_weeks),
       y: item.Price_avg_last_4_weeks,
       x: item.Retailer,
@@ -124,15 +124,15 @@ const BarRetailor = ({ isLoading, chartModel, setChartModel }) => {
           enabled: false,
           type: 'x',
           resetIcon: {
-              offsetX: -10,
-              offsetY: 0,
-              fillColor: '#fff',
-              strokeColor: '#37474F'
+            offsetX: -10,
+            offsetY: 0,
+            fillColor: '#fff',
+            strokeColor: '#37474F'
           },
           selection: {
-              background: '#90CAF9',
-              border: '#0D47A1'
-          }    
+            background: '#90CAF9',
+            border: '#0D47A1'
+          }
         }
       },
       dataLabels: {
@@ -319,16 +319,16 @@ const BarRetailor = ({ isLoading, chartModel, setChartModel }) => {
         },
         labels: {
           formatter: function (value) {
-                return `$${value.toFixed(2)}`; // Format Y-axis as currency
-              },
+            return `$${value.toFixed(2)}`; // Format Y-axis as currency
+          },
           maxWidth: '160px',
           offsetX: 0,
           offsetY: 0,
           style: {
             fontSize: '10px',
-            positions:"relative",
-            top:"100px",
-             zIndex:"-99"
+            positions: "relative",
+            top: "100px",
+            zIndex: "-99"
           },
           // formatter: function (value) {
           //   return value.toFixed(0); // Remove decimal places
@@ -358,13 +358,13 @@ const BarRetailor = ({ isLoading, chartModel, setChartModel }) => {
         }
       },
       legend: {
-        show:false,
+        show: false,
         position: 'top'
       },
       grid: {
         show: false,
         borderColor: '#e7e7e7',
-        
+
       },
       noData: {
         text: "No Data Available To Show",
