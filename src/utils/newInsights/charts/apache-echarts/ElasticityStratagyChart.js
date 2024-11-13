@@ -113,12 +113,26 @@ const ElasticityStratagyChart = ({ isLoading }) => {
         },
         formatter: (params) => {
           const datasetIndex = params.seriesIndex;
+
+          if (!chartData?.data?.datasets || !chartData.data.datasets[datasetIndex]?.data) {
+              return "data unavailable";
+          }
+
           const dataItem = chartData.data.datasets[datasetIndex].data[params.dataIndex];
           const originalX = dataItem.x.toFixed(2); // Inverse the transformation
           const originalY = dataItem.y.toFixed(2); // Inverse the transformation
 
+          // const originalX = (dataItem.x != null && dataItem.x !== '') ? dataItem.x.toFixed(2) : '0.00';
+          // const originalY = (dataItem.y != null && dataItem.y !== '') ? dataItem.y.toFixed(2) : '0.00';
+          console.log(originalX,"originalx");
+          console.log(originalY,"originaly");
+          
+          
+
           return `${chartData.data.datasets[datasetIndex].label}<br />Base Price Elasticity: ${originalX}<br />Promo Price Elasticity: ${originalY}`;
         },
+      
+      
       },
       dataZoom: [
         {
@@ -339,7 +353,7 @@ const ElasticityStratagyChart = ({ isLoading }) => {
         return (
           <ReactECharts
             key={i}
-            option={getDataOption(val)}
+            option={getDataOption(val)||[]}
             showLoading={isLoading}
             style={{
               width: "100%",

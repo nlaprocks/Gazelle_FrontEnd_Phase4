@@ -287,6 +287,21 @@ export default function Financials({ promotedPrice, units, increamentalUnits, ba
                     }
                 },
                 {
+                    seriesName: "Retail Promo Margin %",
+                    show: false,
+                    min: Math.floor(minValue - padding),
+                    max: Math.ceil(maxValue + padding),
+                    labels: {
+                        formatter: (value) => {
+                            if (value === null || value === undefined) return ;
+                            return  value.toFixed(2)+ "%" ;
+                        },
+                        style: {
+                            colors: ['#000']
+                        }
+                    }
+                },
+                {
                     opposite: true,
                     title: {
                         text: rightyAxisTitle,
