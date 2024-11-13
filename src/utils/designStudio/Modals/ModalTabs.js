@@ -61,9 +61,8 @@ export default memo(function ModalTabs(props) {
 
   let data = JSON.parse(localStorage.getItem("auth"));
   let email = data?.email;
-
-  const allowedEmails = ["rick.miller@nla.com", "rod.brown@nla.com"];
-  // const allowedEmails = ['rick.miller@nla.com', 'testing@nla.com'];
+  
+  const allowedEmails = ["rick.miller@nla.com", "rod.brown@nla.com", "kim@nla.com", "bridget@nla.com"];
 
   console.log(selectedColumns);
 
