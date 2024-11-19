@@ -59,23 +59,23 @@ const MyChart = ({ isLoading }) => {
 
       productDataDict[productName].series[1].data.push({
         x: item.Retailer,
-        y: `${item.Dollar_sales_last_52_weeks?.toFixed(2) }`+"$",
+        y: `${item.Dollar_sales_last_52_weeks?.toFixed(2)}` + "$",
         // y: item.Dollar_sales_last_52_weeks?.toFixed(2) 
 
         // y: item.Dollar_sales_last_52_weeks ? Number(item.Dollar_sales_last_52_weeks.toFixed(2)) : null
-  //       y: item.Dollar_sales_last_52_weeks
-  //       ? Number(item.Dollar_sales_last_52_weeks).toLocaleString('en-IN', {
-  //           minimumFractionDigits: 2,  
-  // maximumFractionDigits: 4,  
-  // minimumIntegerDigits: 3,  
-  //         })
-  //       : null
+        //       y: item.Dollar_sales_last_52_weeks
+        //       ? Number(item.Dollar_sales_last_52_weeks).toLocaleString('en-IN', {
+        //           minimumFractionDigits: 2,  
+        // maximumFractionDigits: 4,  
+        // minimumIntegerDigits: 3,  
+        //         })
+        //       : null
       });
 
-  });
+    });
 
 
-    
+
   }
   // }, [chart3Data, chartType])
 
@@ -84,17 +84,17 @@ const MyChart = ({ isLoading }) => {
   const endIndex = startIndex + itemsPerPage;
   const visibleData = transformedData.slice(startIndex, endIndex);
   const showPagination = transformedData.length > itemsPerPage;
-// console.log(chart3Data,"chartdata")
-  
+  // console.log(chart3Data,"chartdata")
+
+  // chartNumber 3
   const getDataOption = (data) => ({
-    
     chart: {
       height: 500,
-      width:"200%",
+      width: "200%",
       zoom: {
         enabled: false,
       },
-      
+
       // type: "bar",
       // stacked: isStacked,
       toolbar: {
@@ -141,11 +141,9 @@ const MyChart = ({ isLoading }) => {
           // return value.toLocaleString('en-US', { style: 'currency', currency: 'INR', minimumFractionDigits: 2 });
           return value
         }
-        
       }
     },
     dataLabels: {
-    
       enabled: false,
     },
     legend: {
@@ -165,7 +163,7 @@ const MyChart = ({ isLoading }) => {
         },
       },
     },
-  
+
     // yaxis: [
     //   {
     //     title: {
@@ -186,10 +184,10 @@ const MyChart = ({ isLoading }) => {
     yaxis: [
       {
         title: {
-          text: data?.leftyAxisTitle || "Base Price Elasticity", 
+          text: data?.leftyAxisTitle || "Base Price Elasticity",
         },
-        opposite: false, 
-        reversed: true, 
+        opposite: false,
+        reversed: true,
         labels: {
           formatter: function (value) {
             return `${Number(value).toLocaleString('en-US')}`;
@@ -198,22 +196,19 @@ const MyChart = ({ isLoading }) => {
       },
       {
         title: {
-          text: data?.rightyAxisTitle || "Sale Revenue (L52 weeks)", 
+          text: data?.rightyAxisTitle || "Sale Revenue (L52 weeks)",
         },
-        opposite: true, 
+        opposite: true,
         labels: {
           formatter: function (value) {
-            return `$${Number(value).toLocaleString('en-US')}`; 
+            return `$${Number(value).toLocaleString('en-US')}`;
           },
         },
       },
     ],
-    
-
-
 
     // series: () => { return data?.series},
-    series: data?.series||[],
+    series: data?.series || [],
     grid: {
       show: false,
       borderColor: '#e7e7e7',
@@ -253,11 +248,11 @@ const MyChart = ({ isLoading }) => {
       }
     },
   });
-//  console.log(chart3Reducer,"chartreducer")
+  //  console.log(chart3Reducer,"chartreducer")
   return (
     <div>
       {visibleData.map((data, index) => (
-       
+
         <div
           key={index}
           style={{

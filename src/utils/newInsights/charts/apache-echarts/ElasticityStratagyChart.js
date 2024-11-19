@@ -12,6 +12,7 @@ const ElasticityStratagyChart = ({ isLoading }) => {
       setChartData(newData);
     }
   }, [chart9Reducer]);
+
   const transformData = (data) => {
     const chartDataMap = {};
 
@@ -53,7 +54,12 @@ const ElasticityStratagyChart = ({ isLoading }) => {
   const transformedChartData = Object.values(chartDataMap);
 
   const getDataOption = (chartData) => {
-    const datasets = chartData.data.datasets;
+    const datasets = chartData?.data?.datasets?.filter(dataset => dataset !== undefined);
+
+    // console.log(chartData,"chartdata")
+    // const datasets = chartData.data.datasets;
+    // console.log(datasets,"datasets");
+
 
     let maxX = Number.MIN_SAFE_INTEGER;
     let maxY = Number.MIN_SAFE_INTEGER;
@@ -62,6 +68,7 @@ const ElasticityStratagyChart = ({ isLoading }) => {
 
     // Loop through datasets and their data to find min and max values
     datasets.forEach((dataset) => {
+      // console.log(datasets)
       dataset.data.forEach((point) => {
         const { x, y } = point;
 
@@ -112,10 +119,12 @@ const ElasticityStratagyChart = ({ isLoading }) => {
           type: "shadow",
         },
         formatter: (params) => {
-          const datasetIndex = params.seriesIndex;
+          const datasetIndex = params.seriesIndex
+          console.log(chartData.data, "datasetindex")
+
 
           if (!chartData?.data?.datasets || !chartData.data.datasets[datasetIndex]?.data) {
-              return "data unavailable";
+            return <></>;
           }
 
           const dataItem = chartData.data.datasets[datasetIndex].data[params.dataIndex];
@@ -124,15 +133,15 @@ const ElasticityStratagyChart = ({ isLoading }) => {
 
           // const originalX = (dataItem.x != null && dataItem.x !== '') ? dataItem.x.toFixed(2) : '0.00';
           // const originalY = (dataItem.y != null && dataItem.y !== '') ? dataItem.y.toFixed(2) : '0.00';
-          console.log(originalX,"originalx");
-          console.log(originalY,"originaly");
-          
-          
+          console.log(originalX, "originalx");
+          console.log(originalY, "originaly");
+
+
 
           return `${chartData.data.datasets[datasetIndex].label}<br />Base Price Elasticity: ${originalX}<br />Promo Price Elasticity: ${originalY}`;
         },
-      
-      
+
+
       },
       dataZoom: [
         {
@@ -216,7 +225,7 @@ const ElasticityStratagyChart = ({ isLoading }) => {
       },
       series: chartData.data.datasets.map((dataset) => ({
         name: dataset.label,
-        data: dataset.data.map((point) => [point.x, point.y]),
+        data: dataset.data.filter((dataset) => dataset !== undefined).map((point) => [point.x, point.y]),
         type: "scatter",
         symbolSize: 20,
         itemStyle: {
@@ -278,6 +287,75 @@ const ElasticityStratagyChart = ({ isLoading }) => {
           symbol: ["none", "none"],
         },
       })),
+
+      // series: chartData.data.datasets
+      // .filter((dataset) => dataset !== undefined && Array.isArray(dataset.data)) // Ensure dataset and data array exist
+      // .map((dataset) => ({
+      //   name: dataset.label,
+      //   data: dataset.data, // Keep valid points only
+      //   type: "scatter",
+      //   symbolSize: 20,
+      //   itemStyle: {
+      //     borderColor: dataset.borderColor,
+      //     backgroundColor: dataset.backgroundColor,
+      //   },
+      //   emphasis: {
+      //     focus: "series",
+      //   },
+      //   markLine: {
+      //     data: [
+      //       {
+      //         xAxis: -2,
+      //         name: "Your Markline Name",
+      //         label: {
+      //           show: false,
+      //         },
+      //         lineStyle: {
+      //           color: "#93969E",
+      //           type: "solid",
+      //           width: 1,
+      //         },
+      //         emphasis: {
+      //           label: {
+      //             show: false,
+      //           },
+      //           lineStyle: {
+      //             width: 1,
+      //           },
+      //         },
+      //         tooltip: {
+      //           show: false,
+      //         },
+      //       },
+      //       {
+      //         yAxis: -2,
+      //         name: "Your Markline Name",
+      //         label: {
+      //           show: false,
+      //         },
+      //         lineStyle: {
+      //           color: "#93969E",
+      //           type: "solid",
+      //           width: 1,
+      //         },
+      //         emphasis: {
+      //           label: {
+      //             show: false,
+      //           },
+      //           lineStyle: {
+      //             width: 1,
+      //           },
+      //         },
+      //         tooltip: {
+      //           show: false,
+      //         },
+      //       },
+      //     ],
+      //     symbol: ["none", "none"],
+      //   },
+      // })) ,
+
+
 
       graphic: [
         {
@@ -353,7 +431,7 @@ const ElasticityStratagyChart = ({ isLoading }) => {
         return (
           <ReactECharts
             key={i}
-            option={getDataOption(val)||[]}
+            option={getDataOption(val) || []}
             showLoading={isLoading}
             style={{
               width: "100%",

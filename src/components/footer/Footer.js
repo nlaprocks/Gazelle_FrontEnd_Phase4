@@ -2,10 +2,13 @@ import React, { useState } from "react";
 import chatBubbles from "../../assets/images/ionic-ios-chatbubbles.svg";
 
 const Footer = () => {
+
   const [state, setState] = useState(false);
+
   const toggler = () => {
     state === false ? setState(true) : setState(false);
   };
+
   return (
     <div>
       {/* <!-- Footer Start  --> */}

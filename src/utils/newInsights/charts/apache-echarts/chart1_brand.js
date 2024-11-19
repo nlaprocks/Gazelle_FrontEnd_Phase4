@@ -31,11 +31,11 @@ const Bar = ({ isLoading, chartModel, setChartModel }) => {
       groupedData[brand][retailer].data.push({
         // y: parseFloat(item.Price_avg_last_4_weeks?.toFixed(2)),
         // y: parseInt(item.Price_avg_last_4_weeks),
-        
-                   //old
+
+        //old
         // y: Math.round(item.Price_avg_last_4_weeks),
-                   //New
-        y:item.Price_avg_last_4_weeks,
+        //New
+        y: item.Price_avg_last_4_weeks,
         x: item.Product,
       });
     });
@@ -47,7 +47,8 @@ const Bar = ({ isLoading, chartModel, setChartModel }) => {
 
     setChartDataArray(newDataArray);
   }, [chart1Reducer]);
-  
+
+  // chartNumber 1
 
   return (
     <div>
@@ -110,12 +111,12 @@ const Bar = ({ isLoading, chartModel, setChartModel }) => {
               enabled: false,
               type: 'x',
               resetIcon: {
-                  offsetX: -10,
-                  offsetY: 0,
-                  fillColor: '#fff',
-                  strokeColor: '#37474F'
+                offsetX: -10,
+                offsetY: 0,
+                fillColor: '#fff',
+                strokeColor: '#37474F'
               },
-                
+
             }
           },
           dataLabels: {
@@ -258,7 +259,6 @@ const Bar = ({ isLoading, chartModel, setChartModel }) => {
           },
           xaxis: {
             categories: allXAxisLabels,
-
             labels: {
               rotate: -45,
               maxHeight: '120px',
@@ -328,7 +328,8 @@ const Bar = ({ isLoading, chartModel, setChartModel }) => {
             },
             x: {
               formatter: function (value, { series, seriesIndex, dataPointIndex, w }) {
-                return allXAxisLabels[value - 1]
+                return allXAxisLabels[dataPointIndex];
+                // return allXAxisLabels[value - 1]
               }
             }
           },
@@ -336,7 +337,7 @@ const Bar = ({ isLoading, chartModel, setChartModel }) => {
           grid: {
             show: false,
             borderColor: '#e7e7e7',
-            
+
           },
           noData: {
             text: "No Data Available To Show",
@@ -499,12 +500,17 @@ const Bar = ({ isLoading, chartModel, setChartModel }) => {
             "#007BA7",
             "#2F4F4F",
           ],
+          plotOptions: {
+            bar: {
+              columnWidth: '40%', // Adjust this percentage to make the bars thinner or thicker
+            }
+          },
         };
 
         return (
           <div key={index} style={{ marginBottom: '50px' }}>
             <div className="d-flex justify-content-center">
-            <label className="mx-2 mb-3 text-bold">
+              <label className="mx-2 mb-3 text-bold">
                 <input
                   type="radio"
                   value="Brand"

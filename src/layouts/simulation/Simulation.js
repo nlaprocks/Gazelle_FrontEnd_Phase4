@@ -9,6 +9,7 @@ import MarginSimulator from "../../utils/simulation/MarginSimulator";
 import PromoEventSimulator from "../../utils/simulation/promo/PromoEventSimulator";
 
 export default function Simulation() {
+
   const { projectName, project_id, model_id } = useParams();
   // console.log("project_id: model_id", project_id, model_id)
 

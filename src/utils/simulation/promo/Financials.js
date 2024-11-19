@@ -2,17 +2,20 @@ import React from "react";
 import ApexCharts from "react-apexcharts";
 
 export default function Financials({ promotedPrice, units, increamentalUnits, basePrice, isPriceSimulationLoading }) {
+
     const echartsReactRef = React.useRef(null);
     const [eventResults, setEventResults] = React.useState([]);
     const [chartType, setChartType] = React.useState("rangeArea");
     const [isStacked, setIsStacked] = React.useState(false);
     const [financialsChartData, setFinancialsChartData] = React.useState([]);
+
     const [financialPriceValues, setFinancialPriceValues] = React.useState({
         listPrice: "",
         edlpPerUnitRate: "",
         promoPerUnitRate: "",
         fixedFee: "",
     });
+
     const handleFinancialPriceInputChange = (event) => {
         const { name, value } = event.target;
         setFinancialPriceValues((prevInputValues) => ({
@@ -20,6 +23,7 @@ export default function Financials({ promotedPrice, units, increamentalUnits, ba
             [name]: value,
         }));
     };
+
     React.useEffect(() => {
         let grossRevenue = units * promotedPrice;
         let variableSpend =
@@ -40,43 +44,51 @@ export default function Financials({ promotedPrice, units, increamentalUnits, ba
             financialPriceValues.fixedFee / units;
         let retailerPromoMargin = ((promotedPrice - netCost) / promotedPrice) * 100;
         let retailerProfit = units * promotedPrice - netCost * units;
+        // console.log(grossRevenue)
         setEventResults([
             {
                 name: "Gross Revenue",
                 value: !isNaN(grossRevenue) && parseFloat(grossRevenue) !== 0 ? "$" + grossRevenue.toFixed(2) : "-",
+                colorStatus: Math.sign(grossRevenue) === 1 ? 'Green' : 'Red'
             },
             {
                 name: "Total Spend",
-                value: !isNaN(totalSpend) ?  "$" + totalSpend.toFixed(2) : "-",
+                value: !isNaN(totalSpend) ? "$" + totalSpend.toFixed(2) : "-",
+                colorStatus: Math.sign(totalSpend) === 1 ? 'Green' : 'Red'
             },
             {
                 name: "Incremental Revenue",
-                value:
-                    !isNaN(increamentalRevenue) && parseFloat(increamentalRevenue) !== 0
-                        ?  "$" + increamentalRevenue.toFixed(2)
-                        : "-",
+                value: !isNaN(increamentalRevenue) && parseFloat(increamentalRevenue) !== 0 ? "$" + increamentalRevenue.toFixed(2) : "-",
+                colorStatus: Math.sign(increamentalRevenue) === 1 ? 'Green' : 'Red'
             },
             {
                 name: "Incremental Profit",
-                value: !isNaN(increamentalProfit) ? "$" +  increamentalProfit.toFixed(2) : "-",
+                value: !isNaN(increamentalProfit) ? "$" + increamentalProfit.toFixed(2) : "-",
+                colorStatus: Math.sign(increamentalProfit) === 1 ? 'Green' : 'Red'
             },
             {
                 name: "Sales ROI",
                 value: !isNaN(percentageROI) ? percentageROI.toFixed(2) + "%" : "-",
+                colorStatus: Math.sign(percentageROI) === 1 ? 'Green' : 'Red'
             },
             {
                 name: "Retail Promo Margin %",
                 value: !isNaN(retailerPromoMargin) ? retailerPromoMargin.toFixed(2) + "%" : "-",
+                colorStatus: Math.sign(retailerPromoMargin) === 1 ? 'Green' : 'Red'
             },
             {
                 name: "Retail Everyday Margin %",
                 value: !isNaN(retailerEverydayMargin) && promotedPrice ? retailerEverydayMargin.toFixed(2) + "%" : "-",
+                colorStatus: Math.sign(retailerEverydayMargin) === 1 ? 'Green' : 'Red'
             },
             {
                 name: "Retail Profit",
-                value: !isNaN(retailerProfit) && parseFloat(retailerProfit) !== 0 ? "$" +  retailerProfit.toFixed(2) : "-",
+                value: !isNaN(retailerProfit) && parseFloat(retailerProfit) !== 0 ? "$" + retailerProfit.toFixed(2) : "-",
+                colorStatus: Math.sign(totalSpend) === 1 ? 'Green' : 'Red'
+
             },
         ]);
+
         setFinancialsChartData([{
             xAxisTitle: "% Change in Price",
             leftyAxisTitle: "Dollars",
@@ -248,8 +260,8 @@ export default function Financials({ promotedPrice, units, increamentalUnits, ba
                     max: Math.ceil(maxValue + padding),
                     labels: {
                         formatter: (value) => {
-                            if (value === null || value === undefined) return ;
-                            return ' $'+ value.toFixed(2);
+                            if (value === null || value === undefined) return;
+                            return ' $' + value.toFixed(2);
                         },
                         style: {
                             colors: ['#000']
@@ -263,8 +275,8 @@ export default function Financials({ promotedPrice, units, increamentalUnits, ba
                     max: Math.ceil(maxValue + padding),
                     labels: {
                         formatter: (value) => {
-                            if (value === null || value === undefined) return ;
-                            return "$" + value.toFixed(2) ;
+                            if (value === null || value === undefined) return;
+                            return "$" + value.toFixed(2);
                         },
                         style: {
                             colors: ['#000']
@@ -278,8 +290,8 @@ export default function Financials({ promotedPrice, units, increamentalUnits, ba
                     max: Math.ceil(maxValue + padding),
                     labels: {
                         formatter: (value) => {
-                            if (value === null || value === undefined) return ;
-                            return "$" + value.toFixed(2) ;
+                            if (value === null || value === undefined) return;
+                            return "$" + value.toFixed(2);
                         },
                         style: {
                             colors: ['#000']
@@ -293,8 +305,8 @@ export default function Financials({ promotedPrice, units, increamentalUnits, ba
                     max: Math.ceil(maxValue + padding),
                     labels: {
                         formatter: (value) => {
-                            if (value === null || value === undefined) return ;
-                            return  value.toFixed(2)+ "%" ;
+                            if (value === null || value === undefined) return;
+                            return value.toFixed(2) + "%";
                         },
                         style: {
                             colors: ['#000']
@@ -308,7 +320,7 @@ export default function Financials({ promotedPrice, units, increamentalUnits, ba
                     },
                     labels: {
                         formatter: (value) => {
-                            if (value === null || value === undefined) return ;
+                            if (value === null || value === undefined) return;
                             return value.toFixed(2) + ' %';
                         }
                     },
@@ -324,7 +336,7 @@ export default function Financials({ promotedPrice, units, increamentalUnits, ba
             dataLabels: {
                 enabled: true,
                 formatter: function (val, opts) {
-                    if (val === null || val === undefined || val === 0) return ;
+                    if (val === null || val === undefined || val === 0) return;
 
                     // Safely check if the series is percentage-based
                     const isPercentage = ['Sales ROI', 'Retail Promo Margin %'].includes(opts.w.globals.seriesNames[opts.seriesIndex]);
@@ -360,17 +372,15 @@ export default function Financials({ promotedPrice, units, increamentalUnits, ba
             },
         };
     };
-    // console.log(eventResults);
+
+    console.log(eventResults);
     // console.log(financialsChartData,"financialchardata" );
-
-
     return (
         <div className="simluation_db">
             <div className="container-fluid">
                 <div className="sim_retailer_main mb-4" style={{ gridTemplateColumns: "auto" }}>
                     <p>Financial Analysis</p>
                 </div>
-
                 {isPriceSimulationLoading ? (
                     <div>
                         <p>Please wait, while we are fetching the data for you . . .</p>
@@ -380,7 +390,7 @@ export default function Financials({ promotedPrice, units, increamentalUnits, ba
                         {/* <!-- Best price --> */}
                         <div className="best_price_row mb-4">
                             <div>
-                                {financialsChartData.map((chartData, index) => (
+                                {/* {financialsChartData.map((chartData, index) => (
                                     <ApexCharts
                                         key={`financials-${index}-${chartType}`}
                                         options={getApexOptions(chartData)}
@@ -390,10 +400,40 @@ export default function Financials({ promotedPrice, units, increamentalUnits, ba
                                         width="90%"
                                         style={{ marginBottom: index !== financialsChartData.length - 1 ? "50px" : "0" }}
                                     />
-                                ))}
+                                ))} */}
+                                {/* test table */}
+                                <div className="sim_retailer_row1 width_td mb-4 ">
+                                    <div>
+                                        <div className="left_best_price col-lg-12">
+                                            <table className="best_pr_table">
+                                                <thead>
+                                                    <tr>
+                                                        <th colSpan={2}>Event Results </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {eventResults &&
+                                                        eventResults?.map((ele) => (
+                                                            // console.log(ele?.value),
+                                                            <tr>
+                                                                <td>
+                                                                    <p >{ele?.name}</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p style={{ color: ele?.colorStatus }}>{ele?.value ? ele?.value : "-"}</p>
+                                                                </td>
+                                                            </tr>
+                                                        ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                {/* test table */}
+
                             </div>
                             <div className="left_best_price">
-                                <table className="best_pr_table">
+                                <table className="best_pr_table mt-5">
                                     <thead>
                                         <tr>
                                             <th colSpan="2" style={{ backgroundColor: "#174F73", color: "#fff" }}>
@@ -420,7 +460,6 @@ export default function Financials({ promotedPrice, units, increamentalUnits, ba
                                                 </div>
                                             </td>
                                         </tr>
-
                                         <tr>
                                             <td>
                                                 <p>EDLP Per Unit Rate</p>
@@ -495,7 +534,7 @@ export default function Financials({ promotedPrice, units, increamentalUnits, ba
                             </div>
                         </div>
                         {/* Product display row */}
-                        <div className="sim_retailer_row1 width_td mb-4 ">
+                        {/* <div className="sim_retailer_row1 width_td mb-4 ">
                             <div>
                                 <div className="left_best_price col-lg-12">
                                     <table className="best_pr_table">
@@ -521,7 +560,7 @@ export default function Financials({ promotedPrice, units, increamentalUnits, ba
                                     </table>
                                 </div>
                             </div>
-                        </div>
+                        </div> */}
                     </div>
                 )}
             </div>

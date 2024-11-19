@@ -59,22 +59,22 @@ export default function PromoEventSimulator({
                 top: 50,
                 containLabel: true,
             },
-            dataZoom: [
-                {
-                    type: "slider", // The type of data zoom, 'slider' for a slider bar
-                    xAxisIndex: [0], // Enable data zoom for the first X axis (index 0)
-                    start: 0, // The start position of the data zoom, 0% in this case
-                    end: 100, // The end position of the data zoom, 100% in this case
-                    // bottom: -30,
-                },
-                {
-                    type: "slider", // The type of data zoom, 'slider' for a slider bar
-                    yAxisIndex: [0], // Enable data zoom for the first Y axis (index 0)
-                    start: 0, // The start position of the data zoom, 0% in this case
-                    end: 100, // The end position of the data zoom, 100% in this case
-                    right: 50,
-                },
-            ],
+            // dataZoom: [
+            //     {
+            //         type: "slider", // The type of data zoom, 'slider' for a slider bar
+            //         xAxisIndex: [0], // Enable data zoom for the first X axis (index 0)
+            //         start: 0, // The start position of the data zoom, 0% in this case
+            //         end: 100, // The end position of the data zoom, 100% in this case
+            //         // bottom: -30,
+            //     },
+            //     {
+            //         type: "slider", // The type of data zoom, 'slider' for a slider bar
+            //         yAxisIndex: [0], // Enable data zoom for the first Y axis (index 0)
+            //         start: 0, // The start position of the data zoom, 0% in this case
+            //         end: 100, // The end position of the data zoom, 100% in this case
+            //         right: 50,
+            //     },
+            // ],
             toolbox: {
                 show: true,
                 orient: "horizontal",
@@ -200,8 +200,6 @@ export default function PromoEventSimulator({
             ],
         };
     };
-
-    console.log(promoEventPriceValues.tprDist)
 
     return (
         <div className="simluation_db">
@@ -517,48 +515,27 @@ export default function PromoEventSimulator({
                                                                 </p>
                                                             </td>
                                                             <td>
-                                                                {/* <p>
+                                                                <p>
                                                                     {i === 0
                                                                         ? promoEventPriceValues.tprDist
-                                                                            ? promoEventPriceValues.tprDist
+                                                                            ? `${promoEventPriceValues.tprDist}%`
                                                                             : "-"
                                                                         : i === 1
                                                                             ? promoEventPriceValues.foDist
-                                                                                ? promoEventPriceValues.foDist
+                                                                                ? `${promoEventPriceValues.foDist}%`
                                                                                 : "-"
                                                                             : i === 2
                                                                                 ? promoEventPriceValues.doDist
-                                                                                    ? promoEventPriceValues.doDist
+                                                                                    ? `${promoEventPriceValues.doDist}%`
                                                                                     : "-"
                                                                                 : promoEventPriceValues.fdDist
-                                                                                    ? promoEventPriceValues.fdDist
-                                                                                    : "-"}%
-                                                                </p> */}
-                                                                <p>
-                                                                {i === 0
-    ? promoEventPriceValues.tprDist
-        ? `${promoEventPriceValues.tprDist}%`
-        : "-"
-    : i === 1
-        ? promoEventPriceValues.foDist
-            ? `${promoEventPriceValues.foDist}%`
-            : "-"
-        : i === 2
-            ? promoEventPriceValues.doDist
-                ? `${promoEventPriceValues.doDist}%`
-                : "-"
-            : promoEventPriceValues.fdDist
-                ? `${promoEventPriceValues.fdDist}%`
-                : "-"}
-
- 
+                                                                                    ? `${promoEventPriceValues.fdDist}%`
+                                                                                    : "-"}
                                                                 </p>
                                                             </td>
                                                             <td>
                                                                 {/* <p>{value ? value.toFixed(2) : "-"}%</p> */}
                                                                 <p>{value ? `${value.toFixed(2)}%` : "-"}</p>
-
-
                                                             </td>
                                                             <td>
                                                                 <p>
@@ -580,40 +557,23 @@ export default function PromoEventSimulator({
                                                                 </p>
                                                             </td>
                                                             <td>
-                                                                {/* <p>$
+                                                                <p>
                                                                     {i === 0
                                                                         ? dollars.tprDollars
-                                                                            ? dollars.tprDollars.toFixed(2)
+                                                                            ? `$${dollars.tprDollars.toFixed(2)}`
                                                                             : "-"
                                                                         : i === 1
                                                                             ? dollars.foDollars
-                                                                                ? dollars.foDollars.toFixed(2)
+                                                                                ? `$${dollars.foDollars.toFixed(2)}`
                                                                                 : "-"
                                                                             : i === 2
                                                                                 ? dollars.doDollars
-                                                                                    ? dollars.doDollars.toFixed(2)
+                                                                                    ? `$${dollars.doDollars.toFixed(2)}`
                                                                                     : "-"
                                                                                 : dollars.fdDollars
-                                                                                    ? dollars.fdDollars.toFixed(2)
+                                                                                    ? `$${dollars.fdDollars.toFixed(2)}`
                                                                                     : "-"}
-                                                                </p> */}
-                                                                <p>
-    {i === 0
-        ? dollars.tprDollars
-            ? `$${dollars.tprDollars.toFixed(2)}`
-            : "-"
-        : i === 1
-            ? dollars.foDollars
-                ? `$${dollars.foDollars.toFixed(2)}`
-                : "-"
-            : i === 2
-                ? dollars.doDollars
-                    ? `$${dollars.doDollars.toFixed(2)}`
-                    : "-"
-                : dollars.fdDollars
-                    ? `$${dollars.fdDollars.toFixed(2)}`
-                    : "-"}
-</p>
+                                                                </p>
 
                                                             </td>
                                                         </tr>
