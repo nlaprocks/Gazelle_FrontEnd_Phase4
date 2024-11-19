@@ -60,6 +60,7 @@ const PromotionalLiftChart = ({ isLoading }) => {
   // Convert the retailers object into an array
   const restructuredData = Object.values(retailers);
 
+  // chartNumber 7
   const getChartOptions = (data) => ({
     chart: {
       // type: 'bar',
@@ -107,15 +108,15 @@ const PromotionalLiftChart = ({ isLoading }) => {
         enabled: false,
         type: 'x',
         resetIcon: {
-            offsetX: -10,
-            offsetY: 0,
-            fillColor: '#fff',
-            strokeColor: '#37474F'
+          offsetX: -10,
+          offsetY: 0,
+          fillColor: '#fff',
+          strokeColor: '#37474F'
         },
         selection: {
-            background: '#90CAF9',
-            border: '#0D47A1'
-        }    
+          background: '#90CAF9',
+          border: '#0D47A1'
+        }
       }
     },
     title: {

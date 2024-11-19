@@ -9,6 +9,7 @@ import MarginSimulator from "../../utils/simulation/MarginSimulator";
 import PromoEventSimulator from "../../utils/simulation/promo/PromoEventSimulator";
 
 export default function Simulation() {
+
   const { projectName, project_id, model_id } = useParams();
   // console.log("project_id: model_id", project_id, model_id)
 
@@ -574,8 +575,15 @@ export default function Simulation() {
 
   const handlePromoEventPriceInputChange = (event) => {
     const { name, value } = event.target;
-    // console.log(name)
-    setPromoEventPriceValues((prevInputValues) => ({ ...prevInputValues, [name]: value, }));
+    if (name === 'tprDist' || name === 'doDist' || name === 'foDist' || name === 'fdDist') {
+      if (value > 100) {
+        setPromoEventPriceValues((prevInputValues) => ({ ...prevInputValues, [name]: 100, }));
+      } else {
+        setPromoEventPriceValues((prevInputValues) => ({ ...prevInputValues, [name]: value, }));
+      }
+    } else {
+      setPromoEventPriceValues((prevInputValues) => ({ ...prevInputValues, [name]: value, }));
+    }
   };
 
   /* -----start------ updating the state of the respective products with their impacts -----start------ */

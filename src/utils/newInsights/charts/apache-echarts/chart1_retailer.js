@@ -16,7 +16,7 @@ const BarRetailor = ({ isLoading, chartModel, setChartModel }) => {
   // Create an empty object to store the grouped data
   const groupedData = {};
   // Iterate through the data and group it by "Retailer"
-  console.log(chart1Reducer?.chart1Data?.data, "dchasadf")
+  // console.log(chart1Reducer?.chart1Data?.data, "dchasadf")
   chart1Reducer?.chart1Data?.data?.forEach((item) => {
     const retailer = item.Product;
     // console.log("item: ", chart1Reducer?.chart1Data?.data.length)
@@ -79,6 +79,7 @@ const BarRetailor = ({ isLoading, chartModel, setChartModel }) => {
     setSData(seriesData)
   }, [chart1Reducer, chartType])
 
+  // chartNumber 1
 
   const chartData = {
     options: {
@@ -276,7 +277,6 @@ const BarRetailor = ({ isLoading, chartModel, setChartModel }) => {
       },
       xaxis: {
         categories: allXAxisLabels,
-
         labels: {
           rotate: -45,
           maxHeight: '120px',
@@ -353,7 +353,8 @@ const BarRetailor = ({ isLoading, chartModel, setChartModel }) => {
         },
         x: {
           formatter: function (value, { series, seriesIndex, dataPointIndex, w }) {
-            return allXAxisLabels[value - 1]
+            return allXAxisLabels[dataPointIndex] || value;
+            // return allXAxisLabels[value - 1]
           }
         }
       },

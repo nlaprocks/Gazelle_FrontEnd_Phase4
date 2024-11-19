@@ -17,7 +17,7 @@ const MultiLine2 = ({ isLoading }) => {
   const transformedData = {};
 
   dayjs.extend(isoWeek);
-             // old code data show by according to weeks
+  // old code data show by according to weeks
   // const groupByWeek = (data) => {
   //   // console.log(data,"data")
   //   const weeklyData = {};
@@ -44,34 +44,34 @@ const MultiLine2 = ({ isLoading }) => {
   //   return weeklyData;
   // };
 
-   // New code data show by according to date
+  // New code data show by according to date
   const groupByWeek = (data) => {
     // console.log(data,"datas")
     const weeklyData = {};
-  
+
     data.forEach((item) => {
-      const weekEnding = item?.WeekEnding;  
+
+      const weekEnding = item?.WeekEnding;
       const product = item.Product;
       const retailer = item.Retailer;
       const key = `${product}-${retailer}`;
-  
-      if (!weeklyData[key]) { 
-        weeklyData[key] = {}; 
+
+      if (!weeklyData[key]) {
+        weeklyData[key] = {};
       }
-  
+
       if (!weeklyData[key][weekEnding]) {
         weeklyData[key][weekEnding] = { totalPrice: 0, totalUnits: 0, count: 0, Retailer: item.Retailer };
       }
-  
-      
+
       weeklyData[key][weekEnding].totalPrice += item.Price;
       weeklyData[key][weekEnding].totalUnits += item.Total_Volume;
       weeklyData[key][weekEnding].count += 1;
     });
-  
+
     return weeklyData;
   };
-  
+
 
   // Group data by week and calculate the averages
   const groupedData = groupByWeek(chart5Data);
@@ -187,6 +187,19 @@ const MultiLine2 = ({ isLoading }) => {
 
   // old code ending for year wise data 
 
+  function getEvenIndexElements(arr) {
+    const result = [];
+    for (let i = 0; i < arr.length; i++) {
+      if (i % 2 === 0) {
+        result.push(arr[i]);
+      } else {
+        result.push('')
+      }
+    }
+    return result;
+  }
+
+  // chartNumber 5
 
   const getChartOptions = (data) => ({
     chart: {
@@ -239,7 +252,8 @@ const MultiLine2 = ({ isLoading }) => {
       },
     },
     xaxis: {
-      categories: data.data.categories,
+      categories: data?.data?.categories && getEvenIndexElements(data.data.categories),
+      // categories: data.data.categories,
       title: {
         text: data.xAxisTitle,
       },
@@ -288,6 +302,10 @@ const MultiLine2 = ({ isLoading }) => {
       intersect: false,
       y: {
         formatter: (value) => value.toFixed(2),
+        // formatter: function (value, { series, seriesIndex, dataPointIndex, w }) {
+        //   return data.data.categories[dataPointIndex];
+        //   // return allXAxisLabels[value - 1]
+        // }
       },
     },
     legend: {
@@ -329,7 +347,8 @@ const MultiLine2 = ({ isLoading }) => {
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
-//  console.log(chart5Data,"chartdata5")
+
+  //  console.log(chart5Data,"chartdata5")
   return (
     <div>
       {visibleChartData?.map((val, i) => (

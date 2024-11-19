@@ -48,6 +48,7 @@ const PromotedDepthChart = ({ isLoading }) => {
   // Convert the retailers object into an array
   const restructuredData = Object.values(retailers);
 
+  // chartNumber 6
   const getChartOptions = (data) => ({
     chart: {
       // type: 'line',
@@ -92,16 +93,37 @@ const PromotedDepthChart = ({ isLoading }) => {
         },
       },
     },
+    plotOptions: {
+      bar: {
+        columnWidth: '40%', // Adjust this percentage to make the bars thinner or thicker
+      }
+    },
     tooltip: {
       trigger: "axis",
       axisPointer: {
         type: "shadow",
       },
+      // x: {
+      //   formatter: function (value, { series, seriesIndex, dataPointIndex, w }) {
+      //     // console.log(value)
+      //     console.log(data?.data?.categories)
+      //     return data?.data?.categories[value]
+      //     // return data?.data?.categories[value - 1]
+      //   }
+      // }
       x: {
+        // Correctly map the x-axis category based on the value
         formatter: function (value, { series, seriesIndex, dataPointIndex, w }) {
-          return data?.data?.categories[value - 1]
+          // Access the category label for the corresponding data point
+          return data?.data?.categories[dataPointIndex] || value;
         }
-      }
+      },
+      y: {
+        // If needed, format the y-axis value
+        formatter: function (value) {
+          return value.toFixed(2); // Format to 2 decimal places
+        }
+      },
     },
     legend: {
       show: true,
@@ -182,7 +204,6 @@ const PromotedDepthChart = ({ isLoading }) => {
     grid: {
       show: false,
       borderColor: '#e7e7e7',
-      
     },
   });
 

@@ -143,7 +143,6 @@ const AccordionComp = ({ value, id, setAddHeadingModal, setShowTakeawayModal, se
   const chart9Reducer = useSelector((state) => state.chart9Reducer);
   const chart10Reducer = useSelector((state) => state.chart10Reducer);
 
-
   return (
     <div id="insightsAccordions" >
       <Accordion defaultActiveKey="10">
@@ -220,14 +219,14 @@ const AccordionComp = ({ value, id, setAddHeadingModal, setShowTakeawayModal, se
                         :
                         <></>
                     } */}
-                      {
-                      
-                        <div className="btn btn-primary">
-                          <RunDemo value={value} id={id} role={role} />
-                        </div>
-                        
+                    {
+
+                      <div className="btn btn-primary">
+                        <RunDemo value={value} id={id} role={role} />
+                      </div>
+
                     }
-                    
+
                     {role !== "admin" ? (
                       <button className="btn btn-danger deleteSlideBtn">
                         <a

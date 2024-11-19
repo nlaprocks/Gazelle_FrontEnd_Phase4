@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import Pagination from "./pagination/Pagination";
 
 const StackedLineChart = ({ isLoading }) => {
+  
   const chart4Reducer = useSelector((state) => state.chart4Reducer);
   const chart4Data = chart4Reducer?.chart4Data?.data;
   const [chart4TransformedData, setChart4TransformedData] = useState([]);

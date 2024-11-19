@@ -48,6 +48,7 @@ const Bar = ({ isLoading, chartModel, setChartModel }) => {
     setChartDataArray(newDataArray);
   }, [chart1Reducer]);
 
+  // chartNumber 1
 
   return (
     <div>
@@ -258,7 +259,6 @@ const Bar = ({ isLoading, chartModel, setChartModel }) => {
           },
           xaxis: {
             categories: allXAxisLabels,
-
             labels: {
               rotate: -45,
               maxHeight: '120px',
@@ -326,7 +326,8 @@ const Bar = ({ isLoading, chartModel, setChartModel }) => {
             },
             x: {
               formatter: function (value, { series, seriesIndex, dataPointIndex, w }) {
-                return allXAxisLabels[value - 1]
+                return allXAxisLabels[dataPointIndex];
+                // return allXAxisLabels[value - 1]
               }
             }
           },
@@ -497,6 +498,11 @@ const Bar = ({ isLoading, chartModel, setChartModel }) => {
             "#007BA7",
             "#2F4F4F",
           ],
+          plotOptions: {
+            bar: {
+              columnWidth: '40%', // Adjust this percentage to make the bars thinner or thicker
+            }
+          },
         };
 
         return (
