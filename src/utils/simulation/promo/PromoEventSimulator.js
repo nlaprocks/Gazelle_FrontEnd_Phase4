@@ -24,6 +24,7 @@ export default function PromoEventSimulator({
     units,
     dollars,
 }) {
+
     const echartsReactRef = React.useRef(null);
     const productName = promoSimulationData[0]?.Product ?? "";
     // console.log(promoSimulationData, discount, lift, units, dollars);
@@ -265,7 +266,6 @@ export default function PromoEventSimulator({
                             </Select>
                         </div>
                     </div>
-
                     <div className="text-end">
                         <div className="row">
                             <div className="col-lg-8">
@@ -279,7 +279,6 @@ export default function PromoEventSimulator({
                         </div>
                     </div>
                 </div>
-
                 {isPriceSimulationLoading ? (
                     <div>
                         <p>Please wait, while we are fetching the data for you . . .</p>
@@ -358,7 +357,6 @@ export default function PromoEventSimulator({
                                                 </div>
                                             </td>
                                         </tr>
-
                                         <tr>
                                             <td>
                                                 <p>Discount %</p>
@@ -419,7 +417,6 @@ export default function PromoEventSimulator({
                                                 </div>
                                             </td>
                                         </tr>
-
                                         <tr>
                                             <td>
                                                 <p>% Display Only ACV</p>
