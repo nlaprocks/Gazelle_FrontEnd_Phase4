@@ -106,11 +106,11 @@ export default function PriceSimulator({
             </div>
           </div>
 
-          <div className="text-end">
+          {/* <div className="text-end">
             <a href="" className="btn btn-primary btn-retailer">
               Update Data{" "}
             </a>
-          </div>
+          </div> */}
         </div>
         {/* Summary */}
         <div className="sim_retailer_row1 width_td mb-4">

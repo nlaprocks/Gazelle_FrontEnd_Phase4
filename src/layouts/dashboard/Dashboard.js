@@ -807,6 +807,7 @@ const Dashboard = () => {
                   style={{ width: 260 }}
                   value={value}
                   onChange={handleChange}
+                  format="MM/dd/yyyy"
                 />
               </div>
             </div>

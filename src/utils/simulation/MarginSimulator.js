@@ -2088,11 +2088,11 @@ export default function MarginSimulator({
                   id="formFileSm"
                   type="file"></input>
               </div>
-              <div className=" col-lg-4">
+              {/* <div className=" col-lg-4">
                 <a href="" className="btn btn-primary btn-retailer">
                   Upload Margin{" "}
                 </a>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

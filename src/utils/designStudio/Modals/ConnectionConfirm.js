@@ -108,7 +108,7 @@ const ConnectionConfirm = ({
   const dispatch = useDispatch();
   const { model_id } = useParams();
   const [loader, setLoader] = React.useState(false);
-
+  
   const getIsDataFetchedReducer = useSelector(
     (state) => state.getIsDataFetchedReducer
   );
@@ -576,11 +576,12 @@ const ConnectionConfirm = ({
         selectedConnectionConfirmModal={selectedConnectionConfirmModal}
         setSelectedConnectionConfirmModal={setSelectedConnectionConfirmModal}
         connectDbConnecttion={addDatabaseConfig}
+        setConnectionConfirmModal={setConnectionConfirmModal}
         selectedColumns={selectedColumns}
         currentTables={currentTable}
       />
     </>
-  );
+  );  
 };
 
 export default ConnectionConfirm;

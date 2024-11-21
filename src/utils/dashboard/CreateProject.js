@@ -138,8 +138,12 @@ export default function CreateProject({
   const handleCloseCancel = () => {
     setShowCreateModal(true);
     setShowCancelProject(false);
+    setSelectedLogoFromList("");
+    setCompanyLogo([]);
   };
   const handleCloseCancelClose = () => {
+    setSelectedLogoFromList("");
+    setCompanyLogo([]);
     setShowCreateModal(false);
     setShowCancelProject(false);
   };
@@ -655,7 +659,6 @@ export default function CreateProject({
               {selectedLogoFromList === "" && (
                 <div className="nla_form_file_upload position-relative nla_form_field_block">
                   <img src={uploadIcon} alt="" />
-                  {/* <label htmlFor="formFile">Upload Company Logo</label> */}
                   {companyLogo?.length > 0 ? (
                     <label htmlFor="formFile">{companyLogo[0].name}</label>
                   ) : (
@@ -667,11 +670,9 @@ export default function CreateProject({
                     className="form-control"
                     type="file"
                     id="formFile"
-                    accept="image/png, image/jpeg"
-                    // onChange={(e) => setCompanyLogo(e.target.files)}
+                    accept="image/png, image/jpeg, image/jpg, image/webp"
                     onChange={companyLogoHandler}
                   />
-                  {/* <ProgressBar now={progress} label={`${progress}%`} /> */}
                 </div>
               )}
             </div>

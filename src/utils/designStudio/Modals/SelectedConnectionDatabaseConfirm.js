@@ -13,34 +13,21 @@ import { Input } from "antd";
 import { DatePicker } from "antd";
 import { Select } from "antd";
 import { CalendarOutlined, DollarOutlined } from "@ant-design/icons";
-// import { updateFormData } from "../redux/actions";
-import { updateFormData } from "../../../store/formData/formAction";
 import { UPDATE_FORM_DATA } from "../../../store/formData/formType";
 
-const { TabPane } = Tabs;
-const requiredColumns = [
-  "WeekEnding",
-  "Retailer",
-  "Product",
-  "Total_Volume",
-  "Dollars",
-];
 const { Option } = Select;
 const moment = require("moment");
 
 const SelectedConnectionDatabaseConfirm = ({
   selectedConnectionConfirmModal,
   setSelectedConnectionConfirmModal,
-  handleSelectColumn,
   connectDbConnecttion,
+  setConnectionConfirmModal,
   selectedColumns,
   currentTables,
-  onFormSubmit,
 }) => {
-  const { RangePicker } = DatePicker;
   const [scheduleObserver, setScheduleObserver] = React.useState(false);
   const [startDate, setStartDate] = React.useState();
-  const [columnAliases, setColumnAliases] = useState({});
   const dispatch = useDispatch();
   const { model_id } = useParams();
   const [loader, setLoader] = React.useState(false);
@@ -53,14 +40,15 @@ const SelectedConnectionDatabaseConfirm = ({
     setStartDate();
   };
 
-  const datastructureReducer = useSelector(
-    (state) => state.datastructureReducer
-  );
+  const handleCancel = () => {
+    setSelectedConnectionConfirmModal(false);
+    setConnectionConfirmModal(true); // Open the other modal
+  };
+
   const databaseConfigReducer = useSelector(
     (state) => state.saveDatabaseConfigReducer
   );
-  // const [currentTable, setCurrentTable] = React.useState("golden_krust_full");
-  // const [selectedColumns, setSelectedColumns] = React.useState([]);
+  
   const [externalColumns, setExternalColumns] = React.useState([]);
 
   React.useEffect(() => {
@@ -137,12 +125,7 @@ const SelectedConnectionDatabaseConfirm = ({
 
   // Submit form data to parent component
   const handleSubmit = (e) => {
-    // console.log(formData)
-    // e.preventDefault();
-    // onFormSubmit(formData);
-
     dispatch({ type: UPDATE_FORM_DATA, payload: formData });
-    // dispatch(updateFormData(formData));
   };
 
   return (
@@ -208,8 +191,6 @@ const SelectedConnectionDatabaseConfirm = ({
                       width: "100%",
                       height: "40px",
                     }}
-                    // defaultValue="Select No of Weeks"
-                    // placeholder="Select No of Weeks"
                     placeholder="select it"
                     value={formData.weeks}
                     onChange={handleSelectChange}
@@ -220,9 +201,7 @@ const SelectedConnectionDatabaseConfirm = ({
                   </Select>
                 </div>
               </div>
-              {/* <button type="submit" className="btn btn-primary">
-        Submit
-      </button> */}
+
             </form>
           </div>
 
@@ -236,41 +215,12 @@ const SelectedConnectionDatabaseConfirm = ({
                   <th>Renamed Measure</th>
                 </tr>
               </thead>
-              {/* <tbody>
-                {datastructureReducer?.structure?.data?.structure
-                  ?.filter((val) => val.table === currentTable)[0]
-                  ?.columns.map((column, index) => {
-                    console.log(column,"columns")
-                    const dataMapping = selectedColumns.find((tableMapping) => tableMapping.table === currentTable);
-                    const isSelected = dataMapping?.columns?.some(
-                      (columnMapping) => columnMapping.original_column === column
-                    );
-                    const isRequired = requiredColumns.includes(column);
-                    return (
-                      <tr key={index}>
-                        <td>
-                          <div className="form-check custom-checkbox">
-                            <span>{column}</span>
-                          </div>
-                        </td>
-                        <td>{column}</td>
-                        <td>
-                          <div className="col-md-8">
-                            <div className="input-box">
-                              <span>{columnAliases[column] || ""}</span>
-                            </div>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-              </tbody> */}
+              
               <tbody>
                 {selectedColumns
                   .filter((val) => val.table === currentTables)
 
                   .map((tableData) => {
-                    // console.log("Mapped tableData:", tableData);
                     return tableData.columns.map((column, columnIndex) => {
                       const originalColumn = column.original_column;
                       const mappedColumn = column.mapped_column || "";
@@ -306,9 +256,8 @@ const SelectedConnectionDatabaseConfirm = ({
             type="button"
             className="btn btn-outline-danger"
             data-bs-dismiss="modal"
-            onClick={() => {
-              handleClose(false);
-            }}>
+            onClick={handleCancel}
+            >
             Cancel
           </button>
           <button
