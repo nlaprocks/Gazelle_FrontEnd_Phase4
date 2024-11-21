@@ -179,6 +179,7 @@ const SelectedConnectionDatabaseConfirm = ({
             <form onSubmit={handleSubmit}>
               <div className="row border-y mb-4 pt-6 ps-7 items-center">
                 <div className="col-md-4 col-12 relative nla_form_project_name position-relative nla_form_field_block mb-4">
+                  <label className="mb-1" htmlFor="cumulativeShare">Cumulative Share of Brand's Revenue(%)</label>
                   <Input
                     size="large"
                     name="cumulativeShare"
@@ -189,6 +190,7 @@ const SelectedConnectionDatabaseConfirm = ({
                   />
                 </div>
                 <div className="col-md-4 col-12 relative nla_form_project_name position-relative nla_form_field_block mb-4">
+                  <label className="mb-1" htmlFor="minDollarSales">Minimum Dollar Sales(L52 Weeks)</label>
                   <Input
                     size="large"
                     name="minDollarSales"
@@ -199,6 +201,7 @@ const SelectedConnectionDatabaseConfirm = ({
                   />
                 </div>
                 <div className="col-md-4 col-12 relative nla_form_project_name position-relative nla_form_field_block mb-4">
+                  <label className="mb-1" htmlFor="weeks">No of Weeks</label>
                   <Select
                     showSearch
                     style={{
@@ -214,7 +217,6 @@ const SelectedConnectionDatabaseConfirm = ({
                     <Option value="52">52</Option>
                     <Option value="104">104</Option>
                     <Option value="156">156</Option>
-                    <Option value="208">208</Option>
                   </Select>
                 </div>
               </div>
