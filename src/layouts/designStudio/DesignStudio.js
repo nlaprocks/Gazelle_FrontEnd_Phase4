@@ -274,6 +274,7 @@ const DesignStudio = () => {
     if (project_id || projectID) {
       dispatch(allActions.updateModelVersionAction.updateModelVersion(model_id, data));
       setModalSaved(true);
+      console.log("modelruns")
       setTimeout(() => {
         setModalSaved(false);
       }, 3000);

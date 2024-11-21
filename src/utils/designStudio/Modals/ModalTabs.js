@@ -61,10 +61,8 @@ export default memo(function ModalTabs(props) {
 
   let data = JSON.parse(localStorage.getItem("auth"));
   let email = data?.email;
-  
-  const allowedEmails = ["rick.miller@nla.com", "rod.brown@nla.com", "kim@nla.com", "bridget@nla.com"];
 
-  console.log(selectedColumns);
+  const allowedEmails = ["rick.miller@nla.com", "rod.brown@nla.com", "kim@nla.com", "bridget@nla.com"];
 
   useEffect(() => {
     const initialColumnAliases = {};
@@ -96,7 +94,7 @@ export default memo(function ModalTabs(props) {
     );
 
     if (tab === "internal" && isSelected) {
-      console.log("change", e.target.value, column);
+      // console.log("change", e.target.value, column);
       setColumnAliases((prevColumnAliases) => ({
         ...prevColumnAliases,
         [column]: e.target.value,
@@ -290,8 +288,8 @@ export default memo(function ModalTabs(props) {
                         return isSelectedA === isSelectedB
                           ? 0
                           : isSelectedA
-                          ? -1
-                          : 1;
+                            ? -1
+                            : 1;
                       })
                       .map((column, index) => {
                         const dataMapping = selectedColumns.find(
@@ -303,7 +301,7 @@ export default memo(function ModalTabs(props) {
                         );
                         const isRequired = requiredColumns.includes(column);
 
-                        console.log(dataMapping, isSelected, isRequired);
+                        // console.log(dataMapping, isSelected, isRequired);
 
                         return (
                           <tr key={index}>
@@ -333,7 +331,7 @@ export default memo(function ModalTabs(props) {
                               <div className="col-md-8">
                                 <div className="input-box">
                                   {preSelectedColumns &&
-                                  preSelectedColumns.includes(column) ? (
+                                    preSelectedColumns.includes(column) ? (
                                     <input
                                       readonly="readonly"
                                       type="text"
@@ -341,9 +339,9 @@ export default memo(function ModalTabs(props) {
                                       placeholder="Renamed Measure"
                                       className="centered-placeholder"
                                       style={{ color: "#808080" }}
-                                      // onChange={(e) =>
-                                      //   handleInputChange(e, column, "internal")
-                                      // }
+                                    // onChange={(e) =>
+                                    //   handleInputChange(e, column, "internal")
+                                    // }
                                     />
                                   ) : (
                                     <input

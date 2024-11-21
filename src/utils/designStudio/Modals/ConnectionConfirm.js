@@ -3,7 +3,7 @@ import Modal from "react-bootstrap/Modal";
 import "./connectionConfirm.css";
 import { useDispatch, useSelector } from "react-redux";
 import allActions from "../../../store/index";
-import { useParams } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 import "react-datetime-picker/dist/DateTimePicker.css";
 import "react-calendar/dist/Calendar.css";
 import "react-clock/dist/Clock.css";
@@ -14,6 +14,7 @@ import ModalTabs from "./ModalTabs";
 import axios from "axios";
 import { UPDATE_FORM_DATA } from "../../../store/formData/formType";
 import { SET_CURRENT_TABLE } from "../../../store/tableData/tableType";
+import { useNavigate } from "react-router-dom";
 
 const preSelectedColumns = [
   "WeekEnding",
@@ -66,7 +67,6 @@ const feature_map = {
 
 let data = JSON.parse(localStorage.getItem("auth"));
 
-console.log(data);
 
 const requiredColumns = [
   "WeekEnding",
@@ -95,11 +95,13 @@ const requiredColumns = [
 ];
 
 const moment = require("moment");
+
 const ConnectionConfirm = ({
   connectionConfirmModal,
   setConnectionConfirmModal,
   tableFromDb,
 }) => {
+
   const [scheduleObserver, setScheduleObserver] = React.useState(false);
   const [vertical, setVertical] = useState("top");
   const [horizontal, setHorizontal] = useState("center");
@@ -108,6 +110,7 @@ const ConnectionConfirm = ({
   const dispatch = useDispatch();
   const { model_id } = useParams();
   const [loader, setLoader] = React.useState(false);
+  const navigate = useNavigate();
 
   const getIsDataFetchedReducer = useSelector(
     (state) => state.getIsDataFetchedReducer
@@ -116,11 +119,14 @@ const ConnectionConfirm = ({
   const handleClose = () => {
     setConnectionConfirmModal(false);
     setStartDate();
+  
+    
   };
 
   const datastructureReducer = useSelector(
     (state) => state.datastructureReducer
   );
+
   const databaseConfigReducer = useSelector(
     (state) => state.saveDatabaseConfigReducer
   );
@@ -171,7 +177,7 @@ const ConnectionConfirm = ({
       datastructureReducer.structure.data.structure.find(
         (table) => table.table === currentTable
       );
-    console.log(datastructureReducer.structure, "datastrudc");
+    // console.log(datastructureReducer.structure, "datastrudc");
     // console.log(databaseConfigReducer,"datab");
 
     // Get the selected columns for the current table
@@ -206,7 +212,7 @@ const ConnectionConfirm = ({
     const tableIndex = selectedColumns.findIndex(
       (item) => item.table === currentTable
     );
-    console.log({ tableIndex });
+    // console.log({ tableIndex });
 
     setSelectedColumns((prevState) => {
       const newColumns = [...prevState[tableIndex].columns];
@@ -270,6 +276,7 @@ const ConnectionConfirm = ({
       });
     }
   };
+
   // console.log("selectedColumns: ", selectedColumns[4]);
   const handleUnselectAllColumns = (currentTableVal) => {
     // Find the index of the selected table in the selectedColumns array
@@ -286,6 +293,7 @@ const ConnectionConfirm = ({
       ]);
     }
   };
+
   // Handler function for selecting a column
   const handleSelectColumn = (column, val) => {
     // Find the index of the selected table in the selectedColumns array
@@ -351,6 +359,7 @@ const ConnectionConfirm = ({
       });
     }
   };
+
   const handleDropDownChange = (event, column) => {
     const { value } = event.target;
     const tableIndex = selectedColumns.findIndex(
@@ -494,7 +503,7 @@ const ConnectionConfirm = ({
     });
   }, [currentTable]);
 
-  //  console.log(currentTable,"currentable")
+
   return (
     <>
       <Modal
@@ -552,6 +561,7 @@ const ConnectionConfirm = ({
             data-bs-dismiss="modal"
             onClick={() => {
               handleClose(false);
+              window.location.reload();
             }}>
             Cancel
           </button>
@@ -573,6 +583,7 @@ const ConnectionConfirm = ({
         </Snackbar>
       </Modal>
       <SelectedConnectionDatabaseConfirm
+      setConnectionConfirmModal={setConnectionConfirmModal}
         selectedConnectionConfirmModal={selectedConnectionConfirmModal}
         setSelectedConnectionConfirmModal={setSelectedConnectionConfirmModal}
         connectDbConnecttion={addDatabaseConfig}

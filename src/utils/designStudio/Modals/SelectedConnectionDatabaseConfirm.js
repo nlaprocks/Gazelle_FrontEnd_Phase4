@@ -16,6 +16,7 @@ import { CalendarOutlined, DollarOutlined } from "@ant-design/icons";
 // import { updateFormData } from "../redux/actions";
 import { updateFormData } from "../../../store/formData/formAction";
 import { UPDATE_FORM_DATA } from "../../../store/formData/formType";
+import { useNavigate } from "react-router-dom";
 
 const { TabPane } = Tabs;
 const requiredColumns = [
@@ -25,11 +26,13 @@ const requiredColumns = [
   "Total_Volume",
   "Dollars",
 ];
+
 const { Option } = Select;
 const moment = require("moment");
 
 const SelectedConnectionDatabaseConfirm = ({
   selectedConnectionConfirmModal,
+  setConnectionConfirmModal,
   setSelectedConnectionConfirmModal,
   handleSelectColumn,
   connectDbConnecttion,
@@ -37,28 +40,34 @@ const SelectedConnectionDatabaseConfirm = ({
   currentTables,
   onFormSubmit,
 }) => {
+
   const { RangePicker } = DatePicker;
+  const navigate = useNavigate();
   const [scheduleObserver, setScheduleObserver] = React.useState(false);
   const [startDate, setStartDate] = React.useState();
   const [columnAliases, setColumnAliases] = useState({});
   const dispatch = useDispatch();
   const { model_id } = useParams();
   const [loader, setLoader] = React.useState(false);
+
   const getIsDataFetchedReducer = useSelector(
     (state) => state.getIsDataFetchedReducer
   );
 
   const handleClose = () => {
     setSelectedConnectionConfirmModal(false);
+    setConnectionConfirmModal(true)
     setStartDate();
   };
 
   const datastructureReducer = useSelector(
     (state) => state.datastructureReducer
   );
+
   const databaseConfigReducer = useSelector(
     (state) => state.saveDatabaseConfigReducer
   );
+
   // const [currentTable, setCurrentTable] = React.useState("golden_krust_full");
   // const [selectedColumns, setSelectedColumns] = React.useState([]);
   const [externalColumns, setExternalColumns] = React.useState([]);
@@ -305,6 +314,7 @@ const SelectedConnectionDatabaseConfirm = ({
             className="btn btn-outline-danger"
             data-bs-dismiss="modal"
             onClick={() => {
+              // navigate(-1);
               handleClose(false);
             }}>
             Cancel

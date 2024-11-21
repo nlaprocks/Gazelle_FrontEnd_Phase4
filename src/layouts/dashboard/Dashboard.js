@@ -28,6 +28,8 @@ import CreateProject from "../../utils/dashboard/CreateProject";
 import EditProject from "../../utils/dashboard/EditProject";
 import AuditUserProjects from "../../utils/dashboard/AuditUserProjects";
 import 'react-toastify/dist/ReactToastify.css';
+import "rsuite/dist/rsuite.min.css";
+
 
 const Dashboard = () => {
 
@@ -201,6 +203,13 @@ const Dashboard = () => {
     setStartDate(value ? value[0].toISOString() : "");
     setEndDate(value ? value[1].toISOString() : "");
   };
+
+  // const handleChange = (value) => {
+  //   console.log(value,"values")
+  //   setValue(value);
+  //   setStartDate(value[0]);
+  //   setEndDate( value[1]);
+  // };
 
   //Search
   const searchDataHandler = async () => {

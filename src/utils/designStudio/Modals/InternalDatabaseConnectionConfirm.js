@@ -253,7 +253,8 @@ const InternalDatabaseConnectionConfirm = ({ internalSelectedDatabase, internalD
       delete saveCompetitorsConfigReducer.success;
     }
   }, [saveMobilityConfigReducer, saveCompetitorsConfigReducer]);
-console.log(database,"database")
+  // console.log(database,"database")
+
   return (
     <Modal
       show={internalDbConnectionConfirmModal}
