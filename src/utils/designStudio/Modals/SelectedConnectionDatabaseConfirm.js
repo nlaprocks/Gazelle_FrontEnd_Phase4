@@ -13,8 +13,6 @@ import { Input } from "antd";
 import { DatePicker } from "antd";
 import { Select } from "antd";
 import { CalendarOutlined, DollarOutlined } from "@ant-design/icons";
-// import { updateFormData } from "../redux/actions";
-import { updateFormData } from "../../../store/formData/formAction";
 import { UPDATE_FORM_DATA } from "../../../store/formData/formType";
 import { useNavigate } from "react-router-dom";
 
@@ -34,18 +32,15 @@ const SelectedConnectionDatabaseConfirm = ({
   selectedConnectionConfirmModal,
   setConnectionConfirmModal,
   setSelectedConnectionConfirmModal,
-  handleSelectColumn,
   connectDbConnecttion,
   selectedColumns,
   currentTables,
-  onFormSubmit,
 }) => {
 
   const { RangePicker } = DatePicker;
   const navigate = useNavigate();
   const [scheduleObserver, setScheduleObserver] = React.useState(false);
   const [startDate, setStartDate] = React.useState();
-  const [columnAliases, setColumnAliases] = useState({});
   const dispatch = useDispatch();
   const { model_id } = useParams();
   const [loader, setLoader] = React.useState(false);
@@ -63,6 +58,10 @@ const SelectedConnectionDatabaseConfirm = ({
   const datastructureReducer = useSelector(
     (state) => state.datastructureReducer
   );
+  const handleCancel = () => {
+    setSelectedConnectionConfirmModal(false);
+    setConnectionConfirmModal(true); // Open the other modal
+  };
 
   const databaseConfigReducer = useSelector(
     (state) => state.saveDatabaseConfigReducer
@@ -70,6 +69,7 @@ const SelectedConnectionDatabaseConfirm = ({
 
   // const [currentTable, setCurrentTable] = React.useState("golden_krust_full");
   // const [selectedColumns, setSelectedColumns] = React.useState([]);
+  
   const [externalColumns, setExternalColumns] = React.useState([]);
 
   React.useEffect(() => {
@@ -146,12 +146,7 @@ const SelectedConnectionDatabaseConfirm = ({
 
   // Submit form data to parent component
   const handleSubmit = (e) => {
-    // console.log(formData)
-    // e.preventDefault();
-    // onFormSubmit(formData);
-
     dispatch({ type: UPDATE_FORM_DATA, payload: formData });
-    // dispatch(updateFormData(formData));
   };
 
   return (
@@ -188,6 +183,7 @@ const SelectedConnectionDatabaseConfirm = ({
             <form onSubmit={handleSubmit}>
               <div className="row border-y mb-4 pt-6 ps-7 items-center">
                 <div className="col-md-4 col-12 relative nla_form_project_name position-relative nla_form_field_block mb-4">
+                  <label className="mb-1" htmlFor="cumulativeShare">Cumulative Share of Brand's Revenue(%)</label>
                   <Input
                     size="large"
                     name="cumulativeShare"
@@ -198,6 +194,7 @@ const SelectedConnectionDatabaseConfirm = ({
                   />
                 </div>
                 <div className="col-md-4 col-12 relative nla_form_project_name position-relative nla_form_field_block mb-4">
+                  <label className="mb-1" htmlFor="minDollarSales">Minimum Dollar Sales(L52 Weeks)</label>
                   <Input
                     size="large"
                     name="minDollarSales"
@@ -208,14 +205,13 @@ const SelectedConnectionDatabaseConfirm = ({
                   />
                 </div>
                 <div className="col-md-4 col-12 relative nla_form_project_name position-relative nla_form_field_block mb-4">
+                  <label className="mb-1" htmlFor="weeks">No of Weeks</label>
                   <Select
                     showSearch
                     style={{
                       width: "100%",
                       height: "40px",
                     }}
-                    // defaultValue="Select No of Weeks"
-                    // placeholder="Select No of Weeks"
                     placeholder="select it"
                     value={formData.weeks}
                     onChange={handleSelectChange}
@@ -223,13 +219,10 @@ const SelectedConnectionDatabaseConfirm = ({
                     <Option value="52">52</Option>
                     <Option value="104">104</Option>
                     <Option value="156">156</Option>
-                    <Option value="208">208</Option>
                   </Select>
                 </div>
               </div>
-              {/* <button type="submit" className="btn btn-primary">
-        Submit
-      </button> */}
+
             </form>
           </div>
 
@@ -243,41 +236,12 @@ const SelectedConnectionDatabaseConfirm = ({
                   <th>Renamed Measure</th>
                 </tr>
               </thead>
-              {/* <tbody>
-                {datastructureReducer?.structure?.data?.structure
-                  ?.filter((val) => val.table === currentTable)[0]
-                  ?.columns.map((column, index) => {
-                    console.log(column,"columns")
-                    const dataMapping = selectedColumns.find((tableMapping) => tableMapping.table === currentTable);
-                    const isSelected = dataMapping?.columns?.some(
-                      (columnMapping) => columnMapping.original_column === column
-                    );
-                    const isRequired = requiredColumns.includes(column);
-                    return (
-                      <tr key={index}>
-                        <td>
-                          <div className="form-check custom-checkbox">
-                            <span>{column}</span>
-                          </div>
-                        </td>
-                        <td>{column}</td>
-                        <td>
-                          <div className="col-md-8">
-                            <div className="input-box">
-                              <span>{columnAliases[column] || ""}</span>
-                            </div>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-              </tbody> */}
+              
               <tbody>
                 {selectedColumns
                   .filter((val) => val.table === currentTables)
 
                   .map((tableData) => {
-                    // console.log("Mapped tableData:", tableData);
                     return tableData.columns.map((column, columnIndex) => {
                       const originalColumn = column.original_column;
                       const mappedColumn = column.mapped_column || "";
