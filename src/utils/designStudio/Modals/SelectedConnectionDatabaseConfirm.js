@@ -14,41 +14,57 @@ import { DatePicker } from "antd";
 import { Select } from "antd";
 import { CalendarOutlined, DollarOutlined } from "@ant-design/icons";
 import { UPDATE_FORM_DATA } from "../../../store/formData/formType";
+import { useNavigate } from "react-router-dom";
+
 
 const { Option } = Select;
 const moment = require("moment");
 
 const SelectedConnectionDatabaseConfirm = ({
   selectedConnectionConfirmModal,
+  setConnectionConfirmModal,
   setSelectedConnectionConfirmModal,
   connectDbConnecttion,
   setConnectionConfirmModal,
   selectedColumns,
   currentTables,
 }) => {
+
   const [scheduleObserver, setScheduleObserver] = React.useState(false);
   const [startDate, setStartDate] = React.useState();
   const dispatch = useDispatch();
   const { model_id } = useParams();
   const [loader, setLoader] = React.useState(false);
+
   const getIsDataFetchedReducer = useSelector(
     (state) => state.getIsDataFetchedReducer
   );
 
   const handleClose = () => {
     setSelectedConnectionConfirmModal(false);
+    setConnectionConfirmModal(true)
     setStartDate();
   };
+
+
+  const datastructureReducer = useSelector(
+    (state) => state.datastructureReducer
+  );
 
   const handleCancel = () => {
     setSelectedConnectionConfirmModal(false);
     setConnectionConfirmModal(true); // Open the other modal
   };
 
+
   const databaseConfigReducer = useSelector(
     (state) => state.saveDatabaseConfigReducer
   );
-  
+
+
+  // const [currentTable, setCurrentTable] = React.useState("golden_krust_full");
+  // const [selectedColumns, setSelectedColumns] = React.useState([]);
+
   const [externalColumns, setExternalColumns] = React.useState([]);
 
   React.useEffect(() => {
@@ -256,8 +272,15 @@ const SelectedConnectionDatabaseConfirm = ({
             type="button"
             className="btn btn-outline-danger"
             data-bs-dismiss="modal"
+
+            //onClick={() => {
+              // navigate(-1);
+            //  handleClose(false);
+            //}}>
+
             onClick={handleCancel}
             >
+
             Cancel
           </button>
           <button
