@@ -25,7 +25,6 @@ const SelectedConnectionDatabaseConfirm = ({
   setConnectionConfirmModal,
   setSelectedConnectionConfirmModal,
   connectDbConnecttion,
-  setConnectionConfirmModal,
   selectedColumns,
   currentTables,
 }) => {
@@ -42,7 +41,6 @@ const SelectedConnectionDatabaseConfirm = ({
 
   const handleClose = () => {
     setSelectedConnectionConfirmModal(false);
-    setConnectionConfirmModal(true)
     setStartDate();
   };
 

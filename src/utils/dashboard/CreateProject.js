@@ -310,6 +310,7 @@ export default function CreateProject({
         projectNameInput.style.borderColor = "#eb3434";
       }
     }
+
     if (type === "") {
       const projectNameInput = document.querySelector("#exampleDataList");
       projectNameInput?.focus();
@@ -426,7 +427,12 @@ export default function CreateProject({
 
   useEffect(() => {
     if (projectName !== "") {
-      document.querySelector("#projectName").style.borderColor = "#86b7fe";
+      const projectNameInput = document.querySelector("#projectName");
+
+      // Check if the element exists before accessing its style
+      if (projectNameInput) {
+        projectNameInput.style.borderColor = "#86b7fe";
+      }
     }
     // if (type !== "") {
     //   document.querySelector("#exampleDataList").style.borderColor = "#86b7fe";

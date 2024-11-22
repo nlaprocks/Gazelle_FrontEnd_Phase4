@@ -1003,9 +1003,15 @@ header .theme-title h1 span {
   width: 200px;
 }
 
-@media screen and (max-width: 1299px) {
+@media screen and (max-width: 1499px) {
   .nla_grid_view_wrapper.nla-col-4 .nla_item_box_col .nla_item_box h3 {
     width: 130px;
+  }
+}
+
+@media screen and (max-width: 1200px) {
+  .nla_grid_view_wrapper.nla-col-4 .nla_item_box_col .nla_item_box h3 {
+    width: 120px;
   }
 }
 
