@@ -65,14 +65,14 @@ const generateCommonUIElements = (slide, value, pptx) => {
     });
   }
 
-  slide.addImage({
-    x: 12.25,
-    y: "85%",
-    w: 0.9,
-    h: 0.9,
-    path: "https://upload.wikimedia.org/wikipedia/en/a/a9/Example.jpg",
-    objectName: "animated gif",
-  });
+  // slide.addImage({
+  //   x: 12.25,
+  //   y: "85%",
+  //   w: 0.9,
+  //   h: 0.9,
+  //   path: "https://upload.wikimedia.org/wikipedia/en/a/a9/Example.jpg",
+  //   objectName: "animated gif",
+  // });
 };
 
 const PptDownloader = ({ value, id, role }) => {
@@ -639,7 +639,7 @@ const PptDownloader = ({ value, id, role }) => {
               showTitle: true,
               titleFontFace: "Calibri Light",
               titleFontSize: 14,
-              title: `${productRetailer[2]} - ${productRetailer[0]} - ${productRetailer[1]}`,
+              title: `${productRetailer[1]} - ${productRetailer[0]}`,
               chartColors: ["5C7BD9", "9FE080"],
               catAxisTitle: "Price Change %",
               showCatAxisTitle: true,
@@ -1521,14 +1521,14 @@ const PptDownloader = ({ value, id, role }) => {
         }
       }
 
-      slide.addImage({
-        x: 12.25,
-        y: "85%",
-        w: 0.9,
-        h: 0.9,
-        path: "https://upload.wikimedia.org/wikipedia/en/a/a9/Example.jpg",
-        objectName: "animated gif",
-      });
+      // slide.addImage({
+      //   x: 12.25,
+      //   y: "85%",
+      //   w: 0.9,
+      //   h: 0.9,
+      //   path: "https://upload.wikimedia.org/wikipedia/en/a/a9/Example.jpg",
+      //   objectName: "animated gif",
+      // });
       // slide.addNotes("This is my favorite slide!");
       await pptx.writeFile({ fileName: `${value.question}.pptx` });
     } catch (e) {
