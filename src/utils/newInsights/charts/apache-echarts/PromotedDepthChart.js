@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import ApexCharts from "react-apexcharts";
 import { useSelector } from "react-redux";
+import Pagination from "./pagination/Pagination";
 
 const PromotedDepthChart = ({ isLoading }) => {
   const chart6Reducer = useSelector((state) => state.chart6Reducer);
@@ -207,13 +208,29 @@ const PromotedDepthChart = ({ isLoading }) => {
     },
   });
 
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5; // Number of retailers per page
+
+  const paginate = (data, currentPage, itemsPerPage) => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return data.slice(startIndex, endIndex);
+  };
+
+  const paginatedData = paginate(restructuredData, currentPage, itemsPerPage);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
   return (
     <div>
-      {restructuredData.map((data, index) => (
+      {paginatedData.map((data, index) => (
         <div
           key={index}
           style={{
-            marginBottom: index !== restructuredData.length - 1 ? "50px" : "0",
+            marginBottom: index !== paginatedData.length - 1 ? "50px" : "0",
             position: "relative",
           }}
         >
@@ -227,6 +244,12 @@ const PromotedDepthChart = ({ isLoading }) => {
           />
         </div>
       ))}
+      <Pagination
+        currentPage={currentPage}
+        totalItems={restructuredData.length}
+        itemsPerPage={itemsPerPage}
+        onPageChange={handlePageChange}
+      />
     </div>
   );
 };

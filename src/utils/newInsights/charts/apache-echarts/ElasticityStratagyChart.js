@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import ReactECharts from "echarts-for-react";
 import { useSelector } from "react-redux";
+import Pagination from "./pagination/Pagination";
 
 const ElasticityStratagyChart = ({ isLoading }) => {
   const [chartData, setChartData] = useState([]);
@@ -143,22 +144,7 @@ const ElasticityStratagyChart = ({ isLoading }) => {
 
 
       },
-      dataZoom: [
-        {
-          type: "slider", // The type of data zoom, 'slider' for a slider bar
-          xAxisIndex: [0], // Enable data zoom for the first X axis (index 0)
-          start: 0, // The start position of the data zoom, 0% in this case
-          end: 100, // The end position of the data zoom, 100% in this case
-          // bottom: -30,
-        },
-        {
-          type: "slider", // The type of data zoom, 'slider' for a slider bar
-          yAxisIndex: [0], // Enable data zoom for the first Y axis (index 0)
-          start: 0, // The start position of the data zoom, 0% in this case
-          end: 100, // The end position of the data zoom, 100% in this case
-          right: 50,
-        },
-      ],
+      
       toolbox: {
         show: true,
         orient: "vertical",
@@ -425,9 +411,27 @@ const ElasticityStratagyChart = ({ isLoading }) => {
     }
   }, [chartData]);
 
+
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5; // Number of retailers per page
+
+  const paginate = (data, currentPage, itemsPerPage) => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return data.slice(startIndex, endIndex);
+  };
+
+  const paginatedData = paginate(chartData, currentPage, itemsPerPage);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+
   return (
     <div>
-      {chartData.map((val, i) => {
+      {paginatedData.map((val, i) => {
         return (
           <ReactECharts
             key={i}
@@ -436,12 +440,18 @@ const ElasticityStratagyChart = ({ isLoading }) => {
             style={{
               width: "100%",
               height: "500px",
-              marginBottom: i !== transformedChartData.length - 1 ? "50px" : "0",
+              marginBottom: i !== paginatedData.length - 1 ? "50px" : "0",
             }}
             ref={chartRef}
           />
         );
       })}
+      <Pagination
+        currentPage={currentPage}
+        totalItems={chartData.length}
+        itemsPerPage={itemsPerPage}
+        onPageChange={handlePageChange}
+      />
     </div>
   );
 };

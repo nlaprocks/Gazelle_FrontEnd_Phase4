@@ -536,9 +536,9 @@ const Dashboard = () => {
       mutationObservables: [`[data-tour-id="mask-position-recompute"]`],
       content: () => (
         <>
-          <div class="tooltip-wrapper-cb">
-            <img height="150" src={introImg} class="img-fluid" alt="" />
-            <h3 class="tooltip-title-cb">Main Navigation</h3>
+          <div calssName="tooltip-wrapper-cb">
+            <img height="150" src={introImg} calssName="img-fluid" alt="" />
+            <h3 calssName="tooltip-title-cb">Main Navigation</h3>
             <p>
               User can navigate to the below set of screens:
               <br />
@@ -546,7 +546,7 @@ const Dashboard = () => {
               <b>Design Studio:</b> To build new/alter existing models.
               <br />
             </p>
-            <div class="custom-checkbox">
+            <div calssName="custom-checkbox">
               <input
                 type="checkbox"
                 id="tootltip-show-box"
@@ -567,16 +567,16 @@ const Dashboard = () => {
     {
       selector: "#filter_box_wrapper",
       content: () => (
-        <div class="tooltip-wrapper-cb">
+        <div calssName="tooltip-wrapper-cb">
           <img
             height="150"
             src={require("../../assets/images/model-search-intro-image.png")}
-            class="img-fluid"
+            calssName="img-fluid"
             alt=""
           />
-          <h3 class="tooltip-title-cb">Model Search</h3>
+          <h3 calssName="tooltip-title-cb">Model Search</h3>
           <p>User can quickly narrow down to the project using one or more of the filter functions listed below.</p>
-          <div class="custom-checkbox">
+          <div calssName="custom-checkbox">
             <input type="checkbox" id="tootltip-show-box" name="tootltip-show-box" value="Show" />
             <label for="tootltip-show-box"> Don't show again</label>
           </div>
@@ -594,19 +594,19 @@ const Dashboard = () => {
     {
       selector: "#circleS",
       content: () => (
-        <div class="tooltip-wrapper-cb">
+        <div calssName="tooltip-wrapper-cb">
           <img
             height="150"
             src={require("../../assets/images/new_project_create_image.png")}
-            class="img-fluid"
+            calssName="img-fluid"
             alt=""
           />
-          <h3 class="tooltip-title-cb">Create New Model</h3>
+          <h3 calssName="tooltip-title-cb">Create New Model</h3>
           <p>
             To create a project use this button to fill up the project details form. Once the form is filled up, the
             project tile will be created in the dashboard.
           </p>
-          <div class="custom-checkbox">
+          <div calssName="custom-checkbox">
             <input type="checkbox" id="tootltip-show-box" name="tootltip-show-box" value="Show" />
             <label for="tootltip-show-box"> Don't show again</label>
           </div>

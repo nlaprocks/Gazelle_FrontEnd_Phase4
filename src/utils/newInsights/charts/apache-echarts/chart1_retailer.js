@@ -534,7 +534,7 @@ const BarRetailor = ({ isLoading, chartModel, setChartModel }) => {
             checked={chartModel === "Brand"}
             onChange={() => setChartModel("Brand")}
           />
-          Brand Charts
+          Brand View
         </label>
         <label className="mx-2 mb-3">
           <input
@@ -544,7 +544,7 @@ const BarRetailor = ({ isLoading, chartModel, setChartModel }) => {
             checked={chartModel === "retailer"}
             onChange={() => setChartModel("retailer")}
           />
-          Retailer Charts
+          Retailer View
         </label>
       </div>
       <h6 style={{ textAlign: "center" }}>{chartData.brand}</h6>

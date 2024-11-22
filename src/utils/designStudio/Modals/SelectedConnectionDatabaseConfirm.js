@@ -16,6 +16,7 @@ import { CalendarOutlined, DollarOutlined } from "@ant-design/icons";
 import { UPDATE_FORM_DATA } from "../../../store/formData/formType";
 import { useNavigate } from "react-router-dom";
 
+
 const { TabPane } = Tabs;
 const requiredColumns = [
   "WeekEnding",
@@ -37,8 +38,10 @@ const SelectedConnectionDatabaseConfirm = ({
   currentTables,
 }) => {
 
+
   const { RangePicker } = DatePicker;
   const navigate = useNavigate();
+
   const [scheduleObserver, setScheduleObserver] = React.useState(false);
   const [startDate, setStartDate] = React.useState();
   const dispatch = useDispatch();
@@ -55,21 +58,36 @@ const SelectedConnectionDatabaseConfirm = ({
     setStartDate();
   };
 
+
   const datastructureReducer = useSelector(
     (state) => state.datastructureReducer
   );
+
+
+  const datastructureReducer = useSelector(
+    (state) => state.datastructureReducer
+  );
+
+
   const handleCancel = () => {
     setSelectedConnectionConfirmModal(false);
     setConnectionConfirmModal(true); // Open the other modal
   };
 
+
   const databaseConfigReducer = useSelector(
     (state) => state.saveDatabaseConfigReducer
   );
 
+
   // const [currentTable, setCurrentTable] = React.useState("golden_krust_full");
   // const [selectedColumns, setSelectedColumns] = React.useState([]);
   
+
+
+  // const [currentTable, setCurrentTable] = React.useState("golden_krust_full");
+  // const [selectedColumns, setSelectedColumns] = React.useState([]);
+
   const [externalColumns, setExternalColumns] = React.useState([]);
 
   React.useEffect(() => {
@@ -277,10 +295,16 @@ const SelectedConnectionDatabaseConfirm = ({
             type="button"
             className="btn btn-outline-danger"
             data-bs-dismiss="modal"
-            onClick={() => {
+
+
+            //onClick={() => {
               // navigate(-1);
-              handleClose(false);
-            }}>
+            //  handleClose(false);
+            //}}>
+
+            onClick={handleCancel}>
+
+
             Cancel
           </button>
           <button
