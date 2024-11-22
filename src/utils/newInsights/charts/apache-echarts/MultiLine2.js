@@ -244,7 +244,9 @@ const MultiLine2 = ({ isLoading }) => {
       },
     },
     title: {
-      text: `${data.Retailer} - ${data.Product}`,
+      // text: `${data.Retailer} - ${data.Product}`,
+      text: `${data.Retailer || 'Unknown Retailer'} - ${data.Product || 'Unknown Product'}`,
+
       align: 'center',
       margin: 10,
       style: {
