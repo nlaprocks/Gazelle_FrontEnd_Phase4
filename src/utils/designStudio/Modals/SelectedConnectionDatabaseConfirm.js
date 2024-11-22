@@ -17,6 +17,15 @@ import { UPDATE_FORM_DATA } from "../../../store/formData/formType";
 import { useNavigate } from "react-router-dom";
 
 
+const { TabPane } = Tabs;
+const requiredColumns = [
+  "WeekEnding",
+  "Retailer",
+  "Product",
+  "Total_Volume",
+  "Dollars",
+];
+
 const { Option } = Select;
 const moment = require("moment");
 
@@ -28,6 +37,10 @@ const SelectedConnectionDatabaseConfirm = ({
   selectedColumns,
   currentTables,
 }) => {
+
+
+  const { RangePicker } = DatePicker;
+  const navigate = useNavigate();
 
   const [scheduleObserver, setScheduleObserver] = React.useState(false);
   const [startDate, setStartDate] = React.useState();
@@ -41,6 +54,7 @@ const SelectedConnectionDatabaseConfirm = ({
 
   const handleClose = () => {
     setSelectedConnectionConfirmModal(false);
+    setConnectionConfirmModal(true)
     setStartDate();
   };
 
@@ -48,6 +62,12 @@ const SelectedConnectionDatabaseConfirm = ({
   const datastructureReducer = useSelector(
     (state) => state.datastructureReducer
   );
+
+
+  const datastructureReducer = useSelector(
+    (state) => state.datastructureReducer
+  );
+
 
   const handleCancel = () => {
     setSelectedConnectionConfirmModal(false);
@@ -58,6 +78,11 @@ const SelectedConnectionDatabaseConfirm = ({
   const databaseConfigReducer = useSelector(
     (state) => state.saveDatabaseConfigReducer
   );
+
+
+  // const [currentTable, setCurrentTable] = React.useState("golden_krust_full");
+  // const [selectedColumns, setSelectedColumns] = React.useState([]);
+  
 
 
   // const [currentTable, setCurrentTable] = React.useState("golden_krust_full");
@@ -271,13 +296,14 @@ const SelectedConnectionDatabaseConfirm = ({
             className="btn btn-outline-danger"
             data-bs-dismiss="modal"
 
+
             //onClick={() => {
               // navigate(-1);
             //  handleClose(false);
             //}}>
 
-            onClick={handleCancel}
-            >
+            onClick={handleCancel}>
+
 
             Cancel
           </button>
