@@ -143,22 +143,7 @@ const ElasticityStratagyChart = ({ isLoading }) => {
 
 
       },
-      dataZoom: [
-        {
-          type: "slider", // The type of data zoom, 'slider' for a slider bar
-          xAxisIndex: [0], // Enable data zoom for the first X axis (index 0)
-          start: 0, // The start position of the data zoom, 0% in this case
-          end: 100, // The end position of the data zoom, 100% in this case
-          // bottom: -30,
-        },
-        {
-          type: "slider", // The type of data zoom, 'slider' for a slider bar
-          yAxisIndex: [0], // Enable data zoom for the first Y axis (index 0)
-          start: 0, // The start position of the data zoom, 0% in this case
-          end: 100, // The end position of the data zoom, 100% in this case
-          right: 50,
-        },
-      ],
+      
       toolbox: {
         show: true,
         orient: "vertical",
