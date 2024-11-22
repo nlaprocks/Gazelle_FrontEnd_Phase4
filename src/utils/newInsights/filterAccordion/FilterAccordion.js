@@ -313,7 +313,7 @@ const FilterAccordion = ({ InsightsBlock }) => {
                       // .filter((product) => !selectedProducts.includes(product))
                       .sort()
                       .map((product) => (
-                        
+
                         <Select.Option
                           key={product}
                           value={product}
@@ -377,10 +377,10 @@ const FilterAccordion = ({ InsightsBlock }) => {
                   }}
                 >
                   {addFiltersReducer.loading ? (
-                    <>
+                    <div className="d-flex align-items-center gap-1">
                       <Spinner as="span" animation="grow" size="sm" role="status" aria-hidden="true" />
-                      Loading...
-                    </>
+                      <span className="flex-1">Loading...</span>
+                    </div>
                   ) : (
                     "Apply Filter"
                   )}
