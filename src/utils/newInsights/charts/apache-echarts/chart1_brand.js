@@ -72,7 +72,7 @@ const Bar = ({ isLoading, chartModel, setChartModel }) => {
         const options = {
           chart: {
             height: 500,
-            stacked: isStacked,
+            stacked: false,
             toolbar: {
               tools: {
                 download: true,
@@ -321,6 +321,8 @@ const Bar = ({ isLoading, chartModel, setChartModel }) => {
           },
           tooltip: {
             trigger: "axis",
+            intersect: true,
+            shared: false,
             axisPointer: {
               type: "shadow",
             },
@@ -329,7 +331,17 @@ const Bar = ({ isLoading, chartModel, setChartModel }) => {
                 return allXAxisLabels[dataPointIndex];
                 // return allXAxisLabels[value - 1]
               }
-            }
+            },
+            marker: {
+              show: true,
+            },
+            
+            fixed: {
+                enabled: false,
+                position: 'topRight',
+                offsetX: 0,
+                offsetY: 0,
+            },
           },
           legend: { position: 'top' },
           grid: {

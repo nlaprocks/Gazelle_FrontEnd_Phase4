@@ -134,8 +134,8 @@ const MyChart = ({ isLoading }) => {
       },
     },
     tooltip: {
-      shared: true,
-      intersect: false,
+      shared: false,
+      intersect: true,
       y: {
         formatter: function (value) {
           // return value.toLocaleString('en-US', { style: 'currency', currency: 'INR', minimumFractionDigits: 2 });

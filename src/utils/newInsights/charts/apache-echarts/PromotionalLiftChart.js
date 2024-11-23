@@ -205,8 +205,8 @@ const PromotionalLiftChart = ({ isLoading }) => {
     },
     colors: ["#2c99f4", "#fa518a", "#f9be56", "#b386e1"],
     tooltip: {
-      shared: true,
-      intersect: false,
+      shared: false,
+      intersect: true,
       y: {
         // formatter: (value) => value.toFixed(2),
         formatter: (value) => Math.round(value),

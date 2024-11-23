@@ -378,8 +378,8 @@ export default function Financials({ promotedPrice, units, increamentalUnits, ba
     return (
         <div className="simluation_db">
             <div className="container-fluid">
-                <div className="sim_retailer_main mb-4" style={{ gridTemplateColumns: "auto" }}>
-                    <p>Financial Analysis</p>
+                <div className="sim_retailer_main mt-10 mb-4" style={{ gridTemplateColumns: "auto" }}>
+                    <h4>Financial Analysis</h4>
                 </div>
                 {isPriceSimulationLoading ? (
                     <div>
@@ -404,8 +404,8 @@ export default function Financials({ promotedPrice, units, increamentalUnits, ba
                                 {/* test table */}
                                 <div className="sim_retailer_row1 width_td mb-4 ">
                                     <div>
-                                        <div className="left_best_price col-lg-12">
-                                            <table className="best_pr_table">
+                                        <div className="left_best_price col-lg-12" style={{ paddingRight: "30px" }}>
+                                            <table className="best_pr_table text-4xl">
                                                 <thead>
                                                     <tr>
                                                         <th colSpan={2}>Event Results </th>

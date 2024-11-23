@@ -101,6 +101,8 @@ const PromotedDepthChart = ({ isLoading }) => {
     },
     tooltip: {
       trigger: "axis",
+      intersect: true,
+      shared: false,
       axisPointer: {
         type: "shadow",
       },

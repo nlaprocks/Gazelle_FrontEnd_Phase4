@@ -348,6 +348,8 @@ const BarRetailor = ({ isLoading, chartModel, setChartModel }) => {
       },
       tooltip: {
         trigger: "axis",
+        intersect: true,
+        shared: false,
         axisPointer: {
           type: "shadow",
         },
