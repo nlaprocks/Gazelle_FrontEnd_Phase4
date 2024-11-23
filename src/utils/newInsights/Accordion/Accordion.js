@@ -221,9 +221,9 @@ const AccordionComp = ({ value, id, setAddHeadingModal, setShowTakeawayModal, se
                     } */}
                     {
 
-                      <div className="btn btn-primary">
+                      //<div className="btn btn-primary">
                         <RunDemo value={value} id={id} role={role} />
-                      </div>
+                      //</div>
 
                     }
 
