@@ -64,9 +64,9 @@ const SelectedConnectionDatabaseConfirm = ({
   );
 
 
-  const datastructureReducer = useSelector(
-    (state) => state.datastructureReducer
-  );
+  // const datastructureReducer = useSelector(
+  //   (state) => state.datastructureReducer
+  // );
 
 
   const handleCancel = () => {
