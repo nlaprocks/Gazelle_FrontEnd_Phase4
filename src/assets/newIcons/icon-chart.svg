@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12">
+  <g id="chart" transform="translate(-1.125 -1.125)">
+    <path id="Path_24143" data-name="Path 24143" d="M3.825,9.563h-2.2a.5.5,0,0,0-.5.5v8a.5.5,0,0,0,.5.5h2.2a.5.5,0,0,0,.5-.5v-8A.5.5,0,0,0,3.825,9.563Zm-.3,8.2h-1.6v-7.4h1.6Z" transform="translate(0 -5.438)"/>
+    <path id="Path_24144" data-name="Path 24144" d="M16.2,16.875H14a.5.5,0,0,0-.5.5v5.4a.5.5,0,0,0,.5.5h2.2a.5.5,0,0,0,.5-.5v-5.4a.5.5,0,0,0-.5-.5Zm-.3,5.6H14.3v-4.8h1.6Z" transform="translate(-7.975 -10.15)"/>
+    <path id="Path_24145" data-name="Path 24145" d="M28.575,1.125h-2.2a.5.5,0,0,0-.5.5v11a.5.5,0,0,0,.5.5h2.2a.5.5,0,0,0,.5-.5v-11a.5.5,0,0,0-.5-.5Zm-.3,11.2h-1.6V1.925h1.6Z" transform="translate(-15.95)"/>
+  </g>
+</svg>

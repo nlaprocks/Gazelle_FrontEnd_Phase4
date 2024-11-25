@@ -1,0 +1,3 @@
+export const ADD_LOG_REQUEST = "ADD_LOG_REQUEST";
+export const ADD_LOG_SUCCESS = "ADD_LOG_SUCCESS";
+export const ADD_LOG_FAILURE = "ADD_LOG_FAILURE";

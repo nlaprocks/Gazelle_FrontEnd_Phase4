@@ -1,0 +1,45 @@
+.chart-pagination {
+  margin: 25px 0;
+  text-align: center;
+}
+.chart-pagination .ant-pagination li.ant-pagination-item {
+  width: 33px;
+  height: 33px;
+  border-radius: 6px;
+}
+.chart-pagination .ant-pagination li.ant-pagination-item-active {
+  background: #174f73;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.29);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  border: #174f73;
+}
+.chart-pagination .ant-pagination li.ant-pagination-next,
+.chart-pagination .ant-pagination li.ant-pagination-prev {
+  width: 33px;
+  height: 33px;
+  display: inline-flex;
+  justify-content: center;
+  border-radius: 6px;
+  align-items: center;
+  background-color: #f0f0f0;
+  box-shadow: unset;
+  color: #2a2725;
+}
+.chart-pagination .ant-pagination li.ant-pagination-options {
+  display: none;
+}
+.chart-pagination
+  .ant-pagination
+  .ant-pagination-jump-next
+  .ant-pagination-item-container
+  .ant-pagination-item-link-icon,
+.chart-pagination
+  .ant-pagination
+  .ant-pagination-jump-prev
+  .ant-pagination-item-container
+  .ant-pagination-item-link-icon {
+  color: #174f73;
+}

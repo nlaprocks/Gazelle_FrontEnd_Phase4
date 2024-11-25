@@ -1,0 +1,2 @@
+export const SET_CURRENT_TABLE = "SET_CURRENT_TABLE";
+
