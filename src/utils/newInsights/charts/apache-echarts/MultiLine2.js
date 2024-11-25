@@ -343,7 +343,7 @@ const MultiLine2 = ({ isLoading }) => {
   const endIndex = startIndex + itemsPerPage;
 
   const visibleChartData = transformedChartData.slice(startIndex, endIndex);
-
+  const showPagination = transformedChartData.length > itemsPerPage;
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
@@ -369,12 +369,14 @@ const MultiLine2 = ({ isLoading }) => {
           />
         </div>
       ))}
-      <Pagination
-        currentPage={currentPage}
-        totalItems={transformedChartData.length}
-        itemsPerPage={itemsPerPage}
-        onPageChange={handlePageChange}
-      />
+      {showPagination && (
+        <Pagination
+          currentPage={currentPage}
+          totalItems={transformedChartData.length}
+          itemsPerPage={itemsPerPage}
+          onPageChange={handlePageChange}
+        />
+      )}
     </div>
   );
 };

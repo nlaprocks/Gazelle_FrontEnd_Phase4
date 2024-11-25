@@ -221,7 +221,7 @@ const PromotedDepthChart = ({ isLoading }) => {
   };
 
   const paginatedData = paginate(restructuredData, currentPage, itemsPerPage);
-
+  const showPagination = restructuredData.length > itemsPerPage;
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
@@ -246,12 +246,14 @@ const PromotedDepthChart = ({ isLoading }) => {
           />
         </div>
       ))}
-      <Pagination
-        currentPage={currentPage}
-        totalItems={restructuredData.length}
-        itemsPerPage={itemsPerPage}
-        onPageChange={handlePageChange}
-      />
+      {showPagination && (
+        <Pagination
+          currentPage={currentPage}
+          totalItems={restructuredData.length}
+          itemsPerPage={itemsPerPage}
+          onPageChange={handlePageChange}
+        />
+      )}
     </div>
   );
 };

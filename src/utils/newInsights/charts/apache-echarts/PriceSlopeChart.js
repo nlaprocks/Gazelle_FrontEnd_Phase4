@@ -211,8 +211,9 @@ const PriceSlopeChart = ({ isLoading }) => {
     const endIndex = startIndex + itemsPerPage;
     return data.slice(startIndex, endIndex);
   };
-
+  
   const paginatedData = paginate(chartData, currentPage, itemsPerPage);
+  const showPagination = chartData.length > itemsPerPage;
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -240,12 +241,14 @@ const PriceSlopeChart = ({ isLoading }) => {
         </div>
       ))
       }
-      <Pagination
-        currentPage={currentPage}
-        totalItems={chartData.length}
-        itemsPerPage={itemsPerPage}
-        onPageChange={handlePageChange}
-      />
+      {showPagination && (
+        <Pagination
+          currentPage={currentPage}
+          totalItems={chartData.length}
+          itemsPerPage={itemsPerPage}
+          onPageChange={handlePageChange}
+        />
+      )}
     </div >
   );
 };

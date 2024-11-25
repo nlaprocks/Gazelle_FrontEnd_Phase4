@@ -144,7 +144,7 @@ const ElasticityStratagyChart = ({ isLoading }) => {
 
 
       },
-      
+
       toolbox: {
         show: true,
         orient: "vertical",
@@ -423,7 +423,7 @@ const ElasticityStratagyChart = ({ isLoading }) => {
   };
 
   const paginatedData = paginate(chartData, currentPage, itemsPerPage);
-
+  const showPagination = chartData.length > itemsPerPage;
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
@@ -446,12 +446,14 @@ const ElasticityStratagyChart = ({ isLoading }) => {
           />
         );
       })}
-      <Pagination
-        currentPage={currentPage}
-        totalItems={chartData.length}
-        itemsPerPage={itemsPerPage}
-        onPageChange={handlePageChange}
-      />
+      {showPagination && (
+        <Pagination
+          currentPage={currentPage}
+          totalItems={chartData.length}
+          itemsPerPage={itemsPerPage}
+          onPageChange={handlePageChange}
+        />
+      )}
     </div>
   );
 };
