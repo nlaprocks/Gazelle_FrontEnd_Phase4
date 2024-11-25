@@ -161,7 +161,19 @@ const MyChart = ({ isLoading }) => {
         style: {
           fontSize: "10px",
         },
+        rotate: -45,
+        rotateAlways: true,
+        formatter: function (value) {
+          console.log(value, value?.length);
+          const maxLabelLength = 15;
+          if (value?.length > maxLabelLength) {
+            return value.substring(0, maxLabelLength - 3) + "...";
+          } else {
+            return value;
+          }
+        },
       },
+      
     },
 
     // yaxis: [

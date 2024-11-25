@@ -168,7 +168,7 @@ const LiftChart = ({ isLoading }) => {
     grid: {
       show: false,
       borderColor: '#e7e7e7',
-
+      
 
     },
   });
@@ -182,7 +182,7 @@ const LiftChart = ({ isLoading }) => {
 
   // Get the data to display for the current page
   const visibleChartData = transformedData?.slice(startIndex, endIndex) || [];
-  const showPagination = visibleChartData.length > itemsPerPage;
+
   // Handle page change
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
@@ -206,14 +206,12 @@ const LiftChart = ({ isLoading }) => {
           />
         </div>
       ))}
-      {showPagination && (
-        <Pagination
-          currentPage={currentPage}
-          totalItems={transformedData?.length || 0}
-          itemsPerPage={itemsPerPage}
-          onPageChange={handlePageChange}
-        />
-      )}
+      <Pagination
+        currentPage={currentPage}
+        totalItems={transformedData?.length || 0}
+        itemsPerPage={itemsPerPage}
+        onPageChange={handlePageChange}
+      />
     </>
   );
 };

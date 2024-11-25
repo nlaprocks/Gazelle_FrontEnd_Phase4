@@ -139,13 +139,16 @@ const PromotedDepthChart = ({ isLoading }) => {
         style: {
           fontSize: '10px',
         },
-        formatter: function (value) {
-          const maxLabelLength = 10;
-          if (value?.length > maxLabelLength) {
-            return value.substring(0, maxLabelLength - 3) + "...";
-          }
-          return value;
-        }
+        rotateAlways: true,
+          formatter: function (value) {
+            console.log(value, value?.length);
+            const maxLabelLength = 15;
+            if (value?.length > maxLabelLength) {
+              return value.substring(0, maxLabelLength - 3) + "...";
+            } else {
+              return value;
+            }
+          },
       },
       axisBorder: {
         show: true,
@@ -221,7 +224,7 @@ const PromotedDepthChart = ({ isLoading }) => {
   };
 
   const paginatedData = paginate(restructuredData, currentPage, itemsPerPage);
-  const showPagination = restructuredData.length > itemsPerPage;
+
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
@@ -246,14 +249,12 @@ const PromotedDepthChart = ({ isLoading }) => {
           />
         </div>
       ))}
-      {showPagination && (
-        <Pagination
-          currentPage={currentPage}
-          totalItems={restructuredData.length}
-          itemsPerPage={itemsPerPage}
-          onPageChange={handlePageChange}
-        />
-      )}
+      <Pagination
+        currentPage={currentPage}
+        totalItems={restructuredData.length}
+        itemsPerPage={itemsPerPage}
+        onPageChange={handlePageChange}
+      />
     </div>
   );
 };

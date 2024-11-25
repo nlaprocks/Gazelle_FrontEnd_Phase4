@@ -161,127 +161,183 @@ const AllPptDownloader = () => {
 
     const generateSecondSlide = (slide, pptx) => {
         return new Promise((resolve) => {
-            if (adminQuestionsReducer?.question?.data && adminQuestionsReducer?.question?.data[1]) {
-                const chart2Data = chart2Reducer?.chart2Data?.data;
-
-                const transformedData = {};
-
-                // Iterate through the chart2Data and group it by Retailer
-                if (chart2Data) {
-                    chart2Data.forEach((item) => {
-                        const retailer = item.Retailer;
-                        const product = item.Product;
-
-                        // Extract the common part of the label before numeric values
-                        const commonLabel = product.match(/^(.*?)\d+\s*OZ/)[1];
-
-                        // Check if the retailer key already exists in transformedData
-                        if (!transformedData[retailer]) {
-                            transformedData[retailer] = {
-                                multiAxes: false,
-                                xycoordinated: true,
-                                quadrant: false,
-                                Retailer: retailer,
-                                xAxisTitle: "Ounces(OZ)",
-                                yAxisTitle: "Price/OZ",
-                                data: {
-                                    datasets: [],
-                                },
-                            };
-                        }
-
-                        // Check if the dataset label already exists in the retailer's datasets
-                        const datasetIndex = transformedData[retailer].data.datasets.findIndex(
-                            (dataset) => dataset.label === commonLabel
-                        );
-
-                        if (datasetIndex === -1) {
-                            // If the dataset doesn't exist, create it
-                            transformedData[retailer].data.datasets.push({
-                                label: commonLabel,
-                                data: [
-                                    {
-                                        x: parseFloat(item.Ounces), // Parse the Ounces as a float
-                                        y: item.Price_avg_last_4_weeks?.toFixed(2),
-                                    },
-                                ],
-                                borderColor: getRandomColor(), // You can define this function to get random colors
-                                backgroundColor: getRandomColor(),
-                                pointRadius: 8,
-                                pointHoverRadius: 20,
-                            });
-                        } else {
-                            // If the dataset exists, push the data point to it
-                            transformedData[retailer].data.datasets[datasetIndex].data.push({
-                                x: parseFloat(item.Ounces),
-                                y: item.Price_avg_last_4_weeks?.toFixed(2),
-                            });
-                        }
-                    });
+          if (
+            adminQuestionsReducer?.question?.data &&
+            adminQuestionsReducer?.question?.data[1]
+          ) {
+            const chart2Data = chart2Reducer?.chart2Data?.data;
+    
+            const transformedData = {};
+    
+            // Iterate through the chart2Data and group it by Retailer
+            if (chart2Data) {
+              chart2Data.forEach((item) => {
+                const retailer = `${item.Retailer} - ${item.Brand}`;
+                const product = item.Product;
+    
+                // Extract the common part of the label before numeric values
+                const commonLabel = product.match(/^(.*?)\d+\s*OZ/)[1];
+    
+                // Check if the retailer key already exists in transformedData
+                if (!transformedData[retailer]) {
+                  transformedData[retailer] = {
+                    multiAxes: false,
+                    xycoordinated: true,
+                    quadrant: false,
+                    Retailer: retailer,
+                    xAxisTitle: "Ounces(OZ)",
+                    yAxisTitle: "Price/OZ",
+                    data: {
+                      datasets: [],
+                    },
+                  };
                 }
-                function getRandomColor() {
-                    const letters = "0123456789ABCDEF";
-                    let color = "#";
-                    for (let i = 0; i < 6; i++) {
-                        color += letters[Math.floor(Math.random() * 16)];
-                    }
-                    return color;
+    
+                // Check if the dataset label already exists in the retailer's datasets
+                const datasetIndex = transformedData[
+                  retailer
+                ].data.datasets.findIndex(
+                  (dataset) => dataset.label === commonLabel
+                );
+    
+                if (datasetIndex === -1) {
+                  // If the dataset doesn't exist, create it
+                  transformedData[retailer].data.datasets.push({
+                    label: commonLabel,
+                    data: [
+                      {
+                        x: parseFloat(item.Ounces), // Parse the Ounces as a float
+                        y: (
+                          item.Price_avg_last_4_weeks / parseFloat(item.Ounces)
+                        )?.toFixed(2),
+                      },
+                    ],
+                    borderColor: getRandomColor(), // You can define this function to get random colors
+                    backgroundColor: getRandomColor(),
+                    pointRadius: 8,
+                    pointHoverRadius: 20,
+                  });
+                } else {
+                  // If the dataset exists, push the data point to it
+                  transformedData[retailer].data.datasets[datasetIndex].data.push({
+                    x: parseFloat(item.Ounces),
+                    y: (
+                      item.Price_avg_last_4_weeks / parseFloat(item.Ounces)
+                    )?.toFixed(2),
+                  });
                 }
-
-                // Convert the object values into an array
-                const formattedChartData = Object.values(transformedData);
-                formattedChartData.forEach((retailer, index) => {
-                    // Use the provided slide for the first chart
-                    if (index > 0) {
-                        // Add new slides only for additional charts
-                        slide = pptx.addSlide({
-                            masterName: "PLACEHOLDER_SLIDE"
-                        });
-                    }
-
-                    generateCommonUIElements(slide, adminQuestionsReducer?.question?.data[1], pptx);
-
-                    const datasets = retailer.data.datasets.map((dataset) => {
-                        const dataPoints = dataset.data.map((point) => ({
-                            x: point.x,
-                            y: point.y,
-                        }));
-
-                        return {
-                            name: dataset.label,
-                            labels: [],
-                            values: dataPoints.map((point) => point.y),
-                            // categoryLabels: dataPoints.map((point) => point.x.toString()),
-                        };
-                    });
-
-                    const chartOptions = {
-                        x: 0.35,
-                        y: 1.0,
-                        w: "95%",
-                        h: 5.3,
-                        showGridlines: false,
-                        catAxisLabelColor: "494949",
-                        catAxisLabelFontFace: "Arial",
-                        catAxisLabelFontSize: 10,
-                        catAxisOrientation: "minMax",
-                        showTitle: true,
-                        titleFontFace: "Calibri Light",
-                        titleFontSize: 14,
-                        title: `${retailer.Retailer}`,
-                        catAxisTitle: "Ounces(0Z)",
-                        valAxisTitle: "Price/OZ",
-                        showCatAxisTitle: true,
-                        showValAxisTitle: true,
-                    };
-                    slide.addChart(pptx.charts.LINE, datasets, chartOptions);
-                });
-                resolve();
-            } else {
-                resolve();
+              });
             }
+            function getRandomColor() {
+              const letters = "0123456789ABCDEF";
+              let color = "#";
+              for (let i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+              }
+              return color;
+            }
+    
+            // Convert the object values into an array
+            const formattedChartData = Object.values(transformedData);
+            formattedChartData.forEach((retailer, index) => {
+              // Create a new slide for each chart (except the first one)
+              if (index > 0) {
+                pptx.layout = "LAYOUT_WIDE";
+                pptx.defineSlideMaster({
+                  title: "PLACEHOLDER_SLIDE",
+                  background: {
+                    color: "FFFFFF",
+                  },
+                  objects: [
+                    {
+                      rect: {
+                        x: 0,
+                        y: 0,
+                        w: "100%",
+                        h: 0.35,
+                        fill: {
+                          color: "174F73",
+                        },
+                      },
+                    },
+                    {
+                      text: {
+                        text: "North Light Analytics Report",
+                        options: {
+                          x: 0,
+                          y: 0,
+                          w: 6,
+                          h: 0.35,
+                          fontSize: 15,
+                          color: "FFFFFF",
+                        },
+                      },
+                    },
+                  ],
+                  slideNumber: {
+                    x: 13,
+                    y: 0,
+                    color: "ffffff",
+                    fontSize: 15,
+                  },
+                });
+                pptx.addSlide({
+                  masterName: "PLACEHOLDER_SLIDE",
+                });
+              }
+    
+              // Add chart to the slide
+              slide = pptx.slides[pptx.slides.length - 1];
+              // Assuming you have a function to generate common UI elements
+              generateCommonUIElements(
+                slide,
+                adminQuestionsReducer?.question?.data[1],
+                pptx
+              );
+              const datasets = retailer.data.datasets.map((dataset) => {
+                const dataPoints = dataset.data
+                  .map((point) => ({
+                    x: point.x,
+                    y: point.y,
+                  }))
+                  .sort((a, b) => parseFloat(a.x) - parseFloat(b.x));
+    
+                return {
+                  name: dataset.label,
+                  labels: dataPoints.map((point) => point.x),
+                  values: dataPoints.map((point) => point.y),
+                  // categoryLabels: dataPoints.map((point) => point.x.toString()),
+                };
+              });
+    
+              const chartOptions = {
+                x: 0.35,
+                y: 1.0,
+                w: "95%",
+                h: 5.3,
+                showGridlines: false,
+                catAxisLabelColor: "494949",
+                catAxisLabelFontFace: "Arial",
+                catAxisLabelFontSize: 10,
+                catAxisOrientation: "minMax",
+                showTitle: true,
+                titleFontFace: "Calibri Light",
+                titleFontSize: 14,
+                title: `${retailer.Retailer}`,
+                catAxisTitle: "Ounces(0Z)",
+                valAxisTitle: "Price/OZ",
+                showCatAxisTitle: true,
+                showValAxisTitle: true,
+              };
+              slide.addChart(pptx.charts.LINE, datasets, chartOptions);
+            });
+            resolve();
+          } else {
+            // If the condition for the second slide is not met, resolve immediately
+            resolve();
+          }
         });
-    };
+      };
 
     const generateThirdSlide = (slide, pptx) => {
         return new Promise((resolve) => {

@@ -230,7 +230,6 @@ const PromotionalLiftChart = ({ isLoading }) => {
   };
 
   const paginatedData = paginate(restructuredData, currentPage, itemsPerPage);
-  const showPagination = restructuredData.length > itemsPerPage;
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -255,14 +254,12 @@ const PromotionalLiftChart = ({ isLoading }) => {
           />
         </div>
       ))}
-      {showPagination && (
-        <Pagination
-          currentPage={currentPage}
-          totalItems={restructuredData.length}
-          itemsPerPage={itemsPerPage}
-          onPageChange={handlePageChange}
-        />
-      )}
+      <Pagination
+        currentPage={currentPage}
+        totalItems={restructuredData.length}
+        itemsPerPage={itemsPerPage}
+        onPageChange={handlePageChange}
+      />
     </div>
   );
 };

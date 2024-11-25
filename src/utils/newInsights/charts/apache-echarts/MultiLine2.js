@@ -54,7 +54,7 @@ const MultiLine2 = ({ isLoading }) => {
       const weekEnding = item?.WeekEnding;
       const product = item.Product;
       const retailer = item.Retailer;
-      const key = `${product}-${retailer}`;
+      const key = `${product}_${retailer}`;
 
       if (!weeklyData[key]) {
         weeklyData[key] = {};
@@ -78,8 +78,9 @@ const MultiLine2 = ({ isLoading }) => {
 
   Object.keys(groupedData).forEach((key) => {
     transformedData[key] = {
-      Retailer: key.split('-')[2],
-      Product: key.split('-')[0] + "-" + key.split('-')[1],
+      Retailer: key.split('_')[1],
+      // Product: key.split('_')[0] + "-" + key.split('_')[1],
+      Product: key.split('_')[0],
       xAxisTitle: "Week-Year",
       leftyAxisTitle: "Units",
       rightyAxisTitle: "Price ($)",
@@ -343,7 +344,7 @@ const MultiLine2 = ({ isLoading }) => {
   const endIndex = startIndex + itemsPerPage;
 
   const visibleChartData = transformedChartData.slice(startIndex, endIndex);
-  const showPagination = transformedChartData.length > itemsPerPage;
+
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
@@ -369,14 +370,12 @@ const MultiLine2 = ({ isLoading }) => {
           />
         </div>
       ))}
-      {showPagination && (
-        <Pagination
-          currentPage={currentPage}
-          totalItems={transformedChartData.length}
-          itemsPerPage={itemsPerPage}
-          onPageChange={handlePageChange}
-        />
-      )}
+      <Pagination
+        currentPage={currentPage}
+        totalItems={transformedChartData.length}
+        itemsPerPage={itemsPerPage}
+        onPageChange={handlePageChange}
+      />
     </div>
   );
 };

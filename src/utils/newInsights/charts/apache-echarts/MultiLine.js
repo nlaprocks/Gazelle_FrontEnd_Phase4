@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import Pagination from "./pagination/Pagination";
 
 const StackedLineChart = ({ isLoading }) => {
-
+  
   const chart4Reducer = useSelector((state) => state.chart4Reducer);
   const chart4Data = chart4Reducer?.chart4Data?.data;
   const [chart4TransformedData, setChart4TransformedData] = useState([]);
@@ -164,16 +164,16 @@ const StackedLineChart = ({ isLoading }) => {
       },
       labels: {   // Old Code
         // formatter: (value) => `${value}%`,
+        
+        formatter: (value) => `${value.toFixed(2)*100}%`,
 
-        formatter: (value) => `${value.toFixed(2) * 100}%`,
-
-        // New Code
+            // New Code
         // formatter: (value) => {
         //   // Check if value is close to zero
         //   if (Math.abs(value) < 0.001) {
         //     return `0.00%`;
         //   }
-
+          
         //   return `${value.toFixed(2)}%`;
         // }
       },
@@ -189,7 +189,7 @@ const StackedLineChart = ({ isLoading }) => {
     series: data.data.datasets.map((dataset) => ({
       name: dataset.label,
       data: dataset.data,
-
+     
     })),
     legend: {
       show: true,
@@ -203,7 +203,7 @@ const StackedLineChart = ({ isLoading }) => {
     grid: {
       show: false,
       borderColor: '#e7e7e7',
-
+      
 
     },
     markers: {
@@ -222,23 +222,23 @@ const StackedLineChart = ({ isLoading }) => {
     tooltip: {
       shared: true,
       intersect: false,
-      // Old Code
+             // Old Code
       // y: {
       //   formatter: (value) => `${value.toFixed(2)}%`,
       // },
 
-      //New Code      
+        //New Code      
       y: {
         formatter: (value) => {
           if (value < 1) {
             // console.log(value,"values")
-            return `${(value * 100).toFixed(2)}%`;
-          }
+            return `${(value * 100).toFixed(2)}%`; 
+          }                                       
           return `${value.toFixed(2)}%`;
         },
       }
-
-
+      
+      
     },
     colors: ["#2c99f4", "#40d68e"]
   });
@@ -249,12 +249,12 @@ const StackedLineChart = ({ isLoading }) => {
   const endIndex = startIndex + itemsPerPage;
 
   const visibleChartData = chart4TransformedData.slice(startIndex, endIndex);
-  const showPagination = chart4TransformedData.length > itemsPerPage;
+
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
-
-  // console.log(chart4Reducer,"chartreducers")
+  
+// console.log(chart4Reducer,"chartreducers")
   return (
     <>
       {visibleChartData.map((chartData, index) => (
@@ -268,14 +268,12 @@ const StackedLineChart = ({ isLoading }) => {
           />
         </div>
       ))}
-      {showPagination && (
-        <Pagination
-          currentPage={currentPage}
-          totalItems={chart4TransformedData.length}
-          itemsPerPage={itemsPerPage}
-          onPageChange={handlePageChange}
-        />
-      )}
+      <Pagination
+        currentPage={currentPage}
+        totalItems={chart4TransformedData.length}
+        itemsPerPage={itemsPerPage}
+        onPageChange={handlePageChange}
+      />
     </>
   );
 };

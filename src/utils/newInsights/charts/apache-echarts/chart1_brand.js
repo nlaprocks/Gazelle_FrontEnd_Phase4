@@ -16,6 +16,7 @@ const Bar = ({ isLoading, chartModel, setChartModel }) => {
     const groupedData = {};
 
     chart1Reducer?.chart1Data?.data?.forEach((item) => {
+      // console.log(item)
       const brand = item.Brand;
       const retailer = item.Retailer;
 
@@ -31,6 +32,12 @@ const Bar = ({ isLoading, chartModel, setChartModel }) => {
       }
 
       groupedData[brand][retailer].data.push({
+        // y: parseFloat(item.Price_avg_last_4_weeks?.toFixed(2)),
+        // y: parseInt(item.Price_avg_last_4_weeks),
+
+        //old
+        // y: Math.round(item.Price_avg_last_4_weeks),
+        //New
         y: item.Price_avg_last_4_weeks,
         x: item.Product,
       });
@@ -45,22 +52,22 @@ const Bar = ({ isLoading, chartModel, setChartModel }) => {
   }, [chart1Reducer]);
 
   // chartNumber 1
-
-  // Pagination states
-  const paginate = (data, currentPage, itemsPerPage) => {
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    return data.slice(startIndex, endIndex);
-  };
-
-  const paginatedData = paginate(chartDataArray, currentPage, itemsPerPage);
-
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
-
-  const showPagination = chartDataArray.length > itemsPerPage;
-
+    // Pagination states
+    const paginate = (data, currentPage, itemsPerPage) => {
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      return data.slice(startIndex, endIndex);
+    };
+  
+    const paginatedData = paginate(chartDataArray, currentPage, itemsPerPage);
+  
+    const handlePageChange = (page) => {
+      setCurrentPage(page);
+    };
+  
+    const showPagination = chartDataArray.length > itemsPerPage;
+  
+  
   return (
     <div>
       {paginatedData.map((chartData, index) => {
@@ -136,6 +143,7 @@ const Bar = ({ isLoading, chartModel, setChartModel }) => {
           stroke: {
             show: true,
             width: 1,
+            // colors: ["#2a97f2", "#40d68e", "#ea580c", "#ef4444"]
             colors: [
               "#0e7490",
               "#65a30d",
@@ -275,12 +283,16 @@ const Bar = ({ isLoading, chartModel, setChartModel }) => {
               style: {
                 fontSize: '10px'
               },
+              rotateAlways: true,
               formatter: function (value) {
+                console.log(value, value?.length);
                 const maxLabelLength = 15;
                 if (value?.length > maxLabelLength) {
                   return value.substring(0, maxLabelLength - 3) + "...";
+                } else {
+                  return value;
                 }
-              }
+              },
             },
             title: {
               text: 'Product',
@@ -345,12 +357,12 @@ const Bar = ({ isLoading, chartModel, setChartModel }) => {
             marker: {
               show: true,
             },
-
+            
             fixed: {
-              enabled: false,
-              position: 'topRight',
-              offsetX: 0,
-              offsetY: 0,
+                enabled: false,
+                position: 'topRight',
+                offsetX: 0,
+                offsetY: 0,
             },
           },
           legend: { position: 'top' },
@@ -376,6 +388,20 @@ const Bar = ({ isLoading, chartModel, setChartModel }) => {
               size: 5,
             },
           },
+          // colors: [
+          //   "#2a97f2", // Color 1
+          //   "#40d68e",// Color 2
+          //   '#3357FF', // Color 3
+          //   '#F1C40F', // Color 4
+          //   '#8E44AD', // Color 5
+          //   '#E67E22', // Color 6
+          //   '#2ECC71', // Color 7
+          //   '#3498DB', // Color 8
+          //   '#9B59B6', // Color 9
+          //   '#34495E', // Color 10
+          //   "#ef4444", // Color 11
+          //   '#FF5733', // Color 12
+          // ],
           colors: [
             "#0e7490",
             "#65a30d",
@@ -547,7 +573,7 @@ const Bar = ({ isLoading, chartModel, setChartModel }) => {
           </div>
         );
       })}
-      {showPagination && (
+            {showPagination && (
         <Pagination
           currentPage={currentPage}
           totalItems={chartDataArray.length}

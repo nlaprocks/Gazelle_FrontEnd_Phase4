@@ -283,13 +283,23 @@ const BarRetailor = ({ isLoading, chartModel, setChartModel }) => {
           style: {
             fontSize: '10px'
           },
+          // formatter: function (value) {
+          //   console.log(value);
+          //   const maxLabelLength = 15;
+          //   if (value?.length > maxLabelLength) {
+          //     return value.substring(0, maxLabelLength - 3) + "...";
+          //   }
+          // }
+          rotateAlways: true,
           formatter: function (value) {
-            console.log(value);
+            console.log(value, value?.length);
             const maxLabelLength = 15;
             if (value?.length > maxLabelLength) {
               return value.substring(0, maxLabelLength - 3) + "...";
+            } else {
+              return value;
             }
-          }
+          },
         },
         title: {
           text: 'Retailers ',

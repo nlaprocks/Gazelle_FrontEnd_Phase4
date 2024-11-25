@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import ApexCharts from "react-apexcharts";
 import { ProfitCurvesChartData } from "./data";
-import Pagination from "./pagination/Pagination";
 
 const ProfitCurvesChart = () => {
   const [chartType, setChartType] = React.useState('line');
@@ -76,7 +75,7 @@ const ProfitCurvesChart = () => {
         //   colors: ['#f3f3f3', 'transparent'], // Takes an array of colors to alternate between
         //   opacity: 0.5,
         // },
-
+  
       },
       xaxis: {
         categories: labels,
@@ -84,7 +83,7 @@ const ProfitCurvesChart = () => {
           text: xAxisTitle,
         },
         labels: {
-          rotate: -45,
+          rotate: -45, 
           style: {
             fontSize: '10px',
           },
@@ -94,12 +93,12 @@ const ProfitCurvesChart = () => {
         curve: 'straight',
         width: 4
       },
-      colors: ["#2c99f4", "#40d68e"],
+      colors:["#2c99f4","#40d68e"],
       markers: {
         size: 3,
-        strokeColors: ["#0ea5e9", "#14532d"],
+        strokeColors:["#0ea5e9","#14532d"],
         strokeWidth: 1,
-        shape: "circle",
+        shape:"circle",
         fillOpacity: 1,
         hover: {
           size: 4,
@@ -131,25 +130,9 @@ const ProfitCurvesChart = () => {
     };
   };
 
-  // Pagination states
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5; // Number of retailers per page
-
-  const paginate = (data, currentPage, itemsPerPage) => {
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    return data.slice(startIndex, endIndex);
-  };
-
-  const paginatedData = paginate(ProfitCurvesChartData, currentPage, itemsPerPage);
-  const showPagination = ProfitCurvesChartData.length > itemsPerPage;
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
-
   return (
     <div>
-      {paginatedData?.map((val, i) => (
+      {ProfitCurvesChartData?.map((val, i) => (
         <ApexCharts
           key={i}
           options={getOptions(val)}
@@ -157,18 +140,10 @@ const ProfitCurvesChart = () => {
           type={chartType}
           height={500}
           style={{
-            marginBottom: i !== paginatedData.length - 1 ? "50px" : "0",
+            marginBottom: i !== ProfitCurvesChartData.length - 1 ? "50px" : "0",
           }}
         />
       ))}
-      {showPagination && (
-        <Pagination
-          currentPage={currentPage}
-          totalItems={ProfitCurvesChartData.length}
-          itemsPerPage={itemsPerPage}
-          onPageChange={handlePageChange}
-        />
-      )}
     </div>
   );
 };
