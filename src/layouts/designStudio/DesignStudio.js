@@ -807,8 +807,7 @@ const DesignStudio = () => {
                             delay={{ show: 250, hide: 250 }}
                             overlay={<Tooltip id="overlay-example">Add Version</Tooltip>}
                           >
-                            <a href="#!" className="btn icon-btn btn-primary" onClick={addModelWithVersionHandler}>
-                                                                              {/* onClick={nodeUpdateHandler} */}
+                            <a href="#!" className="btn icon-btn btn-primary" onClick={nodeUpdateHandler}>
                               <i className="fa-solid fa-sliders"></i>
                               {/* <img src={info} alt="" className="alertAligns" /> */}
                             </a>

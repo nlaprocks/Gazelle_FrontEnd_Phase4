@@ -579,7 +579,7 @@ export default function PromoEventSimulator({
 
                                             <tr>
                                                 <td colSpan={2} style={{ textAlign: "center" }}>
-                                                    <p>Event Incremental </p>
+                                                    <p>Event Increamental</p>
                                                 </td>
                                                 <td>
                                                     <p>

@@ -254,7 +254,6 @@ const InternalDatabaseConnectionConfirm = ({ internalSelectedDatabase, internalD
     }
   }, [saveMobilityConfigReducer, saveCompetitorsConfigReducer]);
 
-
   return (
     <Modal
       show={internalDbConnectionConfirmModal}

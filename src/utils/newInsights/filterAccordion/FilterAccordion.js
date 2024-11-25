@@ -144,32 +144,32 @@ const FilterAccordion = ({ InsightsBlock }) => {
     }
   });
 
-  // React.useEffect(() => {
-  //   const filterProducts = () => {
-  //     const filteredProducts = [];
+  React.useEffect(() => {
+    const filterProducts = () => {
+      const filteredProducts = [];
 
-  //     selectedRetailers.forEach((retailer) => {
-  //       selectedBrands.forEach((brand) => {
-  //         const productsForBrand = retailerBrandsProducts?.[retailer]?.[brand];
-  //         if (productsForBrand) {
-  //           // Add products for the current brand that are not already in the filtered list
-  //           productsForBrand.forEach((product) => {
-  //             if (!filteredProducts.includes(product)) {
-  //               filteredProducts.push(product);
-  //             }
-  //           });
-  //         }
-  //       });
-  //     });
+      selectedRetailers.forEach((retailer) => {
+        selectedBrands.forEach((brand) => {
+          const productsForBrand = retailerBrandsProducts?.[retailer]?.[brand];
+          if (productsForBrand) {
+            // Add products for the current brand that are not already in the filtered list
+            productsForBrand.forEach((product) => {
+              if (!filteredProducts.includes(product)) {
+                filteredProducts.push(product);
+              }
+            });
+          }
+        });
+      });
 
-  //     setSelectedProducts(filteredProducts);
-  //   };
+      setSelectedProducts(filteredProducts);
+    };
 
-  //   if (retailerBrandsProducts) {
-  //     filterProducts();
-  //   }
-  // }, [selectedRetailers, selectedBrands, retailerBrandsProducts]);
-
+    if (retailerBrandsProducts) {
+      filterProducts();
+    }
+  }, [selectedRetailers, selectedBrands, retailerBrandsProducts]);
+  // console.log(selectedProducts,"selectedproducts")
 
   return (
     <>
