@@ -520,7 +520,8 @@
     grid-template-columns: repeat(2, 1fr);
     gap: 15px;
     margin-bottom: 20px;
-    padding: 15px;
+    padding-bottom: 25px;
+    /* padding: 15px; */
     border-bottom: 1px solid #e0e0e0;
 }
 
@@ -538,6 +539,52 @@
 .e-field {
     width: 100%;
 }
+
+.e-dlg-header-content {
+    background-color: var(--bs-secondary);
+    border-color: var(--bs-secondary);
+    color: var(--color-white);
+    justify-content: center;
+    color: var(--color-white);
+    padding: 15px;
+}
+
+.e-footer-content .e-primary {
+    background-color: var(--bs-secondary) !important;
+    border-color: unset !important;
+}
+.e-footer-content .e-event-cancel {
+    background-color: #6c757d !important;
+    color: var(--color-white) !important;
+}
+
+.e-dlg-header-content button {
+    background-color: var(--color-white) !important;
+    border-radius: 50% !important;
+    opacity: 1 !important;
+    background-size: 10px !important;
+    width: 30px !important;
+    height: 30px !important;
+}
+
+
+.e-dlg-header-content button .e-btn-icon {
+    color: var(--color-black) !important;
+    width: 8px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: auto !important;
+}
+
+.e-title-text {
+    color: var(--color-white);
+}
+
+.e-dlg-closeicon-btn {
+    color: var(--color-white);
+}
+
 
 .e-multiselect,
 .e-dropdownlist,

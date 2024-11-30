@@ -29,35 +29,35 @@ const HeaderRows = () => {
 
     const promotions = [{
         id: 1,
-        name: 'Product 1'
+        name: 'Promotion 1'
     }, {
         id: 2,
-        name: 'Product 2'
+        name: 'Promotion 2'
     }, {
         id: 3,
-        name: 'Product 3'
+        name: 'Promotion 3'
     }, {
         id: 4,
-        name: 'Product 4'
+        name: 'Promotion 4'
     }, {
         id: 5,
-        name: 'Product 5'
+        name: 'Promotion 5'
     },
     {
         id: 6,
-        name: 'Product 6'
+        name: 'Promotion 6'
     },
     {
         id: 7,
-        name: 'Product 7'
+        name: 'Promotion 7'
     },
     {
         id: 8,
-        name: 'Product 8'
+        name: 'Promotion 8'
     },
     {
         id: 9,
-        name: 'Product 9'
+        name: 'Promotion 9'
     },
 
     ];
@@ -80,7 +80,6 @@ const HeaderRows = () => {
                     // Add dropdowns for Promotions, Channel, Retailer, Brands, Products
                     const dropdowns = [
                         { name: 'Promotions', type: 'dropdown', options: promotions, fields: { text: 'name', value: 'id' } },
-                        // { name: 'Subject', type: 'text', placeholder: 'Event Name' },
                         { name: 'Channel', type: 'multiselect', options: ['Channel 1', 'Channel 2'], fields: { text: 'text', value: 'value' } },
                         { name: 'Retailer', type: 'dropdown', options: ['Retailer A', 'Retailer B', 'Retailer C'], fields: { text: 'text', value: 'value' } },
                         { name: 'Brands', type: 'dropdown', options: ['Brand X', 'Brand Y', 'Brand Z'], fields: { text: 'text', value: 'value' } },
