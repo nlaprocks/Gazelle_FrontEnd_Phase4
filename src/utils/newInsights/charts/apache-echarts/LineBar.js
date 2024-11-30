@@ -165,7 +165,7 @@ const MyChart = ({ isLoading }) => {
         rotateAlways: true,
         formatter: function (value) {
           console.log(value, value?.length);
-          const maxLabelLength = 15;
+          const maxLabelLength = 30;
           if (value?.length > maxLabelLength) {
             return value.substring(0, maxLabelLength - 3) + "...";
           } else {
@@ -276,7 +276,7 @@ const MyChart = ({ isLoading }) => {
             options={getDataOption(data)}
             series={getDataOption(data).series}
             // type='line'
-            height={500}
+            height={600}
             width="100%"
           />
         </div>
