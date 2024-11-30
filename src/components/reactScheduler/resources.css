@@ -1,0 +1,661 @@
+.e-tooltip-wrap.e-schedule-event-tooltip .airline-flex-row {
+    display: flex;
+    padding: 0 5px;
+    line-height: 20px;
+}
+
+.e-tooltip-wrap.e-schedule-event-tooltip .airline-flex-col {
+    flex: 0 0 50%;
+}
+
+.e-tooltip-wrap.e-schedule-event-tooltip .text-right {
+    text-align: right;
+}
+
+.e-tooltip-wrap.e-schedule-event-tooltip .margin-right {
+    margin-left: -21px;
+}
+
+.e-tooltip-wrap.e-schedule-event-tooltip .text-size {
+    font-size: 14px;
+}
+
+.e-tooltip-wrap.e-schedule-event-tooltip .border-right {
+    border-right: 1px solid #fff;
+}
+
+.e-tooltip-wrap.e-schedule-event-tooltip .airline-fare {
+    padding-left: 8px;
+}
+
+.schedule-resources.e-schedule .e-appointment .template-wrap {
+    color: black;
+    width: 100%;
+}
+
+.fluent-dark .schedule-resources.e-schedule .e-appointment .template-wrap,
+.bootstrap5-dark .schedule-resources.e-schedule .e-appointment .template-wrap,
+.bootstrap5\.3-dark .schedule-resources.e-schedule .e-appointment .template-wrap,
+.tailwind-dark .schedule-resources.e-schedule .e-appointment .template-wrap,
+.bootstrap-dark .schedule-resources.e-schedule .e-appointment .template-wrap,
+.fabric-dark .schedule-resources.e-schedule .e-appointment .template-wrap,
+.material-dark .schedule-resources.e-schedule .e-appointment .template-wrap,
+.highcontrast .schedule-resources.e-schedule .e-appointment .template-wrap,
+.material3-dark .schedule-resources.e-schedule .e-appointment .template-wrap,
+.fluent2-dark .schedule-resources.e-schedule .e-appointment .template-wrap,
+.fluent2-highcontrast .schedule-resources.e-schedule .e-appointment .template-wrap {
+    color: #fff;
+}
+
+.schedule-resources.e-schedule .e-work-cells.best-price {
+    background-color: #FFFBDF;
+}
+
+.schedule-resources.e-schedule .best-price:not(.e-work-cells) {
+    color: #1A961A;
+    float: right;
+    margin-top: -22px;
+    margin-right: 3px;
+    width: auto;
+    font-size: 12px;
+}
+
+.fluent-dark .schedule-resources.e-schedule .best-price:not(.e-work-cells),
+.bootstrap5-dark .schedule-resources.e-schedule .best-price:not(.e-work-cells),
+.bootstrap5\.3-dark .schedule-resources.e-schedule .best-price:not(.e-work-cells),
+.tailwind-dark .schedule-resources.e-schedule .best-price:not(.e-work-cells),
+.bootstrap-dark .schedule-resources.e-schedule .best-price:not(.e-work-cells),
+.fabric-dark .schedule-resources.e-schedule .best-price:not(.e-work-cells),
+.material-dark .schedule-resources.e-schedule .best-price:not(.e-work-cells),
+.highcontrast .schedule-resources.e-schedule .best-price:not(.e-work-cells),
+.material3-dark .schedule-resources.e-schedule .best-price:not(.e-work-cells),
+.fluent2-dark .schedule-resources.e-schedule .best-price:not(.e-work-cells),
+.fluent2-highcontrast .schedule-resources.e-schedule .best-price:not(.e-work-cells) {
+    color: #33DB33;
+}
+
+.fluent-dark .schedule-resources.e-schedule .e-work-cells.best-price,
+.bootstrap5-dark .schedule-resources.e-schedule .e-work-cells.best-price,
+.bootstrap5\.3-dark .schedule-resources.e-schedule .e-work-cells.best-price,
+.tailwind-dark .schedule-resources.e-schedule .e-work-cells.best-price,
+.bootstrap-dark .schedule-resources.e-schedule .e-work-cells.best-price,
+.fabric-dark .schedule-resources.e-schedule .e-work-cells.best-price,
+.material-dark .schedule-resources.e-schedule .e-work-cells.best-price,
+.highcontrast .schedule-resources.e-schedule .e-work-cells.best-price,
+.material3-dark .schedule-resources.e-schedule .e-work-cells.best-price,
+.fluent2-dark .schedule-resources.e-schedule .e-work-cells.best-price,
+.fluent2-highcontrast .schedule-resources.e-schedule .e-work-cells.best-price {
+    background-color: #393939;
+}
+
+.schedule-resources.e-schedule.e-device .best-price:not(.e-work-cells) {
+    display: none;
+}
+
+.schedule-demo-heading {
+    font-size: 16px;
+    padding-bottom: 15px;
+    text-align: center;
+    font-weight: 500
+}
+
+.e-tooltip-wrap.e-schedule-event-tooltip .event-tooltip {
+    width: 217px;
+}
+
+.e-tooltip-wrap.e-schedule-event-tooltip .airline {
+    width: 40%;
+}
+
+.e-tooltip-wrap.e-schedule-event-tooltip .event-tooltip .airline-header {
+    display: flex;
+    padding: 8px 0px 8px 0px;
+}
+
+.e-tooltip-wrap.e-schedule-event-tooltip .event-tooltip .airline-details {
+    display: flex;
+    padding: 8px 5px 8px 5px;
+}
+
+.e-tooltip-wrap.e-schedule-event-tooltip .event-tooltip .airline-timings,
+.e-tooltip-wrap.e-schedule-event-tooltip .event-tooltip .airline-timings-title {
+    display: flex;
+    padding: 5px;
+}
+
+.e-schedule-event-tooltip .event-tooltip .airline-header {
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.e-schedule-event-tooltip .event-tooltip .airline-logo,
+.schedule-resources.e-schedule .template-wrap .airline-logo {
+    background-size: cover;
+    background-repeat: no-repeat;
+    margin-top: -3px;
+    width: 25px;
+    height: 25px;
+}
+
+.e-schedule-event-tooltip .event-tooltip .airline-logo.airways-1,
+.schedule-resources.e-schedule .template-wrap .airline-logo.airways-1 {
+    background-image: url('./images/airways-1.svg');
+}
+
+.e-schedule-event-tooltip .event-tooltip .airline-logo.airways-2,
+.schedule-resources.e-schedule .template-wrap .airline-logo.airways-2 {
+    background-image: url('./images/airways-2.svg');
+}
+
+.e-schedule-event-tooltip .event-tooltip .airline-logo.airways-3,
+.schedule-resources.e-schedule .template-wrap .airline-logo.airways-3 {
+    background-image: url('./images/airways-3.svg');
+}
+
+.schedule-resources.e-schedule .fare-detail {
+    color: #00837B;
+    font-size: 16px;
+    font-weight: 500;
+    height: 25px;
+    padding-left: 5px;
+}
+
+.highcontrast .schedule-resources.e-schedule .fare-detail {
+    color: #1B96BB;
+}
+
+.schedule-resources.e-schedule.e-device .fare-detail {
+    font-size: 11px;
+}
+
+.schedule-resources.e-schedule .e-toolbar-item.e-date-range {
+    margin-left: 8px;
+    pointer-events: none;
+}
+
+.schedule-resources.e-schedule .airway-name {
+    font-size: 12px;
+    overflow: hidden;
+    padding-left: 5px;
+    text-overflow: ellipsis;
+}
+
+.schedule-resources.e-schedule.e-device .airway-name {
+    display: none;
+}
+
+.schedule-resources.e-schedule .e-month-view .e-appointment {
+    height: 45px;
+    background: none;
+    border-width: 0;
+    top: 10px !important;
+}
+
+.schedule-resources.e-schedule.e-device .e-month-view .e-appointment {
+    height: 45px;
+}
+
+.e-bigger .schedule-resources.e-schedule .e-month-view .e-appointment {
+    height: 40px;
+}
+
+.schedule-resources.e-schedule .e-month-view .e-appointment .e-appointment-details {
+    height: inherit;
+}
+
+.schedule-resources.e-schedule .e-month-view .e-more-indicator {
+    display: none
+}
+
+.schedule-resources.e-schedule .e-month-view .e-appointment.e-appointment-border,
+.schedule-resources.e-schedule .e-month-view .e-appointment:focus {
+    border-width: 0;
+}
+
+.e-tooltip-wrap.e-popup.e-schedule-event-tooltip {
+    opacity: 1;
+}
+
+.highcontrast .e-tooltip-wrap.e-popup.e-schedule-event-tooltip {
+    border-color: #e0e0e0;
+    background-color: #fff;
+}
+
+.highcontrast .e-tooltip-wrap.e-popup.e-schedule-event-tooltip .e-tip-content {
+    color: #000;
+}
+
+.e-tooltip-wrap.e-popup.e-schedule-event-tooltip .event-tooltip .airline-name {
+    font-weight: 500;
+    font-size: 16px;
+    padding-left: 10px;
+    padding-top: 3px;
+
+}
+
+.e-tooltip-wrap.e-popup.e-schedule-event-tooltip .event-tooltip .airline-title {
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.e-tooltip-wrap.e-popup.e-schedule-event-tooltip .event-tooltip .airline-logo {
+    padding: 5px;
+    margin-left: 5px;
+    background-size: 25px;
+    height: 25px;
+    width: 25px;
+    margin-top: 0px;
+}
+
+.property-panel-content .e-checkbox-wrapper.e-resource.e-airways-1 .e-frame {
+    background-color: #EA7A57;
+    border-color: transparent;
+}
+
+.property-panel-content .e-checkbox-wrapper.e-resource.e-airways-2 .e-frame {
+    background-color: #357CD2;
+    border-color: transparent;
+}
+
+.property-panel-content .e-checkbox-wrapper.e-resource.e-airways-3 .e-frame {
+    background-color: #7FA900;
+    border-color: transparent;
+}
+
+.custom-event-editor .e-textlabel {
+    padding-right: 15px;
+    text-align: right;
+}
+
+.custom-event-editor td {
+    padding: 7px;
+    padding-right: 16px;
+}
+
+.e-field.e-input {
+    border-radius: 0;
+}
+
+@media (max-width: 550px) {
+    .schedule-demo-heading {
+        font-size: 14px;
+    }
+}
+
+.drag-sample-wrapper {
+    display: -ms-flexbox;
+    display: flex;
+}
+
+.schedule-container {
+    padding-right: 10px;
+    width: 100%;
+}
+
+.title-container {
+    padding-bottom: 10px;
+}
+
+.treeview-external-drag #waiting {
+    height: 100%;
+    padding: 0;
+}
+
+.treeview-external-drag #waitdetails {
+    width: 95%;
+    float: left;
+    height: 100%;
+    padding: 0;
+}
+
+.e-schedule.schedule-drag-drop .e-resource-cells.e-parent-node .template-wrap {
+    padding: 3px 0px;
+}
+
+.title-text {
+    font-size: 18px;
+    margin: 0px;
+    font-weight: bold;
+    text-align: center;
+}
+
+
+.treeview-external-drag #waitlist {
+    width: 100%;
+    height: 50%;
+    font-weight: bold;
+    font-family: "Segoe UI";
+    font-size: 12px;
+    padding: 5px 0 0 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.treeview-external-drag #waitcategory {
+    height: 50%;
+    font-family: "Segoe UI";
+    font-size: 10px;
+    opacity: 0.6;
+    padding-left: 10px;
+    padding-top: 5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.treeview-external-drag .e-list-text,
+.treeview-external-drag.e-rtl .e-list-text,
+.e-bigger .treeview-external-drag .e-list-text,
+.e-bigger .treeview-external-drag.e-rtl .e-list-text {
+    border: 0.5px solid #E1E7EC;
+    height: 50px;
+    line-height: 15px !important;
+    padding: 0 5px;
+    width: 220px;
+}
+
+.treeview-external-drag .e-list-parent,
+.treeview-external-drag.e-rtl .e-list-parent,
+.e-bigger .treeview-external-drag .e-list-parent,
+.e-bigger .treeview-external-drag.e-rtl .e-list-parent {
+    height: 100%;
+    padding: 0 2px;
+}
+
+.treeview-external-drag .e-list-item,
+.e-bigger .treeview-external-drag .e-list-item {
+    height: 100%;
+    padding: 0 0 5px 0;
+}
+
+.treeview-external-drag .e-fullrow,
+.e-bigger .treeview-external-drag .e-fullrow {
+    height: 55px;
+}
+
+.treeview-external-drag .e-list-item.e-hover>.e-fullrow,
+.treeview-external-drag .e-list-item.e-active>.e-fullrow,
+.treeview-external-drag .e-list-item.e-active.e-hover>.e-fullrow,
+.e-bigger .treeview-external-drag .e-list-item.e-hover>.e-fullrow,
+.e-bigger .treeview-external-drag .e-list-item.e-active>.e-fullrow,
+.e-bigger .treeview-external-drag .e-list-item.e-active.e-hover>.e-fullrow {
+    background-color: transparent;
+    border-color: transparent;
+    box-shadow: none !important;
+}
+
+.fluent2-highcontrast .treeview-external-drag .e-list-item.e-hover>.e-text-content .e-list-text {
+    color: #fff;
+}
+
+.treeview-external-drag .e-text-content,
+.e-bigger .treeview-external-drag .e-text-content,
+.treeview-external-drag.e-rtl .e-text-content,
+.e-bigger .treeview-external-drag.e-rtl .e-text-content {
+    padding: 0;
+    background-color: inherit;
+}
+
+.e-drag-item.e-treeview.treeview-external-drag,
+.e-bigger .e-drag-item.e-treeview.treeview-external-drag {
+    padding: 0 !important;
+}
+
+.e-schedule.schedule-drag-drop .e-timeline-view .e-resource-left-td,
+.e-schedule.schedule-drag-drop .e-timeline-month-view .e-resource-left-td {
+    width: 160px;
+}
+
+.e-schedule.schedule-drag-drop .e-resource-cells.e-parent-node .specialist-category {
+    padding-left: 30px
+}
+
+.e-schedule.e-rtl.schedule-drag-drop .e-resource-cells.e-parent-node .specialist-category {
+    padding-right: 30px
+}
+
+.e-schedule.schedule-drag-drop .e-resource-cells.e-child-node .specialist-category,
+.e-schedule.schedule-drag-drop .e-resource-cells.e-child-node .specialist-name {
+    padding: 5px
+}
+
+.e-schedule.schedule-drag-drop .e-resource-cells.e-parent-node .specialist-name {
+    padding: 0 10px
+}
+
+.e-schedule.schedule-drag-drop .e-resource-cells .specialist-name {
+    font-size: 13px;
+}
+
+.e-schedule.schedule-drag-drop .e-resource-cells .specialist-designation {
+    font-size: 10px;
+}
+
+.e-schedule.schedule-drag-drop .specialist-image {
+    width: 45px;
+    height: 40px;
+    float: left;
+    border-radius: 50%;
+    margin-right: 10px;
+    background-repeat: no-repeat;
+    background-size: 45px;
+}
+
+.e-device-hover {
+    background-color: #e0e0e0 !important;
+}
+
+.e-schedule.schedule-drag-drop .e-resource-cells.e-parent-node .specialist-image {
+    display: none;
+}
+
+.schedule-drag-drop.e-schedule .template-wrap .specialist-image.alice {
+    background-image: url('./images/alice.png');
+}
+
+.schedule-drag-drop.e-schedule .template-wrap .specialist-image.robert {
+    background-image: url('./images/robert.png');
+}
+
+.schedule-drag-drop.e-schedule .template-wrap .specialist-image.robson {
+    background-image: url('./images/robson.png');
+}
+
+.schedule-drag-drop.e-schedule .template-wrap .specialist-image.laura {
+    background-image: url('./images/laura.png');
+}
+
+.schedule-drag-drop.e-schedule .template-wrap .specialist-image.nancy {
+    background-image: url('./images/nancy.png');
+}
+
+.schedule-drag-drop.e-schedule .template-wrap .specialist-image.margaret {
+    background-image: url('./images/margaret.png');
+}
+
+@media (max-width: 550px) {
+    .drag-sample-wrapper {
+        display: block;
+    }
+
+    .schedule-container {
+        padding-bottom: 10px
+    }
+
+    .treeview-external-drag.e-treeview,
+    .e-bigger .treeview-external-drag.e-treeview {
+        width: 250px;
+    }
+
+    .e-bigger .treeview-external-drag.e-treeview.e-drag-item {
+        position: relative !important;
+    }
+}
+
+.e-disble-not-allowed {
+    cursor: unset !important;
+}
+
+.e-drag-item.treeview-external-drag .e-icon-expandable {
+    display: none;
+}
+
+.e-float-input input,
+.e-float-input.e-control-wrapper input {
+    margin-bottom: 0;
+}
+
+.e-schedule .e-timeline-view .e-appointment,
+.e-schedule .e-timeline-month-view .e-appointment {
+    height: 40px;
+    border-radius: 6px;
+}
+
+.e-schedule .e-timeline-view .e-appointment .e-appointment-details,
+.e-schedule .e-timeline-month-view .e-appointment .e-appointment-details {
+    padding: 1px 10px 2px;
+}
+
+.custom-field-selections-row,
+.custom-field-financial-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
+    padding: 15px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.custom-field-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.custom-field-container label {
+    font-weight: 500;
+    color: #333;
+}
+
+.e-field {
+    width: 100%;
+}
+
+.e-multiselect,
+.e-dropdownlist,
+.e-numeric {
+    width: 100% !important;
+}
+
+.e-input-group {
+    margin-bottom: 0 !important;
+}
+
+.e-dropdownbase {
+    margin-bottom: 0 !important;
+}
+
+/* Add spacing between sections */
+.form-section+.form-section {
+    margin-top: 20px;
+}
+
+.financial-calculations-table {
+    margin-top: 20px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.best_pr_table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.best_pr_table th {
+    padding: 12px;
+    text-align: center;
+    font-weight: 500;
+}
+
+.best_pr_table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.best_pr_table td p {
+    margin: 0;
+    font-weight: 500;
+    color: #333;
+}
+
+.sim_input_fild {
+    width: 100%;
+}
+
+.margin_simu_input {
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    text-align: right;
+}
+
+.margin_simu_input:read-only {
+    background-color: #f5f5f5;
+}
+
+/* Layout adjustments for the form */
+.e-schedule-dialog .e-dialog-content {
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: 20px;
+}
+
+.financial-calculations-table {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+}
+
+.event-results-table {
+    margin-top: 20px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.event-results-table .best_pr_table th {
+    background-color: #174F73;
+    color: #fff;
+    padding: 12px;
+    text-align: center;
+}
+
+.event-results-table .best_pr_table td p {
+    margin: 0;
+    padding: 8px;
+}
+
+.event-results-table .best_pr_table td:last-child p {
+    text-align: right;
+    font-weight: 500;
+}
+
+/* Layout for two tables side by side */
+.e-schedule-dialog .e-dialog-content {
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    grid-template-rows: auto auto;
+    gap: 20px;
+}
+
+.financial-calculations-table,
+.event-results-table {
+    grid-column: 2;
+}
+
+.financial-calculations-table {
+    grid-row: 1;
+}
+
+.event-results-table {
+    grid-row: 2;
+}

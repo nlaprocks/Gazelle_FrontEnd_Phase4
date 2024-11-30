@@ -21,88 +21,91 @@ const ProductsAndCategories = lazy(() => import("../pages/admin/productsAndCateg
 const ProjectManagement = lazy(() => import("../pages/admin/projectManagement"));
 const SchedulingManagement = lazy(() => import("../pages/admin/SchedulingManagement"));
 const SimulationPage = lazy(() => import("../pages/simulation/SimulationPage"));
-
+const TpoPage = lazy(() => import("../pages/tpo/TpoPage.js"));
+const TpoReportPage = lazy(() => import("../pages/tpoReport/TpoReport.js"));
 
 const Config = () => {
-  
-  return (
-    <Router>
-       <ToastContainer />
-      <Suspense fallback={<Loading />}>
-        <Routes>
-          <Route exact path="/login" element={<LoginPage />}></Route>
-          <Route exact path="/dashboard" element={<ProtectedRoute component={DashboardPage}></ProtectedRoute>}></Route>
-          <Route exact path="/chat" element={<ProtectedRoute component={ChatPage}></ProtectedRoute>}></Route>
-          {/* <Route
+
+    return (
+        <Router>
+            <ToastContainer />
+            <Suspense fallback={<Loading />}>
+                <Routes>
+                    <Route exact path="/login" element={<LoginPage />}></Route>
+                    <Route exact path="/tpo" element={<TpoPage />}></Route>
+                    <Route exact path="/tpo-report" element={<TpoReportPage />}></Route>
+                    <Route exact path="/dashboard" element={<ProtectedRoute component={DashboardPage}></ProtectedRoute>}></Route>
+                    <Route exact path="/chat" element={<ProtectedRoute component={ChatPage}></ProtectedRoute>}></Route>
+                    {/* <Route
             exact
             path="/insights/:id"
             element={<ProtectedRoute component={InsightsPage}></ProtectedRoute>}
           ></Route> */}
 
-          
-          <Route
-            exact
-            path="/new-insights/:id/:model_id"
-            element={<ProtectedRoute component={NewInsightsPage}></ProtectedRoute>}
-          ></Route>
-          <Route
-            exact
-            path="/design-studio/:id/:model_id"
-            element={<ProtectedRoute component={DesignStudioPage}></ProtectedRoute>}
-          ></Route>
-          <Route
-            exact
-            path="/design-studio"
-            element={<ProtectedRoute component={DesignStudioPage}></ProtectedRoute>}
-          ></Route>
 
-          <Route
-            exact
-            path="/simulation/:projectName/:project_id/:model_id"
-            element={<ProtectedRoute component={SimulationPage}></ProtectedRoute>}
-          ></Route>
-          {/* Admin */}
-          <Route exact path="/admin/dashboard" element={<ProtectedRouteAdmin component={AdminDashboard} />}></Route>
-          <Route
-            exact
-            path="/admin/user-management"
-            element={<ProtectedRouteAdmin component={UserManagement} />}
-          ></Route>
-          {/* <Route
+                    <Route
+                        exact
+                        path="/new-insights/:id/:model_id"
+                        element={<ProtectedRoute component={NewInsightsPage}></ProtectedRoute>}
+                    ></Route>
+                    <Route
+                        exact
+                        path="/design-studio/:id/:model_id"
+                        element={<ProtectedRoute component={DesignStudioPage}></ProtectedRoute>}
+                    ></Route>
+                    <Route
+                        exact
+                        path="/design-studio"
+                        element={<ProtectedRoute component={DesignStudioPage}></ProtectedRoute>}
+                    ></Route>
+
+                    <Route
+                        exact
+                        path="/simulation/:projectName/:project_id/:model_id"
+                        element={<ProtectedRoute component={SimulationPage}></ProtectedRoute>}
+                    ></Route>
+                    {/* Admin */}
+                    <Route exact path="/admin/dashboard" element={<ProtectedRouteAdmin component={AdminDashboard} />}></Route>
+                    <Route
+                        exact
+                        path="/admin/user-management"
+                        element={<ProtectedRouteAdmin component={UserManagement} />}
+                    ></Route>
+                    {/* <Route
             exact
             path="/admin/insights-management"
             element={<ProtectedRouteAdmin component={InsightsManagement} />}
           ></Route> */}
-          <Route
-            exact
-            path="/admin/insights-management"
-            element={<ProtectedRouteAdmin component={AdminQuestions} />}
-          ></Route>
-          <Route
-            exact
-            path="/admin/design-studio"
-            element={<ProtectedRouteAdmin component={AdminDesignStudio} />}
-          ></Route>
-          <Route
-            exact
-            path="/admin/products&Categories"
-            element={<ProtectedRouteAdmin component={ProductsAndCategories} />}
-          ></Route>
-          <Route
-            exact
-            path="/admin/project-management"
-            element={<ProtectedRouteAdmin component={ProjectManagement} />}
-          ></Route>
-          <Route
-            exact
-            path="/admin/scheduling-management"
-            element={<ProtectedRouteAdmin component={SchedulingManagement} />}
-          ></Route>
-          <Route exact path="/" element={<Navigate replace to="/login" />} />
-        </Routes>
-      </Suspense>
-    </Router>
-  );
+                    <Route
+                        exact
+                        path="/admin/insights-management"
+                        element={<ProtectedRouteAdmin component={AdminQuestions} />}
+                    ></Route>
+                    <Route
+                        exact
+                        path="/admin/design-studio"
+                        element={<ProtectedRouteAdmin component={AdminDesignStudio} />}
+                    ></Route>
+                    <Route
+                        exact
+                        path="/admin/products&Categories"
+                        element={<ProtectedRouteAdmin component={ProductsAndCategories} />}
+                    ></Route>
+                    <Route
+                        exact
+                        path="/admin/project-management"
+                        element={<ProtectedRouteAdmin component={ProjectManagement} />}
+                    ></Route>
+                    <Route
+                        exact
+                        path="/admin/scheduling-management"
+                        element={<ProtectedRouteAdmin component={SchedulingManagement} />}
+                    ></Route>
+                    <Route exact path="/" element={<Navigate replace to="/login" />} />
+                </Routes>
+            </Suspense>
+        </Router>
+    );
 };
 
 export default Config;
