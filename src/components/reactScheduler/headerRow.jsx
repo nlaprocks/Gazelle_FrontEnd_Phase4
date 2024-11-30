@@ -58,14 +58,12 @@ const HeaderRows = () => {
     {
         id: 9,
         name: 'Promotion 9'
-    },
-
-    ];
+    }];
 
     const fieldsData = {
         subject: { name: 'Title', title: 'Event Name' },
         location: { name: 'Location', title: 'Budget' },
-        startTime: { name: 'StartTime', title: 'Start Tine' },
+        startTime: { name: 'StartTime', title: 'Start Time' },
         endTime: { name: 'EndTime', title: 'End Time' }
     }
     const onPopupOpen = (args) => {
