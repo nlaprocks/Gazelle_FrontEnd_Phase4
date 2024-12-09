@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Search, Settings, ChevronUp, ChevronDown } from "lucide-react";
-import { TreeViewComponent } from '@syncfusion/ej2-react-navigations';
+
 const MenuItem = ({ title, items, color }) => {
     const [isOpen, setIsOpen] = useState(false);
 
@@ -31,52 +31,45 @@ const MenuItem = ({ title, items, color }) => {
 
 const Sidebar = () => {
 
-    // const [products, setProducts] = useState([]);
+    // const [retailers, setRetailers] = useState([]);
 
-    // // Add this to your existing data fetching logic
-    // useEffect(() => {
-    //     // Fetch products data
-    //     const fetchProducts = async () => {
-    //         // Replace with your actual API endpoint
-    //         const response = await fetch('/api/products');
-    //         const data = await response.json();
-    //         setProducts(data);
-    //     };
+    // Add this to your existing data fetching logic
+    useEffect(() => {
+        // Fetch products data
+        // const fetchProducts = async () => {
+        //     // Replace with your actual API endpoint
+        //     const response = await fetch('/api/products');
+        //     const data = await response.json();
+        //     setProducts(data);
+        // };
 
-    //     fetchProducts();
-    // }, []);
+        // setRetailers(["Kevins", "Starbucks", "Del Real"]);
 
-    const products = [{
-        id: 1,
-        name: 'Product 1'
-    }, {
-        id: 2,
-        name: 'Product 2'
-    }, {
-        id: 3,
-        name: 'Product 3'
-    }];
+        // fetchProducts();
+    }, []);
+
+    // const products = [{
+    //     id: 1,
+    //     name: 'Product 1'
+    // }, {
+    //     id: 2,
+    //     name: 'Product 2'
+    // }, {
+    //     id: 3,
+    //     name: 'Product 3'
+    // }];
 
     return (
         <div className="bg-gray-100 pt-4 px-4 h-full w-full mr-1">
-            {/* <div className="flex items-center bg-white rounded-md mb-4">
-        <Search className="ml-2 text-gray-400" size={20} />
-        <input type="text" placeholder="Search" className="w-full p-2 mb-0 rounded-md focus:outline-none" />
-        <Settings className="mr-2 text-gray-400" size={20} />
-      </div> */}
-            <TreeViewComponent
-                fields={{
-                    dataSource: products,
-                    id: 'id',
-                    text: 'name'
-                }}
-                cssClass="product-tree"
-            />
+            <div className="flex items-center bg-white rounded-md mb-4">
+                <Search className="ml-2 text-gray-400" size={20} />
+                <input type="text" placeholder="Search" className="w-full p-2 mb-0 rounded-md focus:outline-none" />
+                <Settings className="mr-2 text-gray-400" size={20} />
+            </div>
 
-            {/* <MenuItem title="Price of the week" items={["Coffee break", "March promotion 2024"]} color="bg-yellow-500" />
-            <MenuItem title="Seasonal" items={["March - April sale promo"]} color="bg-red-500" />
-            <MenuItem title="Sets" items={["Alcohol drinks set promo"]} color="bg-green-500" />
-            <MenuItem title="Special" items={[]} color="bg-orange-500" /> */}
+            <MenuItem title="Retailer 1" items={["Kevins", "Starbucks", "Brand 1", "Brand 2"]} color="bg-yellow-500" />
+            <MenuItem title="Retailer 2" items={["Starbucks", "Del Real", "Brand 1", "Brand 2"]} color="bg-red-500" />
+            <MenuItem title="Retailer 3" items={["Kevins", "Del Real", "Brand 1", "Brand 2"]} color="bg-green-500" />
         </div>
     );
 };

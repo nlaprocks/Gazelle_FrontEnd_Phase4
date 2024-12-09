@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useRef } from 'react';
-import { ScheduleComponent, ViewsDirective, ViewDirective, TimelineMonth, getWeekNumber, Inject, HeaderRowDirective, HeaderRowsDirective, ResourcesDirective, ResourceDirective, Resize, DragAndDrop, getWeekLastDate } from '@syncfusion/ej2-react-schedule';
+import { ScheduleComponent, ViewsDirective, ViewDirective, TimelineMonth, TimelineYear, getWeekNumber, Inject, HeaderRowDirective, HeaderRowsDirective, ResourcesDirective, ResourceDirective, Resize, DragAndDrop, getWeekLastDate } from '@syncfusion/ej2-react-schedule';
 import './resources.css';
 import { extend, Internationalization, createElement, L10n } from '@syncfusion/ej2-base';
 import { applyCategoryColor } from './helper';
@@ -13,7 +13,6 @@ import { TextBoxComponent } from '@syncfusion/ej2-react-inputs';
  */
 const HeaderRows = () => {
     const data = extend([], dataSource.headerRowData, null, true);
-    console.log({ data });
     const scheduleObj = useRef(null);
     const instance = new Internationalization();
     L10n.load({
@@ -27,61 +26,63 @@ const HeaderRows = () => {
         }
     });
 
-    const promotions = [{
+    const products = [{
         id: 1,
-        name: 'Promotion 1'
+        name: 'Product 1'
     }, {
         id: 2,
-        name: 'Promotion 2'
+        name: 'Product 2'
     }, {
         id: 3,
-        name: 'Promotion 3'
+        name: 'Product 3'
     }, {
         id: 4,
-        name: 'Promotion 4'
+        name: 'Product 4'
     }, {
         id: 5,
-        name: 'Promotion 5'
+        name: 'Product 5'
     },
     {
         id: 6,
-        name: 'Promotion 6'
+        name: 'Product 6'
     },
     {
         id: 7,
-        name: 'Promotion 7'
+        name: 'Product 7'
     },
     {
         id: 8,
-        name: 'Promotion 8'
+        name: 'Product 8'
     },
     {
         id: 9,
-        name: 'Promotion 9'
+        name: 'Product 9'
     }];
 
     const fieldsData = {
         subject: { name: 'Title', title: 'Event Name' },
         location: { name: 'Location', title: 'Budget' },
-        startTime: { name: 'StartTime', title: 'Start Time' },
-        endTime: { name: 'EndTime', title: 'End Time' }
+        startTime: { name: 'StartTime', title: 'Start Date' },
+        endTime: { name: 'EndTime', title: 'End Date' },
+        products: { name: 'Products', title: 'Products' }
     }
     const onPopupOpen = (args) => {
         if (args.type === 'Editor') {
             try {
                 // Basic Selection Dropdowns
                 if (!args.element.querySelector('.custom-field-selections-row')) {
+                    args.element.style.width = '50%';
+
                     let row = createElement('div', { className: 'custom-field-selections-row' });
                     let formElement = args.element.querySelector('.e-schedule-form');
                     formElement.firstChild.insertBefore(row, formElement.firstChild.firstChild);
 
                     // Add dropdowns for Promotions, Channel, Retailer, Brands, Products
                     const dropdowns = [
-                        { name: 'Promotions', type: 'dropdown', options: promotions, fields: { text: 'name', value: 'id' } },
                         { name: 'Channel', type: 'multiselect', options: ['Channel 1', 'Channel 2'], fields: { text: 'text', value: 'value' } },
                         { name: 'Retailer', type: 'dropdown', options: ['Retailer A', 'Retailer B', 'Retailer C'], fields: { text: 'text', value: 'value' } },
                         { name: 'Brands', type: 'dropdown', options: ['Brand X', 'Brand Y', 'Brand Z'], fields: { text: 'text', value: 'value' } },
-                        { name: 'Products', type: 'multiselect', options: ['Product 1', 'Product 2', 'Product 3'], fields: { text: 'text', value: 'value' } }
+                        { name: 'Products', type: 'dropdown', options: ['Product 1', 'Product 2', 'Product 3'], fields: { text: 'text', value: 'value' } }
                     ];
 
                     dropdowns.forEach(dropdown => {
@@ -147,6 +148,11 @@ const HeaderRows = () => {
                         { name: 'promoPrice', label: 'Promo Price' },
                         { name: 'discount', label: 'Discount %', readonly: true },
                         { name: 'units', label: 'Units' },
+                        { name: 'tprDist', label: '% TPR ACV' },
+                        { name: 'doDist', label: '% Display Only ACV' },
+                        { name: 'foDist', label: '% Feature Only ACV' },
+                        { name: 'fdDist', label: '% Feature and Display ACV' },
+
                         { name: 'listPrice', label: 'List Price' },
                         { name: 'edlpPerUnitRate', label: 'EDLP Per Unit Rate' },
                         { name: 'promoPerUnitRate', label: 'Promo Per Unit Rate' },
@@ -192,6 +198,7 @@ const HeaderRows = () => {
                 }
 
                 // Add results table
+                // Plase place the result element in right side of the form
                 if (!args.element.querySelector('.event-results-table')) {
                     let resultsContainer = createElement('div', {
                         className: 'event-results-table left_best_price shadow-none'
@@ -199,7 +206,7 @@ const HeaderRows = () => {
 
                     // Get the form element from args
                     const formElement = args.element.querySelector('.e-schedule-form');
-
+                    const containerElement = args.element.querySelector('.e-dlg-content');
                     const table = createElement('table', { className: 'best_pr_table' });
 
                     // Table Header
@@ -296,7 +303,7 @@ const HeaderRows = () => {
 
                     table.appendChild(tbody);
                     resultsContainer.appendChild(table);
-                    formElement.appendChild(resultsContainer);
+                    containerElement.appendChild(resultsContainer);
 
                     // Add input event listeners to all relevant fields
                     const inputs = formElement.querySelectorAll('input[type="number"]');
@@ -332,7 +339,7 @@ const HeaderRows = () => {
     };
     const weekTemplate = (props) => {
         const weekNumber = getWeekNumber(getWeekLastDate(props.date, 0));
-        return (<span className="week">{weekNumber}</span>);
+        return (<span className="week">Week {weekNumber}</span>);
     };
     const onEventRendered = (args) => {
         applyCategoryColor(args, scheduleObj.current.currentView);
@@ -341,14 +348,16 @@ const HeaderRows = () => {
     return (<div className='schedule-control-section'>
         <div className='col-lg-12 control-section'>
             <div className='control-wrapper'>
-                <ScheduleComponent ref={scheduleObj} height='800px' selectedDate={new Date(2021, 0, 1)} eventSettings={{ dataSource: data, fields: fieldsData }} group={{ resources: ['Promotions'] }} popupOpen={onPopupOpen} eventRendered={onEventRendered}>
+                <ScheduleComponent ref={scheduleObj} height='800px' selectedDate={new Date(2021, 0, 1)} eventSettings={{ dataSource: data, fields: fieldsData }} group={{ resources: ['Products'] }} popupOpen={onPopupOpen} eventRendered={onEventRendered} timeScale={{ enable: false }}
+                    workDays={[0]}
+                    startHour="00:00"
+                    endHour="00:00">
                     <ResourcesDirective>
-                        <ResourceDirective field='ResourceId' title='Promotions' name='Promotions' allowMultiple={true} dataSource={promotions} textField='name' idField='id' enableTooltip={true} />
+                        <ResourceDirective field='ResourceId' title='Products' name='Products' allowMultiple={true} dataSource={products} textField='name' idField='id' enableTooltip={true} />
                     </ResourcesDirective>
                     <HeaderRowsDirective>
                         <HeaderRowDirective option='Month' template={monthTemplate} />
                         <HeaderRowDirective option='Week' template={weekTemplate} />
-                        {/* <HeaderRowDirective option='Date' /> */}
                     </HeaderRowsDirective>
                     <ViewsDirective>
                         <ViewDirective option='TimelineMonth' interval={12} />

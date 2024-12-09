@@ -643,7 +643,7 @@
     padding: 6px 8px;
     border: 1px solid #e0e0e0;
     border-radius: 4px;
-    text-align: right;
+    /* text-align: right; */
 }
 
 .margin_simu_input:read-only {
@@ -705,4 +705,22 @@
 
 .event-results-table {
     grid-row: 2;
+}
+
+.e-dlg-content {
+    display: flex !important;
+    justify-content: space-between !important;
+    gap: 2rem !important;
+}
+
+.e-schedule .e-timeline-month-view .e-date-header-wrap table td {
+    width: 150px !important;  /* Adjust this value to control week column width */
+}
+
+.e-schedule .e-timeline-month-view .e-content-wrap table td {
+    width: 150px !important;  /* Should match the header width */
+}
+
+.e-schedule .e-timeline-month-view .e-work-cells {
+    width: 150px !important;  /* Should match the header width */
 }

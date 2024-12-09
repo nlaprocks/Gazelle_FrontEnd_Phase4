@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import "../../css/style.css";
-import { Calendar } from "lucide-react";
+// import { Calendar } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import HeaderRows from "../../components/reactScheduler/headerRow";
 import Sidebar from "../../components/reactScheduler/sidebar";
 import PromoModal from "../../components/reactScheduler/promoModal";
 import Header from "../../components/header/Header";
 import Footer from "../../components/footer/Footer";
+import Calendar from "../../components/Calendar/Calendar";
 
 const TpoPage = () => {
     const navigate = useNavigate();
@@ -29,7 +30,7 @@ const TpoPage = () => {
                         <div className="w-2/3">
                             <div className="flex justify-end items-center gap-7">
                                 <button className="flex items-center space-x-2 bg-white text-black hover:shadow-sm rounded-lg py-2.5 px-3">
-                                    <Calendar className="size-4" />
+                                    {/* <Calendar className="size-4" /> */}
                                     <p className="text-base font-medium">01.01.2024 - 03.01.2024</p>
                                 </button>
                                 <div className="flex justify-end items-center gap-2">
@@ -70,11 +71,11 @@ const TpoPage = () => {
                     {/* Scheduler Wrapper */}
                     <div className="bg-white rounded-lg p-4 w-full shadow-md">
                         <div className="flex justify-center items-stretch w-full">
-                            {/* <div className="max-w-72 w-full">
-                <Sidebar />
-              </div> */}
+                            <div className="max-w-72 w-full">
+                                <Sidebar />
+                            </div>
                             <div className="w-full">
-                                <HeaderRows />
+                                <Calendar />
                             </div>
                         </div>
                     </div>
