@@ -2,8 +2,8 @@ export interface Event {
     id: string
     title: string
     description: string
-    startDate: Date
-    endDate: Date
+    startDate: Date | undefined
+    endDate: Date | undefined
     color: string
     productId: string
     status: string
@@ -11,7 +11,7 @@ export interface Event {
     retailerId: string
     brandId: string
     products: string[]
-    financialData: FinancialData
+    financialData: FinancialData,
 }
 
 export interface Product {
