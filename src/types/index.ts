@@ -18,6 +18,9 @@ export interface Product {
     id: string
     name: string
     brandId: string
+    basePrice: number
+    totalUnits: number
+    promoPriceElasticity?: number
 }
 
 export interface Brand {
@@ -51,6 +54,7 @@ export interface FinancialData {
     vcm: number
     fixedFee: number
     increamentalUnits: number
+    promoPriceElasticity?: number
 }
 
 export interface FinancialResults {

@@ -19,8 +19,17 @@ export const MOCK_BRANDS: Brand[] = [
 ]
 
 export const MOCK_PRODUCTS: Product[] = [
-    { id: 'p1', name: 'Product 1', brandId: 'b1' },
-    { id: 'p2', name: 'Product 2', brandId: 'b1' },
-    { id: 'p3', name: 'Product 3', brandId: 'b2' },
-    { id: 'p4', name: 'Product 4', brandId: 'b3' },
+    {
+        id: 'p1', name: 'Completely Fresh Foods Jack Daniels Honey', brandId: 'b1', basePrice: 8.99416482300885, totalUnits: 490.13, promoPriceElasticity:
+            -2.417659476956699
+    },
+    { id: 'p2', name: 'Product 2', brandId: 'b1', basePrice: 19.99, totalUnits: 2000 },
+    { id: 'p3', name: 'Product 3', brandId: 'b2', basePrice: 39.99, totalUnits: 1500 },
+    { id: 'p4', name: 'Product 4', brandId: 'b3', basePrice: 49.99, totalUnits: 800 },
+    { id: 'p5', name: 'Product 5', brandId: 'b3', basePrice: 49.99, totalUnits: 800 },
+    { id: 'p6', name: 'Product 6', brandId: 'b3', basePrice: 49.99, totalUnits: 800 },
+    { id: 'p7', name: 'Product 7', brandId: 'b3', basePrice: 49.99, totalUnits: 800 },
+    { id: 'p8', name: 'Product 8', brandId: 'b3', basePrice: 49.99, totalUnits: 800 },
+    { id: 'p9', name: 'Product 9', brandId: 'b3', basePrice: 49.99, totalUnits: 800 },
+    { id: 'p10', name: 'Product 10', brandId: 'b3', basePrice: 49.99, totalUnits: 800 },
 ]

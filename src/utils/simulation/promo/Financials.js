@@ -23,6 +23,7 @@ export default function Financials({ promotedPrice, units, increamentalUnits, ba
             [name]: value,
         }));
     };
+    console.log({ promotedPrice, units, increamentalUnits, basePrice })
 
     React.useEffect(() => {
         let grossRevenue = units * promotedPrice;

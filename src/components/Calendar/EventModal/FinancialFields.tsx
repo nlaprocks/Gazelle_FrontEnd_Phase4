@@ -3,15 +3,19 @@ import { InputNumber, Form } from 'antd'
 import { FinancialData } from '../../../types'
 
 interface FinancialFieldsProps {
-    formData: { financialData: FinancialData }
+    formData: { financialData: FinancialData; productId: string }
     setFormData: (data: any) => void
 }
 
 const PROMOTIONAL_FIELDS = [
-    { name: 'basePrice', label: 'Base Price' },
+    {
+        name: 'basePrice', label: 'Base Price', readonly: true, formatter: (value: any) => {
+            return Number(value).toFixed(2)
+        }
+    },
     { name: 'promoPrice', label: 'Promo Price' },
     { name: 'discount', label: 'Discount %', readonly: true },
-    { name: 'units', label: 'Units' },
+    { name: 'units', label: 'Units', readonly: true },
     { name: 'tprDist', label: '% TPR ACV' },
     { name: 'doDist', label: '% Display Only ACV' },
     { name: 'foDist', label: '% Feature Only ACV' },
@@ -37,8 +41,8 @@ const FinancialFields: React.FC<FinancialFieldsProps> = ({ formData, setFormData
                 ...formData,
                 financialData: {
                     ...formData.financialData,
-                    discount: discount.toFixed(2)
-                }
+                    discount: discount.toFixed(2),
+                },
             })
         }
     }, [formData.financialData.basePrice, formData.financialData.promoPrice])
@@ -48,8 +52,8 @@ const FinancialFields: React.FC<FinancialFieldsProps> = ({ formData, setFormData
             ...formData,
             financialData: {
                 ...formData.financialData,
-                [fieldName]: value || 0
-            }
+                [fieldName]: value || 0,
+            },
         })
     }
 
@@ -59,11 +63,7 @@ const FinancialFields: React.FC<FinancialFieldsProps> = ({ formData, setFormData
 
             <div className="grid grid-cols-2 gap-4">
                 {PROMOTIONAL_FIELDS.map(field => (
-                    <Form.Item
-                        key={field.name}
-                        label={field.label}
-                        className="mb-2"
-                    >
+                    <Form.Item key={field.name} label={field.label} className="mb-2">
                         <InputNumber
                             value={formData.financialData[field.name as keyof FinancialData]}
                             onChange={(value) => handleFieldChange(field.name, value)}
@@ -71,7 +71,12 @@ const FinancialFields: React.FC<FinancialFieldsProps> = ({ formData, setFormData
                             disabled={field.readonly}
                             precision={2}
                             step={0.01}
-                            formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                            formatter={(value) => {
+                                if (field.formatter) {
+                                    return field.formatter(value)
+                                }
+                                return `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+                            }}
                             parser={(value: string | undefined) => parseFloat(value?.replace(/\$\s?|(,*)/g, '') || '0')}
                         />
                     </Form.Item>
@@ -81,11 +86,7 @@ const FinancialFields: React.FC<FinancialFieldsProps> = ({ formData, setFormData
             <h3 className="text-lg font-semibold mb-4 mt-4 border-t border-gray-200 pt-4">Financial</h3>
             <div className="grid grid-cols-2 gap-4">
                 {FINANCIAL_FIELDS.map(field => (
-                    <Form.Item
-                        key={field.name}
-                        label={field.label}
-                        className="mb-2"
-                    >
+                    <Form.Item key={field.name} label={field.label} className="mb-2">
                         <InputNumber
                             value={formData.financialData[field.name as keyof FinancialData]}
                             onChange={(value) => handleFieldChange(field.name, value)}

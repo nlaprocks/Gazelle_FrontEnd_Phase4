@@ -1,14 +1,15 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Input, Select, DatePicker, ColorPicker, Form } from 'antd'
-import { Channel, Retailer, Brand, Product } from '../../../types'
+import { Channel, Retailer, Brand, Product } from '../../../types/index'
+import { Event } from '../../../types'
 import dayjs from 'dayjs'
 
 const { TextArea } = Input
 const { RangePicker } = DatePicker
 
 interface EventDetailsProps {
-    formData: any
-    setFormData: (data: any) => void
+    formData: Event
+    setFormData: (data: Event) => void
     channels: Channel[]
     retailers: Retailer[]
     brands: Brand[]
@@ -28,6 +29,25 @@ const EventDetails: React.FC<EventDetailsProps> = ({
         filteredBrands.some(brand => brand.id === product.brandId)
     )
 
+    // Update product details when product selection changes
+    useEffect(() => {
+        if (formData.products.length === 1) {
+            const selectedProduct = products.find(p => p.id === formData.products[0])
+            if (selectedProduct) {
+                setFormData({
+                    ...formData,
+                    productId: selectedProduct.id,
+                    financialData: {
+                        ...formData.financialData,
+                        basePrice: selectedProduct.basePrice,
+                        units: selectedProduct.totalUnits,
+                        promoPriceElasticity: selectedProduct.promoPriceElasticity
+                    }
+                })
+            }
+        }
+    }, [formData.products, products])
+
     const statusOptions = [
         { value: 'draft', label: 'Draft' },
         { value: 'active', label: 'Active' },
@@ -38,9 +58,9 @@ const EventDetails: React.FC<EventDetailsProps> = ({
         <div className="space-y-4">
             <h3 className="text-lg font-semibold mb-4">Event Details</h3>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-2">
                 <div className="col-span-2">
-                    <Form.Item label="Event Name">
+                    <Form.Item label="Event Name" required>
                         <Input
                             value={formData.title}
                             onChange={(e) => setFormData({ ...formData, title: e.target.value })}
@@ -50,7 +70,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({
                 </div>
 
                 <div>
-                    <Form.Item label="Status">
+                    <Form.Item label="Status" required>
                         <Select
                             value={formData.status}
                             onChange={(value) => setFormData({ ...formData, status: value })}
@@ -71,7 +91,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({
                 </div>
 
                 <div className="col-span-2">
-                    <Form.Item label="Date Range">
+                    <Form.Item label="Date Range" required>
                         <RangePicker
                             className="w-full"
                             value={[
@@ -82,8 +102,8 @@ const EventDetails: React.FC<EventDetailsProps> = ({
                                 if (dates) {
                                     setFormData({
                                         ...formData,
-                                        startDate: dates[0]?.format('YYYY-MM-DD'),
-                                        endDate: dates[1]?.format('YYYY-MM-DD')
+                                        startDate: dates[0]?.toDate(),
+                                        endDate: dates[1]?.toDate()
                                     })
                                 }
                             }}
@@ -116,7 +136,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({
                 </div>
 
                 <div>
-                    <Form.Item label="Retailer">
+                    <Form.Item label="Retailer" required>
                         <Select
                             value={formData.retailerId}
                             onChange={(value) => setFormData({
@@ -133,7 +153,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({
                 </div>
 
                 <div>
-                    <Form.Item label="Brand">
+                    <Form.Item label="Brand" required>
                         <Select
                             value={formData.brandId}
                             onChange={(value) => setFormData({
@@ -150,7 +170,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({
                 </div>
 
                 <div>
-                    <Form.Item label="Products">
+                    <Form.Item label="Products" required>
                         <Select
                             mode="multiple"
                             value={formData.products}
@@ -159,6 +179,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({
                             className="w-full"
                             placeholder="Select products"
                             disabled={!formData.brandId}
+                            maxTagCount={2}
                         />
                     </Form.Item>
                 </div>

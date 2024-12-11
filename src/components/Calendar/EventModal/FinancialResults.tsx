@@ -1,6 +1,6 @@
 import React from 'react'
 import { Table } from 'antd'
-import { calculateFinancialResults } from '../../../utils/financialCalculations'
+import { calculateFinancialResults, calculatePromotionalResults } from '../../../utils/financialCalculations'
 import { FinancialData } from '../../../types'
 
 interface FinancialResultsProps {
@@ -8,10 +8,25 @@ interface FinancialResultsProps {
 }
 
 const FinancialResults: React.FC<FinancialResultsProps> = ({ financialData }) => {
-    
+    const promotionalResults = calculatePromotionalResults({
+        basePrice: Number(financialData.basePrice),
+        promoPrice: Number(financialData.promoPrice),
+        tprDist: Number(financialData.tprDist),
+        foDist: Number(financialData.foDist),
+        doDist: Number(financialData.doDist),
+        fdDist: Number(financialData.fdDist),
+        totalUnits: Number(financialData.units),
+        promoPriceElasticity: Number(financialData.promoPriceElasticity),
+    })
 
-    const results = calculateFinancialResults({
-        units: Number(financialData.units),
+    // Get second last element from promotionalResults
+    const increamentalUnits = promotionalResults[promotionalResults.length - 2].units
+
+    // Get last element from promotionalResults
+    const units = promotionalResults[promotionalResults.length - 1].units
+
+    const financialResults = calculateFinancialResults({
+        units,
         promoPrice: Number(financialData.promoPrice),
         basePrice: Number(financialData.basePrice),
         edlpPerUnitRate: Number(financialData.edlpPerUnitRate),
@@ -19,10 +34,47 @@ const FinancialResults: React.FC<FinancialResultsProps> = ({ financialData }) =>
         fixedFee: Number(financialData.fixedFee),
         listPrice: Number(financialData.listPrice),
         vcm: Number(financialData.vcm),
-        increamentalUnits: Number(financialData.increamentalUnits),
+        increamentalUnits,
+        promoPriceElasticity: financialData.promoPriceElasticity,
     })
 
-    const columns = [
+    const promotionColumns = [
+        {
+            title: 'Promotion',
+            dataIndex: 'promotion',
+            key: 'promotion',
+        },
+        {
+            title: '% ACV',
+            dataIndex: 'acv',
+            key: 'acv',
+            align: 'right' as const,
+            render: (value: number) => value ? value.toFixed(2) + '%' : '-',
+        },
+        {
+            title: '% Lift',
+            dataIndex: 'lift',
+            key: 'lift',
+            align: 'right' as const,
+            render: (value: number) => value ? value.toFixed(2) + '%' : '-',
+        },
+        {
+            title: 'Units',
+            dataIndex: 'units',
+            key: 'units',
+            align: 'right' as const,
+            render: (value: number) => value ? value.toFixed(2) : '-',
+        },
+        {
+            title: 'Dollars',
+            dataIndex: 'dollars',
+            key: 'dollars',
+            align: 'right' as const,
+            render: (value: number) => value ? '$' + value.toFixed(2) : '-',
+        },
+    ]
+
+    const financialColumns = [
         {
             title: 'Metric',
             dataIndex: 'name',
@@ -36,34 +88,29 @@ const FinancialResults: React.FC<FinancialResultsProps> = ({ financialData }) =>
         },
     ]
 
-    const promotionResults = [
-        { name: 'Promotion', value: results.totalUnits },
-        { name: '% ACV ', value: results.totalUnits },
-        { name: ' % Lift', value: results.totalAcv },
-        { name: 'Units', value: results.totalAcvWithoutPromo },
-        { name: 'Dollars', value: results.promoAcv },
-    ]
-
     return (
-        <div className="space-y-4">
-            <h3 className="text-lg font-semibold mb-4">Promotion</h3>
+        <div className="space-y-6">
+            <div>
+                <h3 className="text-lg font-semibold mb-4">Promotion Results</h3>
+                <Table
+                    columns={promotionColumns}
+                    dataSource={promotionalResults.map((item, index) => ({ ...item, key: index }))}
+                    pagination={false}
+                    size="small"
+                    bordered
+                />
+            </div>
 
-            <Table
-                columns={promotionResults}
-                dataSource={promotionResults}
-                pagination={false}
-                size="small"
-                bordered
-            />
-
-            <h3 className="text-lg font-semibold mb-4">Financial Results</h3>
-            <Table
-                columns={columns}
-                dataSource={results.map((item, index) => ({ ...item, key: index }))}
-                pagination={false}
-                size="small"
-                bordered
-            />
+            <div>
+                <h3 className="text-lg font-semibold mb-4">Financial Results</h3>
+                <Table
+                    columns={financialColumns}
+                    dataSource={financialResults.map((item, index) => ({ ...item, key: index }))}
+                    pagination={false}
+                    size="small"
+                    bordered
+                />
+            </div>
         </div>
     )
 }

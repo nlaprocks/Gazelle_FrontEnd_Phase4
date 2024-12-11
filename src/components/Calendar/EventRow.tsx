@@ -42,7 +42,7 @@ const EventRow: React.FC<EventRowProps> = ({
 
     return (
         <tr className="relative">
-            <td className="border-b border-r border-gray-200 p-2 font-medium bg-gray-50 sticky left-0 z-10">
+            <td className="border-b border-r border-gray-200 p-2 font-medium bg-gray-50 sticky left-0 z-10 min-w-[160px]">
                 {product.name}
             </td>
             {weeks.map((week) => (
@@ -53,7 +53,7 @@ const EventRow: React.FC<EventRowProps> = ({
                 />
             ))}
             <td className="absolute inset-y-0 left-0 right-0 pointer-events-none">
-                <div className="relative h-full ml-[100px]">
+                <div className="relative h-full ml-[180px]">
                     {events.filter(isEventVisible).map((event) => {
                         const style = calculateEventPosition(event)
                         return (

@@ -4,13 +4,10 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import EventModal from './EventModal'
 import { Event, Product } from '../../types'
 import { SAMPLE_EVENTS } from '../../utils/sampleData'
+import { MOCK_PRODUCTS } from '../../utils/mockData'
 import EventRow from './EventRow'
 
-const SAMPLE_PRODUCTS: Product[] = [
-    { id: 'p1', name: 'Product 1', brandId: 'b1' },
-    { id: 'p2', name: 'Product 2', brandId: 'b2' },
-    { id: 'p3', name: 'Product 3', brandId: 'b3' },
-]
+const SAMPLE_PRODUCTS: Product[] = MOCK_PRODUCTS
 
 const Calendar: React.FC = () => {
     const [currentYear, setCurrentYear] = useState(2024)
@@ -68,8 +65,8 @@ const Calendar: React.FC = () => {
     }
 
     return (
-        <div className="container mx-auto p-4">
-            <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+        <>
+            <div className="bg-white rounded-lg shadow-lg overflow-hidden w-full">
                 <div className="flex items-center justify-between p-4 border-b">
                     <h2 className="text-xl font-semibold">{currentYear}</h2>
                     {/* TODO: Add retailer dropdown and brand dropdown here */}
@@ -90,7 +87,7 @@ const Calendar: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="overflow-x-auto">
+                <div className="overflow-auto max-h-[500px]">
                     <table className="w-full">
                         <thead>
                             <tr>
@@ -98,8 +95,8 @@ const Calendar: React.FC = () => {
                                     Products
                                 </th>
                                 {weeks.slice(0, 52).map((week) => (
-                                    <th key={week.weekNumber} className="border-b border-r border-gray-200 p-2 min-w-[100px]">
-                                        Week {week.weekNumber}
+                                    <th key={week.weekNumber} className="border-b border-r border-gray-200 p-2 min-w-[60px]">
+                                        W {week.weekNumber}
                                     </th>
                                 ))}
                             </tr>
@@ -129,7 +126,7 @@ const Calendar: React.FC = () => {
                 startDate={selectedDate}
                 productId={selectedProductId}
             />
-        </div>
+        </>
     )
 }
 
