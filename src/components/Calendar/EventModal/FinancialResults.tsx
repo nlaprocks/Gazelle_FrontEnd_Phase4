@@ -8,6 +8,8 @@ interface FinancialResultsProps {
 }
 
 const FinancialResults: React.FC<FinancialResultsProps> = ({ financialData }) => {
+    
+
     const results = calculateFinancialResults({
         units: Number(financialData.units),
         promoPrice: Number(financialData.promoPrice),
@@ -34,10 +36,27 @@ const FinancialResults: React.FC<FinancialResultsProps> = ({ financialData }) =>
         },
     ]
 
+    const promotionResults = [
+        { name: 'Promotion', value: results.totalUnits },
+        { name: '% ACV ', value: results.totalUnits },
+        { name: ' % Lift', value: results.totalAcv },
+        { name: 'Units', value: results.totalAcvWithoutPromo },
+        { name: 'Dollars', value: results.promoAcv },
+    ]
+
     return (
         <div className="space-y-4">
-            <h3 className="text-lg font-semibold mb-4">Financial Results</h3>
+            <h3 className="text-lg font-semibold mb-4">Promotion</h3>
 
+            <Table
+                columns={promotionResults}
+                dataSource={promotionResults}
+                pagination={false}
+                size="small"
+                bordered
+            />
+
+            <h3 className="text-lg font-semibold mb-4">Financial Results</h3>
             <Table
                 columns={columns}
                 dataSource={results.map((item, index) => ({ ...item, key: index }))}
