@@ -4012,3 +4012,20 @@ header .theme-title h1 span {
   > textarea.ant-input {
   font-weight: 400;
 }
+
+.tpo-page .ant-form-item {
+  margin-bottom: 0;
+  min-width: 180px;
+}
+
+.tpo-page .ant-form-item .ant-select-selector {
+  height: 40px;
+}
+
+.tpo-page .ant-form-item .ant-select-arrow {
+  margin-top: -2px;
+}
+
+:where(.css-dev-only-do-not-override-14i19y2).ant-form-item {
+  margin-bottom: 0;
+}

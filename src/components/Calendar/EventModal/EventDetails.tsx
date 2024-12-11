@@ -38,7 +38,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({
         <div className="space-y-4">
             <h3 className="text-lg font-semibold mb-4">Event Details</h3>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-2">
                 <div className="col-span-2">
                     <Form.Item label="Event Name">
                         <Input

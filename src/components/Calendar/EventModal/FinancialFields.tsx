@@ -55,7 +55,7 @@ const FinancialFields: React.FC<FinancialFieldsProps> = ({ formData, setFormData
         <div className="space-y-4">
             <h3 className="text-lg font-semibold mb-4">Financial Details</h3>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-2">
                 {FINANCIAL_FIELDS.map(field => (
                     <Form.Item
                         key={field.name}
