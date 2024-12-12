@@ -12,7 +12,6 @@ export const useProductData = (productId: string) => {
         const fetchProduct = async () => {
             try {
                 // setLoading(true);
-                // In a real app, this would be an API call
                 const foundProduct = MOCK_PRODUCTS.find(p => p.id === productId)
                 console.log({ "foundProduct": foundProduct })
                 if (foundProduct) {

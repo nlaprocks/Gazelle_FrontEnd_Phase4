@@ -25,7 +25,6 @@ export default function PromoEventSimulator({
 }) {
     const echartsReactRef = React.useRef(null);
     const productName = promoSimulationData[0]?.Product ?? "";
-    console.log(promoSimulationData, discount, lift, units, dollars);
     //   let summary = Object.values(lift).map((i, value) => {
     //     return {
     //       name: "TPR",
