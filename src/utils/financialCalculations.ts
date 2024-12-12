@@ -111,15 +111,15 @@ export const calculatePromotionalResults = (values: {
     const tprLift = tprDist === 0 ? 0 :
         ((1 + -discount / 100) ** promoPriceElasticity - 1) * tprDist
 
-    const foLift = foDist === 0 ? 0 :
+    const foLift = foDist === 0 || featureEffect === 0 ? 0 :
         ((1 + -discount / 100) ** (promoPriceElasticity * Math.exp((featureEffect * foDist) / 100)) - 1) * 100 -
         ((1 + -discount / 100) ** promoPriceElasticity - 1) * tprDist
 
-    const doLift = doDist === 0 ? 0 :
+    const doLift = doDist === 0 || displayEffect === 0 ? 0 :
         ((1 + -discount / 100) ** (promoPriceElasticity * Math.exp((displayEffect * doDist) / 100)) - 1) * 100 -
         ((1 + -discount / 100) ** promoPriceElasticity - 1) * tprDist
 
-    const fdLift = fdDist === 0 ? 0 :
+    const fdLift = fdDist === 0 || featureAndDisplayEffect === 0 ? 0 :
         ((1 + -discount / 100) ** (promoPriceElasticity * Math.exp((featureAndDisplayEffect * fdDist) / 100)) - 1) * 100 -
         ((1 + -discount / 100) ** promoPriceElasticity - 1) * tprDist
 
