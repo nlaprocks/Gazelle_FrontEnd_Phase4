@@ -1146,7 +1146,7 @@ const Dashboard = () => {
                                       <OverlayTrigger
                                         placement="top"
                                         delay={{ show: 250, hide: 250 }}
-                                        overlay={<Tooltip id="overlay-example">Dublicate project</Tooltip>}
+                                        overlay={<Tooltip id="overlay-example">Duplicate project</Tooltip>}
                                       >
                                         <a href="#!" onClick={() => duplicateProjectHandler(elem?.id)} className="border rounded-full">
                                           <img src={copyIcon} alt="copy Icon" />
