@@ -34,7 +34,7 @@ const KebabMenu = ({
             {isOpen && (
                 <div className="kebab-dropdown">
                     <ul>
-                        <li onClick={() => duplicateProjectHandler(elem?.id)}>Dublicate</li>
+                        <li onClick={() => duplicateProjectHandler(elem?.id)}>Duplicate</li>
                         <li onClick={() => handleEditProjectModal(elem?.id)}>Edit Project</li>
                         <li onClick={() => deleteProjectHandler(elem?.id)}>Delete Project</li>
                     </ul>
