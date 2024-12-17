@@ -117,6 +117,7 @@ const TpoPage = ({
                     </div>
 
                     <div className="w-full grid grid-cols-5 justify-between items-stretch gap-4 my-4">
+                        {/* Show below box in left side container */}
                         <div className="bg-white rounded-lg py-2 px-4 w-full color-shadow">
                             <p className="text-gray-500 text-sm">Total Volume</p>
                             <p className="text-black text-2xl font-bold">60</p>
@@ -145,6 +146,8 @@ const TpoPage = ({
                             <p className="text-gray-500 text-sm">Total Spend</p>
                             <p className="text-black text-2xl font-bold">$340,567</p>
                         </div>
+
+                        {/* Create a target box in the right side */}
                         <div className="bg-white rounded-lg py-2 px-4 w-full color-shadow">
                             <p className="text-gray-500 text-sm">Budget Remaining</p>
                             <p className="text-black text-2xl font-bold">$1,423,941</p>
@@ -154,7 +157,7 @@ const TpoPage = ({
                             <p className="text-black text-2xl font-bold">$340,567</p>
                         </div>
                         <div className="bg-white rounded-lg py-2 px-4 w-full color-shadow">
-                            <p className="text-gray-500 text-sm">Spend Volume</p>
+                            <p className="text-gray-500 text-sm">Target Spend</p>
                             <p className="text-black text-2xl font-bold">$1,423,941</p>
                         </div>
                     </div>

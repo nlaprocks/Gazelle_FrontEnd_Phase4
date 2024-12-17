@@ -49,6 +49,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({
     }, [formData.products, products])
 
     const statusOptions = [
+        { value: 'planned', label: 'Planned' },
         { value: 'draft', label: 'Draft' },
         { value: 'active', label: 'Active' },
         { value: 'completed', label: 'Completed' },

@@ -25,8 +25,8 @@ const EventRow: React.FC<EventRowProps> = ({
     }
 
     const calculateEventPosition = (event: Event) => {
-        const startWeek = event.startDate ? Math.max(0, differenceInWeeks(startOfWeek(event.startDate), yearStart)) : 0
-        const endWeek = event.endDate ? Math.min(51, differenceInWeeks(startOfWeek(event.endDate), yearStart)) : 51
+        const startWeek = event.startDate ? Math.max(0, differenceInWeeks(startOfWeek(event.startDate, { weekStartsOn: 1 }), yearStart)) : 0
+        const endWeek = event.endDate ? Math.min(51, differenceInWeeks(startOfWeek(event.endDate, { weekStartsOn: 1 }), yearStart)) : 51
         const duration = endWeek - startWeek + 1
 
         return {
@@ -42,24 +42,24 @@ const EventRow: React.FC<EventRowProps> = ({
 
     return (
         <tr className="relative">
-            <td className="border-b border-r border-gray-200 p-2 font-medium bg-gray-50 sticky left-0 z-10 min-w-[160px]">
+            <td className="border-b border-r border-gray-200 p-2 font-medium bg-gray-50 sticky left-0 z-10 min-w-[120px] max-w-[120px]">
                 {product.name}
             </td>
             {weeks.map((week) => (
                 <td
                     key={week.weekNumber}
-                    className="border-b border-r border-gray-200 p-1 h-16 relative"
+                    className="border-b border-r border-gray-200 p-1 h-12 relative"
                     onDoubleClick={() => handleCellDoubleClick(week.startDate)}
                 />
             ))}
             <td className="absolute inset-y-0 left-0 right-0 pointer-events-none">
-                <div className="relative h-full ml-[180px]">
+                <div className="relative h-full ml-[120px]">
                     {events.filter(isEventVisible).map((event) => {
                         const style = calculateEventPosition(event)
                         return (
                             <div
                                 key={event.id}
-                                className="relative top-1/2 -translate-y-1/2 z-10"
+                                className="absolute top-1/2 -translate-y-1/2"
                                 style={style}
                             >
                                 <EventItem

@@ -1,11 +1,13 @@
 import React, { useState } from 'react'
-import { addWeeks, startOfWeek, startOfYear } from 'date-fns'
+import { startOfYear } from 'date-fns'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import EventModal from './EventModal'
 import { Event, Product } from '../../types'
 import { SAMPLE_EVENTS } from '../../utils/sampleData'
 import { MOCK_PRODUCTS } from '../../utils/mockData'
 import EventRow from './EventRow'
+import WeekHeader from './WeekHeader'
+import { getYearCalendarData } from '../../utils/dateUtils'
 
 const SAMPLE_PRODUCTS: Product[] = MOCK_PRODUCTS
 
@@ -17,19 +19,7 @@ const Calendar: React.FC = () => {
     const [selectedEvent, setSelectedEvent] = useState<Event | undefined>()
     const [selectedProductId, setSelectedProductId] = useState<string>('')
 
-    const getWeeksInYear = (year: number) => {
-        const startDate = new Date(year, 0, 1)
-        const weeks = []
-        for (let i = 1; i <= 52; i++) {
-            weeks.push({
-                weekNumber: i,
-                startDate: startOfWeek(addWeeks(startDate, i - 1)),
-            })
-        }
-        return weeks
-    }
-
-    const weeks = getWeeksInYear(currentYear)
+    const weeks = getYearCalendarData(currentYear)
 
     const handlePrevYear = () => setCurrentYear(prev => prev - 1)
     const handleNextYear = () => setCurrentYear(prev => prev + 1)
@@ -89,18 +79,7 @@ const Calendar: React.FC = () => {
 
                 <div className="overflow-auto max-h-[500px]">
                     <table className="w-full">
-                        <thead>
-                            <tr>
-                                <th className="border-b border-r border-gray-200 p-2 bg-gray-50 sticky left-0 z-10">
-                                    Products
-                                </th>
-                                {weeks.slice(0, 52).map((week) => (
-                                    <th key={week.weekNumber} className="border-b border-r border-gray-200 p-2 min-w-[60px]">
-                                        W {week.weekNumber}
-                                    </th>
-                                ))}
-                            </tr>
-                        </thead>
+                        <WeekHeader weeks={weeks} />
                         <tbody>
                             {SAMPLE_PRODUCTS.map((product) => (
                                 <EventRow

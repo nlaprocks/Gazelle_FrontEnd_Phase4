@@ -181,7 +181,8 @@ export const calculatePromotionalResults = (values: {
         {
             promotion: 'Event Total',
             acv: 0,
-            lift: totalLift + 100,
+            // lift: totalLift + 100,
+            lift: 0,
             units: totalUnitsEvent,
             dollars: totalDollarsEvent
         }
