@@ -152,7 +152,7 @@ const Flow = (props) => {
           y: event.clientY - reactFlowBounds.top,
         },
         data: {
-          label: "Price",
+          label: "Pricing Algorithm",
         },
         selected: false,
         positionAbsolute: {
@@ -172,7 +172,7 @@ const Flow = (props) => {
           y: event.clientY - reactFlowBounds.top,
         },
         data: {
-          label: "Write File",
+          label: "DB Write",
         },
         selected: true,
         positionAbsolute: {
