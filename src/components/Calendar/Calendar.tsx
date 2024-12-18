@@ -57,7 +57,7 @@ const Calendar: React.FC = () => {
     return (
         <>
             <div className="bg-white rounded-lg shadow-lg overflow-hidden w-full">
-                <div className="flex items-center justify-between p-4 border-b">
+                <div className="flex items-center justify-between px-4 py-1 border-b">
                     <h2 className="text-xl font-semibold">{currentYear}</h2>
                     {/* TODO: Add retailer dropdown and brand dropdown here */}
                     {/* TODO: Also if import button should be here */}

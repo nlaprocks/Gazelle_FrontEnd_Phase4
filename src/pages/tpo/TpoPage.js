@@ -116,51 +116,58 @@ const TpoPage = ({
                         </div>
                     </div>
 
-                    <div className="w-full grid grid-cols-5 justify-between items-stretch gap-4 my-4">
-                        {/* Show below box in left side container */}
-                        <div className="bg-white rounded-lg py-2 px-4 w-full color-shadow">
-                            <p className="text-gray-500 text-sm">Total Volume</p>
-                            <p className="text-black text-2xl font-bold">60</p>
+                    <div className="grid grid-cols-[1fr_300px] gap-4 items-start py-8">
+                        <div className="w-full grid grid-cols-4 justify-between items-stretch gap-4 flex-1">
+                            {/* Show below box in left side container */}
+                            <div className="bg-white rounded-lg py-2 px-4 w-full border-b-4 border-secondary shadow color-shadow">
+                                <p className="text-gray-500 text-sm">Total Volume</p>
+                                <p className="text-black text-2xl font-bold">60</p>
+                            </div>
+                            <div className="bg-white rounded-lg py-2 px-4 w-full border-b-4 border-secondary shadow color-shadow">
+                                <p className="text-gray-500 text-sm">Total Revenue</p>
+                                <p className="text-black text-2xl font-bold">$340,567</p>
+                            </div>
+                            <div className="bg-white rounded-lg py-2 px-4 w-full border-b-4 border-secondary shadow color-shadow">
+                                <p className="text-gray-500 text-sm">Total Contribution</p>
+                                <p className="text-black text-2xl font-bold">60</p>
+                            </div>
+                            <div className="bg-white rounded-lg py-2 px-4 w-full border-b-4 border-secondary shadow color-shadow">
+                                <p className="text-gray-500 text-sm">Total Spend</p>
+                                <p className="text-black text-2xl font-bold">$340,567</p>
+                            </div>
+                            <div className="bg-white rounded-lg py-2 px-4 w-full border-b-4 border-secondary shadow color-shadow">
+                                <p className="text-gray-500 text-sm">Incremental volume</p>
+                                <p className="text-black text-2xl font-bold">34.5%</p>
+                            </div>
+                            <div className="bg-white rounded-lg py-2 px-4 w-full border-b-4 border-secondary shadow color-shadow">
+                                <p className="text-gray-500 text-sm">Incremental Revenue</p>
+                                <p className="text-black text-2xl font-bold">$1,423,941</p>
+                            </div>
+                            <div className="bg-white rounded-lg py-2 px-4 w-full border-b-4 border-secondary shadow color-shadow">
+                                <p className="text-gray-500 text-sm">Plan ROI</p>
+                                <p className="text-black text-2xl font-bold">34.5%</p>
+                            </div>
+                            <div className="bg-white rounded-lg py-2 px-4 w-full border-b-4 border-secondary shadow color-shadow">
+                                <p className="text-gray-500 text-sm">Budget Remaining</p>
+                                <p className="text-black text-2xl font-bold">$1,423,941</p>
+                            </div>
                         </div>
-                        <div className="bg-white rounded-lg py-2 px-4 w-full color-shadow">
-                            <p className="text-gray-500 text-sm">Incremental volume</p>
-                            <p className="text-black text-2xl font-bold">34.5%</p>
-                        </div>
-                        <div className="bg-white rounded-lg py-2 px-4 w-full color-shadow">
-                            <p className="text-gray-500 text-sm">Total Revenue</p>
-                            <p className="text-black text-2xl font-bold">$340,567</p>
-                        </div>
-                        <div className="bg-white rounded-lg py-2 px-4 w-full color-shadow">
-                            <p className="text-gray-500 text-sm">Incremental Revenue</p>
-                            <p className="text-black text-2xl font-bold">$1,423,941</p>
-                        </div>
-                        <div className="bg-white rounded-lg py-2 px-4 w-full color-shadow">
-                            <p className="text-gray-500 text-sm">Total Contribution</p>
-                            <p className="text-black text-2xl font-bold">60</p>
-                        </div>
-                        <div className="bg-white rounded-lg py-2 px-4 w-full color-shadow">
-                            <p className="text-gray-500 text-sm">Plan ROI</p>
-                            <p className="text-black text-2xl font-bold">34.5%</p>
-                        </div>
-                        <div className="bg-white rounded-lg py-2 px-4 w-full color-shadow">
-                            <p className="text-gray-500 text-sm">Total Spend</p>
-                            <p className="text-black text-2xl font-bold">$340,567</p>
-                        </div>
-
-                        {/* Create a target box in the right side */}
-                        <div className="bg-white rounded-lg py-2 px-4 w-full color-shadow">
-                            <p className="text-gray-500 text-sm">Budget Remaining</p>
-                            <p className="text-black text-2xl font-bold">$1,423,941</p>
-                        </div>
-                        <div className="bg-white rounded-lg py-2 px-4 w-full color-shadow">
-                            <p className="text-gray-500 text-sm">Target Volume</p>
-                            <p className="text-black text-2xl font-bold">$340,567</p>
-                        </div>
-                        <div className="bg-white rounded-lg py-2 px-4 w-full color-shadow">
-                            <p className="text-gray-500 text-sm">Target Spend</p>
-                            <p className="text-black text-2xl font-bold">$1,423,941</p>
+                        <div className="flex flex-col gap-4 border-l pl-6">
+                            <div className="bg-white rounded-lg py-1.5 px-3 w-full shadow flex items-center gap-2 border-b-4 border-green-600">
+                                <p className="text-gray-500 text-sm min-w-24">Target Volume:</p>
+                                <p className="text-black text-lg m-0 font-bold">$340,567</p>
+                            </div>
+                            <div className="bg-white rounded-lg py-1.5 px-3 w-full shadow flex items-center gap-2 border-b-4 border-green-600">
+                                <p className="text-gray-500 text-sm min-w-24">Target Spend:</p>
+                                <p className="text-black text-lg m-0 font-bold">$1,423,941</p>
+                            </div>
+                            <div className="bg-white rounded-lg py-1.5 px-3 w-full shadow flex items-center gap-2 border-b-4 border-green-600">
+                                <p className="text-gray-500 text-sm min-w-24">Target Revenue:</p>
+                                <p className="text-black text-lg m-0 font-bold">$1,423,941</p>
+                            </div>
                         </div>
                     </div>
+
                     {/* Scheduler Wrapper */}
                     <div className="bg-white rounded-lg w-full shadow-md">
                         <Calendar />
