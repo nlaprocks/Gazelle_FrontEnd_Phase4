@@ -3853,7 +3853,7 @@ header .theme-title h1 span {
   width: 100%;
 }
 
-.color-shadow {
+/* .color-shadow {
   position: relative;
 }
 
@@ -3867,7 +3867,7 @@ header .theme-title h1 span {
   height: 100%;
   border-radius: 0.5rem;
   box-shadow: 0 1px 1px rgb(0 155 204), 0 2px 2px rgb(0 155 204), 0 4px 4px rgb(0 155 204), 0 8px 8px rgba(0, 0, 0, 0.11), 0 16px 16px rgba(0, 0, 0, 0.11), 0 32px 32px rgba(0, 0, 0, 0.11);
-}
+} */
 
 :where(.css-dev-only-do-not-override-14i19y2).ant-select-outlined:not(.ant-select-disabled):not(.ant-select-customize-input):not(.ant-pagination-size-changer):hover .ant-select-selector {
   border-color: var(--bs-secondary);
