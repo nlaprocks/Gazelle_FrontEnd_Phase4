@@ -1,4 +1,4 @@
-import { Channel, Retailer, Brand, Product } from '../types'
+import { Channel, Retailer, Brand, Product } from '../types/product'
 
 export const MOCK_CHANNELS: Channel[] = [
     { id: 'c1', name: 'Online' },

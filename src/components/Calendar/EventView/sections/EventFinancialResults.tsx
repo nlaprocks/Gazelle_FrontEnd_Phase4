@@ -1,13 +1,13 @@
 import React from 'react'
+import { FinancialData } from '../../../../types/financial'
+import { calculateFinancialResults, calculatePromotionalResults } from '../../../../utils/financialCalculations'
 import { Table } from 'antd'
-import { calculateFinancialResults, calculatePromotionalResults } from '../../../utils/financialCalculations'
-import { FinancialData } from '../../../types/financial'
 
-interface FinancialResultsProps {
+interface EventFinancialResultsProps {
     financialData: FinancialData
 }
 
-const FinancialResults: React.FC<FinancialResultsProps> = ({ financialData }) => {
+export const EventFinancialResults: React.FC<EventFinancialResultsProps> = ({ financialData }) => {
     const financialResults = calculateFinancialResults({
         units: Number(financialData.units),
         promoPrice: Number(financialData.promoPrice),
@@ -85,5 +85,3 @@ const FinancialResults: React.FC<FinancialResultsProps> = ({ financialData }) =>
         </div>
     )
 }
-
-export default FinancialResults

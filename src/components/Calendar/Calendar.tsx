@@ -1,66 +1,71 @@
 import React, { useState } from 'react'
-import { startOfYear } from 'date-fns'
+import { addWeeks, startOfWeek, startOfYear } from 'date-fns'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import EventModal from './EventModal'
-import { Event, Product } from '../../types'
-import { SAMPLE_EVENTS } from '../../utils/sampleData'
+import { EventModal } from './EventModal'
+import { Event } from '../../types/event'
 import { MOCK_PRODUCTS } from '../../utils/mockData'
 import EventRow from './EventRow'
 import WeekHeader from './WeekHeader'
-import { getYearCalendarData } from '../../utils/dateUtils'
-
-const SAMPLE_PRODUCTS: Product[] = MOCK_PRODUCTS
+import { getYearCalendarData, addWeeksToDate, ensureDate } from '../../utils/dateUtils'
+import { useEvents } from '../../hooks/useEvents'
 
 const Calendar: React.FC = () => {
     const [currentYear, setCurrentYear] = useState(2024)
-    const [events, setEvents] = useState<Event[]>(SAMPLE_EVENTS)
+    const { events, createEvent, updateEvent, deleteEvent } = useEvents()
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [selectedDate, setSelectedDate] = useState<Date | undefined>()
     const [selectedEvent, setSelectedEvent] = useState<Event | undefined>()
-    const [selectedProductId, setSelectedProductId] = useState<string>('')
 
     const weeks = getYearCalendarData(currentYear)
 
     const handlePrevYear = () => setCurrentYear(prev => prev - 1)
     const handleNextYear = () => setCurrentYear(prev => prev + 1)
 
-    const handleAddEvent = (date: Date, productId: string) => {
+    const handleAddEvent = (date: Date) => {
         setSelectedDate(date)
-        setSelectedProductId(productId)
         setSelectedEvent(undefined)
         setIsModalOpen(true)
     }
 
     const handleEditEvent = (event: Event) => {
         setSelectedEvent(event)
-        setSelectedProductId(event.productId)
         setSelectedDate(undefined)
         setIsModalOpen(true)
     }
 
-    const handleSaveEvent = (eventData: Omit<Event, 'id'>) => {
-        if (selectedEvent) {
-            setEvents(events.map(event =>
-                event.id === selectedEvent.id
-                    ? { ...eventData, id: event.id }
-                    : event
-            ))
-        } else {
-            setEvents([...events, { ...eventData, id: crypto.randomUUID() }])
-        }
+    const handleCopyEvent = (event: Event) => {
+        setSelectedEvent({
+            ...event,
+            id: '', // Clear ID for new event
+            title: `Copy of ${event.title}`,
+        })
+        setIsModalOpen(true)
     }
 
-    const getEventsForProduct = (productId: string) => {
-        return events.filter(event => event.productId === productId)
+    const handleDragEnd = async (event: Event, weeksDelta: number) => {
+        const newStartDate = event.startDate ? addWeeksToDate(event.startDate, weeksDelta) : undefined
+        const newEndDate = event.endDate ? addWeeksToDate(event.endDate, weeksDelta) : undefined
+
+        await updateEvent({
+            ...event,
+            startDate: newStartDate,
+            endDate: newEndDate,
+        })
+    }
+
+    const handleSaveEvent = async (eventData: Omit<Event, 'id'>) => {
+        if (selectedEvent?.id) {
+            await updateEvent({ ...eventData, id: selectedEvent.id })
+        } else {
+            await createEvent(eventData)
+        }
     }
 
     return (
         <>
             <div className="bg-white rounded-lg shadow-lg overflow-hidden w-full">
-                <div className="flex items-center justify-between p-4 border-b">
+                <div className="flex items-center justify-between px-4 py-1 border-b">
                     <h2 className="text-xl font-semibold">{currentYear}</h2>
-                    {/* TODO: Add retailer dropdown and brand dropdown here */}
-                    {/* TODO: Also if import button should be here */}
                     <div className="flex gap-2">
                         <button
                             onClick={handlePrevYear}
@@ -77,18 +82,23 @@ const Calendar: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="overflow-auto max-h-[500px]">
-                    <table className="w-full">
+                <div className="overflow-auto">
+                    <table className="w-full border-collapse">
                         <WeekHeader weeks={weeks} />
                         <tbody>
-                            {SAMPLE_PRODUCTS.map((product) => (
+                            {MOCK_PRODUCTS.map((product) => (
                                 <EventRow
                                     key={product.id}
                                     product={product}
                                     weeks={weeks}
-                                    events={getEventsForProduct(product.id)}
+                                    events={events.filter(event =>
+                                        event.products.some(p => p.productId === product.id)
+                                    )}
                                     onAddEvent={handleAddEvent}
                                     onEditEvent={handleEditEvent}
+                                    onCopyEvent={handleCopyEvent}
+                                    onDeleteEvent={deleteEvent}
+                                    onDragEnd={handleDragEnd}
                                     yearStart={startOfYear(new Date(currentYear, 0, 1))}
                                 />
                             ))}
@@ -103,7 +113,6 @@ const Calendar: React.FC = () => {
                 onSave={handleSaveEvent}
                 initialEvent={selectedEvent}
                 startDate={selectedDate}
-                productId={selectedProductId}
             />
         </>
     )
