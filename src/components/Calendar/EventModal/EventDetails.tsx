@@ -143,7 +143,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({
                     </Form.Item>
                 </div>
 
-                <div>
+                <div className="col-span-2">
                     <Form.Item label="Channels">
                         <Select
                             mode="multiple"
@@ -190,7 +190,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({
                     </Form.Item>
                 </div>
 
-                <div>
+                <div className="col-span-2">
                     <Form.Item label="Products" required>
                         <Select
                             mode="multiple"

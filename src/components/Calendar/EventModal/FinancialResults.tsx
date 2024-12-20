@@ -33,7 +33,7 @@ const FinancialResults: React.FC<FinancialResultsProps> = ({ financialData }) =>
     return (
         <div className="space-y-6">
             <div>
-                <h3 className="text-lg font-semibold mb-4">Promotion Results</h3>
+                <h3 className="text-lg font-semibold mb-2">Promotion Results</h3>
                 <Table
                     columns={[
                         { title: 'Promotion', dataIndex: 'promotion' },
@@ -70,7 +70,7 @@ const FinancialResults: React.FC<FinancialResultsProps> = ({ financialData }) =>
             </div>
 
             <div>
-                <h3 className="text-lg font-semibold mb-4">Financial Results</h3>
+                <h3 className="text-lg font-semibold mb-2">Financial Results</h3>
                 <Table
                     columns={[
                         { title: 'Metric', dataIndex: 'name' },

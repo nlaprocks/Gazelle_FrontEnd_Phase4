@@ -7,6 +7,7 @@ import FinancialFields from './FinancialFields'
 import FinancialResults from './FinancialResults'
 import { MOCK_CHANNELS, MOCK_RETAILERS, MOCK_BRANDS, MOCK_PRODUCTS } from '../../../utils/mockData'
 import { createPortal } from 'react-dom'
+import { CaretRightOutlined } from '@ant-design/icons';
 import { ProductAccordionItem } from './types'
 
 interface EventModalProps {
@@ -99,13 +100,13 @@ export const EventModal: React.FC<EventModalProps> = ({
     const modalContent = (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[100]">
             <div className="bg-white rounded-lg w-full max-w-[95vw] max-h-[90vh] overflow-hidden m-4">
-                <div className="flex justify-between items-center p-6 border-b">
-                    <h2 className="text-2xl font-semibold text-gray-900">
+                <div className="flex justify-between items-center px-6 py-3 bg-secondary border-b">
+                    <h2 className="text-2xl font-medium text-white">
                         {initialEvent ? 'Edit Event' : 'Add New Event'}
                     </h2>
                     <button
                         onClick={onClose}
-                        className="text-gray-500 hover:text-gray-700 transition-colors"
+                        className="text-white hover:text-gray-700 transition-colors"
                     >
                         <X size={24} />
                     </button>
@@ -135,7 +136,7 @@ export const EventModal: React.FC<EventModalProps> = ({
                             <div className="w-[70%] p-6 overflow-auto">
                                 <h3 className="text-lg font-semibold mb-4">Product Details</h3>
                                 {formData.products.length > 0 ? (
-                                    <Collapse items={productItems} className="mb-4" />
+                                    <Collapse items={productItems} expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}/>
                                 ) : (
                                     <div className="text-center text-gray-500 py-8">
                                         Select products to view details
@@ -156,7 +157,7 @@ export const EventModal: React.FC<EventModalProps> = ({
                             </button>
                             <button
                                 type="submit"
-                                className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md hover:bg-indigo-700"
+                                className="btn btn-primary font-medium"
                             >
                                 {initialEvent ? 'Update Event' : 'Create Event'}
                             </button>
