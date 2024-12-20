@@ -12,6 +12,7 @@ export const SAMPLE_EVENTS: Event[] = [
         channels: ['c1', 'c2'], // Online and Retail
         retailerId: 'r1', // Walmart
         brandId: 'b1', // Brand A
+        budget: 10000,
         products: [{
             productId: 'p1',
             financialData: {
@@ -43,6 +44,7 @@ export const SAMPLE_EVENTS: Event[] = [
         channels: ['c2', 'c3'], // Retail and Wholesale
         retailerId: 'r1', // Walmart
         brandId: 'b1', // Brand A
+        budget: 10000,
         products: [
             {
                 productId: 'p1',
@@ -95,6 +97,7 @@ export const SAMPLE_EVENTS: Event[] = [
         channels: ['c1', 'c2', 'c3'], // All channels
         retailerId: 'r2', // Target
         brandId: 'b3', // Brand C
+        budget: 10000,
         products: [
             {
                 productId: 'p4',

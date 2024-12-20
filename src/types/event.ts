@@ -18,6 +18,7 @@ export interface BaseEvent {
     channels: string[]
     retailerId: string
     brandId: string
+    budget: number
     products: EventProduct[]
 }
 

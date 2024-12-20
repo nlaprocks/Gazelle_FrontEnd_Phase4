@@ -91,6 +91,17 @@ const EventDetails: React.FC<EventDetailsProps> = ({
                 </div>
 
                 <div>
+                    <Form.Item label="Budget" required>
+                        <Input
+                            type="number"
+                            value={formData.budget}
+                            onChange={(e) => setFormData({ ...formData, budget: Number(e.target.value) })}
+                            className="w-full"
+                        />
+                    </Form.Item>
+                </div>
+
+                <div>
                     <Form.Item label="Color">
                         <ColorPicker
                             value={formData.color}

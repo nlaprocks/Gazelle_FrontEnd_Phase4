@@ -36,6 +36,7 @@ export const EventModal: React.FC<EventModalProps> = ({
         retailerId: '',
         brandId: '',
         products: [],
+        budget: 0,
     })
 
     useEffect(() => {
