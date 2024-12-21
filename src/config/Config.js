@@ -33,8 +33,8 @@ const Config = () => {
             <ToastContainer />
             <Suspense fallback={<Loading />}>
                 <Routes>
-                    <Route exact path="/login" element={<LoginPage />}></Route>
                     <Route element={<AuthLayout />}>
+                        <Route exact path="/login" element={<LoginPage />}></Route>
                         <Route index path="/forgot-password" element={<ForgotPassword />}></Route>
                         <Route index path="/reset-password" element={<ResetPassword />}></Route>
                     </Route>

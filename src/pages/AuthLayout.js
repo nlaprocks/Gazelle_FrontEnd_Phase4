@@ -65,7 +65,7 @@ const AuthLayout = () => {
                         </div>
                     </div>
                     <div className="col-lg-7 col-md-6 px-0">
-                        <Outlet setHelpModal={setHelpModal} />
+                        <Outlet context={{ setHelpModal }} />
                     </div>
                     <HelpAndSupportModal show={showHelpModal} onHide={() => setHelpModal(false)} />
                 </div>

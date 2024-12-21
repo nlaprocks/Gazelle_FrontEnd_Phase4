@@ -1,13 +1,12 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import "../../css/style.css";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import Spinner from "react-bootstrap/Spinner";
 import Alert from "@mui/material/Alert";
 import Stack from "@mui/material/Stack";
-
 import Api from "../../services/Api";
 
-const ForgotPassword = ({ setHelpModal }) => {
+const ForgotPassword = () => {
+    const { setHelpModal } = useOutletContext();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [email, setEmail] = useState("");

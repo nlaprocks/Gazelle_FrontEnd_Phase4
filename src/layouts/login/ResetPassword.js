@@ -1,15 +1,16 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import "../../css/style.css";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import Spinner from "react-bootstrap/Spinner";
 import Alert from "@mui/material/Alert";
 import Stack from "@mui/material/Stack";
 import Api from "../../services/Api";
 
-const ResetPassword = ({ setHelpModal }) => {
+const ResetPassword = () => {
+    const { setHelpModal } = useOutletContext();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
-    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
     const [error, setErrorMsg] = useState("");
     const [showAlert, setShowAlert] = useState(false);
 
@@ -23,10 +24,11 @@ const ResetPassword = ({ setHelpModal }) => {
             };
 
             const apiData = {
-                email,
+                password,
+                confirmPassword,
             };
 
-            let { data } = await Api("POST", "api/v1/auth/forgot-password", apiData, config);
+            let { data } = await Api("POST", "api/v1/auth/reset-password", apiData, config);
             // console.log(data);
             if (data.code === 200) {
                 localStorage.setItem("auth", JSON.stringify(data.data));
@@ -50,14 +52,14 @@ const ResetPassword = ({ setHelpModal }) => {
 
     const loginHandler = (e) => {
         e.preventDefault();
-        if (email === "") {
+        if (password === "") {
             setErrorMsg("Please fill all fields");
             setShowAlert(true);
             setTimeout(() => {
                 setShowAlert(false);
             }, 3000);
-        } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(email)) {
-            setErrorMsg("Invalid Email");
+        } else if (password !== confirmPassword) {
+            setErrorMsg("Password and Confirm Password do not match");
             setShowAlert(true);
             setTimeout(() => {
                 setShowAlert(false);
@@ -83,13 +85,23 @@ const ResetPassword = ({ setHelpModal }) => {
                             <div className="row align-items-center">
                                 <div className="col-lg-12 col-md-12">
                                     <input
-                                        type="email"
+                                        type="password"
                                         className="form-control"
-                                        placeholder="Email*"
-                                        name="email"
+                                        placeholder="Password*"
+                                        name="password"
                                         required
                                         // onChange={handleChange}
-                                        onChange={(e) => setEmail(e.currentTarget.value)}
+                                        onChange={(e) => setPassword(e.currentTarget.value)}
+                                    />
+                                </div>
+                                <div className="col-lg-12 col-md-12">
+                                    <input
+                                        type="password"
+                                        className="form-control"
+                                        placeholder="Confirm Password*"
+                                        name="confirmPassword"
+                                        required
+                                        onChange={(e) => setConfirmPassword(e.currentTarget.value)}
                                     />
                                 </div>
                                 <div className="col-lg-12 col-md-12">
@@ -113,7 +125,7 @@ const ResetPassword = ({ setHelpModal }) => {
                                                 <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
                                             </>
                                         ) : (
-                                            "Send Reset Link"
+                                            "Reset Password"
                                         )}
                                     </button>
                                 </div>
