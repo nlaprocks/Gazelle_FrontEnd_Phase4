@@ -4,6 +4,7 @@ import { Product } from '../../../types/product';
 import { EventProduct } from '../../../types/event';
 import { EventFinancialInfo } from './sections/EventFinancialInfo';
 import { EventFinancialResults } from './sections/EventFinancialResults';
+import { CaretRightOutlined } from '@ant-design/icons';
 
 interface ProductAccordionViewProps {
   products: Product[];
@@ -30,7 +31,7 @@ const ProductAccordionView: React.FC<ProductAccordionViewProps> = ({
     };
   }).filter(Boolean) as CollapseProps['items'];
 
-  return <Collapse items={items} className="mb-4" />;
+  return <Collapse items={items} expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />} />;
 };
 
 export default ProductAccordionView;

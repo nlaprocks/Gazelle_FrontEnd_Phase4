@@ -3,6 +3,7 @@ import { Event } from '../../types/event';
 import { Product } from '../../types/product';
 import { differenceInWeeks, startOfWeek, isBefore, isAfter, format } from 'date-fns';
 import EventItem from './EventItem/EventItem';
+import { Tooltip } from 'antd';
 
 interface EventRowProps {
     product: Product;
@@ -49,8 +50,10 @@ const EventRow: React.FC<EventRowProps> = ({
 
     return (
         <tr className="relative">
-            <td className="border-b border-r border-gray-200 p-2 font-medium bg-gray-50 sticky left-0 z-10 min-w-[120px] max-w-[120px]">
-                {product.name}
+            <td className="product-title border-b border-r border-gray-200 p-2 font-medium bg-gray-50 sticky left-0 z-10 min-w-[120px] max-w-[120px]">
+                <Tooltip placement="topLeft" title={product.name}>
+                    <span>{product.name}</span>
+                </Tooltip>                
             </td>
             {weeks.map((week) => (
                 <td

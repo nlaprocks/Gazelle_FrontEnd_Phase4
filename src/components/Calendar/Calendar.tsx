@@ -83,7 +83,7 @@ const Calendar: React.FC = () => {
                 </div>
 
                 <div className="overflow-auto">
-                    <table className="w-full border-collapse">
+                    <table className="w-full border-collapse tpo-calendar">
                         <WeekHeader weeks={weeks} />
                         <tbody>
                             {MOCK_PRODUCTS.map((product) => (
