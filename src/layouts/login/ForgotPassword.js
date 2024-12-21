@@ -29,12 +29,7 @@ const ForgotPassword = () => {
             let { data } = await Api("POST", "api/v1/auth/forgot-password", apiData, config);
             // console.log(data);
             if (data.code === 200) {
-                localStorage.setItem("auth", JSON.stringify(data.data));
-                if (data.data.role === "admin" || data.data.role === "manager") {
-                    navigate("/admin/user-management");
-                } else {
-                    navigate("/dashboard");
-                }
+                navigate("/reset-link-sent");
                 setLoading(false);
             }
         } catch (error) {
@@ -72,10 +67,10 @@ const ForgotPassword = () => {
             <div className="nla_login_data_wrapper">
                 <div className="login-form">
                     <h4 className="pb-3">
-                        <strong>Dynamic Analytics Enabling Real-Time Business Impact.</strong>
+                        <strong>Forgot Password</strong>
                     </h4>
                     <p>
-                        A path breaking analytics platform that harmonizes advanced analytics and business decision making.
+                        Please enter your email below to receive a link to reset your password.
                     </p>
 
                     <div className="login-form-block">

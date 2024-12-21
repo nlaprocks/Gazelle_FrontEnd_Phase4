@@ -8,6 +8,7 @@ const AuthLayout = lazy(() => import("../pages/AuthLayout.js"));
 const LoginPage = lazy(() => import("../pages/loginPage/LoginPage.js"));
 const ForgotPassword = lazy(() => import("../layouts/login/ForgotPassword.js"));
 const ResetPassword = lazy(() => import("../layouts/login/ResetPassword.js"));
+const ResetLinkSent = lazy(() => import("../layouts/login/ResetLinkSent.js"));
 const DashboardPage = lazy(() => import("../pages/dashboardPage/DashboardPage.js"));
 const ChatPage = lazy(() => import("../pages/chat/ChatPage.js"));
 const DesignStudioPage = lazy(() => import("../pages/designStudioPage/DesignStudioPage.js"));
@@ -37,6 +38,7 @@ const Config = () => {
                         <Route exact path="/login" element={<LoginPage />}></Route>
                         <Route index path="/forgot-password" element={<ForgotPassword />}></Route>
                         <Route index path="/reset-password" element={<ResetPassword />}></Route>
+                        <Route index path="/reset-link-sent" element={<ResetLinkSent />}></Route>
                     </Route>
                     <Route exact path="/tpo" element={<TpoPage />}></Route>
                     <Route exact path="/tpo-report" element={<TpoReportPage />}></Route>

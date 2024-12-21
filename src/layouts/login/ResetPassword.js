@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate, useOutletContext } from "react-router-dom";
+import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import Spinner from "react-bootstrap/Spinner";
 import Alert from "@mui/material/Alert";
 import Stack from "@mui/material/Stack";
@@ -14,6 +14,8 @@ const ResetPassword = () => {
     const [error, setErrorMsg] = useState("");
     const [showAlert, setShowAlert] = useState(false);
 
+    const { token } = useParams();
+
     const loginHandlerSub = async () => {
         try {
             setLoading(true);
@@ -26,17 +28,13 @@ const ResetPassword = () => {
             const apiData = {
                 password,
                 confirmPassword,
+                token,
             };
 
             let { data } = await Api("POST", "api/v1/auth/reset-password", apiData, config);
             // console.log(data);
             if (data.code === 200) {
-                localStorage.setItem("auth", JSON.stringify(data.data));
-                if (data.data.role === "admin" || data.data.role === "manager") {
-                    navigate("/admin/user-management");
-                } else {
-                    navigate("/dashboard");
-                }
+                navigate("/login");
                 setLoading(false);
             }
         } catch (error) {
@@ -74,10 +72,10 @@ const ResetPassword = () => {
             <div className="nla_login_data_wrapper">
                 <div className="login-form">
                     <h4 className="pb-3">
-                        <strong>Dynamic Analytics Enabling Real-Time Business Impact.</strong>
+                        <strong>Reset Password</strong>
                     </h4>
                     <p>
-                        A path breaking analytics platform that harmonizes advanced analytics and business decision making.
+                        Please enter your new password below.
                     </p>
 
                     <div className="login-form-block">
