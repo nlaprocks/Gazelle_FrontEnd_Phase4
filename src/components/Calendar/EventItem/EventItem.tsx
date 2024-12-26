@@ -2,13 +2,13 @@ import React, { useState, useRef } from 'react'
 import { Event } from '../../../types/event'
 import { EventHoverCard } from './EventHoverCard'
 import { EventViewModal } from '../EventView/EventViewModal'
-import { ContextMenu } from './ContextMenu'
+// import { ContextMenu } from './ContextMenu'
 import { useDrag } from '../../../hooks/useDrag'
 
 interface EventItemProps {
     event: Event
     onEdit: () => void
-    onDelete: (id: string) => void
+    // onDelete: (id: string) => void
     onCopy: (event: Event) => void
     onDragEnd: (event: Event, weeksDelta: number) => void
 }
@@ -16,12 +16,12 @@ interface EventItemProps {
 export const EventItem: React.FC<EventItemProps> = ({
     event,
     onEdit,
-    onDelete,
+    // onDelete,
     onCopy,
     onDragEnd,
 }) => {
     const [isViewModalOpen, setIsViewModalOpen] = useState(false)
-    const [contextMenuPosition, setContextMenuPosition] = useState<{ x: number; y: number } | null>(null)
+    // const [contextMenuPosition, setContextMenuPosition] = useState<{ x: number; y: number } | null>(null)
     const elementRef = useRef<HTMLDivElement>(null)
 
     const handleDragEnd = (weeksDelta: number) => {
@@ -39,15 +39,15 @@ export const EventItem: React.FC<EventItemProps> = ({
         setIsViewModalOpen(true)
     }
 
-    const handleContextMenu = (e: React.MouseEvent) => {
-        e.preventDefault()
-        e.stopPropagation()
-        setContextMenuPosition({ x: e.clientX, y: e.clientY })
-    }
+    // const handleContextMenu = (e: React.MouseEvent) => {
+    //     e.preventDefault()
+    //     e.stopPropagation()
+    //     setContextMenuPosition({ x: e.clientX, y: e.clientY })
+    // }
 
-    const handleCloseContextMenu = () => {
-        setContextMenuPosition(null)
-    }
+    // const handleCloseContextMenu = () => {
+    //     setContextMenuPosition(null)
+    // }
 
     return (
         <>
@@ -55,7 +55,6 @@ export const EventItem: React.FC<EventItemProps> = ({
                 ref={elementRef}
                 className={`h-8 rounded-md relative group z-20 pointer-events-auto w-full`}
                 onDoubleClick={handleDoubleClick}
-                onContextMenu={handleContextMenu}
                 {...dragProps}
             >
                 <div className="absolute inset-0 flex items-center justify-center px-2">
@@ -73,17 +72,18 @@ export const EventItem: React.FC<EventItemProps> = ({
                 isOpen={isViewModalOpen}
                 onClose={() => setIsViewModalOpen(false)}
                 onEdit={onEdit}
+            // onDelete={() => onDelete(event.id)}
             />
 
-            {contextMenuPosition && (
+            {/* {contextMenuPosition && (
                 <ContextMenu
                     position={contextMenuPosition}
                     onClose={handleCloseContextMenu}
                     onEdit={onEdit}
-                    onDelete={() => onDelete(event.id)}
+                    // onDelete={() => onDelete(event.id)}
                     onCopy={() => onCopy(event)}
                 />
-            )}
+            )} */}
         </>
     )
 }

@@ -1,17 +1,21 @@
 import React from 'react'
 import { Event } from '../../../types/event'
-import { X, Edit, Trash2, Copy  } from 'lucide-react'
+import type { PopconfirmProps } from 'antd'
+import { Button, message, Popconfirm } from 'antd'
+import { X, Edit, Trash2, Copy } from 'lucide-react'
 import { EventBasicInfo } from './sections/EventBasicInfo'
 import { MOCK_PRODUCTS } from '../../../utils/mockData'
 import { EventAdditionalInfo } from './sections/EventAdditionalInfo'
 import ProductAccordionView from './ProductAccordionView'
 import { createPortal } from 'react-dom'
+import { useEvents } from '../../../hooks/useEvents'
 
 interface EventViewModalProps {
     event: Event
     isOpen: boolean
     onClose: () => void
     onEdit: () => void
+    // onDelete: () => void
 }
 
 export const EventViewModal: React.FC<EventViewModalProps> = ({
@@ -19,10 +23,13 @@ export const EventViewModal: React.FC<EventViewModalProps> = ({
     isOpen,
     onClose,
     onEdit,
+    // onDelete
 }) => {
+    const { deleteEvent } = useEvents()
+
     if (!isOpen) return null
 
-    const products = event.products
+    const products = event.planned
         .map(ep => MOCK_PRODUCTS.find(p => p.id === ep.productId))
         .filter((p): p is NonNullable<typeof p> => p !== undefined)
 
@@ -31,24 +38,52 @@ export const EventViewModal: React.FC<EventViewModalProps> = ({
         onEdit()
     }
 
+    const confirm: PopconfirmProps['onConfirm'] = async (e) => {
+        const handleDelete = async () => {
+            onClose()
+            const res = await deleteEvent(event.id)
+            if (res) {
+                message.success('Event deleted')
+            } else {
+                message.error('Failed to delete event')
+            }
+        }
+        handleDelete()
+    }
+
+    const cancel: PopconfirmProps['onCancel'] = (e) => {
+        console.log(e)
+        message.error('Rejected')
+    }
+
     const modalContent = (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[100]">
             <div className="bg-white rounded-lg w-full max-w-7xl max-h-[90vh] overflow-hidden m-4">
                 <div className="flex justify-between items-center px-6 py-3 border-b bg-secondary sticky top-0 z-10">
                     <h2 className="text-2xl font-medium text-white">Event Details</h2>
                     <div className="flex items-center gap-4">
-                        <button
+                        {/* <button
                             className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md transition-colors"
                         >
                             <Copy size={16} />
                             Copy Event
-                        </button>
-                        <button
-                            className="flex items-center gap-2 px-4 py-2 bg-red-700 text-white rounded-md transition-colors"
+                        </button> */}
+
+                        <Popconfirm
+                            title="Delete the task"
+                            description="Are you sure to delete this task?"
+                            onConfirm={confirm}
+                            onCancel={cancel}
+                            okText="Yes"
+                            cancelText="No"
                         >
-                            <Trash2 size={16} />
-                            Delete Event
-                        </button>
+                            <button
+                                className="flex items-center gap-2 px-4 py-2 bg-red-700 text-white rounded-md transition-colors"
+                            >
+                                <Trash2 size={16} />
+                                Delete Event
+                            </button>
+                        </Popconfirm>
                         <button
                             onClick={handleEdit}
                             className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-md transition-colors"
@@ -71,7 +106,7 @@ export const EventViewModal: React.FC<EventViewModalProps> = ({
                             <EventBasicInfo event={event} />
                             <EventAdditionalInfo event={event} />
                         </div>
-                        <ProductAccordionView products={products} eventProducts={event.products} />
+                        <ProductAccordionView products={products} eventProducts={event.planned} />
                     </div>
                 </div>
             </div>

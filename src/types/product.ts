@@ -2,6 +2,7 @@ export interface Product {
     id: string
     name: string
     brandId: string
+    retailerId?: string
     basePrice: number
     totalUnits: number
     promoPriceElasticity?: number

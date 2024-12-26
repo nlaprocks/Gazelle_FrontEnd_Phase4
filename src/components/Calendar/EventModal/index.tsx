@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import { X } from 'lucide-react'
-import { Form, Collapse, type CollapseProps } from 'antd'
+import { Form, Collapse, type CollapseProps, Tabs } from 'antd'
 import { Event, EventProduct } from '../../../types/event'
 import EventDetails from './EventDetails'
 import FinancialFields from './FinancialFields'
 import FinancialResults from './FinancialResults'
-import { MOCK_CHANNELS, MOCK_RETAILERS, MOCK_BRANDS, MOCK_PRODUCTS } from '../../../utils/mockData'
+import { MOCK_CHANNELS, MOCK_PRODUCTS } from '../../../utils/mockData'
 import { createPortal } from 'react-dom'
-import { CaretRightOutlined } from '@ant-design/icons';
+import { CaretRightOutlined } from '@ant-design/icons'
 import { ProductAccordionItem } from './types'
 
 interface EventModalProps {
@@ -16,6 +16,11 @@ interface EventModalProps {
     onSave: (event: Omit<Event, 'id'>) => void
     initialEvent?: Event
     startDate?: Date
+    selectedRetailer?: string
+    selectedBrand?: string
+    productData?: Array<any>
+    retailers?: string[]
+    brands?: string[]
 }
 
 export const EventModal: React.FC<EventModalProps> = ({
@@ -24,19 +29,25 @@ export const EventModal: React.FC<EventModalProps> = ({
     onSave,
     initialEvent,
     startDate,
+    selectedRetailer,
+    selectedBrand,
+    productData,
+    retailers,
+    brands
 }) => {
     const [form] = Form.useForm()
     const [formData, setFormData] = useState<Omit<Event, 'id'>>({
         title: '',
         description: '',
-        startDate: startDate ? new Date(startDate.toISOString().split('T')[0]) : undefined,
-        endDate: startDate ? new Date(startDate.toISOString().split('T')[0]) : undefined,
+        start_date: startDate ? new Date(startDate.toISOString().split('T')[0]) : undefined,
+        end_date: startDate ? new Date(startDate.toISOString().split('T')[0]) : undefined,
         color: '#4F46E5',
         status: 'draft',
         channels: [],
         retailerId: '',
         brandId: '',
-        products: [],
+        planned: [],
+        actual: [],
         budget: 0,
     })
 
@@ -44,8 +55,8 @@ export const EventModal: React.FC<EventModalProps> = ({
         if (initialEvent) {
             setFormData({
                 ...initialEvent,
-                startDate: initialEvent?.startDate ? new Date(initialEvent.startDate) : undefined,
-                endDate: initialEvent?.endDate ? new Date(initialEvent.endDate) : undefined,
+                start_date: initialEvent?.start_date ? new Date(initialEvent.start_date) : undefined,
+                end_date: initialEvent?.end_date ? new Date(initialEvent.end_date) : undefined,
             })
         }
     }, [initialEvent])
@@ -53,7 +64,7 @@ export const EventModal: React.FC<EventModalProps> = ({
     const handleProductDataChange = (productId: string, financialData: EventProduct['financialData']) => {
         setFormData(prev => ({
             ...prev,
-            products: prev.products.map(p =>
+            planned: prev.planned.map(p =>
                 p.productId === productId ? { ...p, financialData } : p
             ),
         }))
@@ -66,9 +77,9 @@ export const EventModal: React.FC<EventModalProps> = ({
 
     if (!isOpen) return null
 
-    const productItems: CollapseProps['items'] = formData.products
+    const productItems: CollapseProps['items'] = formData.planned
         .map(eventProduct => {
-            const product = MOCK_PRODUCTS.find(p => p.id === eventProduct.productId)
+            const product = productData?.find(p => p.id === eventProduct.productId)
             if (!product) return null
 
             const item: ProductAccordionItem = {
@@ -104,6 +115,9 @@ export const EventModal: React.FC<EventModalProps> = ({
                     <h2 className="text-2xl font-medium text-white">
                         {initialEvent ? 'Edit Event' : 'Add New Event'}
                     </h2>
+                    <div className='mx-auto flex items-center gap-2'>
+                        <label className='text-lg'>Remaining Budget:</label> <h3 className='text-xl'>$32,000</h3>
+                    </div>
                     <button
                         onClick={onClose}
                         className="text-white hover:text-gray-700 transition-colors"
@@ -122,27 +136,47 @@ export const EventModal: React.FC<EventModalProps> = ({
                         <div className="flex h-full">
                             {/* Left side - Event Details (30%) */}
                             <div className="w-[30%] border-r border-gray-200 p-6 overflow-auto">
-                                <EventDetails
-                                    formData={formData}
-                                    setFormData={setFormData}
-                                    channels={MOCK_CHANNELS}
-                                    retailers={MOCK_RETAILERS}
-                                    brands={MOCK_BRANDS}
-                                    products={MOCK_PRODUCTS}
-                                />
+                                {productData && (
+                                    <EventDetails
+                                        formData={formData}
+                                        setFormData={setFormData}
+                                        channels={MOCK_CHANNELS}
+                                        retailers={retailers || []}
+                                        brands={brands || []}
+                                        products={productData}
+                                        planned={formData.planned}
+                                        actual={formData.actual}
+                                    />
+                                )}
                             </div>
 
                             {/* Right side - Product Details (70%) */}
-                            <div className="w-[70%] p-6 overflow-auto">
-                                <h3 className="text-lg font-semibold mb-4">Product Details</h3>
-                                {formData.products.length > 0 ? (
-                                    <Collapse items={productItems} expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}/>
-                                ) : (
-                                    <div className="text-center text-gray-500 py-8">
-                                        Select products to view details
+                            <Tabs defaultActiveKey="1" className="p-4 w-[70%]">
+                                <Tabs.TabPane tab="Plan" key="1">
+                                    <div className="p-2 overflow-auto">
+                                        <h3 className="text-lg font-semibold mb-4">Product Details</h3>
+                                        {formData.planned.length > 0 ? (
+                                            <Collapse items={productItems} expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />} />
+                                        ) : (
+                                            <div className="text-center text-gray-500 py-8">
+                                                Select products to view details
+                                            </div>
+                                        )}
                                     </div>
-                                )}
-                            </div>
+                                </Tabs.TabPane>
+                                <Tabs.TabPane tab="Actual" key="2">
+                                    <div className="p-2 overflow-auto">
+                                        <h3 className="text-lg font-semibold mb-4">Product Details</h3>
+                                        {formData.actual.length > 0 ? (
+                                            <Collapse items={productItems} expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />} />
+                                        ) : (
+                                            <div className="text-center text-gray-500 py-8">
+                                                Select products to view details
+                                            </div>
+                                        )}
+                                    </div>
+                                </Tabs.TabPane>
+                            </Tabs>
                         </div>
                     </div>
 

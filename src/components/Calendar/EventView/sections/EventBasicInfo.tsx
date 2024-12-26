@@ -29,7 +29,7 @@ export const EventBasicInfo: React.FC<EventBasicInfoProps> = ({ event }) => {
                 <InfoRow
                     icon={<Calendar size={16} />}
                     label="Date Range"
-                    value={`${format(event.startDate || new Date(), 'MMM d, yyyy')} - ${format(event.endDate || new Date(), 'MMM d, yyyy')}`}
+                    value={`${format(event.start_date || new Date(), 'MMM d, yyyy')} - ${format(event.end_date || new Date(), 'MMM d, yyyy')}`}
                 />
                 <InfoRow
                     icon={<Palette size={16} />}
@@ -44,7 +44,7 @@ export const EventBasicInfo: React.FC<EventBasicInfoProps> = ({ event }) => {
                         </div>
                     }
                 />
-                
+
             </div>
         </InfoSection>
     )

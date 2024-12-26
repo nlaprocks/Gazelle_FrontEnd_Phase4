@@ -40,7 +40,7 @@ const Config = () => {
                         <Route index path="/reset-password" element={<ResetPassword />}></Route>
                         <Route index path="/reset-link-sent" element={<ResetLinkSent />}></Route>
                     </Route>
-                    <Route exact path="/tpo" element={<TpoPage />}></Route>
+                    <Route exact path="/tpo/:projectName/:project_id/:model_id" element={<TpoPage />}></Route>
                     <Route exact path="/tpo-report" element={<TpoReportPage />}></Route>
                     <Route exact path="/dashboard" element={<ProtectedRoute component={DashboardPage}></ProtectedRoute>}></Route>
                     <Route exact path="/chat" element={<ProtectedRoute component={ChatPage}></ProtectedRoute>}></Route>

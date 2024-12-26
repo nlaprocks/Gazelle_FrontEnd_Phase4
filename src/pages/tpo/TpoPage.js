@@ -1,34 +1,111 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../../css/style.css";
-import { useNavigate } from "react-router-dom";
-import PromoModal from "../../components/reactScheduler/promoModal";
+import axios from "axios";
+
+import { useNavigate, useParams } from "react-router-dom";
+import { ImportEvent } from "../../components/Calendar/ImportEvent/ImportEvent";
 import Header from "../../components/header/Header";
 import Footer from "../../components/footer/Footer";
 import Calendar from "../../components/Calendar/Calendar";
 import { Select, Form } from "antd";
+import { useEvents } from '../../hooks/useEvents'
+import { Event } from '../../types/event'
 
 const TpoPage = ({
     formData = {},
     setFormData = () => { },
-    channels = [],
-    retailers = [],
-    brands = [],
-    products = [],
 }) => {
+    const { projectName, project_id, model_id } = useParams();
+    const [retailerBrandProducts, setRetailerBrandProducts] = useState([]);
     const navigate = useNavigate();
-    const [show, setShow] = useState(false);
-
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
 
     const handleRedirect = () => {
         navigate("/tpo-report");
     };
 
-    const filteredBrands = (brands || []).filter(brand => brand.retailerId === formData.retailerId);
-    const filteredProducts = (products || []).filter(product =>
-        filteredBrands.some(brand => brand.id === product.brandId)
-    );
+    const [selectedRetailer, setSelectedRetailer] = useState("");
+    const [selectedBrand, setSelectedBrand] = useState("");
+    const [productData, setProductData] = useState([]);
+    const retailers = Object?.keys(retailerBrandProducts);
+    let brands = selectedRetailer
+        ? Object?.keys(retailerBrandProducts[selectedRetailer])
+        : [];
+    let products = selectedBrand
+        ? retailerBrandProducts[selectedRetailer][selectedBrand]
+        : [];
+
+    useEffect(() => {
+        const fetchRetailerBrandProductApiHandler = async () => {
+            try {
+                const api = `${process.env.REACT_APP_NGROK}/insights/retailer_brands_products?project_id=${project_id}&model_id=${model_id}`;
+                const response = await axios.get(api);
+                if (response.status === 200) {
+                    setRetailerBrandProducts(response?.data?.data);
+                }
+            } catch (error) {
+                console.log("Error in fetching retailers", error);
+            }
+        };
+        fetchRetailerBrandProductApiHandler();
+    }, []);
+
+    const handleProductChange = (value) => {
+        setFormData({ ...formData, products: value })
+        fetchProductData(value);
+    }
+
+    const fetchProductData = async (products) => {
+        let productDataArray = [];
+        try {
+            for (const product of products) {
+                const api = `${process.env.REACT_APP_NGROK}/insights/simulation/price/product-data?project_id=${project_id}&model_id=${model_id}&Retailer=${selectedRetailer}&Product=${product}`;
+                const response = await axios.get(api);
+                if (response.status === 200) {
+                    // setTimeout(() => {
+                    let SingleproductData = response?.data?.data[0];
+                    const basePrice = !isNaN(
+                        response?.data?.data[0]?.Price_avg_last_4_weeks
+                    )
+                        ? response?.data?.data[0]?.Price_avg_last_4_weeks
+                        : 0;
+
+                    SingleproductData = {
+                        id: SingleproductData._id,
+                        name: SingleproductData.Product,
+                        brandId: SingleproductData.Brand,
+                        retailerId: SingleproductData.Retailer,
+                        totalUnits: SingleproductData.total_units_sum / 52,
+                        promoPriceElasticity:
+                            SingleproductData?.Promo_Price_Elasticity,
+                        basePrice: basePrice,
+                        // total_units_sum: SingleproductData?.total_units_sum / 52,
+                    };
+
+                    productDataArray.push(SingleproductData);
+                    // }, 500);
+
+                }
+            }
+            setProductData(productDataArray);
+        } catch (error) {
+            console.log("Error in fetching promo event simulation data: ", error);
+        }
+    };
+
+    const { createImportedEvent } = useEvents()
+
+    const [isImportModalOpen, setIsImportModalOpen] = useState(false)
+
+    const handleImportEvents = async (importedEvents: Event[]) => {
+        try {
+            for (const event of importedEvents) {
+                await createImportedEvent(event)
+            }
+        } catch (error) {
+            console.error('Failed to import events:', error)
+            throw error
+        }
+    }
 
     return (
         <>
@@ -36,79 +113,94 @@ const TpoPage = ({
             <div className="min-h-[calc(100vh-40px)] bg-[rgb(249,249,249)] pt-20 pb-8">
                 <div className="mx-auto px-12">
                     <div className="flex justify-between flex-wrap items-center h-full">
-                        <h2 className="text-2xl">Promotion</h2>
+                        <div className="flex flex-col ">
+                            <a href="/dashboard" className="flex items-center gap-2">
+                                <div className="fa-solid fa-arrow-left"></div>
+                                <span>Back to Home Page</span>
+                            </a>
+                            <h2 className="text-2xl">{projectName}</h2>
+                        </div>
                         <div className="w-[calc(100%-140px)]">
                             <div className="tpo-page flex justify-end flex-wrap items-center gap-x-4 gap-y-2">
                                 <button className="flex items-center space-x-2 bg-white text-black hover:shadow-sm rounded-lg py-2.5 px-3">
                                     <p className="text-base font-medium">01.01.2024 - 03.01.2024</p>
                                 </button>
 
-                                <Form.Item>
-                                    <Select
-                                        value={formData.retailerId}
-                                        onChange={value =>
-                                            setFormData({
-                                                ...formData,
-                                                retailerId: value,
-                                                brandId: '',
-                                                products: [],
-                                            })
-                                        }
-                                        options={retailers.map(retailer => ({
-                                            value: retailer.id,
-                                            label: retailer.name,
-                                        }))}
-                                        className="w-full mb-0 shadow-sm rounded-sm"
-                                        placeholder="Select retailer"
-                                    />
-                                </Form.Item>
+                                <div className="w-[30%] flex gap-2">
+                                    <Form.Item>
+                                        <Select
+                                            value={formData.retailerId}
+                                            onChange={value => {
+                                                setFormData({
+                                                    ...formData,
+                                                    retailerId: value,
+                                                    brandId: '',
+                                                    products: [],
+                                                })
+                                                setSelectedRetailer(value)
+                                            }}
+                                            options={retailers.map(retailer => ({
+                                                value: retailer,
+                                                label: retailer,
+                                            }))}
+                                            className="w-full mb-0 shadow-sm rounded-sm"
+                                            placeholder="Select retailer"
+                                        />
+                                    </Form.Item>
 
-                                <Form.Item>
-                                    <Select
-                                        value={formData.brandId}
-                                        onChange={value =>
-                                            setFormData({
-                                                ...formData,
-                                                brandId: value,
-                                                products: [],
-                                            })
-                                        }
-                                        options={filteredBrands.map(brand => ({
-                                            value: brand.id,
-                                            label: brand.name,
-                                        }))}
-                                        className="w-full mb-0 shadow-sm rounded-sm"
-                                        placeholder="Select brand"
-                                        disabled={!formData.retailerId}
-                                    />
-                                </Form.Item>
+                                    <Form.Item>
+                                        <Select
+                                            value={formData.brandId}
+                                            onChange={value => {
+                                                setFormData({
+                                                    ...formData,
+                                                    brandId: value,
+                                                    products: [],
+                                                })
+                                                setSelectedBrand(value)
+                                            }}
+                                            options={brands.map(brand => ({
+                                                value: brand,
+                                                label: brand,
+                                            }))}
+                                            className="w-full mb-0 shadow-sm rounded-sm"
+                                            placeholder="Select brand"
+                                            disabled={!selectedRetailer}
+                                        />
+                                    </Form.Item>
 
-                                <Form.Item>
-                                    <Select
-                                        mode="multiple"
-                                        value={formData.products}
-                                        onChange={values =>
-                                            setFormData({ ...formData, products: values })
-                                        }
-                                        options={filteredProducts.map(product => ({
-                                            value: product.id,
-                                            label: product.name,
-                                        }))}
-                                        className="w-full mb-0 shadow-sm rounded-sm"
-                                        placeholder="Select products"
-                                        disabled={!formData.brandId}
-                                    />
-                                </Form.Item>
+                                    <Form.Item>
+                                        <Select
+                                            mode="multiple"
+                                            value={formData.products}
+                                            onChange={values => {
+                                                handleProductChange(values)
+                                            }}
+                                            style={{
+                                                minWidth: "100%",
+                                            }}
+                                            options={products.map(product => ({
+                                                value: product,
+                                                label: product,
+                                            }))}
+                                            className="w-full mb-0 shadow-sm rounded-sm filtered-accordion-ant-select"
+                                            placeholder="Select products"
+                                            disabled={!selectedBrand}
+                                            maxTagCount="responsive"
+                                        />
+                                    </Form.Item>
+                                </div>
 
                                 <button onClick={handleRedirect} className="flex items-center bg-[#009bcc] text-white hover:text-primary rounded-lg py-2 px-4">
                                     <p className="text-base font-medium">TPO Report</p>
                                 </button>
+
                                 <button className="flex items-center bg-[rgb(229,229,230)] text-black hover:shadow-sm rounded-lg py-2.5 px-3">
                                     <p className="text-base font-medium">Calculate ROI</p>
                                 </button>
                                 <button
                                     className="flex items-center bg-[rgb(73,162,128)] text-white hover:shadow-sm rounded-lg py-2.5 px-3"
-                                    onClick={handleShow}
+                                    onClick={() => setIsImportModalOpen(true)}
                                 >
                                     <p className="text-base font-medium">Import</p>
                                 </button>
@@ -170,18 +262,16 @@ const TpoPage = ({
 
                     {/* Scheduler Wrapper */}
                     <div className="bg-white rounded-lg w-full shadow-md">
-                        <Calendar />
+                        <Calendar retailers={retailers} brands={brands} selectedRetailer={selectedRetailer} selectedBrand={selectedBrand} productData={productData} />
                     </div>
                 </div>
             </div>
 
-            {show && (
-                <PromoModal
-                    show={show}
-                    handleClose={handleClose}
-                    setShow={setShow}
-                />
-            )}
+            <ImportEvent
+                show={isImportModalOpen}
+                onClose={() => setIsImportModalOpen(false)}
+                onImport={handleImportEvents}
+            />
 
             <Footer />
         </>

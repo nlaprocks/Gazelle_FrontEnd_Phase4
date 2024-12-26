@@ -1,15 +1,22 @@
 import React, { useState } from 'react'
-import { addWeeks, startOfWeek, startOfYear } from 'date-fns'
+import { startOfYear } from 'date-fns'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { EventModal } from './EventModal'
 import { Event } from '../../types/event'
-import { MOCK_PRODUCTS } from '../../utils/mockData'
 import EventRow from './EventRow'
 import WeekHeader from './WeekHeader'
 import { getYearCalendarData, addWeeksToDate, ensureDate } from '../../utils/dateUtils'
 import { useEvents } from '../../hooks/useEvents'
 
-const Calendar: React.FC = () => {
+interface CalendarProps {
+    retailers: Array<any>
+    brands: Array<any>
+    selectedRetailer: string
+    selectedBrand: string
+    productData: Array<any>
+}
+
+const Calendar: React.FC<CalendarProps> = ({ retailers, brands, selectedRetailer, selectedBrand, productData }) => {
     const [currentYear, setCurrentYear] = useState(2024)
     const { events, createEvent, updateEvent, deleteEvent } = useEvents()
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -43,13 +50,13 @@ const Calendar: React.FC = () => {
     }
 
     const handleDragEnd = async (event: Event, weeksDelta: number) => {
-        const newStartDate = event.startDate ? addWeeksToDate(event.startDate, weeksDelta) : undefined
-        const newEndDate = event.endDate ? addWeeksToDate(event.endDate, weeksDelta) : undefined
+        const newStartDate = event.start_date ? addWeeksToDate(event.start_date, weeksDelta) : undefined
+        const newEndDate = event.end_date ? addWeeksToDate(event.end_date, weeksDelta) : undefined
 
         await updateEvent({
             ...event,
-            startDate: newStartDate,
-            endDate: newEndDate,
+            start_date: newStartDate,
+            end_date: newEndDate,
         })
     }
 
@@ -86,14 +93,15 @@ const Calendar: React.FC = () => {
                     <table className="w-full border-collapse tpo-calendar">
                         <WeekHeader weeks={weeks} />
                         <tbody>
-                            {MOCK_PRODUCTS.map((product) => (
+                            {productData?.length > 0 && productData.map((product: any) => (
                                 <EventRow
                                     key={product.id}
+                                    productName={product.name}
                                     product={product}
                                     weeks={weeks}
-                                    events={events.filter(event =>
-                                        event.products.some(p => p.productId === product.id)
-                                    )}
+                                    events={events.filter(event => {
+                                        return event.planned.some(p => p.productId === product.id)
+                                    })}
                                     onAddEvent={handleAddEvent}
                                     onEditEvent={handleEditEvent}
                                     onCopyEvent={handleCopyEvent}
@@ -102,18 +110,31 @@ const Calendar: React.FC = () => {
                                     yearStart={startOfYear(new Date(currentYear, 0, 1))}
                                 />
                             ))}
+
+                            {productData?.length === 0 && (
+                                <tr>
+                                    <td colSpan={weeks.length + 1} className="text-center py-4">No products selected</td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
                 </div>
             </div>
 
-            <EventModal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                onSave={handleSaveEvent}
-                initialEvent={selectedEvent}
-                startDate={selectedDate}
-            />
+            {productData.length > 0 && (
+                <EventModal
+                    isOpen={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                    onSave={handleSaveEvent}
+                    initialEvent={selectedEvent}
+                    startDate={selectedDate}
+                    selectedRetailer={selectedRetailer}
+                    selectedBrand={selectedBrand}
+                    retailers={retailers}
+                    brands={brands}
+                    productData={productData}
+                />
+            )}
         </>
     )
 }

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { Input, Select, DatePicker, ColorPicker, Form } from 'antd'
-import { Channel, Retailer, Brand, Product } from '../../../types/product'
+import { Channel, Product } from '../../../types/product'
 import { Event, EventProduct } from '../../../types/event'
 import dayjs from 'dayjs'
 
@@ -11,9 +11,11 @@ interface EventDetailsProps {
     formData: Omit<Event, 'id'>
     setFormData: (data: Omit<Event, 'id'>) => void
     channels: Channel[]
-    retailers: Retailer[]
-    brands: Brand[]
+    retailers: string[]
+    brands: string[]
     products: Product[]
+    planned: EventProduct[]
+    actual: EventProduct[]
 }
 
 const EventDetails: React.FC<EventDetailsProps> = ({
@@ -23,15 +25,17 @@ const EventDetails: React.FC<EventDetailsProps> = ({
     retailers,
     brands,
     products,
+    planned,
+    actual
 }) => {
-    const filteredBrands = brands.filter(brand => brand.retailerId === formData.retailerId)
-    const filteredProducts = products.filter(product =>
-        filteredBrands.some(brand => brand.id === product.brandId)
-    )
+    // const filteredBrands = brands.filter(brand => brand.retailerId === formData.retailerId)
+    // const filteredProducts = products.filter(product =>
+    //     filteredBrands.some(brand => brand.id === product.brandId)
+    // )
 
     // Initialize product financial data when products are selected
     useEffect(() => {
-        const selectedProducts = products.filter(p => formData.products.some(ep => ep.productId === p.id))
+        const selectedProducts = products.filter(p => formData.planned.some(ep => ep.productId === p.id))
         const updatedProducts: EventProduct[] = selectedProducts.map(product => ({
             productId: product.id,
             financialData: {
@@ -54,14 +58,15 @@ const EventDetails: React.FC<EventDetailsProps> = ({
 
         setFormData({
             ...formData,
-            products: updatedProducts,
+            planned: updatedProducts,
         })
-    }, [formData.products.map(p => p.productId).join(',')])
+    }, [formData.planned.map(p => p.productId).join(',')])
 
     const statusOptions = [
-        { value: 'draft', label: 'Draft' },
-        { value: 'active', label: 'Active' },
-        { value: 'completed', label: 'Completed' },
+        { value: 'DRAFT', label: 'Draft' },
+        { value: 'ACTIVE', label: 'Active' },
+        { value: 'COMPLETED', label: 'Completed' },
+        { value: 'CANCELLED', label: 'Cancelled' },
     ]
 
     return (
@@ -116,15 +121,15 @@ const EventDetails: React.FC<EventDetailsProps> = ({
                         <RangePicker
                             className="w-full"
                             value={[
-                                formData.startDate ? dayjs(formData.startDate) : null,
-                                formData.endDate ? dayjs(formData.endDate) : null
+                                formData.start_date ? dayjs(formData.start_date) : null,
+                                formData.end_date ? dayjs(formData.end_date) : null
                             ]}
                             onChange={(dates) => {
                                 if (dates) {
                                     setFormData({
                                         ...formData,
-                                        startDate: dates[0]?.toDate(),
-                                        endDate: dates[1]?.toDate()
+                                        start_date: dates[0]?.toDate(),
+                                        end_date: dates[1]?.toDate()
                                     })
                                 }
                             }}
@@ -164,9 +169,10 @@ const EventDetails: React.FC<EventDetailsProps> = ({
                                 ...formData,
                                 retailerId: value,
                                 brandId: '',
-                                products: []
+                                planned: [],
+                                actual: []
                             })}
-                            options={retailers.map(retailer => ({ value: retailer.id, label: retailer.name }))}
+                            options={retailers.map(retailer => ({ value: retailer, label: retailer }))}
                             className="w-full"
                             placeholder="Select retailer"
                         />
@@ -180,9 +186,10 @@ const EventDetails: React.FC<EventDetailsProps> = ({
                             onChange={(value) => setFormData({
                                 ...formData,
                                 brandId: value,
-                                products: []
+                                planned: [],
+                                actual: []
                             })}
-                            options={filteredBrands.map(brand => ({ value: brand.id, label: brand.name }))}
+                            options={brands.map(brand => ({ value: brand, label: brand }))}
                             className="w-full"
                             placeholder="Select brand"
                             disabled={!formData.retailerId}
@@ -194,12 +201,31 @@ const EventDetails: React.FC<EventDetailsProps> = ({
                     <Form.Item label="Products" required>
                         <Select
                             mode="multiple"
-                            value={formData.products.map(p => p.productId)}
+                            value={formData.planned.map(p => p.productId)}
                             onChange={(values) => setFormData({
                                 ...formData,
-                                products: values.map(productId => ({
+                                planned: values.map(productId => ({
                                     productId,
-                                    financialData: formData.products.find(p => p.productId === productId)?.financialData || {
+                                    financialData: formData.planned.find(p => p.productId === productId)?.financialData || {
+                                        basePrice: 0,
+                                        promoPrice: 0,
+                                        discount: 0,
+                                        units: 0,
+                                        tprDist: 0,
+                                        doDist: 0,
+                                        foDist: 0,
+                                        fdDist: 0,
+                                        listPrice: 0,
+                                        edlpPerUnitRate: 0,
+                                        promoPerUnitRate: 0,
+                                        vcm: 0,
+                                        fixedFee: 0,
+                                        increamentalUnits: 0,
+                                    }
+                                })),
+                                actual: values.map(productId => ({
+                                    productId,
+                                    financialData: formData.planned.find(p => p.productId === productId)?.financialData || {
                                         basePrice: 0,
                                         promoPrice: 0,
                                         discount: 0,
@@ -217,7 +243,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({
                                     }
                                 }))
                             })}
-                            options={filteredProducts.map(product => ({ value: product.id, label: product.name }))}
+                            options={products.map(product => ({ value: product.id, label: product.name }))}
                             className="w-full"
                             placeholder="Select products"
                             disabled={!formData.brandId}

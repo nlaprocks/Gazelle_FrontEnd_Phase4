@@ -1,16 +1,16 @@
-import React from 'react';
-import { Event } from '../../../../types/event';
-import { Tags, Box, Building2 } from 'lucide-react';
-import { MOCK_PRODUCTS } from '../../../../utils/mockData';
+import React from 'react'
+import { Event } from '../../../../types/event'
+import { Tags, Box, Building2 } from 'lucide-react'
+import { MOCK_PRODUCTS } from '../../../../utils/mockData'
 
 interface EventAdditionalInfoProps {
-    event: Event;
+    event: Event
 }
 
 export const EventAdditionalInfo: React.FC<EventAdditionalInfoProps> = ({ event }) => {
-    const products = event.products
+    const products = event.planned
         .map(ep => MOCK_PRODUCTS.find(p => p.id === ep.productId))
-        .filter((p): p is NonNullable<typeof p> => p !== undefined);
+        .filter((p): p is NonNullable<typeof p> => p !== undefined)
 
     return (
         <div className="bg-gray-100 p-6 rounded-lg border border-gray-200">
@@ -29,7 +29,7 @@ export const EventAdditionalInfo: React.FC<EventAdditionalInfoProps> = ({ event 
                         ))}
                     </div>
                 </div>
-                
+
                 <div>
                     <div className="flex items-center gap-2 mb-2">
                         <Building2 size={16} className="text-gray-500" />
@@ -60,5 +60,5 @@ export const EventAdditionalInfo: React.FC<EventAdditionalInfoProps> = ({ event 
                 </div>
             </div>
         </div>
-    );
-};
+    )
+}

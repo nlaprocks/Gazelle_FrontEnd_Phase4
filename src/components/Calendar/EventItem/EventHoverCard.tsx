@@ -9,8 +9,8 @@ interface EventHoverCardProps {
 }
 
 export const EventHoverCard: React.FC<EventHoverCardProps> = ({ event }) => {
-    const product = MOCK_PRODUCTS.find(p => event.products[0]?.productId === p.id)
-    const financialData = event.products[0]?.financialData
+    const product = MOCK_PRODUCTS.find(p => event.planned[0]?.productId === p.id)
+    const financialData = event.planned[0]?.financialData
 
     if (!product || !financialData) return null
 
@@ -25,7 +25,7 @@ export const EventHoverCard: React.FC<EventHoverCardProps> = ({ event }) => {
                 <div className="flex items-center gap-2 text-gray-600">
                     <Calendar size={16} />
                     <span>
-                        {format(event.startDate ?? new Date(), 'MMM d, yyyy')} - {format(event.endDate ?? new Date(), 'MMM d, yyyy')}
+                        {format(event.start_date ?? new Date(), 'MMM d, yyyy')} - {format(event.end_date ?? new Date(), 'MMM d, yyyy')}
                     </span>
                 </div>
 

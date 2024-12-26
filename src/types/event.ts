@@ -11,15 +11,17 @@ export interface BaseEvent {
     id: string // Added id to BaseEvent
     title: string
     description: string
-    startDate?: Date
-    endDate?: Date
+    start_date?: Date
+    end_date?: Date
     color: string
     status: EventStatus
     channels: string[]
     retailerId: string
     brandId: string
     budget: number
-    products: EventProduct[]
+    // products: EventProduct[]
+    planned: EventProduct[]
+    actual: EventProduct[]
 }
 
 export interface Event extends BaseEvent { }
