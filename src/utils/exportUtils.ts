@@ -12,8 +12,8 @@ export const downloadSampleTemplate = () => {
             status: 'draft',
             color: '#4F46E5',
             channels: 'Online,Retail',
-            retailerId: 'r1',
-            brandId: 'b1',
+            retailer_id: 'r1',
+            brand_id: 'b1',
             budget: '10000',
             // Product 1 data
             productId: 'p1',
@@ -40,8 +40,8 @@ export const downloadSampleTemplate = () => {
             status: 'draft',
             color: '#4F46E5',
             channels: 'Online,Retail',
-            retailerId: 'r1',
-            brandId: 'b1',
+            retailer_id: 'r1',
+            brand_id: 'b1',
             budget: '10000',
             // Product 2 data
             productId: 'p2',

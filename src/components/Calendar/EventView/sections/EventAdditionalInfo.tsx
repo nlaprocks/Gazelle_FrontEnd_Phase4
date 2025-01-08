@@ -37,10 +37,10 @@ export const EventAdditionalInfo: React.FC<EventAdditionalInfoProps> = ({ event 
                     </div>
                     <div className="flex flex-wrap gap-2">
                         <span className="px-2 py-1 bg-white rounded-md text-sm">
-                            Brand ID: {event.brandId}
+                            Brand ID: {event.brand_id}
                         </span>
                         <span className="px-2 py-1 bg-white rounded-md text-sm">
-                            Retailer ID: {event.retailerId}
+                            Retailer ID: {event.retailer_id}
                         </span>
                     </div>
                 </div>

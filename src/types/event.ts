@@ -16,14 +16,18 @@ export interface BaseEvent {
     color: string
     status: EventStatus
     channels: string[]
-    retailerId: string
-    brandId: string
+    project_id: string
+    model_id: string
+    retailer_id: string
+    brand_id: string
     budget: number
     // products: EventProduct[]
     planned: EventProduct[]
     actual: EventProduct[]
 }
 
-export interface Event extends BaseEvent { }
+export interface Event extends BaseEvent {
+
+}
 
 export type NewEvent = Omit<Event, 'id'>

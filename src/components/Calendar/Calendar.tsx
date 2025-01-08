@@ -9,14 +9,13 @@ import { getYearCalendarData, addWeeksToDate, ensureDate } from '../../utils/dat
 import { useEvents } from '../../hooks/useEvents'
 
 interface CalendarProps {
-    retailers: Array<any>
-    brands: Array<any>
+    projects: Array<any>
     selectedRetailer: string
     selectedBrand: string
     productData: Array<any>
 }
 
-const Calendar: React.FC<CalendarProps> = ({ retailers, brands, selectedRetailer, selectedBrand, productData }) => {
+const Calendar: React.FC<CalendarProps> = ({ projects, selectedRetailer, selectedBrand, productData }) => {
     const [currentYear, setCurrentYear] = useState(2024)
     const { events, createEvent, updateEvent, deleteEvent } = useEvents()
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -130,8 +129,7 @@ const Calendar: React.FC<CalendarProps> = ({ retailers, brands, selectedRetailer
                     startDate={selectedDate}
                     selectedRetailer={selectedRetailer}
                     selectedBrand={selectedBrand}
-                    retailers={retailers}
-                    brands={brands}
+                    projects={projects}
                     productData={productData}
                 />
             )}

@@ -10,8 +10,10 @@ export const SAMPLE_EVENTS: Event[] = [
         color: '#4F46E5',
         status: 'active',
         channels: ['c1', 'c2'], // Online and Retail
-        retailerId: 'r1', // Walmart
-        brandId: 'b1', // Brand A
+        retailer_id: 'r1', // Walmart
+        brand_id: 'b1', // Brand A
+        project_id: 'p1',
+        model_id: 'm1',
         budget: 10000,
         planned: [{
             productId: 'p1',
@@ -63,8 +65,10 @@ export const SAMPLE_EVENTS: Event[] = [
         color: '#10B981',
         status: 'draft',
         channels: ['c2', 'c3'], // Retail and Wholesale
-        retailerId: 'r1', // Walmart
-        brandId: 'b1', // Brand A
+        retailer_id: 'r1', // Walmart
+        brand_id: 'b1', // Brand A
+        project_id: 'p1',
+        model_id: 'm1',
         budget: 10000,
         planned: [
             {
@@ -156,8 +160,10 @@ export const SAMPLE_EVENTS: Event[] = [
         color: '#EF4444',
         status: 'draft',
         channels: ['c1', 'c2', 'c3'], // All channels
-        retailerId: 'r2', // Target
-        brandId: 'b3', // Brand C
+        retailer_id: 'r2', // Target
+        brand_id: 'b3', // Brand C
+        project_id: 'p1',
+        model_id: 'm1',
         budget: 10000,
         planned: [
             {

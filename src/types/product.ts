@@ -1,8 +1,8 @@
 export interface Product {
     id: string
     name: string
-    brandId: string
-    retailerId?: string
+    brand_id: string
+    retailer_id?: string
     basePrice: number
     totalUnits: number
     promoPriceElasticity?: number
@@ -11,7 +11,7 @@ export interface Product {
 export interface Brand {
     id: string
     name: string
-    retailerId: string
+    retailer_id: string
 }
 
 export interface Retailer {

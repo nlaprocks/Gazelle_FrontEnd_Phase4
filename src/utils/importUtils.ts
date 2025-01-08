@@ -10,8 +10,10 @@ interface CsvRow {
     status: string
     color: string
     channels: string
-    retailerId: string
-    brandId: string
+    retailer_id: string
+    brand_id: string
+    project_id: string
+    model_id: string
     budget: string
     // Product data
     productId: string
@@ -101,7 +103,7 @@ const calculateDiscount = (basePrice: number, promoPrice: number): number => {
 
 const createEvent = (row: CsvRow, eventId: string, productData: EventProduct): Event => {
     // Validate required fields
-    const requiredFields: (keyof CsvRow)[] = ['title', 'start_date', 'end_date', 'status', 'retailerId', 'brandId']
+    const requiredFields: (keyof CsvRow)[] = ['title', 'start_date', 'end_date', 'status', 'retailer_id', 'brand_id']
     requiredFields.forEach(field => {
         if (!row[field]) {
             throw new Error(`Missing required field: ${field}`)
@@ -117,8 +119,10 @@ const createEvent = (row: CsvRow, eventId: string, productData: EventProduct): E
         color: row.color || '#4F46E5',
         status: validateStatus(row.status),
         channels: parseChannels(row.channels),
-        retailerId: row.retailerId,
-        brandId: row.brandId,
+        retailer_id: row.retailer_id,
+        brand_id: row.brand_id,
+        project_id: row.project_id,
+        model_id: row.model_id,
         budget: Number(row.budget) || 0,
         planned: [productData],
         actual: []

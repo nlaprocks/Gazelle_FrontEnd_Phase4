@@ -5,7 +5,7 @@ import { Event, EventProduct } from '../../../types/event'
 import EventDetails from './EventDetails'
 import FinancialFields from './FinancialFields'
 import FinancialResults from './FinancialResults'
-import { MOCK_CHANNELS, MOCK_PRODUCTS } from '../../../utils/mockData'
+import { MOCK_CHANNELS } from '../../../utils/mockData'
 import { createPortal } from 'react-dom'
 import { CaretRightOutlined } from '@ant-design/icons'
 import { ProductAccordionItem } from './types'
@@ -19,6 +19,7 @@ interface EventModalProps {
     selectedRetailer?: string
     selectedBrand?: string
     productData?: Array<any>
+    projects?: Array<any>
     retailers?: string[]
     brands?: string[]
 }
@@ -33,7 +34,8 @@ export const EventModal: React.FC<EventModalProps> = ({
     selectedBrand,
     productData,
     retailers,
-    brands
+    brands,
+    projects
 }) => {
     const [form] = Form.useForm()
     const [formData, setFormData] = useState<Omit<Event, 'id'>>({
@@ -44,8 +46,10 @@ export const EventModal: React.FC<EventModalProps> = ({
         color: '#4F46E5',
         status: 'draft',
         channels: [],
-        retailerId: '',
-        brandId: '',
+        retailer_id: '',
+        brand_id: '',
+        project_id: '',
+        model_id: '',
         planned: [],
         actual: [],
         budget: 0,
@@ -141,9 +145,7 @@ export const EventModal: React.FC<EventModalProps> = ({
                                         formData={formData}
                                         setFormData={setFormData}
                                         channels={MOCK_CHANNELS}
-                                        retailers={retailers || []}
-                                        brands={brands || []}
-                                        products={productData}
+                                        projects={projects || []}
                                         planned={formData.planned}
                                         actual={formData.actual}
                                     />
