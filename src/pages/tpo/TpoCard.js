@@ -2,6 +2,7 @@ import { Button, message } from "antd";
 import { Link } from "react-router-dom";
 import modelSearchIntroImage from '../../assets/images/model-search-intro-image.png';
 import axios from "axios";
+import KebabMenu from '../../components/KebabMenu/KebabMenu';
 import { useEffect, useState } from "react";
 
 export const TpoCard = ({ event, projects, fetchEventTpos }) => {
@@ -35,38 +36,57 @@ export const TpoCard = ({ event, projects, fetchEventTpos }) => {
 
     return (
 
-        <div className="tpo-card bg-white p-4 rounded-md shadow-md m-4" key={event.id}>
+        <div className="tpo-card bg-white p-4 pb-2 rounded-2xl shadow-md" key={event.id}>
             {project && (
                 <>
-                    <div className="d-flex align-items-center justify-content-between">
-                        <div className="avatar">
-                            {project?.company_logo ? (
-                                <img src={project?.company_logo} alt="Company Logo" className="img-fluid" />
-                            ) : (
-                                <img src={modelSearchIntroImage} alt="Default" className="img-fluid" />
-                            )}
-                            <h3 className=''>{project?.project_name}</h3>
-                            <small className="fst-normal badge-primary rounded">
-                                Version: {getModelVersion(event)}
-                            </small>
-                        </div>
+                    <div className="flex items-center justify-between">
+                        <div className="d-flex justify-start items-center">
+                            <div className="avatar">
+                                {project?.company_logo ? (
+                                    <img src={project?.company_logo} alt="Company Logo" className="img-fluid" />
+                                ) : (
+                                    <img src={modelSearchIntroImage} alt="Default" className="img-fluid" />
+                                )}
+                                <h3 className=''>{project?.project_name}</h3>
+                            </div>
 
-                        <div className="d-flex align-items-center justify-content-between mb-3" style={{ marginTop: '-10px' }}>
-                            <Button onClick={handleDeleteTpo}>
-                                <i className="fa-solid fa-trash"></i>
-                            </Button>
+                            <div>
+                                <h4 className="text-lg">{event.name}</h4>
+                                <small className="fst-normal badge-primary rounded">
+                                    Version {getModelVersion(event)}
+                                </small>
+                            </div>
                         </div>
+                        <KebabMenu
+                            // elem={elem}
+                            // duplicateProjectHandler={duplicateProjectHandler}
+                            // handleEditProjectModal={handleEditProjectModal}
+                            deleteProjectHandler={handleDeleteTpo}
+                        />
                     </div>
-                    <h4>{event.name}</h4>
-                    <p>{project?.project_name}</p>
-                    <p>Version {getModelVersion(event)}</p>
+                    
+                    <div className="flex gap-2 py-4 text-lg">
+                        <lable className="font-semibold">Project:</lable> <p>{project?.project_name}</p>
+                    </div>
+                    {/* <p>Version {getModelVersion(event)}</p> */}
                     <Link
                         to={`/tpo/${encodeURIComponent(project?.project_name)}/${event?.project_id}/${event?.model_id}`}
-                        className='simulator'
+                        className='simulator gap-2 bg-primary px-4 py-2 inline-flex items-center text-white rounded hover:no-underline hover:bg-[#009bcc]'
                     >
                         <i className="fa-regular fa-calendar"></i>
-                        TPO
+                        Event
                     </Link>
+
+                    <div className="flex items-center justify-between mt-4 pt-2 border-t border-gray-200 -mx-6">
+                        <p className="font-bold pl-6">
+                            <span className="font-normal block">Created at:</span> 10/01/2025<br />
+                            12:33
+                        </p>
+                        <p className="font-bold pr-6">
+                            <span className="font-normal block">Updated at:</span> 10/01/2025<br />
+                            12:33
+                        </p>
+                    </div>
                 </>
             )}
         </div>

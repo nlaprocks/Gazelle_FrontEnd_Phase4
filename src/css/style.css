@@ -148,6 +148,7 @@ input[type='date']:focus {
 input.form-control,
 .form-select,
 input[type='text'],
+input[type='text']:not('.ant-input'),
 input[type='search'],
 input[type='email'] {
   background-color: var(--color-white);
@@ -158,6 +159,10 @@ input[type='email'] {
   font-size: 14px;
   line-height: 17px;
   font-weight: 500;
+}
+
+input[type='text'].ant-input {
+  padding: 8px 11px;
 }
 
 input.form-control::-webkit-input-placeholder,
