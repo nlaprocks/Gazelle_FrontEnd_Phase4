@@ -125,22 +125,22 @@ const TpoHome = () => {
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                     placeholder="Enter TPO name"
                                 />
-                        </div>
-                        <div className="mt-2">
-                            <Typography.Title level={5}>Project</Typography.Title>
-                            <Select
-                                value={formData.project_id}
-                                onChange={(value) => setFormData({
-                                    ...formData,
-                                    project_id: value,
-                                })}
-                                options={projects.map(project => ({ value: project.id, label: project.project_name }))}
-                                className="w-full"
-                                placeholder="Select project"
-                            />
-                        </div>
-                        <div className="mt-2">
-                            <Typography.Title level={5}>Model</Typography.Title>
+                            </div>
+                            <div className="mt-2">
+                                <Typography.Title level={5}>Project</Typography.Title>
+                                <Select
+                                    value={formData.project_id}
+                                    onChange={(value) => setFormData({
+                                        ...formData,
+                                        project_id: value,
+                                    })}
+                                    options={projects.map(project => ({ value: project.id, label: project.project_name }))}
+                                    className="w-full"
+                                    placeholder="Select project"
+                                />
+                            </div>
+                            <div className="mt-2">
+                                <Typography.Title level={5}>Model</Typography.Title>
                                 <Select
                                     value={formData.model_id}
                                     onChange={(value) => setFormData({
@@ -152,7 +152,7 @@ const TpoHome = () => {
                                     placeholder="Select model"
                                     disabled={!formData.project_id}
                                 />
-                        </div>
+                            </div>
                         </div>
                     </Modal.Body>
                     <Modal.Footer>

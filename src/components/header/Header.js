@@ -11,6 +11,7 @@ const Header = () => {
     const navigate = useNavigate();
     const [activeDesign, setActiveDesign] = useState(false);
     const [activeChat, setActiveChat] = useState(false);
+    const [activeTPO, setActiveTPO] = useState(false);
     const [activeDash, setActiveDash] = useState(false);
     const location = useLocation();
     const [notifState, notifSetState] = useState(false);
@@ -31,6 +32,8 @@ const Header = () => {
         } else if (location.pathname === "/design-studio") {
             setActiveDash(false);
             setActiveDesign(true);
+        } else if (location.pathname === "/tpo") {
+            setActiveTPO(true);
         } else if (location.pathname === "/chat") {
             setActiveChat(true);
         }
@@ -239,7 +242,7 @@ const Header = () => {
                       <span>Insights</span>
                     </a>
                   </li> */}
-                                    <li className={activeChat === true ? "active" : ""}>
+                                    <li className={activeTPO === true ? "active" : ""}>
                                         <Link
                                             to={`/tpo`}
                                             className='simulator'
