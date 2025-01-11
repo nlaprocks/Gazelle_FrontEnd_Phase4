@@ -15,6 +15,7 @@ const tooltipVariants = cva(
         success: "border border-success bg-success text-success-foreground",
         destructive:
           "border border-destructive bg-destructive text-destructive-foreground",
+          white: "border border-white bg-white text-black-foreground shadow"
       },
     },
     defaultVariants: {

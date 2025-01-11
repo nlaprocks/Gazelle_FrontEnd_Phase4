@@ -608,6 +608,10 @@ header .theme-title h1 span {
   margin-top: 45px;
 }
 
+.nla_login_data_wrapper .login-form .login-form-block .form-control {
+  margin-bottom: 1rem;
+}
+
 .nla_login_data_wrapper .login-form .login-form-block .nla_top-spacing {
   padding-top: 23px;
 }
@@ -4091,6 +4095,10 @@ header .theme-title h1 span {
   .ant-form-item:not(.ant-form-item-horizontal)
   .ant-col-xl-24.ant-form-item-label {
   padding-bottom: 0;
+}
+
+body.modal-open {
+  padding-right: 0 !important;
 }
 
 /* .product-title span {
