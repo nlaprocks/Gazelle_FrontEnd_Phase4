@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
 import "../../css/style.css";
 import axios from "axios";
-import { Input, Select, Form, Button, message, Flex, Typography } from 'antd'
+import { Input, Select, Form, Button, message, Typography } from 'antd'
 import { Modal } from "react-bootstrap";
 import Header from "../../components/header/Header";
 import Footer from "../../components/footer/Footer";
-import { Link } from "react-router-dom";
 import { TpoCard } from "./TpoCard";
 
 
@@ -51,38 +50,86 @@ const TpoHome = () => {
 
     const [show, setShow] = useState(false);
     const onClose = () => {
+        setFormData({
+            id: null,
+            name: '',
+            project_id: '',
+            model_id: '',
+        });
         setShow(false);
     }
 
+    const [editTpo, setEditTpo] = useState(false);
+
     const [formData, setFormData] = useState({
+        id: null,
         name: '',
         project_id: '',
         model_id: '',
     });
     const [loading, setLoading] = useState(false);
+
     const handleCreateTpo = async () => {
         try {
             setLoading(true);
             const config = { headers: { Authorization: `Bearer ` + authData.token } };
-            const api = `${process.env.REACT_APP_Base_URL}/api/v1/events/tpo`;
-            let { data } = await axios.post(api, formData, config);
 
-            if (data) {
-                setEventTpos([...eventTpos, data]);
-                // success message
-                message.success('TPO created successfully');
-                setShow(false);
-                setFormData({
-                    name: '',
-                    project_id: '',
-                    model_id: '',
-                });
+            if (editTpo) {
+                const api = `${process.env.REACT_APP_Base_URL}/api/v1/events/tpo/${formData.id}`;
+                let { data } = await axios.put(api, formData, config);
+
+                if (data) {
+                    setEventTpos([...eventTpos, data]);
+                    // success message
+                    message.success('TPO updated successfully');
+                    setShow(false);
+                    setFormData({
+                        id: null,
+                        name: '',
+                        project_id: '',
+                        model_id: '',
+                    });
+
+                    setEditTpo(false);
+                    fetchEventTpos();
+                }
+            } else {
+                const api = `${process.env.REACT_APP_Base_URL}/api/v1/events/tpo`;
+                let { data } = await axios.post(api, formData, config);
+
+                if (data) {
+                    setEventTpos([...eventTpos, data]);
+                    // success message
+                    message.success('TPO created successfully');
+                    setShow(false);
+                    setFormData({
+                        id: null,
+                        name: '',
+                        project_id: '',
+                        model_id: '',
+                    });
+
+                    setEditTpo(false);
+                    fetchEventTpos();
+                }
             }
         } catch (error) {
             console.log("Error", error);
         } finally {
             setLoading(false);
         }
+    }
+
+    const handleEditTpo = async (event) => {
+        setShow(true);
+        setEditTpo(true);
+        setFormData(event);
+    }
+
+    const handleDuplicateTpo = async (event) => {
+        console.log({ event: event });
+        setShow(true);
+        setFormData(event);
     }
 
     return (
@@ -104,7 +151,7 @@ const TpoHome = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4">
                         {eventTpos?.map((event) => (
                             <div className="w-full">
-                                <TpoCard event={event} projects={projects} fetchEventTpos={fetchEventTpos} />
+                                <TpoCard event={event} projects={projects} fetchEventTpos={fetchEventTpos} handleEditTpo={handleEditTpo} handleDuplicateTpo={handleDuplicateTpo} />
                             </div>
                         ))}
                     </div>
@@ -112,58 +159,60 @@ const TpoHome = () => {
             </div>
 
             {/* Add Create TPO Modal */}
-                <Modal show={show} onHide={onClose} centered>
-                    <Modal.Header closeButton>
-                        <Modal.Title>Create TPO</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <div className="nla_modal_body_title">
-                            <div>                            
-                                <Typography.Title level={5}>TPO Name</Typography.Title>
-                                <Input
-                                    value={formData.name}
-                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                    placeholder="Enter TPO name"
-                                />
-                            </div>
-                            <div className="mt-2">
-                                <Typography.Title level={5}>Project</Typography.Title>
-                                <Select
-                                    value={formData.project_id}
-                                    onChange={(value) => setFormData({
-                                        ...formData,
-                                        project_id: value,
-                                    })}
-                                    options={projects.map(project => ({ value: project.id, label: project.project_name }))}
-                                    className="w-full"
-                                    placeholder="Select project"
-                                />
-                            </div>
-                            <div className="mt-2">
-                                <Typography.Title level={5}>Model</Typography.Title>
-                                <Select
-                                    value={formData.model_id}
-                                    onChange={(value) => setFormData({
-                                        ...formData,
-                                        model_id: value,
-                                    })}
-                                    options={projects.find(project => project.id === formData.project_id)?.Models.map((model) => ({ value: model.id, label: `Version ${model.model_version}` }))}
-                                    className="w-full"
-                                    placeholder="Select model"
-                                    disabled={!formData.project_id}
-                                />
-                            </div>
+            <Modal show={show} onHide={onClose} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>{editTpo ? "Edit TPO" : "Create TPO"}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <div className="nla_modal_body_title">
+                        <div>
+                            <Typography.Title level={5}>TPO Name</Typography.Title>
+                            <Input
+                                value={formData.name}
+                                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                placeholder="Enter TPO name"
+                            />
                         </div>
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="secondary" className="btn btn-outline-secondary" onClick={onClose}>
-                            Close
-                        </Button>
-                        <Button variant="primary" className="btn btn-primary" onClick={handleCreateTpo}>
-                            Create TPO
-                        </Button>
-                    </Modal.Footer>
-                </Modal>
+                        <div className="mt-2">
+                            <Typography.Title level={5}>Project</Typography.Title>
+                            <Select
+                                value={{ value: formData.project_id, label: projects.find(project => project.id === parseInt(formData.project_id))?.project_name }}
+                                onChange={(value) => setFormData({
+                                    ...formData,
+                                    project_id: value,
+                                })}
+                                options={projects.map(project => ({ value: project.id, label: project.project_name }))}
+                                className="w-full"
+                                placeholder="Select project"
+                            />
+                        </div>
+                        <div className="mt-2">
+                            <Typography.Title level={5}>Model</Typography.Title>
+                            <Select
+                                value={{
+                                    value: formData.model_id, label: `Version ${projects.find(project => project.id === parseInt(formData.project_id))?.Models.find(model => model.id === parseInt(formData.model_id))?.model_version}`
+                                }}
+                                onChange={(value) => setFormData({
+                                    ...formData,
+                                    model_id: value,
+                                })}
+                                options={projects.find(project => project.id === parseInt(formData.project_id))?.Models.map((model) => ({ value: model.id, label: `Version ${model.model_version}` }))}
+                                className="w-full"
+                                placeholder="Select model"
+                                disabled={!formData.project_id}
+                            />
+                        </div>
+                    </div>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" className="btn btn-outline-secondary" onClick={onClose}>
+                        Close
+                    </Button>
+                    <Button variant="primary" className="btn btn-primary" onClick={handleCreateTpo}>
+                        {editTpo ? "Update TPO" : "Create TPO"}
+                    </Button>
+                </Modal.Footer>
+            </Modal>
             <Footer />
         </>
     );
