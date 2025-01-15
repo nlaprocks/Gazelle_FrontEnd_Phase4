@@ -4,7 +4,8 @@ const KebabMenu = ({
     elem,
     duplicateProjectHandler,
     handleEditProjectModal,
-    deleteProjectHandler
+    deleteProjectHandler,
+    handleUpgradeVersion
 }) => {
     const [isOpen, setIsOpen] = useState(false);
     const menuRef = useRef();
@@ -36,6 +37,7 @@ const KebabMenu = ({
                     <ul>
                         <li onClick={() => duplicateProjectHandler(elem?.id)}>Duplicate</li>
                         <li onClick={() => handleEditProjectModal(elem?.id)}>Edit Project</li>
+                        <li onClick={() => handleUpgradeVersion(elem?.id)}>Upgrade Version</li>
                         <li onClick={() => deleteProjectHandler(elem?.id)}>Delete Project</li>
                     </ul>
                 </div>
