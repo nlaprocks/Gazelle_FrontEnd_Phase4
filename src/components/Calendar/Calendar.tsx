@@ -21,7 +21,7 @@ const Calendar: React.FC<CalendarProps> = ({ projects, selectedRetailer, selecte
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [selectedDate, setSelectedDate] = useState<Date | undefined>()
     const [selectedEvent, setSelectedEvent] = useState<Event | undefined>()
-
+    const maxBudget = 32000
     const weeks = getYearCalendarData(currentYear)
 
     const handlePrevYear = () => setCurrentYear(prev => prev - 1)
@@ -131,6 +131,7 @@ const Calendar: React.FC<CalendarProps> = ({ projects, selectedRetailer, selecte
                     selectedBrand={selectedBrand}
                     projects={projects}
                     productData={productData}
+                    maxBudget={maxBudget}
                 />
             )}
         </>

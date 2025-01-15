@@ -16,6 +16,7 @@ interface EventDetailsProps {
     planned: EventProduct[]
     actual: EventProduct[]
     projects: Array<any>
+    maxBudget: number
 }
 
 const EventDetails: React.FC<EventDetailsProps> = ({
@@ -24,7 +25,8 @@ const EventDetails: React.FC<EventDetailsProps> = ({
     channels,
     planned,
     actual,
-    projects
+    projects,
+    maxBudget
 }) => {
     // const filteredBrands = brands.filter(brand => brand.retailer_id === formData.retailer_id)
     // const filteredProducts = products.filter(product =>
@@ -193,12 +195,25 @@ const EventDetails: React.FC<EventDetailsProps> = ({
                 </div>
 
                 <div>
-                    <Form.Item label="Budget" required>
+                    <Form.Item
+                        label="Budget"
+                        required
+                        validateStatus={formData.budget > maxBudget ? "error" : "success"}
+                        help={formData.budget > maxBudget ? `Budget cannot exceed ${maxBudget.toLocaleString()}` : null}
+                    >
                         <Input
                             type="number"
                             value={formData.budget}
-                            onChange={(e) => setFormData({ ...formData, budget: Number(e.target.value) })}
-                            className="w-full"
+                            onChange={(e) => {
+                                const value = Number(e.target.value);
+                                setFormData({
+                                    ...formData,
+                                    budget: value
+                                });
+                            }}
+                            className={`w-full ${formData.budget > maxBudget ? 'border-red-500' : ''}`}
+                            min={0}
+                            max={maxBudget}
                         />
                     </Form.Item>
                 </div>

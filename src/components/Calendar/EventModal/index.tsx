@@ -23,6 +23,7 @@ interface EventModalProps {
     projects?: Array<any>
     retailers?: string[]
     brands?: string[]
+    maxBudget: number
 }
 
 export const EventModal: React.FC<EventModalProps> = ({
@@ -36,7 +37,8 @@ export const EventModal: React.FC<EventModalProps> = ({
     productData,
     retailers,
     brands,
-    projects
+    projects,
+    maxBudget
 }) => {
     const [form] = Form.useForm()
     const { project_id, model_id, id } = useParams();
@@ -123,7 +125,7 @@ export const EventModal: React.FC<EventModalProps> = ({
                         {initialEvent ? 'Edit Event' : 'Add New Event'}
                     </h2>
                     <div className='mx-auto flex items-center gap-2'>
-                        <label className='text-lg'>Remaining Budget:</label> <h3 className='text-xl'>$32,000</h3>
+                        <label className='text-lg'>Remaining Budget:</label> <h3 className='text-xl'>${maxBudget?.toLocaleString()}</h3>
                     </div>
                     <button
                         onClick={onClose}
@@ -151,6 +153,7 @@ export const EventModal: React.FC<EventModalProps> = ({
                                         projects={projects || []}
                                         planned={formData.planned}
                                         actual={formData.actual}
+                                        maxBudget={maxBudget}
                                     />
                                 )}
                             </div>

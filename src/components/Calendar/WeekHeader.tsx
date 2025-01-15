@@ -42,9 +42,9 @@ const WeekHeader: React.FC<WeekHeaderProps> = ({ weeks }) => {
                 {weeks.map((week) => (
                     <th
                         key={`week-${week.weekNumber}-${format(week.startDate, 'yyyy-MM-dd')}`}
-                        className="border-b border-r border-gray-200 p-1 min-w-[40px] max-w-[40px] text-sm bg-gray-50 font-normal"
+                        className="border-b border-r border-gray-200 p-1 min-w-[40px] max-w-[40px] text-sm bg-gray-50 font-normal text-center"
                     >
-                        W{week.weekNumber}
+                        {format(week.startDate, 'dd')}
                     </th>
                 ))}
             </tr>
