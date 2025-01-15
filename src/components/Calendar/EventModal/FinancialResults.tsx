@@ -18,6 +18,7 @@ const FinancialResults: React.FC<FinancialResultsProps> = ({ financialData }) =>
         listPrice: Number(financialData.listPrice),
         vcm: Number(financialData.vcm),
         increamentalUnits: Number(financialData.increamentalUnits),
+        promoPriceElasticity: Number(financialData.promoPriceElasticity),
     })
 
     const promotionalResults = calculatePromotionalResults({
@@ -28,6 +29,7 @@ const FinancialResults: React.FC<FinancialResultsProps> = ({ financialData }) =>
         doDist: Number(financialData.doDist),
         fdDist: Number(financialData.fdDist),
         totalUnits: Number(financialData.units),
+        promoPriceElasticity: Number(financialData.promoPriceElasticity),
     })
 
     return (

@@ -3,6 +3,7 @@ import { Event } from '../types/event'
 export const SAMPLE_EVENTS: Event[] = [
     {
         id: '1',
+        event_tpo_id: '1',
         title: 'Spring Promotion - Jack Daniels Honey',
         description: 'Major promotional campaign for Jack Daniels Honey during spring season',
         start_date: new Date(2024, 0, 8), // Week 2
@@ -31,7 +32,8 @@ export const SAMPLE_EVENTS: Event[] = [
                 promoPerUnitRate: 0.50,
                 vcm: 2.50,
                 fixedFee: 1000,
-                increamentalUnits: 150
+                increamentalUnits: 150,
+                promoPriceElasticity: 0.5
             }
         }],
         actual: [
@@ -51,13 +53,15 @@ export const SAMPLE_EVENTS: Event[] = [
                     promoPerUnitRate: 0.50,
                     vcm: 2.50,
                     fixedFee: 1000,
-                    increamentalUnits: 150
+                    increamentalUnits: 150,
+                    promoPriceElasticity: 0.5
                 }
             }
         ]
     },
     {
         id: '2',
+        event_tpo_id: '2',
         title: 'Summer Clearance Event',
         description: 'Multi-product clearance event with significant discounts',
         start_date: new Date(2024, 5, 1), // June 1
@@ -87,7 +91,8 @@ export const SAMPLE_EVENTS: Event[] = [
                     promoPerUnitRate: 0.75,
                     vcm: 2.25,
                     fixedFee: 1500,
-                    increamentalUnits: 250
+                    increamentalUnits: 250,
+                    promoPriceElasticity: 0.5
                 }
             },
             {
@@ -106,7 +111,8 @@ export const SAMPLE_EVENTS: Event[] = [
                     promoPerUnitRate: 1.00,
                     vcm: 4.50,
                     fixedFee: 2000,
-                    increamentalUnits: 500
+                    increamentalUnits: 500,
+                    promoPriceElasticity: 0.5
                 }
             }
         ],
@@ -127,7 +133,8 @@ export const SAMPLE_EVENTS: Event[] = [
                     promoPerUnitRate: 0.75,
                     vcm: 2.25,
                     fixedFee: 1500,
-                    increamentalUnits: 250
+                    increamentalUnits: 250,
+                    promoPriceElasticity: 0.5
                 }
             },
             {
@@ -146,13 +153,15 @@ export const SAMPLE_EVENTS: Event[] = [
                     promoPerUnitRate: 1.00,
                     vcm: 4.50,
                     fixedFee: 2000,
-                    increamentalUnits: 500
+                    increamentalUnits: 500,
+                    promoPriceElasticity: 0.5
                 }
             }
         ]
     },
     {
         id: '3',
+        event_tpo_id: '3',
         title: 'Holiday Special',
         description: 'End of year holiday promotion across all channels',
         start_date: new Date(2024, 11, 1), // December 1
@@ -182,7 +191,8 @@ export const SAMPLE_EVENTS: Event[] = [
                     promoPerUnitRate: 2.00,
                     vcm: 8.50,
                     fixedFee: 3000,
-                    increamentalUnits: 300
+                    increamentalUnits: 300,
+                    promoPriceElasticity: 0.5
                 }
             }
         ],
@@ -203,7 +213,8 @@ export const SAMPLE_EVENTS: Event[] = [
                     promoPerUnitRate: 2.00,
                     vcm: 8.50,
                     fixedFee: 3000,
-                    increamentalUnits: 300
+                    increamentalUnits: 300,
+                    promoPriceElasticity: 0.5
                 }
             }
         ],

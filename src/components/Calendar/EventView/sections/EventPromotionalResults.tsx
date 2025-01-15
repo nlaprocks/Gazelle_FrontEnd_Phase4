@@ -16,6 +16,7 @@ export const EventPromotionalResults: React.FC<EventPromotionalResultsProps> = (
         doDist: Number(financialData.doDist),
         fdDist: Number(financialData.fdDist),
         totalUnits: Number(financialData.units),
+        promoPriceElasticity: Number(financialData.promoPriceElasticity),
     })
 
     const columns = [

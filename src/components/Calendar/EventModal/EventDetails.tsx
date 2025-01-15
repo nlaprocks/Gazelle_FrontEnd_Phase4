@@ -122,6 +122,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({
                             vcm: 0,
                             fixedFee: 0,
                             increamentalUnits: 0,
+                            promoPriceElasticity: product.promoPriceElasticity,
                         }
                     }
                 }
@@ -257,7 +258,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({
                     </Form.Item>
                 </div>
 
-                <div>
+                {/* <div>
                     <Form.Item label="Project" required>
                         <Select
                             value={formData.project_id}
@@ -295,7 +296,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({
                             disabled={!formData.project_id}
                         />
                     </Form.Item>
-                </div>
+                </div> */}
 
                 <div>
                     <Form.Item label="Retailer" required>

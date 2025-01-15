@@ -17,7 +17,7 @@ const TpoPage = ({
 }) => {
     const authData = JSON.parse(localStorage.getItem("auth"));
     const user_id = authData?.user_id;
-    const { projectName, project_id, model_id } = useParams();
+    const { projectName, project_id, model_id, id } = useParams();
 
     const [projects, setProjects] = useState([]);
     const [projectModels, setProjectModels] = useState([]);
@@ -270,12 +270,9 @@ const TpoPage = ({
                                 </div>
 
                                 <button onClick={handleRedirect} className="flex items-center bg-[#009bcc] text-white hover:text-primary rounded-lg py-2 px-4">
-                                    <p className="text-base font-medium">TPO Report</p>
+                                    <p className="text-base font-medium">Trade Plan Report</p>
                                 </button>
 
-                                <button className="flex items-center bg-[rgb(229,229,230)] text-black hover:shadow-sm rounded-lg py-2.5 px-3">
-                                    <p className="text-base font-medium">Calculate ROI</p>
-                                </button>
                                 <button
                                     className="flex items-center bg-[rgb(73,162,128)] text-white hover:shadow-sm rounded-lg py-2.5 px-3"
                                     onClick={() => setIsImportModalOpen(true)}
@@ -359,6 +356,7 @@ const TpoPage = ({
                 show={isImportModalOpen}
                 onClose={() => setIsImportModalOpen(false)}
                 onImport={handleImportEvents}
+                event_tpo_id={id}
             />
 
             <Footer />

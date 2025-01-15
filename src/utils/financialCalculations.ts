@@ -85,7 +85,7 @@ export const calculatePromotionalResults = (values: {
     doDist: number
     fdDist: number
     totalUnits: number
-    promoPriceElasticity?: number
+    promoPriceElasticity: number
     featureEffect?: number
     displayEffect?: number
     featureAndDisplayEffect?: number
@@ -98,7 +98,7 @@ export const calculatePromotionalResults = (values: {
         doDist,
         fdDist,
         totalUnits,
-        promoPriceElasticity = -2.3351810184210127, // Default elasticity if not provided
+        promoPriceElasticity, // Default elasticity if not provided
         featureEffect = 0,
         displayEffect = 0,
         featureAndDisplayEffect = 0

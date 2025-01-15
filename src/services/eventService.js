@@ -1,11 +1,11 @@
 import axios from 'axios'
 
 export const eventService = {
-    async getEvents() {
+    async getEvents(event_id) {
         try {
             const auth = JSON.parse(localStorage.getItem("auth") || '{}')
             const config = { headers: { Authorization: `Bearer ` + auth.token } }
-            const response = await axios.get(`${process.env.REACT_APP_Base_URL}/api/v1/events`, config)
+            const response = await axios.get(`${process.env.REACT_APP_Base_URL}/api/v1/events/${event_id}`, config)
             return response.data || []
         } catch (error) {
             console.error(error)

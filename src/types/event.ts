@@ -18,6 +18,7 @@ export interface BaseEvent {
     channels: string[]
     project_id: string
     model_id: string
+    event_tpo_id: string
     retailer_id: string
     brand_id: string
     budget: number

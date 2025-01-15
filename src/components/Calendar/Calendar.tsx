@@ -5,7 +5,7 @@ import { EventModal } from './EventModal'
 import { Event } from '../../types/event'
 import EventRow from './EventRow'
 import WeekHeader from './WeekHeader'
-import { getYearCalendarData, addWeeksToDate, ensureDate } from '../../utils/dateUtils'
+import { getYearCalendarData, addWeeksToDate } from '../../utils/dateUtils'
 import { useEvents } from '../../hooks/useEvents'
 
 interface CalendarProps {

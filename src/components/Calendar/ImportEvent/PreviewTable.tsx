@@ -121,6 +121,7 @@ export const PreviewTable: React.FC<PreviewTableProps> = ({ data }) => {
                 doDist: product.financialData.doDist,
                 fdDist: product.financialData.fdDist,
                 totalUnits: product.financialData.units,
+                promoPriceElasticity: product.financialData.promoPriceElasticity,
             })
 
             return (

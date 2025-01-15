@@ -28,6 +28,7 @@ export const EventFinancialResults: React.FC<EventFinancialResultsProps> = ({ fi
         doDist: Number(financialData.doDist),
         fdDist: Number(financialData.fdDist),
         totalUnits: Number(financialData.units),
+        promoPriceElasticity: Number(financialData.promoPriceElasticity),
     })
 
     return (

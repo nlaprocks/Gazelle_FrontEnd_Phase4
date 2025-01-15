@@ -8,31 +8,52 @@ import { ValidationResults } from './ValidationResults'
 import { downloadSampleTemplate } from '../../../utils/exportUtils'
 import type { Event } from '../../../types/event'
 import type { UploadFile, RcFile } from 'antd/es/upload/interface'
-
+import { useParams } from 'react-router-dom'
 interface ImportEventProps {
     show: boolean
     onClose: () => void
     onImport: (events: Event[]) => Promise<void>
+    event_tpo_id: string
 }
 
 const { Dragger } = Upload
 const { TabPane } = Tabs
 
-export const ImportEvent: React.FC<ImportEventProps> = ({ show, onClose, onImport }) => {
+export const ImportEvent: React.FC<ImportEventProps> = ({ show, onClose, onImport, event_tpo_id }) => {
+    const { project_id, model_id } = useParams()
     const [fileList, setFileList] = useState<UploadFile[]>([])
     const [previewData, setPreviewData] = useState<Event[]>([])
     const [validationErrors, setValidationErrors] = useState<string[]>([])
     const [importing, setImporting] = useState(false)
-
     const handleFileRead = async (file: RcFile) => {
         try {
-            const { events, errors } = await parseEventData(file)
-            setPreviewData(events)
-            setValidationErrors(errors)
-            return false // Prevent default upload behavior
+            if (!project_id || !model_id) {
+                message.error('Project ID or Model ID is missing');
+                return false;
+            }
+
+            // Add loading message
+            message.loading('Processing file...', 0);
+
+            const result = await parseEventData(file, event_tpo_id, project_id, model_id);
+
+            // Destroy the loading message
+            message.destroy();
+
+            if (result && result.events) {
+                console.log('Parsed events:', result.events);
+                setPreviewData(result.events);
+                setValidationErrors(result.errors || []);
+            } else {
+                message.error('No events data returned');
+            }
+
+            return false; // Prevent default upload behavior
         } catch (error) {
-            message.error('Failed to read file')
-            return false
+            message.destroy(); // Clear loading message if there's an error
+            console.error('File reading error:', error);
+            message.error('Failed to read file');
+            return false;
         }
     }
 

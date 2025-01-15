@@ -66,6 +66,7 @@ const TpoHome = () => {
         name: '',
         project_id: '',
         model_id: '',
+        submit_type: 'create',
     });
     const [loading, setLoading] = useState(false);
 
@@ -88,6 +89,7 @@ const TpoHome = () => {
                         name: '',
                         project_id: '',
                         model_id: '',
+                        submit_type: 'create',
                     });
 
                     setEditTpo(false);
@@ -107,6 +109,7 @@ const TpoHome = () => {
                         name: '',
                         project_id: '',
                         model_id: '',
+                        submit_type: 'create',
                     });
 
                     setEditTpo(false);
@@ -123,13 +126,20 @@ const TpoHome = () => {
     const handleEditTpo = async (event) => {
         setShow(true);
         setEditTpo(true);
-        setFormData(event);
+        setFormData({ ...event, submit_type: 'update' });
+    }
+
+    const [upgradeVersion, setUpgradeVersion] = useState(false);
+    const handleUpgradeVersion = async (event) => {
+        setShow(true);
+        setUpgradeVersion(true);
+        setFormData({ ...event, submit_type: 'upgrade' });
     }
 
     const handleDuplicateTpo = async (event) => {
         console.log({ event: event });
         setShow(true);
-        setFormData(event);
+        setFormData({ ...event, submit_type: 'duplicate' });
     }
 
     return (
@@ -141,7 +151,7 @@ const TpoHome = () => {
                         {/* SHow create tpo button */}
                         <div className="nla_add_new_project_btn">
                             <button onClick={() => setShow(true)}>
-                                <span className="btn-primary rounded-pill icon-btn me-2"> + </span> Create TPO
+                                <span className="btn-primary rounded-pill icon-btn me-2"> + </span> Create Trade Plan
                             </button>
                         </div>
                     </div>
@@ -151,7 +161,7 @@ const TpoHome = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4">
                         {eventTpos?.map((event) => (
                             <div className="w-full">
-                                <TpoCard event={event} projects={projects} fetchEventTpos={fetchEventTpos} handleEditTpo={handleEditTpo} handleDuplicateTpo={handleDuplicateTpo} />
+                                <TpoCard event={event} projects={projects} fetchEventTpos={fetchEventTpos} handleEditTpo={handleEditTpo} handleDuplicateTpo={handleDuplicateTpo} handleUpgradeVersion={handleUpgradeVersion} />
                             </div>
                         ))}
                     </div>
@@ -161,16 +171,16 @@ const TpoHome = () => {
             {/* Add Create TPO Modal */}
             <Modal show={show} onHide={onClose} centered>
                 <Modal.Header closeButton>
-                    <Modal.Title>{editTpo ? "Edit TPO" : "Create TPO"}</Modal.Title>
+                    <Modal.Title>{editTpo ? "Edit Trade Plan" : upgradeVersion ? "Upgrade Version" : "Create Trade Plan"}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <div className="nla_modal_body_title">
                         <div>
-                            <Typography.Title level={5}>TPO Name</Typography.Title>
+                            <Typography.Title level={5}>Trade Plan Name</Typography.Title>
                             <Input
                                 value={formData.name}
                                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                placeholder="Enter TPO name"
+                                placeholder="Enter Trade Plan name"
                             />
                         </div>
                         <div className="mt-2">
@@ -181,6 +191,7 @@ const TpoHome = () => {
                                     ...formData,
                                     project_id: value,
                                 })}
+                                disabled={upgradeVersion}
                                 options={projects.map(project => ({ value: project.id, label: project.project_name }))}
                                 className="w-full"
                                 placeholder="Select project"
@@ -209,7 +220,7 @@ const TpoHome = () => {
                         Close
                     </Button>
                     <Button variant="primary" className="btn btn-primary" onClick={handleCreateTpo}>
-                        {editTpo ? "Update TPO" : "Create TPO"}
+                        {editTpo ? "Update Trade Plan" : upgradeVersion ? "Upgrade Version" : "Create Trade Plan"}
                     </Button>
                 </Modal.Footer>
             </Modal>

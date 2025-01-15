@@ -247,7 +247,7 @@ const Header = () => {
                                             to={`/tpo`}
                                             className='simulator'
                                         >
-                                            TPO
+                                            Trade Plan Optimization
                                         </Link>
                                     </li>
                                     <li className={activeChat === true ? "active" : ""}>

@@ -1,16 +1,18 @@
 import { useState, useEffect } from 'react'
 import { Event } from '../types/event'
 import { eventService } from '../services/eventService'
+import { useParams } from "react-router-dom";
 
 export const useEvents = () => {
     const [events, setEvents] = useState<Event[]>([])
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
+    const { id } = useParams();
 
     const fetchEvents = async () => {
         try {
             setLoading(true)
-            const data = await eventService.getEvents()
+            const data = await eventService.getEvents(id)
             setEvents(data)
         } catch (err) {
             setError('Failed to fetch events')

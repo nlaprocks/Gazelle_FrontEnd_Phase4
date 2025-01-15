@@ -6,7 +6,7 @@ import KebabMenu from '../../components/KebabMenu/KebabMenu';
 import { useEffect, useState } from "react";
 import Moment from "react-moment";
 
-export const TpoCard = ({ event, projects, fetchEventTpos, handleEditTpo, handleDuplicateTpo }) => {
+export const TpoCard = ({ event, projects, fetchEventTpos, handleEditTpo, handleDuplicateTpo, handleUpgradeVersion }) => {
     const authData = JSON.parse(localStorage.getItem("auth"));
     // const user_id = authData?.user_id;
     const [project, setProject] = useState(null);
@@ -63,6 +63,7 @@ export const TpoCard = ({ event, projects, fetchEventTpos, handleEditTpo, handle
                             duplicateProjectHandler={() => handleDuplicateTpo(event)}
                             handleEditProjectModal={() => handleEditTpo(event)}
                             deleteProjectHandler={handleDeleteTpo}
+                            handleUpgradeVersion={() => handleUpgradeVersion(event)}
                         />
                     </div>
 
@@ -71,7 +72,7 @@ export const TpoCard = ({ event, projects, fetchEventTpos, handleEditTpo, handle
                     </div>
                     {/* <p>Version {getModelVersion(event)}</p> */}
                     <Link
-                        to={`/tpo/${encodeURIComponent(project?.project_name)}/${event?.project_id}/${event?.model_id}`}
+                        to={`/tpo/${encodeURIComponent(project?.project_name)}/${event?.project_id}/${event?.model_id}/${event?.id}`}
                         className='simulator gap-2 bg-primary px-4 py-2 inline-flex items-center text-white rounded hover:no-underline hover:bg-[#009bcc]'
                     >
                         <i className="fa-regular fa-calendar"></i>

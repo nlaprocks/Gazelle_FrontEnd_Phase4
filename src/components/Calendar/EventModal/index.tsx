@@ -9,6 +9,7 @@ import { MOCK_CHANNELS } from '../../../utils/mockData'
 import { createPortal } from 'react-dom'
 import { CaretRightOutlined } from '@ant-design/icons'
 import { ProductAccordionItem } from './types'
+import { useParams } from 'react-router-dom'
 
 interface EventModalProps {
     isOpen: boolean
@@ -38,6 +39,7 @@ export const EventModal: React.FC<EventModalProps> = ({
     projects
 }) => {
     const [form] = Form.useForm()
+    const { project_id, model_id, id } = useParams();
     const [formData, setFormData] = useState<Omit<Event, 'id'>>({
         title: '',
         description: '',
@@ -48,8 +50,9 @@ export const EventModal: React.FC<EventModalProps> = ({
         channels: [],
         retailer_id: '',
         brand_id: '',
-        project_id: '',
-        model_id: '',
+        project_id: project_id || '',
+        model_id: model_id || '',
+        event_tpo_id: id || '',
         planned: [],
         actual: [],
         budget: 0,

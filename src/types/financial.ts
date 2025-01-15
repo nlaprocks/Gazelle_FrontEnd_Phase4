@@ -12,7 +12,11 @@ export interface FinancialData {
     promoPerUnitRate: number
     vcm: number
     fixedFee: number
-    increamentalUnits: number
+    increamentalUnits: number,
+    promoPriceElasticity: number,
+
+    sharedProfitCreated?: number,
+    percentageFundedByRetailer?: number,
 }
 
 export interface FinancialResults {
