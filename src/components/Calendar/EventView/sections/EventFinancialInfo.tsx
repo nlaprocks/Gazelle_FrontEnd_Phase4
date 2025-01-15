@@ -15,6 +15,8 @@ export const EventFinancialInfo: React.FC<EventFinancialInfoProps> = ({
     product,
     financialData,
 }) => {
+
+    console.log({ product });
     return (
         <InfoSection title="Financial Details">
             <InfoRow

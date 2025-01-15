@@ -18,6 +18,7 @@ export const SAMPLE_EVENTS: Event[] = [
         budget: 10000,
         planned: [{
             productId: 'p1',
+            productName: 'Product 1',
             financialData: {
                 basePrice: 8.99,
                 promoPrice: 7.49,
@@ -39,6 +40,7 @@ export const SAMPLE_EVENTS: Event[] = [
         actual: [
             {
                 productId: 'p1',
+                productName: 'Product 1',
                 financialData: {
                     basePrice: 8.99,
                     promoPrice: 7.49,
@@ -77,6 +79,7 @@ export const SAMPLE_EVENTS: Event[] = [
         planned: [
             {
                 productId: 'p1',
+                productName: 'Product 1',
                 financialData: {
                     basePrice: 8.99,
                     promoPrice: 6.99,
@@ -97,6 +100,7 @@ export const SAMPLE_EVENTS: Event[] = [
             },
             {
                 productId: 'p2',
+                productName: 'Product 2',
                 financialData: {
                     basePrice: 19.99,
                     promoPrice: 14.99,
@@ -119,6 +123,7 @@ export const SAMPLE_EVENTS: Event[] = [
         actual: [
             {
                 productId: 'p1',
+                productName: 'Product 1',
                 financialData: {
                     basePrice: 8.99,
                     promoPrice: 6.99,
@@ -139,6 +144,7 @@ export const SAMPLE_EVENTS: Event[] = [
             },
             {
                 productId: 'p2',
+                productName: 'Product 2',
                 financialData: {
                     basePrice: 19.99,
                     promoPrice: 14.99,
@@ -177,6 +183,7 @@ export const SAMPLE_EVENTS: Event[] = [
         planned: [
             {
                 productId: 'p4',
+                productName: 'Product 4',
                 financialData: {
                     basePrice: 49.99,
                     promoPrice: 39.99,
@@ -199,6 +206,7 @@ export const SAMPLE_EVENTS: Event[] = [
         actual: [
             {
                 productId: 'p4',
+                productName: 'Product 4',
                 financialData: {
                     basePrice: 49.99,
                     promoPrice: 39.99,

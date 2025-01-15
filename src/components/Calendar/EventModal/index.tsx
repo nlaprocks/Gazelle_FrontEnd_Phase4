@@ -70,13 +70,16 @@ export const EventModal: React.FC<EventModalProps> = ({
         }
     }, [initialEvent])
 
-    const handleProductDataChange = (productId: string, financialData: EventProduct['financialData']) => {
+    const handleProductDataChange = (productId: string, productName: string, financialData: EventProduct['financialData']) => {
         setFormData(prev => ({
             ...prev,
             planned: prev.planned.map(p =>
-                p.productId === productId ? { ...p, financialData } : p
+                p.productId === productId ? { ...p, financialData, productName } : p
             ),
         }))
+
+        console.log({ formData: formData.planned });
+
     }
 
     const handleSubmit = () => {
@@ -101,7 +104,7 @@ export const EventModal: React.FC<EventModalProps> = ({
                             <FinancialFields
                                 productId={product.id}
                                 financialData={eventProduct.financialData}
-                                onChange={(data) => handleProductDataChange(product.id, data)}
+                                onChange={(data) => handleProductDataChange(product.id, product.name, data)}
                                 basePrice={product.basePrice}
                                 totalUnits={product.totalUnits}
                             />

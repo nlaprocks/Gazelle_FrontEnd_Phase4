@@ -1,14 +1,15 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Event } from '../../../types/event'
 import type { PopconfirmProps } from 'antd'
-import { Button, message, Popconfirm } from 'antd'
+import { message, Popconfirm } from 'antd'
 import { X, Edit, Trash2, Copy } from 'lucide-react'
 import { EventBasicInfo } from './sections/EventBasicInfo'
-import { MOCK_PRODUCTS } from '../../../utils/mockData'
 import { EventAdditionalInfo } from './sections/EventAdditionalInfo'
 import ProductAccordionView from './ProductAccordionView'
 import { createPortal } from 'react-dom'
 import { useEvents } from '../../../hooks/useEvents'
+import { getProductData } from '../../../utils/importUtils'
+import { useParams } from "react-router-dom";
 
 interface EventViewModalProps {
     event: Event
@@ -26,12 +27,36 @@ export const EventViewModal: React.FC<EventViewModalProps> = ({
     // onDelete
 }) => {
     const { deleteEvent } = useEvents()
+    const { project_id, model_id } = useParams();
+    const [products, setProducts] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    const fetchProducts = async () => {
+        console.log({ project_id, model_id });
+        if (!project_id || !model_id) return;
+
+        try {
+            const productPromises = event.planned.map(ep =>
+                getProductData(ep.productName, project_id, model_id, event.retailer_id)
+            );
+
+            const resolvedProducts = await Promise.all(productPromises);
+            setProducts(resolvedProducts);
+        } catch (error) {
+            console.error('Failed to fetch products:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+
+
+        fetchProducts();
+    }, []);
 
     if (!isOpen) return null
-
-    const products = event.planned
-        .map(ep => MOCK_PRODUCTS.find(p => p.id === ep.productId))
-        .filter((p): p is NonNullable<typeof p> => p !== undefined)
+    if (!project_id || !model_id) return null
 
     const handleEdit = () => {
         onClose()
@@ -106,7 +131,16 @@ export const EventViewModal: React.FC<EventViewModalProps> = ({
                             <EventBasicInfo event={event} />
                             <EventAdditionalInfo event={event} />
                         </div>
-                        <ProductAccordionView products={products} eventProducts={event.planned} />
+                        {isLoading ? (
+                            <div>Loading products...</div>
+                        ) : (
+                            products.length > 0 && (
+                                <ProductAccordionView
+                                    products={products}
+                                    eventProducts={event.planned}
+                                />
+                            )
+                        )}
                     </div>
                 </div>
             </div>

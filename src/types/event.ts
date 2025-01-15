@@ -4,6 +4,7 @@ export type EventStatus = 'draft' | 'active' | 'completed'
 
 export interface EventProduct {
     productId: string
+    productName: string
     financialData: FinancialData
 }
 

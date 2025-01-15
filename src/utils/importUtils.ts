@@ -82,7 +82,7 @@ export const parseEventData = async (file: File, event_tpo_id: string, project_i
     })
 }
 
-const getProductData = async (product: string, project_id: string, model_id: string, retailer_id: string) => {
+export const getProductData = async (product: string, project_id: string, model_id: string, retailer_id: string) => {
     try {
         const api = `${process.env.REACT_APP_NGROK}/insights/simulation/price/product-data?project_id=${project_id}&model_id=${model_id}&Retailer=${retailer_id}&Product=${product}`;
         const response = await axios.get(api);
@@ -121,6 +121,7 @@ const createProductData = async (row: CsvRow, project_id: string, model_id: stri
 
         return {
             productId: product.id,
+            productName: product.name,
             financialData: {
                 basePrice: Number(product.basePrice) || 0,
                 promoPrice: Number(row.promoPrice) || 0,
@@ -162,7 +163,6 @@ const createEvent = (row: CsvRow, eventId: string, productData: EventProduct, pr
             }
         })
 
-        console.log('event created');
         return {
             id: eventId,
             event_tpo_id: eventId,
