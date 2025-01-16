@@ -8,7 +8,7 @@ import { useDrag } from '../../../hooks/useDrag'
 interface EventItemProps {
     event: Event
     onEdit: () => void
-    // onDelete: (id: string) => void
+    onDelete: (id: string) => void
     onCopy: (event: Event) => void
     onDragEnd: (event: Event, weeksDelta: number) => void
 }
@@ -16,7 +16,7 @@ interface EventItemProps {
 export const EventItem: React.FC<EventItemProps> = ({
     event,
     onEdit,
-    // onDelete,
+    onDelete,
     onCopy,
     onDragEnd,
 }) => {
@@ -72,7 +72,7 @@ export const EventItem: React.FC<EventItemProps> = ({
                 isOpen={isViewModalOpen}
                 onClose={() => setIsViewModalOpen(false)}
                 onEdit={onEdit}
-            // onDelete={() => onDelete(event.id)}
+                onDelete={() => onDelete(event.id)}
             />
 
             {/* {contextMenuPosition && (

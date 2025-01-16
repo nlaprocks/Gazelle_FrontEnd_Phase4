@@ -134,12 +134,15 @@ const TpoPage = ({
     const { createImportedEvent } = useEvents()
 
     const [isImportModalOpen, setIsImportModalOpen] = useState(false)
+    const [fetchImportedEvents, setFetchImportedEvents] = useState(false)
+
 
     const handleImportEvents = async (importedEvents: Event[]) => {
         try {
             for (const event of importedEvents) {
                 await createImportedEvent(event)
             }
+            setFetchImportedEvents(true)
         } catch (error) {
             console.error('Failed to import events:', error)
             throw error
@@ -338,7 +341,7 @@ const TpoPage = ({
                             </div>
 
                             <div className="bg-white rounded-lg w-full shadow-md">
-                                <Calendar projects={projects} selectedRetailer={selectedRetailer} selectedBrand={selectedBrand} productData={productData} />
+                                <Calendar projects={projects} selectedRetailer={selectedRetailer} selectedBrand={selectedBrand} productData={productData} fetchImportedEvents={fetchImportedEvents} setFetchImportedEvents={setFetchImportedEvents} />
                             </div>
                         </>
                     ) : (

@@ -141,14 +141,6 @@ export default function Project({
                             </Link>
                         )}
 
-                        {/* <Link
-                            to={`/tpo/${encodeURIComponent(elem?.project_name)}/${elem?.id}/${elem?.Models[0]?.id}`}
-                            className='simulator'
-                        >
-                            <i className="fa-regular fa-calendar"></i>
-                            TPO
-                        </Link> */}
-
                         <a
                             href="#!"
                             className='output'

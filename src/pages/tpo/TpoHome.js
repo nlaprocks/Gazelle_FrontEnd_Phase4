@@ -57,6 +57,8 @@ const TpoHome = () => {
             model_id: '',
         });
         setShow(false);
+        setEditTpo(false);
+        setUpgradeVersion(false);
     }
 
     const [editTpo, setEditTpo] = useState(false);
@@ -159,11 +161,20 @@ const TpoHome = () => {
                 {/* Show all tpo cards */}
                 <div className="mx-10">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4">
-                        {eventTpos?.map((event) => (
-                            <div className="w-full">
-                                <TpoCard event={event} projects={projects} fetchEventTpos={fetchEventTpos} handleEditTpo={handleEditTpo} handleDuplicateTpo={handleDuplicateTpo} handleUpgradeVersion={handleUpgradeVersion} />
-                            </div>
-                        ))}
+                        {eventTpos
+                            ?.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                            .map((event) => (
+                                <div className="w-full" key={event.id}>
+                                    <TpoCard
+                                        event={event}
+                                        projects={projects}
+                                        fetchEventTpos={fetchEventTpos}
+                                        handleEditTpo={handleEditTpo}
+                                        handleDuplicateTpo={handleDuplicateTpo}
+                                        handleUpgradeVersion={handleUpgradeVersion}
+                                    />
+                                </div>
+                            ))}
                     </div>
                 </div>
             </div>

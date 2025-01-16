@@ -16,7 +16,7 @@ interface EventViewModalProps {
     isOpen: boolean
     onClose: () => void
     onEdit: () => void
-    // onDelete: () => void
+    onDelete: () => void
 }
 
 export const EventViewModal: React.FC<EventViewModalProps> = ({
@@ -24,9 +24,9 @@ export const EventViewModal: React.FC<EventViewModalProps> = ({
     isOpen,
     onClose,
     onEdit,
-    // onDelete
+    onDelete
 }) => {
-    const { deleteEvent } = useEvents()
+    // const { deleteEvent } = useEvents()
     const { project_id, model_id } = useParams();
     const [products, setProducts] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -66,12 +66,7 @@ export const EventViewModal: React.FC<EventViewModalProps> = ({
     const confirm: PopconfirmProps['onConfirm'] = async (e) => {
         const handleDelete = async () => {
             onClose()
-            const res = await deleteEvent(event.id)
-            if (res) {
-                message.success('Event deleted')
-            } else {
-                message.error('Failed to delete event')
-            }
+            onDelete()
         }
         handleDelete()
     }

@@ -79,6 +79,7 @@ const EventRow: React.FC<EventRowProps> = ({
                                     onEdit={() => onEditEvent(event)}
                                     onCopy={() => onCopyEvent(event)}
                                     onDragEnd={onDragEnd}
+                                    onDelete={() => onDeleteEvent(event.id)}
                                 />
                             </div>
                         )

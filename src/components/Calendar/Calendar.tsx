@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { startOfYear } from 'date-fns'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { EventModal } from './EventModal'
@@ -7,17 +7,20 @@ import EventRow from './EventRow'
 import WeekHeader from './WeekHeader'
 import { getYearCalendarData, addWeeksToDate } from '../../utils/dateUtils'
 import { useEvents } from '../../hooks/useEvents'
+import { message } from 'antd'
 
 interface CalendarProps {
     projects: Array<any>
     selectedRetailer: string
     selectedBrand: string
     productData: Array<any>
+    fetchImportedEvents: boolean
+    setFetchImportedEvents: (fetchImportedEvents: boolean) => void
 }
 
-const Calendar: React.FC<CalendarProps> = ({ projects, selectedRetailer, selectedBrand, productData }) => {
+const Calendar: React.FC<CalendarProps> = ({ projects, selectedRetailer, selectedBrand, productData, fetchImportedEvents, setFetchImportedEvents }) => {
     const [currentYear, setCurrentYear] = useState(2024)
-    const { events, createEvent, updateEvent, deleteEvent } = useEvents()
+    const { events, createEvent, updateEvent, deleteEvent, refreshEvents } = useEvents()
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [selectedDate, setSelectedDate] = useState<Date | undefined>()
     const [selectedEvent, setSelectedEvent] = useState<Event | undefined>()
@@ -39,6 +42,12 @@ const Calendar: React.FC<CalendarProps> = ({ projects, selectedRetailer, selecte
         setIsModalOpen(true)
     }
 
+    useEffect(() => {
+        if (fetchImportedEvents) {
+            refreshEvents()
+        }
+    }, [fetchImportedEvents])
+
     const handleCopyEvent = (event: Event) => {
         setSelectedEvent({
             ...event,
@@ -49,21 +58,45 @@ const Calendar: React.FC<CalendarProps> = ({ projects, selectedRetailer, selecte
     }
 
     const handleDragEnd = async (event: Event, weeksDelta: number) => {
-        const newStartDate = event.start_date ? addWeeksToDate(event.start_date, weeksDelta) : undefined
-        const newEndDate = event.end_date ? addWeeksToDate(event.end_date, weeksDelta) : undefined
+        try {
+            const newStartDate = event.start_date ? addWeeksToDate(event.start_date, weeksDelta) : undefined
+            const newEndDate = event.end_date ? addWeeksToDate(event.end_date, weeksDelta) : undefined
 
-        await updateEvent({
-            ...event,
-            start_date: newStartDate,
-            end_date: newEndDate,
-        })
+            await updateEvent({
+                ...event,
+                start_date: newStartDate,
+                end_date: newEndDate,
+            })
+            await refreshEvents()
+        } catch (error) {
+            console.error('Failed to update event position:', error)
+        }
     }
 
     const handleSaveEvent = async (eventData: Omit<Event, 'id'>) => {
-        if (selectedEvent?.id) {
-            await updateEvent({ ...eventData, id: selectedEvent.id })
-        } else {
-            await createEvent(eventData)
+        try {
+            if (selectedEvent?.id) {
+                await updateEvent({ ...eventData, id: selectedEvent.id })
+            } else {
+                await createEvent(eventData)
+            }
+            await refreshEvents()
+            setIsModalOpen(false)
+        } catch (error) {
+            console.error('Failed to save event:', error)
+        }
+    }
+
+    const handleDeleteEventWrapper = async (eventId: string) => {
+        try {
+            const res = await deleteEvent(eventId);
+            if (res) {
+                message.success('Event deleted')
+            } else {
+                message.error('Failed to delete event')
+            }
+        } catch (error) {
+            console.error('Failed to delete event:', error)
         }
     }
 
@@ -99,12 +132,14 @@ const Calendar: React.FC<CalendarProps> = ({ projects, selectedRetailer, selecte
                                     product={product}
                                     weeks={weeks}
                                     events={events.filter(event => {
+                                        console.log({ filterEvent: event });
+
                                         return event.planned.some(p => p.productId === product.id)
                                     })}
                                     onAddEvent={handleAddEvent}
                                     onEditEvent={handleEditEvent}
                                     onCopyEvent={handleCopyEvent}
-                                    onDeleteEvent={deleteEvent}
+                                    onDeleteEvent={handleDeleteEventWrapper}
                                     onDragEnd={handleDragEnd}
                                     yearStart={startOfYear(new Date(currentYear, 0, 1))}
                                 />

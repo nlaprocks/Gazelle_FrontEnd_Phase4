@@ -59,7 +59,7 @@ export const parseEventData = async (file: File, event_tpo_id: string, project_i
                                 event.planned.push(productData)
                             } else {
                                 // Create new event with product
-                                const event = createEvent(row, eventId, productData, project_id, model_id)
+                                const event = createEvent(row, eventId, productData, project_id, model_id, event_tpo_id)
                                 events.set(eventId, event)
                             }
                         } catch (error) {
@@ -143,9 +143,7 @@ const createProductData = async (row: CsvRow, project_id: string, model_id: stri
     } catch (error) {
         console.log("Error in creating product data: ", error);
         throw error;
-
     }
-
 }
 
 const calculateDiscount = (basePrice: number, promoPrice: number): number => {
@@ -153,7 +151,7 @@ const calculateDiscount = (basePrice: number, promoPrice: number): number => {
     return ((basePrice - promoPrice) / basePrice) * 100
 }
 
-const createEvent = (row: CsvRow, eventId: string, productData: EventProduct, project_id: string, model_id: string): Event => {
+const createEvent = (row: CsvRow, eventId: string, productData: EventProduct, project_id: string, model_id: string, event_tpo_id: string): Event => {
     try {
         // Validate required fields
         const requiredFields: (keyof CsvRow)[] = ['title', 'start_date', 'end_date', 'status', 'retailer_id', 'brand_id']
@@ -165,7 +163,7 @@ const createEvent = (row: CsvRow, eventId: string, productData: EventProduct, pr
 
         return {
             id: eventId,
-            event_tpo_id: eventId,
+            event_tpo_id: event_tpo_id,
             title: row.title,
             description: row.description || '',
             start_date: parseDate(row.start_date),
@@ -184,9 +182,7 @@ const createEvent = (row: CsvRow, eventId: string, productData: EventProduct, pr
     } catch (error) {
         console.log("Error in creating event: ", error);
         throw error;
-
     }
-
 }
 
 const parseDate = (value: string): Date => {

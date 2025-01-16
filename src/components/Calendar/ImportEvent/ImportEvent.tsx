@@ -9,6 +9,7 @@ import { downloadSampleTemplate } from '../../../utils/exportUtils'
 import type { Event } from '../../../types/event'
 import type { UploadFile, RcFile } from 'antd/es/upload/interface'
 import { useParams } from 'react-router-dom'
+
 interface ImportEventProps {
     show: boolean
     onClose: () => void
@@ -25,6 +26,7 @@ export const ImportEvent: React.FC<ImportEventProps> = ({ show, onClose, onImpor
     const [previewData, setPreviewData] = useState<Event[]>([])
     const [validationErrors, setValidationErrors] = useState<string[]>([])
     const [importing, setImporting] = useState(false)
+    const [activeKey, setActiveKey] = useState('upload')
     const handleFileRead = async (file: RcFile) => {
         try {
             if (!project_id || !model_id) {
@@ -43,6 +45,7 @@ export const ImportEvent: React.FC<ImportEventProps> = ({ show, onClose, onImpor
             if (result && result.events) {
                 console.log('Parsed events:', result.events);
                 setPreviewData(result.events);
+                setActiveKey('preview')
                 setValidationErrors(result.errors || []);
             } else {
                 message.error('No events data returned');
@@ -115,7 +118,7 @@ export const ImportEvent: React.FC<ImportEventProps> = ({ show, onClose, onImpor
                 </Button>
             ]}
         >
-            <Tabs defaultActiveKey="upload">
+            <Tabs defaultActiveKey="upload" activeKey={activeKey}>
                 <TabPane
                     tab={
                         <span>
