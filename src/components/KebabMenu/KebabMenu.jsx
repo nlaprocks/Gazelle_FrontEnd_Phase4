@@ -37,7 +37,9 @@ const KebabMenu = ({
                     <ul>
                         <li onClick={() => duplicateProjectHandler(elem?.id)}>Duplicate</li>
                         <li onClick={() => handleEditProjectModal(elem?.id)}>Edit Project</li>
-                        <li onClick={() => handleUpgradeVersion(elem?.id)}>Upgrade Version</li>
+                        {handleUpgradeVersion && (
+                            <li onClick={() => handleUpgradeVersion(elem?.id)}>Upgrade Version</li>
+                        )}
                         <li onClick={() => deleteProjectHandler(elem?.id)}>Delete Project</li>
                     </ul>
                 </div>
