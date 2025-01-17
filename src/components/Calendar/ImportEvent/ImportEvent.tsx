@@ -118,7 +118,7 @@ export const ImportEvent: React.FC<ImportEventProps> = ({ show, onClose, onImpor
                 </Button>
             ]}
         >
-            <Tabs defaultActiveKey="upload" activeKey={activeKey}>
+            <Tabs defaultActiveKey="upload" activeKey={activeKey} onChange={setActiveKey}>
                 <TabPane
                     tab={
                         <span>
