@@ -1,6 +1,6 @@
 import React from 'react'
 import { Table } from 'antd'
-import { calculateFinancialResults, calculatePromotionalResults } from '../../../utils/financialCalculations'
+import { calculateFinancialResults, calculatePromotionalResults, formatMoney } from '../../../utils/financialCalculations'
 import { FinancialData } from '../../../types/financial'
 
 interface FinancialResultsProps {
@@ -8,7 +8,20 @@ interface FinancialResultsProps {
 }
 
 const FinancialResults: React.FC<FinancialResultsProps> = ({ financialData }) => {
-    const financialResults = calculateFinancialResults({
+    const promotionalResults = calculatePromotionalResults({
+        basePrice: Number(financialData.basePrice),
+        promoPrice: Number(financialData.promoPrice),
+        tprDist: Number(financialData.tprDist),
+        foDist: Number(financialData.foDist),
+        doDist: Number(financialData.doDist),
+        fdDist: Number(financialData.fdDist),
+        totalUnits: Number(financialData.units),
+        promoPriceElasticity: Number(financialData.promoPriceElasticity),
+    })
+
+    console.log({ promotionalResults });
+
+    let financialResults = calculateFinancialResults({
         units: Number(financialData.units),
         promoPrice: Number(financialData.promoPrice),
         basePrice: Number(financialData.basePrice),
@@ -21,16 +34,11 @@ const FinancialResults: React.FC<FinancialResultsProps> = ({ financialData }) =>
         promoPriceElasticity: Number(financialData.promoPriceElasticity),
     })
 
-    const promotionalResults = calculatePromotionalResults({
-        basePrice: Number(financialData.basePrice),
-        promoPrice: Number(financialData.promoPrice),
-        tprDist: Number(financialData.tprDist),
-        foDist: Number(financialData.foDist),
-        doDist: Number(financialData.doDist),
-        fdDist: Number(financialData.fdDist),
-        totalUnits: Number(financialData.units),
-        promoPriceElasticity: Number(financialData.promoPriceElasticity),
-    })
+    // Add Event Incremental Dollars to the financialResults
+    financialResults = financialResults.map(result => result.name === 'Incremental Revenue' ? { ...result, value: formatMoney(promotionalResults.find(result => result.promotion === 'Event Incremental')?.dollars || 0, '$') } : result)
+
+    console.log({ financialResults });
+
 
     return (
         <div className="space-y-6">

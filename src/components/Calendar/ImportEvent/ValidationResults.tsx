@@ -6,11 +6,15 @@ interface ValidationResultsProps {
 }
 
 export const ValidationResults: React.FC<ValidationResultsProps> = ({ errors }) => {
+    console.log({ errors });
+
     const categorizeError = (error: string) => {
+        console.log({ error });
         if (error.includes('Missing required field')) return 'required'
         if (error.includes('Invalid date')) return 'date'
         if (error.includes('Invalid status')) return 'status'
         if (error.includes('Invalid format')) return 'format'
+        if (error.includes('Cannot read properties of undefined')) return 'product not found'
         return 'other'
     }
 
@@ -20,6 +24,7 @@ export const ValidationResults: React.FC<ValidationResultsProps> = ({ errors }) 
             case 'date': return 'orange'
             case 'status': return 'purple'
             case 'format': return 'blue'
+            case 'product not found': return 'red'
             default: return 'default'
         }
     }

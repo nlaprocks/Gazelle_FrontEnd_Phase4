@@ -90,8 +90,8 @@ export const EventViewModal: React.FC<EventViewModalProps> = ({
                         </button> */}
 
                         <Popconfirm
-                            title="Delete the task"
-                            description="Are you sure to delete this task?"
+                            title="Delete the event?"
+                            description="Are you sure to delete this event?"
                             onConfirm={confirm}
                             onCancel={cancel}
                             okText="Yes"

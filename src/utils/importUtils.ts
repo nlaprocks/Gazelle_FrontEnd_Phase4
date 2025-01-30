@@ -154,7 +154,7 @@ const calculateDiscount = (basePrice: number, promoPrice: number): number => {
 const createEvent = (row: CsvRow, eventId: string, productData: EventProduct, project_id: string, model_id: string, event_tpo_id: string): Event => {
     try {
         // Validate required fields
-        const requiredFields: (keyof CsvRow)[] = ['title', 'start_date', 'end_date', 'status', 'retailer_id', 'brand_id']
+        const requiredFields: (keyof CsvRow)[] = ['title', 'start_date', 'end_date', 'status', 'retailer_id', 'brand_id', 'productId', 'promoPrice']
         requiredFields.forEach(field => {
             if (!row[field]) {
                 throw new Error(`Missing required field: ${field}`)

@@ -1,4 +1,4 @@
-import { Button, message, Skeleton } from "antd";
+import { Button, message, Skeleton, Modal } from "antd";
 import { Link } from "react-router-dom";
 import modelSearchIntroImage from '../../assets/images/model-search-intro-image.png';
 import axios from "axios";
@@ -21,17 +21,29 @@ export const TpoCard = ({ event, projects, fetchEventTpos, handleEditTpo, handle
 
     const handleDeleteTpo = async () => {
         try {
-            const config = { headers: { Authorization: `Bearer ` + authData.token } };
-            const api = `${process.env.REACT_APP_Base_URL}/api/v1/events/tpo/${event.id}`;
-            let { data } = await axios.delete(api, config);
+            Modal.confirm({
+                title: 'Delete TPO',
+                content: 'Are you sure you want to delete this TPO?',
+                okText: 'Yes',
+                okType: 'danger',
+                cancelText: 'No',
+                async onOk() {
+                    const config = { headers: { Authorization: `Bearer ` + authData.token } };
+                    const api = `${process.env.REACT_APP_Base_URL}/api/v1/events/tpo/${event.id}`;
+                    let { data } = await axios.delete(api, config);
 
-            if (data) {
-                // success message
-                message.success('TPO deleted successfully');
-                fetchEventTpos();
-            }
+                    if (data) {
+                        message.success('TPO deleted successfully');
+                        fetchEventTpos();
+                    }
+                },
+                onCancel() {
+                    // Do nothing
+                }
+            });
         } catch (error) {
             console.log("Error", error);
+            message.error('Failed to delete TPO');
         }
     }
 

@@ -54,7 +54,7 @@ export const PreviewTable: React.FC<PreviewTableProps> = ({ data }) => {
 
     const renderProductDetails = (products: any[], title: string) => {
         const productColumns = [
-            { title: 'Product ID', dataIndex: 'productId', key: 'productId' },
+            { title: 'Product', dataIndex: 'productName', key: 'productName' },
             {
                 title: 'Base Price',
                 dataIndex: ['financialData', 'basePrice'],
@@ -101,6 +101,7 @@ export const PreviewTable: React.FC<PreviewTableProps> = ({ data }) => {
         ]
 
         return products.map((product) => {
+            console.log({ product });
             const financialResults = calculateFinancialResults({
                 units: product.financialData.units,
                 promoPrice: product.financialData.promoPrice,
@@ -126,7 +127,6 @@ export const PreviewTable: React.FC<PreviewTableProps> = ({ data }) => {
 
             return (
                 <div key={product.productId} className="mt-6">
-                    <h5 className="font-medium mb-2">Product ID: {product.productId}</h5>
                     <Tabs defaultActiveKey="financial">
                         <TabPane tab="Financial Results" key="financial">
                             <Table

@@ -26,6 +26,7 @@ export interface BaseEvent {
     // products: EventProduct[]
     planned: EventProduct[]
     actual: EventProduct[]
+    user_id?: string
 }
 
 export interface Event extends BaseEvent {

@@ -17,8 +17,8 @@ const TpoHome = () => {
     // Fetch event tpos
     const fetchEventTpos = async () => {
         try {
-            const config = { headers: { Authorization: `Bearer ` + authData.token } };
-            const api = `${process.env.REACT_APP_Base_URL}/api/v1/events/tpo`;
+            const config = { headers: { Authorization: `Bearer ` + authData.token, accept: 'application/json' } };
+            const api = `${process.env.REACT_APP_Base_URL}/api/v1/events/tpo-list/${user_id}`;
             let { data } = await axios.get(api, config);
 
             if (data) {
@@ -55,6 +55,7 @@ const TpoHome = () => {
             name: '',
             project_id: '',
             model_id: '',
+            user_id: user_id,
         });
         setShow(false);
         setEditTpo(false);
@@ -68,6 +69,7 @@ const TpoHome = () => {
         name: '',
         project_id: '',
         model_id: '',
+        user_id: user_id,
         submit_type: 'create',
     });
     const [loading, setLoading] = useState(false);
@@ -92,6 +94,7 @@ const TpoHome = () => {
                         project_id: '',
                         model_id: '',
                         submit_type: 'create',
+                        user_id: user_id,
                     });
 
                     setEditTpo(false);
@@ -112,6 +115,7 @@ const TpoHome = () => {
                         project_id: '',
                         model_id: '',
                         submit_type: 'create',
+                        user_id: user_id,
                     });
 
                     setEditTpo(false);
@@ -203,7 +207,7 @@ const TpoHome = () => {
                                     project_id: value,
                                 })}
                                 disabled={upgradeVersion}
-                                options={projects.map(project => ({ value: project.id, label: project.project_name }))}
+                                options={projects.filter(project => project.is_insight).map(project => ({ value: project.id, label: project.project_name }))}
                                 className="w-full"
                                 placeholder="Select project"
                             />
@@ -218,7 +222,7 @@ const TpoHome = () => {
                                     ...formData,
                                     model_id: value,
                                 })}
-                                options={projects.find(project => project.id === parseInt(formData.project_id))?.Models.map((model) => ({ value: model.id, label: `Version ${model.model_version}` }))}
+                                options={projects.find(project => project.id === parseInt(formData.project_id))?.Models.map((model) => ({ value: model.id, label: `Version ${model?.model_version}` }))}
                                 className="w-full"
                                 placeholder="Select model"
                                 disabled={!formData.project_id}
