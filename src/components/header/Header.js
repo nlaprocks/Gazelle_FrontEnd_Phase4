@@ -8,139 +8,142 @@ import logo from "../../assets/images/logo.png";
 import { useNavigate } from "react-router-dom";
 
 const Header = () => {
-  const navigate = useNavigate();
-  const [activeDesign, setActiveDesign] = useState(false);
-  const [activeChat, setActiveChat] = useState(false);
-  const [activeDash, setActiveDash] = useState(false);
-  const location = useLocation();
-  const [notifState, notifSetState] = useState(false);
-  const [adminObserver, setAdminObserver] = useState(false);
-  const [path, setPath] = useState("");
-  const authData = JSON.parse(localStorage.getItem("auth"));
-  const notifHandler = () => {
-    if (notifState === true) {
-      notifSetState(false);
-    } else {
-      notifSetState(true);
-    }
-  };
-  const locationChecker = () => {
-    if (location.pathname === "/dashboard") {
-      setActiveDash(true);
-      setActiveDesign(false);
-    } else if (location.pathname === "/design-studio") {
-      setActiveDash(false);
-      setActiveDesign(true);
-    } else if (location.pathname === "/chat") {
-      setActiveChat(true);
-    }
-    if (location.pathname.includes("/admin")) {
-      setPath(location.pathname);
-      setAdminObserver(true);
-    } else {
-      setAdminObserver(false);
-    }
-  };
-  useEffect(() => {
-    locationChecker();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location]);
-  // Closes Notification dropDown When Clicked outside
-  const ref = useRef(null);
-  useClickAway(ref, () => {
-    notifSetState(false);
-  });
-  const logoutHandler = () => {
-    localStorage.removeItem("auth");
-  };
-  return (
-    <div>
-      {/* <!-- Header Start --> */}
-      <header className="container-fluid dashboard_header">
-        <div className="row align-items-center">
-          <div className="col-lg-3 col-md-6">
-            <div className="nla_header_left">
-              <div className="nla_logo">
-                <Link to="/dashboard">
-                  <img
-                    src={logo}
-                    alt="Northlight Analytics Logo"
-                    className="img-fluid navbar-brand"
-                  />
-                </Link>
-              </div>
-              {/* <div className="nla_title">
+    const navigate = useNavigate();
+    const [activeDesign, setActiveDesign] = useState(false);
+    const [activeChat, setActiveChat] = useState(false);
+    const [activeTPO, setActiveTPO] = useState(false);
+    const [activeDash, setActiveDash] = useState(false);
+    const location = useLocation();
+    const [notifState, notifSetState] = useState(false);
+    const [adminObserver, setAdminObserver] = useState(false);
+    const [path, setPath] = useState("");
+    const authData = JSON.parse(localStorage.getItem("auth"));
+    const notifHandler = () => {
+        if (notifState === true) {
+            notifSetState(false);
+        } else {
+            notifSetState(true);
+        }
+    };
+    const locationChecker = () => {
+        if (location.pathname === "/dashboard") {
+            setActiveDash(true);
+            setActiveDesign(false);
+        } else if (location.pathname === "/design-studio") {
+            setActiveDash(false);
+            setActiveDesign(true);
+        } else if (location.pathname === "/tpo") {
+            setActiveTPO(true);
+        } else if (location.pathname === "/chat") {
+            setActiveChat(true);
+        }
+        if (location.pathname.includes("/admin")) {
+            setPath(location.pathname);
+            setAdminObserver(true);
+        } else {
+            setAdminObserver(false);
+        }
+    };
+    useEffect(() => {
+        locationChecker();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [location]);
+    // Closes Notification dropDown When Clicked outside
+    const ref = useRef(null);
+    useClickAway(ref, () => {
+        notifSetState(false);
+    });
+    const logoutHandler = () => {
+        localStorage.removeItem("auth");
+    };
+    return (
+        <div>
+            {/* <!-- Header Start --> */}
+            <header className="container-fluid dashboard_header">
+                <div className="row align-items-center">
+                    <div className="col-lg-3 col-md-6">
+                        <div className="nla_header_left">
+                            <div className="nla_logo">
+                                <Link to="/dashboard">
+                                    <img
+                                        src={logo}
+                                        alt="Northlight Analytics Logo"
+                                        className="img-fluid navbar-brand"
+                                    />
+                                </Link>
+                            </div>
+                            {/* <div className="nla_title">
                 <p className="mb-0">Gazelle</p>
               </div> */}
-            </div>
-          </div>
-          <div className="col-md-6">
-            <ul className="nav justify-center">
-              {adminObserver ? (
-                <>
-                  <li className={path.includes("/admin/dashboard") ? "active" : ""}>
-                    <Link to="/admin/dashboard">
-                      {/* <div className="icon">
+                        </div>
+                    </div>
+                    <div className="col-md-6">
+                        <ul className="nav justify-center">
+                            {adminObserver ? (
+                                <>
+                                    <li className={path.includes("/admin/dashboard") ? "active" : ""}>
+                                        <Link to="/admin/dashboard">
+                                            {/* <div className="icon">
                         <MaterialDashboard />
                       </div> */}
-                      <span>Dashboard</span>
-                    </Link>
-                  </li>
-                  <li className={path.includes("/admin/user-management") ? "active" : ""}>
-                    <Link to="/admin/user-management">
-                      {/* <div className="icon">
+                                            <span>Dashboard</span>
+                                        </Link>
+                                    </li>
+                                    <li className={path.includes("/admin/user-management") ? "active" : ""}>
+                                        <Link to="/admin/user-management">
+                                            {/* <div className="icon">
                         <User />
                       </div> */}
-                      <span>User Management</span>
-                    </Link>
-                  </li>
-                  <li className={path.includes("/admin/project-management") ? "active" : ""}>
-                    <Link to="/admin/project-management">
-                      {/* <div className="icon">
+                                            <span>User Management</span>
+                                        </Link>
+                                    </li>
+                                    <li className={path.includes("/admin/project-management") ? "active" : ""}>
+                                        <Link to="/admin/project-management">
+                                            {/* <div className="icon">
                         <Ios />
                       </div> */}
-                      <span>Project Management</span>
-                    </Link>
-                  </li>
-                  <li className={path.includes("/admin/design-studio") ? "active" : ""}>
-                    <Link to="/admin/design-studio">
-                      {/* <div className="icon">
+                                            <span>Project Management</span>
+                                        </Link>
+                                    </li>
+                                    <li className={path.includes("/admin/design-studio") ? "active" : ""}>
+                                        <Link to="/admin/design-studio">
+                                            {/* <div className="icon">
                         <Studio />
                       </div> */}
-                      <span>Design Studio</span>
-                    </Link>
-                  </li>
-                  <li className={path.includes("/admin/insights-management") ? "active" : ""}>
-                    <Link to="/admin/insights-management">
-                      {/* <div className="icon">
+                                            <span>Design Studio</span>
+                                        </Link>
+                                    </li>
+                                    <li className={path.includes("/admin/insights-management") ? "active" : ""}>
+                                        <Link to="/admin/insights-management">
+                                            {/* <div className="icon">
                         <Eye />
                       </div> */}
-                      <span>Insights Management</span>
-                    </Link>
-                  </li>
-                  <li className={path.includes("/admin/products&Categories") ? "active" : ""}>
-                    <Link to="/admin/products&Categories">
-                      {/* <div className="icon">
+                                            <span>Insights Management</span>
+                                        </Link>
+                                    </li>
+                                    <li className={path.includes("/admin/products&Categories") ? "active" : ""}>
+                                        <Link to="/admin/products&Categories">
+                                            {/* <div className="icon">
                         <i className="fa-solid fa-lemon"></i>
                       </div> */}
-                      <span>Products and Category Management</span>
-                    </Link>
-                  </li>
-                  <li className={path.includes("/admin/scheduling-management") ? "active" : ""}>
-                    <Link to="/admin/scheduling-management">
-                      {/* <div className="icon">
+                                            <span>Products and Category Management</span>
+                                        </Link>
+                                    </li>
+                                    <li className={path.includes("/admin/scheduling-management") ? "active" : ""}>
+                                        <Link to="/admin/scheduling-management">
+                                            {/* <div className="icon">
                         <i className="fa-solid fa-calendar-days"></i>
                       </div> */}
-                      <span>Scheduling Management</span>
-                    </Link>
-                  </li>
-                </>
-              ) : (
-                <>
-                  <li className={activeDash === true ? "active" : ""}>
-                    <Link to="/dashboard">
-                      <div className="icon">
-                        {/* <svg
+                                            <span>Scheduling Management</span>
+                                        </Link>
+                                    </li>
+                                </>
+                            ) : (
+                                <>
+                                    <li className={activeDash === true ? "active" : ""}>
+                                        <Link to="/dashboard">
+                                            <div className="icon">
+                                                {/* <svg
                           id="home_icon"
                           data-name="home_icon"
                           xmlns="http://www.w3.org/2000/svg"
@@ -170,22 +173,22 @@ const Header = () => {
                             ></path>
                           </g>
                         </svg> */}
-                      </div>
-                      <span>Home</span>
-                    </Link>
-                  </li>
-                  <li className={activeDesign === true ? "active" : ""}>
-                    <a
-                      href="#!"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        navigate("/design-studio");
-                        window.location.reload();
-                      }}
-                    >
-                      <span>Design Studio</span>
-                    </a>
-                    {/* <OverlayTrigger
+                                            </div>
+                                            <span>Home</span>
+                                        </Link>
+                                    </li>
+                                    <li className={activeDesign === true ? "active" : ""}>
+                                        <a
+                                            href="#!"
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                navigate("/design-studio");
+                                                window.location.reload();
+                                            }}
+                                        >
+                                            <span>Design Studio</span>
+                                        </a>
+                                        {/* <OverlayTrigger
                       placement="right"
                       delay={{ show: 250, hide: 250 }}
                       overlay={
@@ -225,8 +228,8 @@ const Header = () => {
                           </svg>
                         </div>
                     </OverlayTrigger> */}
-                  </li>
-{/* 
+                                    </li>
+                                    {/* 
                   <li className={activeChat === true ? "active" : ""}>
                     <a
                       href="#!"
@@ -239,114 +242,118 @@ const Header = () => {
                       <span>Insights</span>
                     </a>
                   </li> */}
-
-
-
-
-                  <li className={activeChat === true ? "active" : ""}>
-                    <a
-                      href="#!"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        navigate("/chat");
-                        window.location.reload();
-                      }}
-                    >
-                      <span>Chat</span>
-                    </a>
-                  </li>
-                </>
-              )}
-            </ul>
-          </div>
-          <div className="col-lg-3 col-md-6 text-end">
-            <div className="nla_settings_block">
-              <div className="position-relative nla_notification">
-                <a href="#">
-                  <i className="fa-regular fa-bell"></i>
-                </a>
-              </div>
-              <div className="nla_profile_setting_wrapper">
-                <div className="nla_profile">
-                  <img src={placeHoldImg} className="img-fluid" alt="profile" />
-                </div>
-                <div className="dropdown" ref={ref}>
-                  <button
-                    className="btn dropdown-toggle"
-                    type="button"
-                    id="profile_dropdown"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
-                    onClick={notifHandler}
-                  >
-                    {authData?.email ? authData?.email : "John Doe"}
-                  </button>
-                  {notifState === true ? (
-                    <>
-                      <ul
-                        className="dropdown-menu show"
-                        aria-labelledby="profile_dropdown"
-                        style={{
-                          position: "absolute",
-                          inset: "0px auto auto 0px",
-                          margin: "0px",
-                          transform: "translate3d(-124px, 21px, 0px)",
-                        }}
-                      >
-                        <li>
-                          <a className="dropdown-item" href="#!">
-                            Profile
-                          </a>
-                        </li>
-                        {authData.role === "admin" ||
-                          authData.role === "manager" ? (
-                          <li>
-                            {location.pathname.includes("/admin") ? (
-                              <Link
-                                to="/dashboard"
-                                className="dropdown-item"
-                                href="#"
-                              >
-                                User Dashboard
-                              </Link>
-                            ) : (
-                              <Link
-                                to="/admin/user-management"
-                                className="dropdown-item"
-                                href="#"
-                              >
-                                Admin Dashboard
-                              </Link>
+                                    <li className={activeTPO === true ? "active" : ""}>
+                                        <Link
+                                            to={`/tpo`}
+                                            className='simulator'
+                                        >
+                                            Trade Plan Optimization
+                                        </Link>
+                                    </li>
+                                    <li className={activeChat === true ? "active" : ""}>
+                                        <a
+                                            href="#!"
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                navigate("/chat");
+                                                window.location.reload();
+                                            }}
+                                        >
+                                            <span>Chat</span>
+                                        </a>
+                                    </li>
+                                </>
                             )}
-                          </li>
-                        ) : null}
+                        </ul>
+                    </div>
+                    <div className="col-lg-3 col-md-6 text-end">
+                        <div className="nla_settings_block">
+                            <div className="position-relative nla_notification">
+                                <a href="#">
+                                    <i className="fa-regular fa-bell"></i>
+                                </a>
+                            </div>
+                            <div className="nla_profile_setting_wrapper">
+                                <div className="nla_profile">
+                                    <img src={placeHoldImg} className="img-fluid" alt="profile" />
+                                </div>
+                                <div className="dropdown" ref={ref}>
+                                    <button
+                                        className="btn dropdown-toggle"
+                                        type="button"
+                                        id="profile_dropdown"
+                                        data-bs-toggle="dropdown"
+                                        aria-expanded="false"
+                                        onClick={notifHandler}
+                                    >
+                                        {authData?.email ? authData?.email : "John Doe"}
+                                    </button>
+                                    {notifState === true ? (
+                                        <>
+                                            <ul
+                                                className="dropdown-menu show"
+                                                aria-labelledby="profile_dropdown"
+                                                style={{
+                                                    position: "absolute",
+                                                    inset: "0px auto auto 0px",
+                                                    margin: "0px",
+                                                    transform: "translate3d(-124px, 21px, 0px)",
+                                                }}
+                                            >
+                                                <li>
+                                                    <a className="dropdown-item" href="#!">
+                                                        Profile
+                                                    </a>
+                                                </li>
+                                                {authData.role === "admin" ||
+                                                    authData.role === "manager" ? (
+                                                    <li>
+                                                        {location.pathname.includes("/admin") ? (
+                                                            <Link
+                                                                to="/dashboard"
+                                                                className="dropdown-item"
+                                                                href="#"
+                                                            >
+                                                                User Dashboard
+                                                            </Link>
+                                                        ) : (
+                                                            <Link
+                                                                to="/admin/user-management"
+                                                                className="dropdown-item"
+                                                                href="#"
+                                                            >
+                                                                Admin Dashboard
+                                                            </Link>
+                                                        )}
+                                                    </li>
+                                                ) : null}
 
-                        <li>
-                          <a className="dropdown-item" href="#!">
-                            Clients
-                          </a>
-                        </li>
-                        <li>
-                          <Link
-                            className="dropdown-item"
-                            to="/login"
-                            onClick={logoutHandler}
-                          >
-                            Logout
-                          </Link>
-                        </li>
-                      </ul>
-                    </>
-                  ) : null}
+                                                <li>
+                                                    <a className="dropdown-item" href="#!">
+                                                        Clients
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <Link
+                                                        className="dropdown-item"
+                                                        to="/login"
+                                                        onClick={logoutHandler}
+                                                    >
+                                                        Logout
+                                                    </Link>
+                                                </li>
+                                            </ul>
+                                        </>
+                                    ) : null}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-              </div>
-            </div>
-          </div>
+            </header>
+            {/* {/* <!-- Header Start --> */}
         </div>
-      </header>
-      {/* {/* <!-- Header Start --> */}
-    </div>
-  );
+    );
 };
 
 export default Header;
