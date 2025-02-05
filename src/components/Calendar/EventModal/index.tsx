@@ -93,6 +93,7 @@ export const EventModal: React.FC<EventModalProps> = ({
         .map(eventProduct => {
             const product = productData?.find(p => p.id === eventProduct.productId)
             if (!product) return null
+            console.log({ product });
 
             const item: ProductAccordionItem = {
                 key: product.id,

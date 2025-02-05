@@ -11,17 +11,18 @@ import { Select, Form, Modal, Input, message } from "antd";
 import { useEvents } from '../../hooks/useEvents'
 import { Event } from '../../types/event'
 import { Pencil } from 'lucide-react';
+import { eventService } from "../../services/eventService"
+// interface TpoData {
+//     project_id: number;
+//     model_id: number;
+//     user_id: number;
+//     id: number;
+//     name: string;
 
-interface TpoData {
-    project_id: number;
-    model_id: number;
-    user_id: number;
-    id: number;
-    name: string;
-    volume: number;
-    spend: number;
-    revenue: number;
-}
+//     volume: number;
+//     spend: number;
+//     revenue: number;
+// }
 
 const TpoPage = ({
     formData = {},
@@ -133,38 +134,43 @@ const TpoPage = ({
     }
 
     const fetchProductData = async (products) => {
-        let productDataArray = [];
         try {
-            for (const product of products) {
-                const api = `${process.env.REACT_APP_NGROK}/insights/simulation/price/product-data?project_id=${selectedProject}&model_id=${selectedModel}&Retailer=${selectedRetailer}&Product=${product}`;
-                const response = await axios.get(api);
-                if (response.status === 200) {
-                    // setTimeout(() => {
-                    let SingleproductData = response?.data?.data[0];
-                    const basePrice = !isNaN(
-                        response?.data?.data[0]?.Price_avg_last_4_weeks
-                    )
-                        ? response?.data?.data[0]?.Price_avg_last_4_weeks
-                        : 0;
+            await eventService.fetchProductData(products, selectedProject, selectedModel, selectedRetailer).then((productData) => {
+                console.log({ productData });
+                setProductData(productData);
+            });
 
-                    SingleproductData = {
-                        id: SingleproductData._id,
-                        name: SingleproductData.Product,
-                        brand_id: SingleproductData.Brand,
-                        retailer_id: SingleproductData.Retailer,
-                        totalUnits: SingleproductData.total_units_sum / 52,
-                        promoPriceElasticity:
-                            SingleproductData?.Promo_Price_Elasticity,
-                        basePrice: basePrice,
-                        // total_units_sum: SingleproductData?.total_units_sum / 52,
-                    };
+            // for (const product of products) {
+            //     const api = `${process.env.REACT_APP_NGROK}/insights/simulation/price/product-data?project_id=${selectedProject}&model_id=${selectedModel}&Retailer=${selectedRetailer}&Product=${product}`;
 
-                    productDataArray.push(SingleproductData);
-                    // }, 500);
+            //     const response = await axios.get(api);
+            //     if (response.status === 200) {
+            //         // setTimeout(() => {
+            //         let SingleproductData = response?.data?.data[0];
+            //         const basePrice = !isNaN(
+            //             response?.data?.data[0]?.Price_avg_last_4_weeks
+            //         )
+            //             ? response?.data?.data[0]?.Price_avg_last_4_weeks
+            //             : 0;
 
-                }
-            }
-            setProductData(productDataArray);
+            //         SingleproductData = {
+            //             id: SingleproductData._id,
+            //             name: SingleproductData.Product,
+            //             brand_id: SingleproductData.Brand,
+            //             retailer_id: SingleproductData.Retailer,
+            //             totalUnits: SingleproductData.total_units_sum / 52,
+            //             promoPriceElasticity:
+            //                 SingleproductData?.Promo_Price_Elasticity,
+            //             basePrice: basePrice,
+            //             // total_units_sum: SingleproductData?.total_units_sum / 52,
+            //         };
+
+            //         productDataArray.push(SingleproductData);
+            //         // }, 500);
+
+            //     }
+            // }
+
         } catch (error) {
             console.log("Error in fetching promo event simulation data: ", error);
         }

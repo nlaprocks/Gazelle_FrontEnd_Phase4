@@ -21,17 +21,31 @@ export const calculateFinancialResults = (values: {
         vcm,
         increamentalUnits,
     } = values
+    console.log({ units, promoPrice, basePrice, edlpPerUnitRate, promoPerUnitRate, fixedFee, listPrice, vcm, increamentalUnits });
 
     const grossRevenue = units * promoPrice
     const variableSpend = (edlpPerUnitRate + promoPerUnitRate) * units
     const totalSpend = fixedFee ? fixedFee + variableSpend : variableSpend
+
     const increamentalRevenue = increamentalUnits * promoPrice
-    const increamentalProfit = increamentalUnits * vcm - totalSpend
+    const variableContributionMargin = vcm
+    const increamentalProfit = increamentalUnits * variableContributionMargin - totalSpend
     const percentageROI = (increamentalProfit / totalSpend) * 100
-    const retailerEverydayMargin = ((basePrice - listPrice) / basePrice) * 100
+
     const netCost = listPrice - edlpPerUnitRate - promoPerUnitRate - fixedFee / units
+
+    const retailerEverydayMargin = ((basePrice - listPrice) / basePrice) * 100
     const retailerPromoMargin = ((promoPrice - netCost) / promoPrice) * 100
     const retailerProfit = units * promoPrice - netCost * units
+
+    const mfrCOGS = listPrice - edlpPerUnitRate - promoPerUnitRate - fixedFee / units
+    const baseSharedProfit = (basePrice - mfrCOGS) * units
+    const promoSharedProfit = (promoPrice - mfrCOGS) * units
+    const sharedProfitCreated = promoSharedProfit - baseSharedProfit
+
+    const shelfPriceInvestment = (basePrice - promoPrice) * units
+    const mfrTradeInvestment = fixedFee + (edlpPerUnitRate + promoPerUnitRate) * units
+    const percentageFundedByRetailer = ((shelfPriceInvestment - mfrTradeInvestment) / shelfPriceInvestment) * 100
 
     return [
         {
@@ -66,6 +80,14 @@ export const calculateFinancialResults = (values: {
             name: "Retail Profit",
             value: formatMoney(retailerProfit, '$'),
         },
+        {
+            name: "Shared Profit Created",
+            value: formatMoney(sharedProfitCreated, '$'),
+        },
+        {
+            name: "% Funded by Retailer",
+            value: formatValue(percentageFundedByRetailer, '%'),
+        },
     ]
 }
 
@@ -98,30 +120,39 @@ export const calculatePromotionalResults = (values: {
         doDist,
         fdDist,
         totalUnits,
-        promoPriceElasticity, // Default elasticity if not provided
+        promoPriceElasticity,
         featureEffect = 0,
         displayEffect = 0,
         featureAndDisplayEffect = 0
     } = values
 
     // Calculate discount percentage
-    const discount = ((basePrice - promoPrice) / basePrice) * 100
+    const discount = ((basePrice - promoPrice) * 100) / basePrice
 
-    // Calculate lifts
-    const tprLift = tprDist === 0 ? 0 :
+    // TPR Lift calculation
+    const tprLift = (tprDist === 0 || !tprDist) ? 0 :
         ((1 + -discount / 100) ** promoPriceElasticity - 1) * tprDist
 
-    const foLift = foDist === 0 || featureEffect === 0 ? 0 :
-        ((1 + -discount / 100) ** (promoPriceElasticity * Math.exp((featureEffect * foDist) / 100)) - 1) * 100 -
-        ((1 + -discount / 100) ** promoPriceElasticity - 1) * tprDist
+    // Base TPR effect for subtraction
+    const baseTprEffect = ((1 + -discount / 100) ** promoPriceElasticity - 1) * tprDist
 
-    const doLift = doDist === 0 || displayEffect === 0 ? 0 :
-        ((1 + -discount / 100) ** (promoPriceElasticity * Math.exp((displayEffect * doDist) / 100)) - 1) * 100 -
-        ((1 + -discount / 100) ** promoPriceElasticity - 1) * tprDist
+    // Feature Only Lift
+    const foLift = (foDist === 0 || !foDist) ? 0 :
+        ((1 + -discount / 100) **
+            (promoPriceElasticity * Math.exp((featureEffect * foDist) / 100)) - 1) * 100 -
+        baseTprEffect
 
-    const fdLift = fdDist === 0 || featureAndDisplayEffect === 0 ? 0 :
-        ((1 + -discount / 100) ** (promoPriceElasticity * Math.exp((featureAndDisplayEffect * fdDist) / 100)) - 1) * 100 -
-        ((1 + -discount / 100) ** promoPriceElasticity - 1) * tprDist
+    // Display Only Lift
+    const doLift = (doDist === 0 || !doDist) ? 0 :
+        ((1 + -discount / 100) **
+            (promoPriceElasticity * Math.exp((displayEffect * doDist) / 100)) - 1) * 100 -
+        baseTprEffect
+
+    // Feature and Display Lift
+    const fdLift = (fdDist === 0 || !fdDist) ? 0 :
+        ((1 + -discount / 100) **
+            (promoPriceElasticity * Math.exp((featureAndDisplayEffect * fdDist) / 100)) - 1) * 100 -
+        baseTprEffect
 
     // Calculate units
     const tprUnits = (tprLift / 100) * totalUnits
@@ -181,8 +212,7 @@ export const calculatePromotionalResults = (values: {
         {
             promotion: 'Event Total',
             acv: 0,
-            // lift: totalLift + 100,
-            lift: 0,
+            lift: totalLift + 100,
             units: totalUnitsEvent,
             dollars: totalDollarsEvent
         }
@@ -195,4 +225,40 @@ export const formatValue = (value: number, suffix: string): string => {
 
 export const formatMoney = (value: number, prefix: string): string => {
     return !isNaN(value) && value !== 0 ? `${prefix}${value.toFixed(2)}` : "-"
+}
+
+export const getResult = (financialData: any) => {
+    const promotionalResults = calculatePromotionalResults({
+        basePrice: Number(financialData.basePrice),
+        promoPrice: Number(financialData.promoPrice),
+        tprDist: Number(financialData.tprDist),
+        foDist: Number(financialData.foDist),
+        doDist: Number(financialData.doDist),
+        fdDist: Number(financialData.fdDist),
+        totalUnits: Number(financialData.units),
+        promoPriceElasticity: Number(financialData.promoPriceElasticity),
+    })
+
+    let totalUnits = Number(promotionalResults.find(result => result.promotion === 'Event Total')?.units);
+
+    let financialResults = calculateFinancialResults({
+        units: Number(totalUnits),
+        // units: Number(totalUnits) + Number(financialData.units),
+        promoPrice: Number(financialData.promoPrice),
+        basePrice: Number(financialData.basePrice),
+        edlpPerUnitRate: Number(financialData.edlpPerUnitRate),
+        promoPerUnitRate: Number(financialData.promoPerUnitRate),
+        fixedFee: Number(financialData.fixedFee),
+        listPrice: Number(financialData.listPrice),
+        vcm: Number(financialData.vcm),
+        increamentalUnits: Number(totalUnits),
+        promoPriceElasticity: Number(financialData.promoPriceElasticity),
+    })
+
+    financialResults = financialResults.map(result => result.name === 'Incremental Revenue' ? { ...result, value: formatMoney(promotionalResults.find(result => result.promotion === 'Event Incremental')?.dollars || 0, '$') } : result);
+
+    return {
+        promotionalResults,
+        financialResults
+    }
 }

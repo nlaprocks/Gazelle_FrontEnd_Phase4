@@ -65,13 +65,17 @@ const FinancialFields: React.FC<FinancialFieldsProps> = ({
                     <Form.Item key={field.name} label={field.label} className="mb-2">
                         <InputNumber
                             value={field.name === 'basePrice' ? basePrice :
-                                field.name === 'units' ? totalUnits :
+                                field.name === 'units' ? Number(totalUnits.toFixed(2)) :
                                     financialData[field.name as keyof FinancialData]}
                             onChange={(value) => handleFieldChange(field.name as keyof FinancialData, value)}
                             className="w-full"
                             disabled={field.readonly}
                             precision={2}
                             step={0.01}
+
+
+
+
                             formatter={(value) => {
                                 if (field.formatter) {
                                     return field.formatter(value)
