@@ -2,7 +2,7 @@ import React from 'react'
 import { Table, Tabs } from 'antd'
 import { Event } from '../../../types/event'
 import { format } from 'date-fns'
-import { calculateFinancialResults, calculatePromotionalResults } from '../../../utils/financialCalculations'
+import { calculateFinancialResults, calculatePromotionalResults, formatMoney } from '../../../utils/financialCalculations'
 
 const { TabPane } = Tabs
 
@@ -101,8 +101,18 @@ export const PreviewTable: React.FC<PreviewTableProps> = ({ data }) => {
         ]
 
         return products.map((product) => {
-            console.log({ product });
-            const financialResults = calculateFinancialResults({
+            const promotionalResults = calculatePromotionalResults({
+                basePrice: product.financialData.basePrice,
+                promoPrice: product.financialData.promoPrice,
+                tprDist: product.financialData.tprDist,
+                foDist: product.financialData.foDist,
+                doDist: product.financialData.doDist,
+                fdDist: product.financialData.fdDist,
+                totalUnits: product.financialData.units,
+                promoPriceElasticity: product.financialData.promoPriceElasticity,
+            })
+
+            let financialResults = calculateFinancialResults({
                 units: product.financialData.units,
                 promoPrice: product.financialData.promoPrice,
                 basePrice: product.financialData.basePrice,
@@ -114,16 +124,8 @@ export const PreviewTable: React.FC<PreviewTableProps> = ({ data }) => {
                 increamentalUnits: product.financialData.increamentalUnits,
             })
 
-            const promotionalResults = calculatePromotionalResults({
-                basePrice: product.financialData.basePrice,
-                promoPrice: product.financialData.promoPrice,
-                tprDist: product.financialData.tprDist,
-                foDist: product.financialData.foDist,
-                doDist: product.financialData.doDist,
-                fdDist: product.financialData.fdDist,
-                totalUnits: product.financialData.units,
-                promoPriceElasticity: product.financialData.promoPriceElasticity,
-            })
+            // Add Event Incremental Dollars to the financialResults
+            financialResults = financialResults.map(result => result.name === 'Incremental Revenue' ? { ...result, value: formatMoney(promotionalResults.find(result => result.promotion === 'Event Incremental')?.dollars || 0, '$') } : result)
 
             return (
                 <div key={product.productId} className="mt-6">

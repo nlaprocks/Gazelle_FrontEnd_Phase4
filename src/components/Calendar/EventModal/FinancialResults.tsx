@@ -19,8 +19,6 @@ const FinancialResults: React.FC<FinancialResultsProps> = ({ financialData }) =>
         promoPriceElasticity: Number(financialData.promoPriceElasticity),
     })
 
-    console.log({ promotionalResults });
-
     let financialResults = calculateFinancialResults({
         units: Number(financialData.units),
         promoPrice: Number(financialData.promoPrice),
@@ -36,9 +34,6 @@ const FinancialResults: React.FC<FinancialResultsProps> = ({ financialData }) =>
 
     // Add Event Incremental Dollars to the financialResults
     financialResults = financialResults.map(result => result.name === 'Incremental Revenue' ? { ...result, value: formatMoney(promotionalResults.find(result => result.promotion === 'Event Incremental')?.dollars || 0, '$') } : result)
-
-    console.log({ financialResults });
-
 
     return (
         <div className="space-y-6">

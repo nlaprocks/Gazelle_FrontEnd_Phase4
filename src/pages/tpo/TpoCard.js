@@ -1,8 +1,8 @@
-import { Button, message, Skeleton, Modal } from "antd";
+import { message, Skeleton, Modal } from "antd";
 import { Link } from "react-router-dom";
 import modelSearchIntroImage from '../../assets/images/model-search-intro-image.png';
 import axios from "axios";
-import KebabMenu from '../../components/KebabMenu/KebabMenu';
+import TpoKebabMenu from "../../components/Calendar/TpoKebabMenu";
 import { useEffect, useState } from "react";
 import Moment from "react-moment";
 
@@ -70,12 +70,13 @@ export const TpoCard = ({ event, projects, fetchEventTpos, handleEditTpo, handle
                                 </small>
                             </div>
                         </div>
-                        <KebabMenu
+                        <TpoKebabMenu
                             elem={event}
                             duplicateProjectHandler={() => handleDuplicateTpo(event)}
                             handleEditProjectModal={() => handleEditTpo(event)}
                             deleteProjectHandler={handleDeleteTpo}
                             handleUpgradeVersion={() => handleUpgradeVersion(event)}
+
                         />
                     </div>
 

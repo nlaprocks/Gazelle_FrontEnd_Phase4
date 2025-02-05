@@ -216,23 +216,23 @@ const TpoPage = ({
     return (
         <>
             <Header />
-            < div className="min-h-[calc(100vh-40px)] bg-[rgb(249,249,249)] pt-20 pb-8" >
+            <div className="min-h-[calc(100vh-40px)] bg-[rgb(249,249,249)] pt-20 pb-8">
                 <div className="mx-auto px-12" >
-                    <div className="flex justify-between flex-wrap items-center h-full" >
+                    <div className="flex justify-between flex-wrap items-center h-full">
                         <div className="flex flex-col " >
                             <a href="/tpo" className="flex items-center gap-2" >
                                 <div className="fa-solid fa-arrow-left" > </div>
-                                < span > Back </span>
+                                <span> Back </span>
                             </a>
-                            < h4 className="text-2xl font-bold" > {projectName} </h4>
+                            <h4 className="text-2xl font-bold"> {projectName} </h4>
                         </div>
-                        < div >
+                        <div>
                             <div className="tpo-page flex justify-end flex-wrap items-center gap-x-4 gap-y-2" >
-                                <button className="flex items-center space-x-2 bg-white text-black hover:shadow-sm rounded-lg py-2.5 px-3" >
+                                {/* <button className="flex items-center space-x-2 bg-white text-black hover:shadow-sm rounded-lg py-2.5 px-3" >
                                     <p className="text-base font-medium" >01.01.2024 - 03.01.2024 </p>
-                                </button>
+                                </button> */}
 
-                                < div className="flex items-center space-x-2 py-2.5 px-3 gap-2" >
+                                <div className="flex items-center space-x-2 py-2.5 px-3 gap-2">
                                     <Form.Item>
                                         <Select
                                             value={formData.retailer_id}
@@ -256,7 +256,7 @@ const TpoPage = ({
                                         />
                                     </Form.Item>
 
-                                    < Form.Item >
+                                    <Form.Item>
                                         <Select
                                             value={formData.brand_id}
                                             onChange={value => {
@@ -279,7 +279,7 @@ const TpoPage = ({
                                         />
                                     </Form.Item>
 
-                                    < Form.Item >
+                                    <Form.Item>
                                         <Select
                                             mode="multiple"
                                             value={formData.products}
@@ -303,11 +303,11 @@ const TpoPage = ({
                                     </Form.Item>
                                 </div>
 
-                                < button onClick={handleRedirect} className="flex items-center bg-[#009bcc] text-white hover:text-primary rounded-lg py-2 px-4" >
+                                <button onClick={handleRedirect} className="flex items-center bg-[#009bcc] text-white hover:text-primary rounded-lg py-2 px-4" >
                                     <p className="text-base font-medium" > Trade Plan Report </p>
                                 </button>
 
-                                < button
+                                <button
                                     className="flex items-center bg-[rgb(73,162,128)] text-white hover:shadow-sm rounded-lg py-2.5 px-3"
                                     onClick={() => setIsImportModalOpen(true)}
                                 >
@@ -335,28 +335,28 @@ const TpoPage = ({
                                             <p className="text-gray-500 text-sm" > Total Contribution </p>
                                             < p className="text-black text-2xl font-bold" > 60 </p>
                                         </div>
-                                        < div className="bg-white rounded-lg py-2 px-4 w-full border-b-4 border-secondary shadow color-shadow" >
+                                        <div className="bg-white rounded-lg py-2 px-4 w-full border-b-4 border-secondary shadow color-shadow" >
                                             <p className="text-gray-500 text-sm" > Total Spend </p>
                                             < p className="text-black text-2xl font-bold" > $340, 567 </p>
                                         </div>
-                                        < div className="bg-white rounded-lg py-2 px-4 w-full border-b-4 border-secondary shadow color-shadow" >
+                                        <div className="bg-white rounded-lg py-2 px-4 w-full border-b-4 border-secondary shadow color-shadow" >
                                             <p className="text-gray-500 text-sm" > Incremental volume </p>
                                             < p className="text-black text-2xl font-bold" > 34.5 % </p>
                                         </div>
-                                        < div className="bg-white rounded-lg py-2 px-4 w-full border-b-4 border-secondary shadow color-shadow" >
+                                        <div className="bg-white rounded-lg py-2 px-4 w-full border-b-4 border-secondary shadow color-shadow" >
                                             <p className="text-gray-500 text-sm" > Incremental Revenue </p>
                                             < p className="text-black text-2xl font-bold" > $1, 423, 941 </p>
                                         </div>
-                                        < div className="bg-white rounded-lg py-2 px-4 w-full border-b-4 border-secondary shadow color-shadow" >
+                                        <div className="bg-white rounded-lg py-2 px-4 w-full border-b-4 border-secondary shadow color-shadow" >
                                             <p className="text-gray-500 text-sm" > Plan ROI </p>
                                             < p className="text-black text-2xl font-bold" > 34.5 % </p>
                                         </div>
-                                        < div className="bg-white rounded-lg py-2 px-4 w-full border-b-4 border-secondary shadow color-shadow" >
+                                        <div className="bg-white rounded-lg py-2 px-4 w-full border-b-4 border-secondary shadow color-shadow" >
                                             <p className="text-gray-500 text-sm" > Budget Remaining </p>
                                             < p className="text-black text-2xl font-bold" > $1, 423, 941 </p>
                                         </div>
                                     </div>
-                                    < div className="flex flex-col gap-4 border-l pl-6 relative" >
+                                    <div className="flex flex-col gap-4 border-l pl-6 relative" >
                                         <button
                                             onClick={
                                                 () => {
@@ -369,19 +369,19 @@ const TpoPage = ({
                                             <Pencil size={16} className="text-gray-500" />
                                         </button>
 
-                                        < div className="bg-white rounded-lg py-1.5 px-3 w-full shadow flex items-center gap-2 border-b-4 border-green-600" >
+                                        <div className="bg-white rounded-lg py-1.5 px-3 w-full shadow flex items-center gap-2 border-b-4 border-green-600" >
                                             <p className="text-gray-500 text-sm min-w-24" > Target Volume: </p>
                                             < p className="text-black text-lg m-0 font-bold" >
                                                 ${targetValues.volume.toLocaleString()}
                                             </p>
                                         </div>
-                                        < div className="bg-white rounded-lg py-1.5 px-3 w-full shadow flex items-center gap-2 border-b-4 border-green-600" >
+                                        <div className="bg-white rounded-lg py-1.5 px-3 w-full shadow flex items-center gap-2 border-b-4 border-green-600" >
                                             <p className="text-gray-500 text-sm min-w-24" > Target Spend: </p>
-                                            < p className="text-black text-lg m-0 font-bold" >
+                                            <p className="text-black text-lg m-0 font-bold" >
                                                 ${targetValues.spend.toLocaleString()}
                                             </p>
                                         </div>
-                                        < div className="bg-white rounded-lg py-1.5 px-3 w-full shadow flex items-center gap-2 border-b-4 border-green-600" >
+                                        <div className="bg-white rounded-lg py-1.5 px-3 w-full shadow flex items-center gap-2 border-b-4 border-green-600" >
                                             <p className="text-gray-500 text-sm min-w-24" > Target Revenue: </p>
                                             < p className="text-black text-lg m-0 font-bold" >
                                                 ${targetValues.revenue.toLocaleString()}
@@ -390,14 +390,14 @@ const TpoPage = ({
                                     </div>
                                 </div>
 
-                                < div className="bg-white rounded-lg w-full shadow-md" >
+                                <div className="bg-white rounded-lg w-full shadow-md" >
                                     <Calendar projects={projects} selectedRetailer={selectedRetailer} selectedBrand={selectedBrand} productData={productData} fetchImportedEvents={fetchImportedEvents} setFetchImportedEvents={setFetchImportedEvents} />
                                 </div>
                             </>
                         ) : (
                             <>
                                 {/* Show Information about select project and model */}
-                                < div className="bg-white rounded-lg w-full shadow-md p-4 text-center" >
+                                <div className="bg-white rounded-lg w-full shadow-md p-4 text-center" >
                                     <p className="text-gray-500 text-sm" > Select project and model to view TPO </p>
                                 </div>
                             </>
@@ -427,21 +427,20 @@ const TpoPage = ({
                         <label className="block text-sm font-medium text-gray-700 mb-1" >
                             Target Volume
                         </label>
-                        < Input
+                        <Input
                             type="number"
                             value={tempTargets.volume}
                             onChange={(e) => setTempTargets({
                                 ...tempTargets,
                                 volume: parseInt(e.target.value) || 0
                             })}
-                            prefix="$"
                         />
                     </div>
-                    < div >
+                    <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1" >
                             Target Spend
                         </label>
-                        < Input
+                        <Input
                             type="number"
                             value={tempTargets.spend}
                             onChange={(e) => setTempTargets({
@@ -451,11 +450,11 @@ const TpoPage = ({
                             prefix="$"
                         />
                     </div>
-                    < div >
+                    <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1" >
                             Target Revenue
                         </label>
-                        < Input
+                        <Input
                             type="number"
                             value={tempTargets.revenue}
                             onChange={(e) => setTempTargets({
@@ -468,7 +467,7 @@ const TpoPage = ({
                 </div>
             </Modal>
 
-            < Footer />
+            <Footer />
         </>
     );
 };
