@@ -10,8 +10,10 @@ import Calendar from "../../components/Calendar/Calendar";
 import { Select, Form, Modal, Input, message } from "antd";
 import { useEvents } from '../../hooks/useEvents'
 import { Event } from '../../types/event'
-import { Pencil } from 'lucide-react';
+import { TargetUpdate } from "../../components/Calendar/TargetUpdate";
+// import { Pencil } from 'lucide-react';
 import { eventService } from "../../services/eventService"
+
 // interface TpoData {
 //     project_id: number;
 //     model_id: number;
@@ -66,6 +68,7 @@ const TpoPage = ({
         revenue: 0
     });
     const [tempTargets, setTempTargets] = useState({});
+
 
     useEffect(() => {
         const fetchProjects = async () => {
@@ -203,22 +206,6 @@ const TpoPage = ({
         }
     }, [tpoData]);
 
-    const handleUpdateTargets = async () => {
-        try {
-            const config = { headers: { Authorization: `Bearer ${authData.token}` } };
-            const api = `${process.env.REACT_APP_Base_URL}/api/v1/events/tpo/${id}/target`;
-
-            await axios.put(api, tempTargets, config);
-
-            setTargetValues(tempTargets);
-            setIsEditingTargets(false);
-            message.success('Target values updated successfully');
-        } catch (error) {
-            console.error('Failed to update targets:', error);
-            message.error('Failed to update target values');
-        }
-    };
-
     return (
         <>
             <Header />
@@ -326,79 +313,7 @@ const TpoPage = ({
                     {
                         selectedProject && selectedModel ? (
                             <>
-                                <div className="grid grid-cols-[1fr_300px] gap-4 items-start py-8" >
-                                    <div className="w-full grid grid-cols-4 justify-between items-stretch gap-4 flex-1" >
-                                        {/* Show below box in left side container */}
-                                        < div className="bg-white rounded-lg py-2 px-4 w-full border-b-4 border-secondary shadow color-shadow" >
-                                            <p className="text-gray-500 text-sm" > Total Volume </p>
-                                            < p className="text-black text-2xl font-bold" > 60 </p>
-                                        </div>
-                                        < div className="bg-white rounded-lg py-2 px-4 w-full border-b-4 border-secondary shadow color-shadow" >
-                                            <p className="text-gray-500 text-sm" > Total Revenue </p>
-                                            < p className="text-black text-2xl font-bold" > $340, 567 </p>
-                                        </div>
-                                        < div className="bg-white rounded-lg py-2 px-4 w-full border-b-4 border-secondary shadow color-shadow" >
-                                            <p className="text-gray-500 text-sm" > Total Contribution </p>
-                                            < p className="text-black text-2xl font-bold" > 60 </p>
-                                        </div>
-                                        <div className="bg-white rounded-lg py-2 px-4 w-full border-b-4 border-secondary shadow color-shadow" >
-                                            <p className="text-gray-500 text-sm" > Total Spend </p>
-                                            < p className="text-black text-2xl font-bold" > $340, 567 </p>
-                                        </div>
-                                        <div className="bg-white rounded-lg py-2 px-4 w-full border-b-4 border-secondary shadow color-shadow" >
-                                            <p className="text-gray-500 text-sm" > Incremental volume </p>
-                                            < p className="text-black text-2xl font-bold" > 34.5 % </p>
-                                        </div>
-                                        <div className="bg-white rounded-lg py-2 px-4 w-full border-b-4 border-secondary shadow color-shadow" >
-                                            <p className="text-gray-500 text-sm" > Incremental Revenue </p>
-                                            < p className="text-black text-2xl font-bold" > $1, 423, 941 </p>
-                                        </div>
-                                        <div className="bg-white rounded-lg py-2 px-4 w-full border-b-4 border-secondary shadow color-shadow" >
-                                            <p className="text-gray-500 text-sm" > Plan ROI </p>
-                                            < p className="text-black text-2xl font-bold" > 34.5 % </p>
-                                        </div>
-                                        <div className="bg-white rounded-lg py-2 px-4 w-full border-b-4 border-secondary shadow color-shadow" >
-                                            <p className="text-gray-500 text-sm" > Budget Remaining </p>
-                                            < p className="text-black text-2xl font-bold" > $1, 423, 941 </p>
-                                        </div>
-                                    </div>
-                                    <div className="flex flex-col gap-4 border-l pl-6 relative" >
-                                        <button
-                                            onClick={
-                                                () => {
-                                                    setTempTargets(targetValues);
-                                                    setIsEditingTargets(true);
-                                                }
-                                            }
-                                            className="absolute right-2 top-2 p-2 hover:bg-gray-100 rounded-full"
-                                        >
-                                            <Pencil size={16} className="text-gray-500" />
-                                        </button>
-
-                                        <div className="bg-white rounded-lg py-1.5 px-3 w-full shadow flex items-center gap-2 border-b-4 border-green-600" >
-                                            <p className="text-gray-500 text-sm min-w-24" > Target Volume: </p>
-                                            < p className="text-black text-lg m-0 font-bold" >
-                                                ${targetValues.volume.toLocaleString()}
-                                            </p>
-                                        </div>
-                                        <div className="bg-white rounded-lg py-1.5 px-3 w-full shadow flex items-center gap-2 border-b-4 border-green-600" >
-                                            <p className="text-gray-500 text-sm min-w-24" > Target Spend: </p>
-                                            <p className="text-black text-lg m-0 font-bold" >
-                                                ${targetValues.spend.toLocaleString()}
-                                            </p>
-                                        </div>
-                                        <div className="bg-white rounded-lg py-1.5 px-3 w-full shadow flex items-center gap-2 border-b-4 border-green-600" >
-                                            <p className="text-gray-500 text-sm min-w-24" > Target Revenue: </p>
-                                            < p className="text-black text-lg m-0 font-bold" >
-                                                ${targetValues.revenue.toLocaleString()}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="bg-white rounded-lg w-full shadow-md" >
-                                    <Calendar projects={projects} selectedRetailer={selectedRetailer} selectedBrand={selectedBrand} productData={productData} fetchImportedEvents={fetchImportedEvents} setFetchImportedEvents={setFetchImportedEvents} />
-                                </div>
+                                <Calendar projects={projects} selectedRetailer={selectedRetailer} selectedBrand={selectedBrand} productData={productData} fetchImportedEvents={fetchImportedEvents} setFetchImportedEvents={setFetchImportedEvents} targetValues={targetValues} setIsEditingTargets={setIsEditingTargets} setTempTargets={setTempTargets} />
                             </>
                         ) : (
                             <>
@@ -420,61 +335,19 @@ const TpoPage = ({
                 retailerBrandProducts={retailerBrandProducts}
             />
 
-            <Modal
-                title="Edit Target Values"
-                open={isEditingTargets}
-                onOk={handleUpdateTargets}
-                onCancel={() => setIsEditingTargets(false)}
-                okText="Save"
-                cancelText="Cancel"
-            >
-                <div className="space-y-4" >
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1" >
-                            Target Volume
-                        </label>
-                        <Input
-                            type="number"
-                            value={tempTargets.volume}
-                            onChange={(e) => setTempTargets({
-                                ...tempTargets,
-                                volume: parseInt(e.target.value) || 0
-                            })}
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1" >
-                            Target Spend
-                        </label>
-                        <Input
-                            type="number"
-                            value={tempTargets.spend}
-                            onChange={(e) => setTempTargets({
-                                ...tempTargets,
-                                spend: parseInt(e.target.value) || 0
-                            })}
-                            prefix="$"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1" >
-                            Target Revenue
-                        </label>
-                        <Input
-                            type="number"
-                            value={tempTargets.revenue}
-                            onChange={(e) => setTempTargets({
-                                ...tempTargets,
-                                revenue: parseInt(e.target.value) || 0
-                            })}
-                            prefix="$"
-                        />
-                    </div>
-                </div>
-            </Modal>
+            <TargetUpdate
+                isEditingTargets={isEditingTargets}
+                tempTargets={tempTargets}
+                setTempTargets={setTempTargets}
+                targetValues={targetValues}
+                setTargetValues={setTargetValues}
+                setIsEditingTargets={setIsEditingTargets}
+                event_tpo_id={id}
+            />
 
             <Footer />
         </>
+
     );
 };
 
