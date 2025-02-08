@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Modal, Upload, Button, Tabs, message, Select, Space, Typography } from 'antd'
+import { Modal, Upload, Button, Tabs, message, Select, Space, Typography, Radio } from 'antd'
 import { InboxOutlined } from '@ant-design/icons'
 import { FileSpreadsheet, Download } from 'lucide-react'
 import { parseEventData } from '../../../utils/importUtils'
@@ -31,6 +31,7 @@ export const ImportEvent: React.FC<ImportEventProps> = ({ show, onClose, onImpor
     const [activeKey, setActiveKey] = useState('upload')
     const [selectedRetailer, setSelectedRetailer] = useState<string>('')
     const [selectedBrand, setSelectedBrand] = useState<string>('')
+    const [eventTimeframe, setEventTimeframe] = useState<'past' | 'current'>('past')
 
     const getRetailerProducts = (retailer: string) => {
         return Object?.keys(retailerBrandProducts[retailer]).filter((brand: any) => {
@@ -55,7 +56,7 @@ export const ImportEvent: React.FC<ImportEventProps> = ({ show, onClose, onImpor
             // Add loading message
             message.loading('Processing file...', 0);
 
-            const result = await parseEventData(file, event_tpo_id, project_id, model_id);
+            const result = await parseEventData(file, event_tpo_id, project_id, model_id, eventTimeframe);
 
             // Destroy the loading message
             message.destroy();
@@ -139,6 +140,26 @@ export const ImportEvent: React.FC<ImportEventProps> = ({ show, onClose, onImpor
                     }
                     key="upload"
                 >
+                    <div className="mb-4">
+                        <Radio.Group
+                            value={eventTimeframe}
+                            onChange={(e) => setEventTimeframe(e.target.value)}
+                        >
+                            {/* In Current Event Dates will be kept as specified in the file */}
+                            <Radio.Button value="past">Current Event</Radio.Button>
+
+                            {/* In Past Event Dates will be adjusted to the current year */}
+                            <Radio.Button value="current">Past Event</Radio.Button>
+                        </Radio.Group>
+
+                        <div className="mt-2 text-sm text-gray-500">
+                            {eventTimeframe === 'current'
+                                ? "Dates will be adjusted to the current year"
+                                : "Dates will be kept as specified in the file"
+                            }
+                        </div>
+                    </div>
+
                     <Dragger {...uploadProps}>
                         <p className="ant-upload-drag-icon">
                             <InboxOutlined />

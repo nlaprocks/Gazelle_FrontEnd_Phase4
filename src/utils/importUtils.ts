@@ -38,7 +38,13 @@ interface ParseResult {
     errors: string[]
 }
 
-export const parseEventData = async (file: File, event_tpo_id: string, project_id: string, model_id: string): Promise<ParseResult> => {
+export const parseEventData = async (
+    file: File,
+    event_tpo_id: string,
+    project_id: string,
+    model_id: string,
+    timeframe: 'past' | 'current' = 'past'
+): Promise<ParseResult> => {
     const events = new Map<string, Event>()
     const errors: string[] = []
     return new Promise((resolve) => {
@@ -59,7 +65,7 @@ export const parseEventData = async (file: File, event_tpo_id: string, project_i
                                 event.planned.push(productData)
                             } else {
                                 // Create new event with product
-                                const event = createEvent(row, eventId, productData, project_id, model_id, event_tpo_id)
+                                const event = createEvent(row, eventId, productData, project_id, model_id, event_tpo_id, timeframe)
                                 events.set(eventId, event)
                             }
                         } catch (error) {
@@ -151,7 +157,15 @@ const calculateDiscount = (basePrice: number, promoPrice: number): number => {
     return ((basePrice - promoPrice) / basePrice) * 100
 }
 
-const createEvent = (row: CsvRow, eventId: string, productData: EventProduct, project_id: string, model_id: string, event_tpo_id: string): Event => {
+const createEvent = (
+    row: CsvRow,
+    eventId: string,
+    productData: EventProduct,
+    project_id: string,
+    model_id: string,
+    event_tpo_id: string,
+    timeframe: 'past' | 'current' = 'past'
+): Event => {
     try {
         // Validate required fields
         const requiredFields: (keyof CsvRow)[] = ['title', 'start_date', 'end_date', 'status', 'retailer_id', 'brand_id', 'productId', 'promoPrice']
@@ -166,8 +180,8 @@ const createEvent = (row: CsvRow, eventId: string, productData: EventProduct, pr
             event_tpo_id: event_tpo_id,
             title: row.title,
             description: row.description || '',
-            start_date: parseDate(row.start_date),
-            end_date: parseDate(row.end_date),
+            start_date: parseDate(row.start_date, timeframe),
+            end_date: parseDate(row.end_date, timeframe),
             color: row.color || '#4F46E5',
             status: validateStatus(row.status),
             channels: parseChannels(row.channels),
@@ -185,11 +199,17 @@ const createEvent = (row: CsvRow, eventId: string, productData: EventProduct, pr
     }
 }
 
-const parseDate = (value: string): Date => {
+const parseDate = (value: string, timeframe: 'past' | 'current' = 'past'): Date => {
     const date = new Date(value)
     if (isNaN(date.getTime())) {
         throw new Error('Invalid date format')
     }
+
+    if (timeframe === 'current') {
+        const currentYear = new Date().getFullYear()
+        date.setFullYear(currentYear)
+    }
+
     return date
 }
 

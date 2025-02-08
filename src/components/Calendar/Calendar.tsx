@@ -9,6 +9,7 @@ import { getYearCalendarData, addWeeksToDate } from '../../utils/dateUtils'
 import { useEvents } from '../../hooks/useEvents'
 import { message } from 'antd'
 import { Pencil } from 'lucide-react';
+import { calculateWidgetValues } from '../../utils/widgetCalculations'
 
 interface CalendarProps {
     projects: Array<any>
@@ -109,42 +110,46 @@ const Calendar: React.FC<CalendarProps> = ({ projects, selectedRetailer, selecte
         }
     }
 
+    // Calculate widget values
+    const widgetValues = calculateWidgetValues(events, targetValues.spend)
+
+
     return (
         <>
             <div className="grid grid-cols-[1fr_300px] gap-4 items-start py-8" >
                 <div className="w-full grid grid-cols-4 justify-between items-stretch gap-4 flex-1" >
-                    {/* Show below box in left side container */}
-                    < div className="bg-white rounded-lg py-2 px-4 w-full border-b-4 border-secondary shadow color-shadow" >
+                    <div className="bg-white rounded-lg py-2 px-4 w-full border-b-4 border-secondary shadow color-shadow" >
                         <p className="text-gray-500 text-sm" > Total Volume </p>
-                        < p className="text-black text-2xl font-bold" > 60 </p>
+                        <p className="text-black text-2xl font-bold" > {widgetValues.totalVolume} </p>
                     </div>
-                    < div className="bg-white rounded-lg py-2 px-4 w-full border-b-4 border-secondary shadow color-shadow" >
+                    <div className="bg-white rounded-lg py-2 px-4 w-full border-b-4 border-secondary shadow color-shadow" >
                         <p className="text-gray-500 text-sm" > Total Revenue </p>
-                        < p className="text-black text-2xl font-bold" > $340, 567 </p>
+                        <p className="text-black text-2xl font-bold" > ${widgetValues.totalRevenue} </p>
                     </div>
-                    < div className="bg-white rounded-lg py-2 px-4 w-full border-b-4 border-secondary shadow color-shadow" >
+                    <div className="bg-white rounded-lg py-2 px-4 w-full border-b-4 border-secondary shadow color-shadow" >
                         <p className="text-gray-500 text-sm" > Total Contribution </p>
-                        < p className="text-black text-2xl font-bold" > 60 </p>
+                        <p className="text-black text-2xl font-bold" > {widgetValues.totalContribution} </p>
                     </div>
                     <div className="bg-white rounded-lg py-2 px-4 w-full border-b-4 border-secondary shadow color-shadow" >
                         <p className="text-gray-500 text-sm" > Total Spend </p>
-                        < p className="text-black text-2xl font-bold" > $340, 567 </p>
+                        <p className="text-black text-2xl font-bold" > ${widgetValues.totalSpend.toLocaleString()} </p>
                     </div>
                     <div className="bg-white rounded-lg py-2 px-4 w-full border-b-4 border-secondary shadow color-shadow" >
                         <p className="text-gray-500 text-sm" > Incremental volume </p>
-                        < p className="text-black text-2xl font-bold" > 34.5 % </p>
+                        <p className="text-black text-2xl font-bold" > {widgetValues.incrementalVolume} </p>
                     </div>
                     <div className="bg-white rounded-lg py-2 px-4 w-full border-b-4 border-secondary shadow color-shadow" >
                         <p className="text-gray-500 text-sm" > Incremental Revenue </p>
-                        < p className="text-black text-2xl font-bold" > $1, 423, 941 </p>
+                        <p className="text-black text-2xl font-bold" > ${widgetValues.incrementalRevenue} </p>
                     </div>
+
                     <div className="bg-white rounded-lg py-2 px-4 w-full border-b-4 border-secondary shadow color-shadow" >
                         <p className="text-gray-500 text-sm" > Plan ROI </p>
-                        < p className="text-black text-2xl font-bold" > 34.5 % </p>
+                        <p className="text-black text-2xl font-bold" > {widgetValues.planROI.toFixed(1)}% </p>
                     </div>
                     <div className="bg-white rounded-lg py-2 px-4 w-full border-b-4 border-secondary shadow color-shadow" >
                         <p className="text-gray-500 text-sm" > Budget Remaining </p>
-                        < p className="text-black text-2xl font-bold" > $1, 423, 941 </p>
+                        <p className="text-black text-2xl font-bold" > ${widgetValues.budgetRemaining.toLocaleString()} </p>
                     </div>
                 </div>
                 <div className="flex flex-col gap-4 border-l pl-6 relative" >
@@ -162,8 +167,8 @@ const Calendar: React.FC<CalendarProps> = ({ projects, selectedRetailer, selecte
 
                     <div className="bg-white rounded-lg py-1.5 px-3 w-full shadow flex items-center gap-2 border-b-4 border-green-600" >
                         <p className="text-gray-500 text-sm min-w-24" > Target Volume: </p>
-                        < p className="text-black text-lg m-0 font-bold" >
-                            ${targetValues.volume.toLocaleString()}
+                        <p className="text-black text-lg m-0 font-bold" >
+                            {targetValues.volume.toLocaleString()}
                         </p>
                     </div>
                     <div className="bg-white rounded-lg py-1.5 px-3 w-full shadow flex items-center gap-2 border-b-4 border-green-600" >
