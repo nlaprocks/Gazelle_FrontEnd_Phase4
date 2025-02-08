@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate, useOutletContext, useParams } from "react-router-dom";
+import { useNavigate, useOutletContext, useSearchParams } from "react-router-dom";
 import Spinner from "react-bootstrap/Spinner";
 import Alert from "@mui/material/Alert";
 import Stack from "@mui/material/Stack";
@@ -14,7 +14,8 @@ const ResetPassword = () => {
     const [error, setErrorMsg] = useState("");
     const [showAlert, setShowAlert] = useState(false);
 
-    const { token } = useParams();
+    const [searchParams] = useSearchParams();
+    const token = searchParams.get("token");
 
     const loginHandlerSub = async () => {
         try {
@@ -32,8 +33,8 @@ const ResetPassword = () => {
             };
 
             let { data } = await Api("POST", "api/v1/auth/reset-password", apiData, config);
-            // console.log(data);
-            if (data.code === 200) {
+
+            if (data.status) {
                 navigate("/login");
                 setLoading(false);
             }
@@ -111,11 +112,10 @@ const ResetPassword = () => {
                                         </Stack>
                                     ) : null}
                                 </div>
-                                <div className="col-6 nla_top-spacing">
+                                <div className="col-8 nla_top-spacing">
                                     <button
                                         type="submit"
                                         className="btn btn-primary"
-                                        style={{ width: "166.81px" }}
                                         onClick={loginHandler}
                                     >
                                         {loading === true ? (
@@ -128,7 +128,7 @@ const ResetPassword = () => {
                                     </button>
                                 </div>
 
-                                <div className="col-6 text-end nla_top-spacing">
+                                <div className="col-4 text-end nla_top-spacing">
                                     <a style={{ cursor: "pointer" }} className="nla_forgot_psw" onClick={() => navigate("/login")}>
                                         Back to login
                                     </a>

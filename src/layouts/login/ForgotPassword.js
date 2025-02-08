@@ -27,8 +27,7 @@ const ForgotPassword = () => {
             };
 
             let { data } = await Api("POST", "api/v1/auth/forgot-password", apiData, config);
-            // console.log(data);
-            if (data.code === 200) {
+            if (data.status) {
                 navigate("/reset-link-sent");
                 setLoading(false);
             }
@@ -100,7 +99,6 @@ const ForgotPassword = () => {
                                     <button
                                         type="submit"
                                         className="btn btn-primary"
-                                        style={{ width: "166.81px" }}
                                         onClick={loginHandler}
                                     >
                                         {loading === true ? (
