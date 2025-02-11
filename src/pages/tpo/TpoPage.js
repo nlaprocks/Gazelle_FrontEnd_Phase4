@@ -32,7 +32,7 @@ const TpoPage = ({
 }) => {
     const authData = JSON.parse(localStorage.getItem("auth"));
     const user_id = authData?.user_id;
-    const { projectName, project_id, model_id, id } = useParams();
+    const { project_name, project_id, model_id, id } = useParams();
 
     // Fetch TPO data
     const [tpoData, setTpoData] = useState(null);
@@ -41,9 +41,10 @@ const TpoPage = ({
     const [projectModels, setProjectModels] = useState([]);
     const [retailerBrandProducts, setRetailerBrandProducts] = useState([]);
     const navigate = useNavigate();
+    console.log({ project_name });
 
     const handleRedirect = () => {
-        navigate(`/tpo-report/${projectName}/${project_id}/${model_id}/${id}`);
+        navigate(`/tpo-report/${project_name}/${project_id}/${model_id}/${id}`);
     };
 
     // Select project and model
@@ -217,7 +218,7 @@ const TpoPage = ({
                                 <div className="fa-solid fa-arrow-left" > </div>
                                 <span> Back </span>
                             </a>
-                            <h4 className="text-2xl font-bold"> {projectName} </h4>
+                            <h4 className="text-2xl font-bold"> {project_name} </h4>
                         </div>
                         <div>
                             <div className="tpo-page flex justify-end flex-wrap items-center gap-x-4 gap-y-2" >
