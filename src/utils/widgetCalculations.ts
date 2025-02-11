@@ -11,6 +11,7 @@ export const calculateWidgetValues = (events: Event[], targetBudget: number) => 
     let validROICount = 0
     let totalVolume = 0
     let totalIncrementalVolume = 0
+    let totalCogs = 0;
 
     // Process each event
     events.forEach(event => {
@@ -33,6 +34,7 @@ export const calculateWidgetValues = (events: Event[], targetBudget: number) => 
 
 
             // Add to totals
+            totalCogs += Number((product.financialData.basePrice / 2) * product.financialData.units)
             totalRevenue += Number(grossRevenue?.replace(/[^0-9.-]+/g, "")) || 0
             totalSpend += Number(totalSpendResult?.replace(/[^0-9.-]+/g, "")) || 0
             totalIncrementalRevenue += Number(incrementalRevenue?.replace(/[^0-9.-]+/g, "")) || 0
@@ -59,11 +61,11 @@ export const calculateWidgetValues = (events: Event[], targetBudget: number) => 
     // Calculate final values
     const averageROI = validROICount > 0 ? totalROI / validROICount : 0
     const budgetRemaining = targetBudget - totalSpend
-
+    const totalContribution = Number((totalSpend + totalCogs) - totalRevenue);
     return {
         totalVolume: totalVolume.toFixed(2),
         totalRevenue: totalRevenue.toFixed(2),
-        totalContribution: events.length, // As per requirement
+        totalContribution, // As per requirement
         totalSpend,
         incrementalVolume: totalIncrementalVolume.toFixed(2),
         incrementalRevenue: totalIncrementalRevenue.toFixed(2),

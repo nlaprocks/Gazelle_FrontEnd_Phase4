@@ -43,7 +43,7 @@ const TpoPage = ({
     const navigate = useNavigate();
 
     const handleRedirect = () => {
-        navigate("/tpo-report");
+        navigate(`/tpo-report/${projectName}/${project_id}/${model_id}/${id}`);
     };
 
     // Select project and model

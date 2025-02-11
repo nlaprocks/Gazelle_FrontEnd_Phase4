@@ -34,7 +34,6 @@ const Calendar: React.FC<CalendarProps> = ({ projects, selectedRetailer, selecte
     const [selectedDate, setSelectedDate] = useState<Date | undefined>()
 
     const [selectedEvent, setSelectedEvent] = useState<Event | undefined>()
-    const maxBudget = 32000
     const weeks = getYearCalendarData(currentYear)
 
     const handlePrevYear = () => setCurrentYear(prev => prev - 1)
@@ -128,7 +127,7 @@ const Calendar: React.FC<CalendarProps> = ({ projects, selectedRetailer, selecte
                     </div>
                     <div className="bg-white rounded-lg py-2 px-4 w-full border-b-4 border-secondary shadow color-shadow" >
                         <p className="text-gray-500 text-sm" > Total Contribution </p>
-                        <p className="text-black text-2xl font-bold" > {widgetValues.totalContribution} </p>
+                        <p className="text-black text-2xl font-bold" > ${widgetValues.totalContribution.toFixed(1)} </p>
                     </div>
                     <div className="bg-white rounded-lg py-2 px-4 w-full border-b-4 border-secondary shadow color-shadow" >
                         <p className="text-gray-500 text-sm" > Total Spend </p>
@@ -251,7 +250,7 @@ const Calendar: React.FC<CalendarProps> = ({ projects, selectedRetailer, selecte
                         selectedBrand={selectedBrand}
                         projects={projects}
                         productData={productData}
-                        maxBudget={maxBudget}
+                        maxBudget={widgetValues.budgetRemaining}
                     />
                 )}
             </div>

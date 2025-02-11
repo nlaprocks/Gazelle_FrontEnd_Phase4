@@ -43,7 +43,7 @@ const Config = () => {
                     </Route>
                     <Route exact path="/tpo" element={<TpoHome />}></Route>
                     <Route exact path="/tpo/:project_name/:project_id/:model_id/:id" element={<TpoPage />}></Route>
-                    <Route exact path="/tpo-report" element={<TpoReportPage />}></Route>
+                    <Route exact path="/tpo-report/:project_name/:project_id/:model_id/:id" element={<TpoReportPage />}></Route>
                     <Route exact path="/dashboard" element={<ProtectedRoute component={DashboardPage}></ProtectedRoute>}></Route>
                     <Route exact path="/chat" element={<ProtectedRoute component={ChatPage}></ProtectedRoute>}></Route>
                     {/* <Route
