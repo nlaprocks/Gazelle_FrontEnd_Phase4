@@ -41,7 +41,6 @@ const TpoPage = ({
     const [projectModels, setProjectModels] = useState([]);
     const [retailerBrandProducts, setRetailerBrandProducts] = useState([]);
     const navigate = useNavigate();
-    console.log({ project_name });
 
     const handleRedirect = () => {
         navigate(`/tpo-report/${project_name}/${project_id}/${model_id}/${id}`);
