@@ -9,14 +9,17 @@ const Footer = () => {
     state === false ? setState(true) : setState(false);
   };
 
+  const year = new Date().getFullYear();
+
   return (
     <div>
       {/* <!-- Footer Start  --> */}
       <footer className="nla_theme_footer bg-[#0d0e23]">
-        <p className="mb-0 text-white">© 2024 NorthLight Analytic Partners Inc. | Confidential and Proprietary</p>
+        <p className="mb-0 text-white">© {year} NorthLight Analytic Partners Inc. | Confidential and Proprietary</p>
       </footer>
       <div className="nla_help-and-faqs-block">
         <div className="position-relative help_toggle_btn" onClick={toggler}>
+
           <img src={chatBubbles} alt="Help and FAQs" className="img-fluid" />
           <span>?</span>
         </div>

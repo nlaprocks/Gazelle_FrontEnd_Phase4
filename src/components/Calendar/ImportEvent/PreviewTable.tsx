@@ -2,7 +2,7 @@ import React from 'react'
 import { Table, Tabs } from 'antd'
 import { Event } from '../../../types/event'
 import { format } from 'date-fns'
-import { calculateFinancialResults, calculatePromotionalResults } from '../../../utils/financialCalculations'
+import { getResult } from '../../../utils/financialCalculations'
 
 const { TabPane } = Tabs
 
@@ -101,29 +101,7 @@ export const PreviewTable: React.FC<PreviewTableProps> = ({ data }) => {
         ]
 
         return products.map((product) => {
-            console.log({ product });
-            const financialResults = calculateFinancialResults({
-                units: product.financialData.units,
-                promoPrice: product.financialData.promoPrice,
-                basePrice: product.financialData.basePrice,
-                edlpPerUnitRate: product.financialData.edlpPerUnitRate,
-                promoPerUnitRate: product.financialData.promoPerUnitRate,
-                fixedFee: product.financialData.fixedFee,
-                listPrice: product.financialData.listPrice,
-                vcm: product.financialData.vcm,
-                increamentalUnits: product.financialData.increamentalUnits,
-            })
-
-            const promotionalResults = calculatePromotionalResults({
-                basePrice: product.financialData.basePrice,
-                promoPrice: product.financialData.promoPrice,
-                tprDist: product.financialData.tprDist,
-                foDist: product.financialData.foDist,
-                doDist: product.financialData.doDist,
-                fdDist: product.financialData.fdDist,
-                totalUnits: product.financialData.units,
-                promoPriceElasticity: product.financialData.promoPriceElasticity,
-            })
+            const { promotionalResults, financialResults } = getResult(product.financialData);
 
             return (
                 <div key={product.productId} className="mt-6">

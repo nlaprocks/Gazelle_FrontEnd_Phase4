@@ -1,6 +1,6 @@
 import React from 'react'
 import { FinancialData } from '../../../../types/financial'
-import { calculateFinancialResults, calculatePromotionalResults } from '../../../../utils/financialCalculations'
+import { getResult } from '../../../../utils/financialCalculations'
 import { Table } from 'antd'
 
 interface EventFinancialResultsProps {
@@ -8,28 +8,7 @@ interface EventFinancialResultsProps {
 }
 
 export const EventFinancialResults: React.FC<EventFinancialResultsProps> = ({ financialData }) => {
-    const financialResults = calculateFinancialResults({
-        units: Number(financialData.units),
-        promoPrice: Number(financialData.promoPrice),
-        basePrice: Number(financialData.basePrice),
-        edlpPerUnitRate: Number(financialData.edlpPerUnitRate),
-        promoPerUnitRate: Number(financialData.promoPerUnitRate),
-        fixedFee: Number(financialData.fixedFee),
-        listPrice: Number(financialData.listPrice),
-        vcm: Number(financialData.vcm),
-        increamentalUnits: Number(financialData.increamentalUnits),
-    })
-
-    const promotionalResults = calculatePromotionalResults({
-        basePrice: Number(financialData.basePrice),
-        promoPrice: Number(financialData.promoPrice),
-        tprDist: Number(financialData.tprDist),
-        foDist: Number(financialData.foDist),
-        doDist: Number(financialData.doDist),
-        fdDist: Number(financialData.fdDist),
-        totalUnits: Number(financialData.units),
-        promoPriceElasticity: Number(financialData.promoPriceElasticity),
-    })
+    const { promotionalResults, financialResults } = getResult(financialData);
 
     return (
         <div className="space-y-6">
