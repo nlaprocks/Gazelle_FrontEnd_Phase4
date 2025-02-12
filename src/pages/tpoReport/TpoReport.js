@@ -615,32 +615,74 @@ const TpoReport = () => {
     return (
         <>
             <Header />
-            <div className="min-h-[calc(100vh-40px)] bg-[rgb(249,249,249)] pt-20 pb-8">
-                <div className="mx-auto px-12">
-                    <div className="flex justify-between flex-wrap items-center h-full">
-                        <div className="flex flex-col">
+            <div className="min-h-[calc(100vh-40px)] pt-20 pb-8">
+                <div className="border-b border-[#cccccc] pb-3 px-[36px]">
+                    <div className="container-fluid">
+                        <div className="flex gap-2">
                             <a href="/tpo" className="flex items-center gap-2">
-                                <div className="fa-solid fa-arrow-left"></div>
-                                <span>Back</span>
+                                <div class="nla-arrow-left-icon"><span></span></div>
                             </a>
                             <h4 className="text-2xl font-bold">{project_name}</h4>
                         </div>
-                        <div className="w-full mt-4">
+                    </div>
+                </div>
+                <div className="mx-auto px-12">
+                    <div className="flex justify-between flex-wrap items-center h-full">
+                        
+                        <div className="w-full mt-4 tpo-report-accordion">
                             <Accordion defaultActiveKey="0">
-                                <Accordion.Item eventKey="0">
+                                <Accordion.Item eventKey="0" className="my-2 py-0 rounded-lg border-0">
                                     <Accordion.Header>
                                         <div className="flex items-center">
                                             <div className="theme_badge">
                                                 <span>Chart</span>
                                                 <span className="nla_number">1</span>
                                             </div>
-                                            <span className="ml-2">Event Level ROI</span>
+                                            <span className="ml-2">Event Level ROI For all Events</span>
                                         </div>
                                     </Accordion.Header>
                                     <Accordion.Body>
                                         <div>
-                                            <div className="flex justify-between mb-4">
-                                                <div>
+                                            <div className="flex justify-between items-start mb-4">
+                                                <div className="overflow-x-auto">
+                                                    {/* <p className="text-lg font-semibold mb-2">Avg. ROI across all events: {formatNumber(summaryData.avgROI)}%</p> */}
+                                                    <table className="min-w-full bg-white border border-gray-300 rounded-lg shadow-md">
+                                                        <thead>
+                                                            <tr className="bg-[#164f73] text-white">
+                                                                <th colspan="4" className="py-2 px-4 text-left text-lg">Avg. ROI across all events: {formatNumber(summaryData.avgROI)}%</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <thead>
+                                                            <tr className="bg-gray-200 text-gray-700">
+                                                                <th className="py-2 px-4 text-left">Overall</th>
+                                                                <th className="py-2 px-4 text-left">Events</th>
+                                                                <th className="py-2 px-4 text-left">Trade Spend</th>
+                                                                <th className="py-2 px-4 text-left">Avg. ROI</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr className="border-b border-gray-300 text-left">
+                                                                <th className="py-2 px-4">Total</th>
+                                                                <th className="py-2 px-4">{summaryData.total}</th>
+                                                                <th className="py-2 px-4">${(summaryData.totalSpend / 1000000).toFixed(1)}MM</th>
+                                                                <th className="py-2 px-4">{formatNumber(summaryData.avgROI)}%</th>
+                                                            </tr>
+                                                            <tr className="border-b border-gray-300 text-left">
+                                                                <th className="py-2 px-4">Position ROI</th>
+                                                                <td className="py-2 px-4">{summaryData.positiveROI}</td>
+                                                                <td className="py-2 px-4">-</td>
+                                                                <td className="py-2 px-4">{formatNumber((summaryData.positiveROI / summaryData.total) * 100)}%</td>
+                                                            </tr>
+                                                            <tr className="border-b border-gray-300 text-left">
+                                                                <th className="py-2 px-4">Negative ROI</th>
+                                                                <td className="py-2 px-4">{summaryData.negativeROI}</td>
+                                                                <td className="py-2 px-4">-</td>
+                                                                <td className="py-2 px-4">{formatNumber((summaryData.negativeROI / summaryData.total) * 100)}%</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                {/* <div>
                                                     <div>Avg. ROI across all events: {formatNumber(summaryData.avgROI)}%</div>
                                                     <div className="grid grid-cols-4 gap-4 mt-2">
                                                         <div>Total: {summaryData.total}</div>
@@ -652,7 +694,7 @@ const TpoReport = () => {
                                                         <div>Positive ROI: {summaryData.positiveROI} ({formatNumber((summaryData.positiveROI / summaryData.total) * 100)}%)</div>
                                                         <div>Negative ROI: {summaryData.negativeROI} ({formatNumber((summaryData.negativeROI / summaryData.total) * 100)}%)</div>
                                                     </div>
-                                                </div>
+                                                </div> */}
                                                 <button
                                                     className="btn btn-primary"
                                                     onClick={generatePPT}
@@ -670,14 +712,14 @@ const TpoReport = () => {
                                         </div>
                                     </Accordion.Body>
                                 </Accordion.Item>
-                                <Accordion.Item eventKey="1">
+                                <Accordion.Item eventKey="1" className="my-2 py-0 rounded-lg border-0">
                                     <Accordion.Header>
                                         <div className="flex items-center">
                                             <div className="theme_badge">
                                                 <span>Chart</span>
                                                 <span className="nla_number">2</span>
                                             </div>
-                                            <span className="ml-2">Account Level ROI</span>
+                                            <span className="ml-2">What is driving the variation in ROI across different accounts?</span>
                                         </div>
                                     </Accordion.Header>
                                     <Accordion.Body>
@@ -700,9 +742,9 @@ const TpoReport = () => {
                                                 type="bar"
                                                 height={400}
                                             />
-                                            <div className="mt-4">
+                                            {/* <div className="mt-4">
                                                 <p className="font-bold">What is driving the variation in ROI across different accounts?</p>
-                                            </div>
+                                            </div> */}
                                         </div>
                                     </Accordion.Body>
                                 </Accordion.Item>
