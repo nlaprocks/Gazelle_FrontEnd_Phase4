@@ -2115,7 +2115,7 @@ header .theme-title h1 span {
   display: flex;
 }
 
-.design-studio-topbar .new-project-name .nla-arrow-left-icon {
+.nla-arrow-left-icon {
   width: 34px;
   height: 34px;
   background: #f3f9fa 0% 0% no-repeat padding-box;
@@ -2134,7 +2134,7 @@ header .theme-title h1 span {
   margin-right: 15px;
 }
 
-.design-studio-topbar .new-project-name .nla-arrow-left-icon span {
+.nla-arrow-left-icon span {
   border: solid var(--bs-primary);
   border-width: 0 2px 2px 0;
   display: inline-block;
@@ -3717,9 +3717,11 @@ header .theme-title h1 span {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 0.5rem;
+  padding: 0.8rem 0.5rem;
   border-radius: 0.35rem;
   column-gap: 0.5rem;
+  background-color: #f1f5fe;
+  color: #0d0e23;
 }
 
 .theme_badge span {
@@ -3911,3 +3913,13 @@ body.modal-open {
 /* .tpo-calendar thead tr:first-child th:nth-child(2) {
   min-width: 100px;
 } */
+
+
+.tpo-report-accordion .accordion-button {
+  padding: 0.5rem 1.25rem;
+  font-size: 18px;
+}
+
+.tpo-report-accordion .accordion-button:focus {
+  border-bottom: 1px;
+}
