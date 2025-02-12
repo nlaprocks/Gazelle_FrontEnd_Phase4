@@ -142,6 +142,8 @@ const TpoReport = () => {
         let negativeCount = 0;
         let eventNames = [];
         let roiValues = [];
+        let negativeROI = [];
+        let positiveROI = [];
 
         // Transform events data for chart
         events.forEach(event => {
@@ -165,8 +167,14 @@ const TpoReport = () => {
             eventROI = eventROI / event.planned.length;
             totalSpend += eventSpend;
 
-            if (eventROI > 0) positiveCount++;
-            if (eventROI < 0) negativeCount++;
+            if (eventROI > 0) {
+                positiveCount++;
+                positiveROI.push(eventROI);
+            }
+            if (eventROI < 0) {
+                negativeCount++;
+                negativeROI.push(eventROI);
+            }
 
             eventNames.push(event.name || `Event ${event.id}`);
             roiValues.push(eventROI);
@@ -197,13 +205,16 @@ const TpoReport = () => {
                 }
             }
         }));
+        console.log({ totalSpend });
 
         setSummaryData({
             total: events.length,
-            positiveROI: positiveCount,
-            negativeROI: negativeCount,
+            positiveROI: positiveROI.reduce((acc, curr) => acc + curr, 0) / positiveCount,
+            positiveCount: positiveCount,
+            negativeROI: negativeROI.reduce((acc, curr) => acc + curr, 0) / negativeCount,
+            negativeCount: negativeCount,
             avgROI: roiValues.reduce((acc, curr) => acc + curr, 0) / roiValues.length,
-            totalSpend
+            totalSpend: totalSpend
         });
     };
 
@@ -628,7 +639,7 @@ const TpoReport = () => {
                 </div>
                 <div className="mx-auto px-12">
                     <div className="flex justify-between flex-wrap items-center h-full">
-                        
+
                         <div className="w-full mt-4 tpo-report-accordion">
                             <Accordion defaultActiveKey="0">
                                 <Accordion.Item eventKey="0" className="my-2 py-0 rounded-lg border-0">
@@ -664,20 +675,20 @@ const TpoReport = () => {
                                                             <tr className="border-b border-gray-300 text-left">
                                                                 <th className="py-2 px-4">Total</th>
                                                                 <th className="py-2 px-4">{summaryData.total}</th>
-                                                                <th className="py-2 px-4">${(summaryData.totalSpend / 1000000).toFixed(1)}MM</th>
+                                                                <th className="py-2 px-4">${((summaryData.totalSpend).toFixed(1).toLocaleString())}</th>
                                                                 <th className="py-2 px-4">{formatNumber(summaryData.avgROI)}%</th>
                                                             </tr>
                                                             <tr className="border-b border-gray-300 text-left">
                                                                 <th className="py-2 px-4">Position ROI</th>
-                                                                <td className="py-2 px-4">{summaryData.positiveROI}</td>
+                                                                <td className="py-2 px-4">{summaryData.positiveCount}</td>
                                                                 <td className="py-2 px-4">-</td>
-                                                                <td className="py-2 px-4">{formatNumber((summaryData.positiveROI / summaryData.total) * 100)}%</td>
+                                                                <td className="py-2 px-4">{formatNumber(summaryData.positiveROI)}%</td>
                                                             </tr>
                                                             <tr className="border-b border-gray-300 text-left">
                                                                 <th className="py-2 px-4">Negative ROI</th>
-                                                                <td className="py-2 px-4">{summaryData.negativeROI}</td>
+                                                                <td className="py-2 px-4">{summaryData.negativeCount}</td>
                                                                 <td className="py-2 px-4">-</td>
-                                                                <td className="py-2 px-4">{formatNumber((summaryData.negativeROI / summaryData.total) * 100)}%</td>
+                                                                <td className="py-2 px-4">{formatNumber(summaryData.negativeROI)}%</td>
                                                             </tr>
                                                         </tbody>
                                                     </table>

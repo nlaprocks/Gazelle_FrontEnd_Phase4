@@ -34,7 +34,7 @@ export const calculateWidgetValues = (events: Event[], targetBudget: number) => 
 
 
             // Add to totals
-            totalCogs += Number((product.financialData.basePrice / 2) * product.financialData.units)
+            totalCogs += Number((product.financialData.basePrice / 2) * eventTotalVolume)
             totalRevenue += Number(grossRevenue?.replace(/[^0-9.-]+/g, "")) || 0
             totalSpend += Number(totalSpendResult?.replace(/[^0-9.-]+/g, "")) || 0
             totalIncrementalRevenue += Number(incrementalRevenue?.replace(/[^0-9.-]+/g, "")) || 0
