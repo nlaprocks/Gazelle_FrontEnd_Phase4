@@ -21,7 +21,7 @@ export const calculateFinancialResults = (values: {
         vcm,
         increamentalUnits,
     } = values
-    console.log({ units, promoPrice, basePrice, edlpPerUnitRate, promoPerUnitRate, fixedFee, listPrice, vcm, increamentalUnits });
+    // console.log({ units, promoPrice, basePrice, edlpPerUnitRate, promoPerUnitRate, fixedFee, listPrice, vcm, increamentalUnits });
 
     const grossRevenue = units * promoPrice
     const variableSpend = (edlpPerUnitRate + promoPerUnitRate) * units
