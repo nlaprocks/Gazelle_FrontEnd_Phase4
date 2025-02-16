@@ -7,11 +7,10 @@ import { ImportEvent } from "../../components/Calendar/ImportEvent/ImportEvent";
 import Header from "../../components/header/Header";
 import Footer from "../../components/footer/Footer";
 import Calendar from "../../components/Calendar/Calendar";
-import { Select, Form, Modal, Input, message } from "antd";
+import { Select, Form } from "antd";
 import { useEvents } from '../../hooks/useEvents'
 import { Event } from '../../types/event'
 import { TargetUpdate } from "../../components/Calendar/TargetUpdate";
-// import { Pencil } from 'lucide-react';
 import { eventService } from "../../services/eventService"
 
 // interface TpoData {
@@ -184,7 +183,7 @@ const TpoPage = ({
     const [isImportModalOpen, setIsImportModalOpen] = useState(false)
     const [fetchImportedEvents, setFetchImportedEvents] = useState(false)
 
-    const handleImportEvents = async (importedEvents: Event[]) => {
+    const handleImportEvents = async (importedEvents) => {
         try {
             for (const event of importedEvents) {
                 await createImportedEvent(event)
