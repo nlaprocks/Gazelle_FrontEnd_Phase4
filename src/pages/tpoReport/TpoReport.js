@@ -524,7 +524,7 @@ const TpoReport = () => {
             dataLabels: {
                 enabled: true,
                 formatter: function (val) {
-                    return val.toFixed(2) + '%';
+                    return val.toFixed(2);
                 },
                 style: {
                     colors: ['#000']
@@ -532,21 +532,34 @@ const TpoReport = () => {
             },
             colors: ['#4472C4', '#00B050', '#FFC000'],
             xaxis: {
-                categories: ['PPG A', 'PPG B'],
+                categories: [],
                 title: {
                     text: 'Price Point Groups'
                 }
             },
-            yaxis: {
-                title: {
-                    text: 'Percentage (%)'
-                },
-                labels: {
-                    formatter: function (val) {
-                        return val.toFixed(2) + '%';
+            yaxis: [
+                {
+                    title: {
+                        text: 'ROI (%)'
+                    },
+                    labels: {
+                        formatter: function (val) {
+                            return val.toFixed(2) + '%';
+                        }
                     }
+                },
+                {
+                    title: {
+                        text: 'Shared Profit per $ / % Funded'
+                    },
+                    labels: {
+                        formatter: function (val) {
+                            return val.toFixed(2);
+                        }
+                    },
+                    opposite: true
                 }
-            },
+            ],
             grid: {
                 borderColor: '#e7e7e7',
                 row: {
@@ -556,13 +569,6 @@ const TpoReport = () => {
             },
             legend: {
                 position: 'bottom'
-            },
-            tooltip: {
-                y: {
-                    formatter: function (val) {
-                        return val.toFixed(2) + '%';
-                    }
-                }
             }
         },
         summaryData: {
@@ -570,13 +576,15 @@ const TpoReport = () => {
                 sharedProfitCreated: 0,
                 shelfPriceInvestment: 0,
                 sharedProfitPerDollar: 0,
-                percentFundedByRetailer: 0
+                percentFundedByRetailer: 0,
+                pricePoints: []
             },
             ppgB: {
                 sharedProfitCreated: 0,
                 shelfPriceInvestment: 0,
                 sharedProfitPerDollar: 0,
-                percentFundedByRetailer: 0
+                percentFundedByRetailer: 0,
+                pricePoints: []
             }
         }
     });
@@ -1486,111 +1494,132 @@ const TpoReport = () => {
         }));
     };
 
-    const calculateChart6Data = () => {
-        const ppgData = {
-            ppgA: {
-                events: [],
-                roi: [],
-                sharedProfitCreated: [],
-                shelfPriceInvestment: [],
-                mftTradeInvestment: [],
-                retailerFunding: []
-            },
-            ppgB: {
-                events: [],
-                roi: [],
-                sharedProfitCreated: [],
-                shelfPriceInvestment: [],
-                mftTradeInvestment: [],
-                retailerFunding: []
+    // Add this function at the top level of the component
+    const createPPGGroups = (events) => {
+        // Map to store product combinations and their events
+        const ppgMap = new Map();
+
+        events.forEach(event => {
+            // Sort product IDs to ensure consistent combination keys
+            const productIds = event.planned.map(p => p.productId).sort().join('_');
+
+            if (!ppgMap.has(productIds)) {
+                ppgMap.set(productIds, {
+                    products: event.planned.map(p => p.productId),
+                    events: [],
+                    name: `PPG ${String.fromCharCode(65 + ppgMap.size)}` // A, B, C, etc.
+                });
             }
-        };
 
-        // Process events
-        currentYearEvents.forEach(event => {
-            event.planned.forEach(product => {
-                const { financialResults } = getResult(product.financialData);
-                const ppg = product.price_point_group || 'ppgA'; // Default to PPG A if not specified
-
-                // Calculate ROI
-                const roiResult = financialResults.find(r => r.name === "Sales ROI")?.value;
-                const roi = Number(roiResult?.replace(/[^0-9.-]+/g, "")) || 0;
-
-                // Calculate Shared Profit Created
-                const baseUnits = 10000; // Example base units
-                const promoUnits = 25000; // Example promo units
-                const baseShelfPrice = 2.05;
-                const promoShelfPrice = 1.55;
-                const mfrCOGS = 0.95;
-
-                const baseSharedProfit = (baseShelfPrice - mfrCOGS) * baseUnits;
-                const promoSharedProfit = (promoShelfPrice - mfrCOGS) * promoUnits;
-                const sharedProfitCreated = promoSharedProfit - baseSharedProfit;
-
-                // Calculate Shelf Price Investment
-                const shelfPriceInvestment = (baseShelfPrice - promoShelfPrice) * promoUnits;
-
-                // Calculate Manufacturer Trade Investment
-                const mftTradeInvestment = 10000; // Example value, replace with actual calculation
-
-                // Calculate % Funded by Retailer
-                const retailerFunding = (shelfPriceInvestment - mftTradeInvestment) / shelfPriceInvestment * 100;
-
-                // Store calculations in ppgData
-                ppgData[ppg].events.push(event);
-                ppgData[ppg].roi.push(roi);
-                ppgData[ppg].sharedProfitCreated.push(sharedProfitCreated);
-                ppgData[ppg].shelfPriceInvestment.push(shelfPriceInvestment);
-                ppgData[ppg].mftTradeInvestment.push(mftTradeInvestment);
-                ppgData[ppg].retailerFunding.push(retailerFunding);
-            });
+            ppgMap.get(productIds).events.push(event);
         });
 
-        // Calculate averages for each PPG
-        const calculatePPGAverages = (ppg) => {
-            const data = ppgData[ppg];
-            return {
-                avgROI: data.roi.length ? data.roi.reduce((a, b) => a + b, 0) / data.roi.length : 0,
-                avgSharedProfitPerDollar: data.sharedProfitCreated.length && data.shelfPriceInvestment.length ?
-                    (data.sharedProfitCreated.reduce((a, b) => a + b, 0) / data.shelfPriceInvestment.reduce((a, b) => a + b, 0)) * 100 : 0,
-                avgRetailerFunding: data.retailerFunding.length ?
-                    data.retailerFunding.reduce((a, b) => a + b, 0) / data.retailerFunding.length : 0
+        return ppgMap;
+    };
+
+    // Update calculateChart6Data function
+    const calculateChart6Data = () => {
+        const ppgGroups = createPPGGroups(currentYearEvents);
+        const ppgResults = new Map();
+
+        // Process each PPG group
+        ppgGroups.forEach((group, productIds) => {
+            const ppgStats = {
+                roi: [],
+                sharedProfitCreated: 0,
+                sharedProfitPerDollar: 0,
+                retailerFunding: [],
+                totalShelfPriceInvestment: 0,
+                pricePoints: new Set() // Track unique price points
             };
-        };
 
-        const ppgAStats = calculatePPGAverages('ppgA');
-        const ppgBStats = calculatePPGAverages('ppgB');
+            // Process each event in the PPG
+            group.events.forEach(event => {
+                event.planned.forEach(product => {
+                    const { financialResults, promotionalResults } = getResult(product.financialData);
+                    const basePrice = Number(product.financialData.basePrice) || 0;
+                    const promoPrice = Number(product.financialData.promoPrice) || 0;
+                    const mfrCOGS = basePrice / 2;
+                    const promoUnits = Number(promotionalResults.find(result =>
+                        result.promotion === 'Event Total')?.units) || 0;
+                    const baseUnits = Number(product.financialData.units) || 0;
 
+                    // Add price point
+                    ppgStats.pricePoints.add(promoPrice.toFixed(2));
+
+                    // Calculate Shared Profit
+                    const baseSharedProfit = (basePrice - mfrCOGS) * baseUnits;
+                    const promoSharedProfit = (promoPrice - mfrCOGS) * promoUnits;
+                    const sharedProfitCreated = promoSharedProfit - baseSharedProfit;
+
+                    // Calculate Shelf Price Investment
+                    const shelfPriceInvestment = (basePrice - promoPrice) * promoUnits;
+
+                    // Calculate ROI
+                    const roiResult = financialResults.find(r => r.name === "Sales ROI")?.value;
+                    const roi = Number(roiResult?.replace(/[^0-9.-]+/g, "")) || 0;
+                    ppgStats.roi.push(roi);
+
+                    // Calculate Retailer Funding
+                    // TODO: Check for the mftTradeInvestment correct value of this field with @pankajbhai
+                    const mftTradeInvestment = Number(product.financialData.mft_trade_investment) || 0;
+                    const retailerFunding = ((shelfPriceInvestment - mftTradeInvestment) / shelfPriceInvestment) * 100;
+                    ppgStats.retailerFunding.push(retailerFunding);
+
+                    ppgStats.sharedProfitCreated += sharedProfitCreated;
+                    ppgStats.totalShelfPriceInvestment += shelfPriceInvestment;
+                });
+            });
+
+            // Calculate averages for the PPG
+            ppgStats.avgROI = ppgStats.roi.length ?
+                ppgStats.roi.reduce((a, b) => a + b, 0) / ppgStats.roi.length : 0;
+            ppgStats.sharedProfitPerDollar = ppgStats.totalShelfPriceInvestment ?
+                ppgStats.sharedProfitCreated / ppgStats.totalShelfPriceInvestment : 0;
+            ppgStats.avgRetailerFunding = ppgStats.retailerFunding.length ?
+                ppgStats.retailerFunding.reduce((a, b) => a + b, 0) / ppgStats.retailerFunding.length : 0;
+
+            ppgResults.set(group.name, ppgStats);
+        });
+
+        // Prepare chart data
+        const series = [
+            {
+                name: 'ROI',
+                data: Array.from(ppgResults.values()).map(stats => stats.avgROI)
+            },
+            {
+                name: 'Shared Profit Created Per $ Invested',
+                data: Array.from(ppgResults.values()).map(stats => stats.sharedProfitPerDollar)
+            },
+            {
+                name: '% Funded by Retailer',
+                data: Array.from(ppgResults.values()).map(stats => stats.avgRetailerFunding)
+            }
+        ];
+
+        // Update chart data state
         setChart6Data(prev => ({
             ...prev,
-            series: [
-                {
-                    name: 'ROI',
-                    data: [ppgAStats.avgROI, ppgBStats.avgROI]
-                },
-                {
-                    name: 'Shared Profit Created Per $ Invested',
-                    data: [ppgAStats.avgSharedProfitPerDollar, ppgBStats.avgSharedProfitPerDollar]
-                },
-                {
-                    name: '% Funded by Retailer',
-                    data: [ppgAStats.avgRetailerFunding, ppgBStats.avgRetailerFunding]
+            series,
+            options: {
+                ...prev.options,
+                xaxis: {
+                    ...prev.options.xaxis,
+                    categories: Array.from(ppgResults.keys())
                 }
-            ],
-            summaryData: {
-                ppgA: {
-                    sharedProfitCreated: ppgData.ppgA.sharedProfitCreated.reduce((a, b) => a + b, 0),
-                    shelfPriceInvestment: ppgData.ppgA.shelfPriceInvestment.reduce((a, b) => a + b, 0),
-                    sharedProfitPerDollar: ppgAStats.avgSharedProfitPerDollar,
-                    percentFundedByRetailer: ppgAStats.avgRetailerFunding
-                },
-                ppgB: {
-                    sharedProfitCreated: ppgData.ppgB.sharedProfitCreated.reduce((a, b) => a + b, 0),
-                    shelfPriceInvestment: ppgData.ppgB.shelfPriceInvestment.reduce((a, b) => a + b, 0),
-                    sharedProfitPerDollar: ppgBStats.avgSharedProfitPerDollar,
-                    percentFundedByRetailer: ppgBStats.avgRetailerFunding
-                }
-            }
+            },
+            summaryData: Object.fromEntries(
+                Array.from(ppgResults.entries()).map(([name, stats]) => [
+                    name.toLowerCase().replace(' ', ''),
+                    {
+                        roi: stats.avgROI,
+                        sharedProfitPerDollar: stats.sharedProfitPerDollar,
+                        percentFundedByRetailer: stats.avgRetailerFunding,
+                        pricePoints: Array.from(stats.pricePoints).sort((a, b) => Number(a) - Number(b))
+                    }
+                ])
+            )
         }));
     };
 
@@ -1754,75 +1783,58 @@ const TpoReport = () => {
     };
 
     const calculateChart9Data = () => {
-        // Group events by promoted price
-        const priceGroups = {
-            '6.99': { events: [] },
-            '5.99': { events: [] },
-            '4.99': { events: [] }
-        };
+        const ppgGroups = createPPGGroups(currentYearEvents);
+        const retailerFundingData = new Map();
 
-        currentYearEvents.forEach(event => {
-            event.planned.forEach(product => {
-                const promoPrice = Number(product.financialData.promoPrice);
-                const { financialResults, promotionalResults } = getResult(product.financialData);
-                let totalUnits = Number(promotionalResults.find(result => result.promotion === 'Event Total')?.units);
-                // Calculate ROI
-                const roiResult = financialResults.find(r => r.name === "Sales ROI")?.value;
-                const roi = Number(roiResult?.replace(/[^0-9.-]+/g, "")) || 0;
+        ppgGroups.forEach((group, productIds) => {
+            const fundingPoints = [];
 
-                // Calculate retailer funding percentage using the formula from image 2 and 3
-                const baseShelfPrice = Number(product.financialData.basePrice) || 0;
-                const promoShelfPrice = Number(product.financialData.promoPrice) || 0;
-                const promoUnits = Number(totalUnits) || 0;
-                const mftTradeInvestment = Number(product.financialData.mft_trade_investment) || 0;
+            // Process each event in the PPG
+            group.events.forEach(event => {
+                let eventRetailerFunding = 0;
+                let eventROI = 0;
 
-                const shelfPriceInvestment = (baseShelfPrice - promoShelfPrice) * promoUnits;
-                const retailerFunding = shelfPriceInvestment > 0 ?
-                    ((shelfPriceInvestment - mftTradeInvestment) / shelfPriceInvestment) * 100 : 0;
+                event.planned.forEach(product => {
+                    const { financialResults, promotionalResults } = getResult(product.financialData);
+                    const basePrice = Number(product.financialData.basePrice) || 0;
+                    const promoPrice = Number(product.financialData.promoPrice) || 0;
+                    const promoUnits = Number(promotionalResults.find(result =>
+                        result.promotion === 'Event Total')?.units) || 0;
 
-                // Add to appropriate price group
-                if (Math.abs(promoPrice - 6.99) < 0.01) {
-                    priceGroups['6.99'].events.push({ roi, retailerFunding });
-                } else if (Math.abs(promoPrice - 5.99) < 0.01) {
-                    priceGroups['5.99'].events.push({ roi, retailerFunding });
-                } else if (Math.abs(promoPrice - 4.99) < 0.01) {
-                    priceGroups['4.99'].events.push({ roi, retailerFunding });
-                }
+                    // Calculate Shelf Price Investment
+                    const shelfPriceInvestment = (basePrice - promoPrice) * promoUnits;
+
+                    // Calculate ROI
+                    const roiResult = financialResults.find(r => r.name === "Sales ROI")?.value;
+                    const roi = Number(roiResult?.replace(/[^0-9.-]+/g, "")) || 0;
+
+                    // Calculate Retailer Funding
+                    const mftTradeInvestment = Number(product.financialData.mft_trade_investment) || 0;
+                    const retailerFunding = ((shelfPriceInvestment - mftTradeInvestment) / shelfPriceInvestment) * 100;
+
+                    eventRetailerFunding += retailerFunding;
+                    eventROI += roi;
+                });
+
+                // Average metrics for the event
+                const avgRetailerFunding = eventRetailerFunding / event.planned.length;
+                const avgROI = eventROI / event.planned.length;
+
+                fundingPoints.push([avgRetailerFunding, avgROI]);
             });
+
+            retailerFundingData.set(group.name, fundingPoints);
         });
 
-        // Generate data points for each price line
-        const generateDataPoints = (events) => {
-            // Generate points from 0 to 100% retailer funding
-            const points = [];
-            for (let funding = 0; funding <= 100; funding += 5) {
-                const relevantEvents = currentYearEvents.filter(e =>
-                    Math.abs(e.retailerFunding - funding) <= 2.5);
-
-                if (relevantEvents.length > 0) {
-                    const avgROI = relevantEvents.reduce((sum, e) => sum + e.roi, 0) / relevantEvents.length;
-                    points.push([funding, avgROI]);
-                }
-            }
-            return points;
-        };
+        // Generate series data
+        const series = Array.from(retailerFundingData.entries()).map(([ppgName, points]) => ({
+            name: ppgName,
+            data: points.sort((a, b) => a[0] - b[0]) // Sort by retailer funding percentage
+        }));
 
         setChart9Data(prev => ({
             ...prev,
-            series: [
-                {
-                    name: '$6.99',
-                    data: generateDataPoints(priceGroups['6.99'].events)
-                },
-                {
-                    name: '$5.99',
-                    data: generateDataPoints(priceGroups['5.99'].events)
-                },
-                {
-                    name: '$4.99',
-                    data: generateDataPoints(priceGroups['4.99'].events)
-                }
-            ]
+            series
         }));
     };
 
@@ -3145,13 +3157,13 @@ const TpoReport = () => {
                                                                 <th className="py-2 px-4">Position ROI</th>
                                                                 <td className="py-2 px-4">{summaryData.positiveCount}</td>
                                                                 <td className="py-2 px-4">-</td>
-                                                                <td className="py-2 px-4">{formatNumber(summaryData.positiveROI)}%</td>
+                                                                <th className="py-2 px-4">{formatNumber(summaryData.positiveROI)}%</th>
                                                             </tr>
                                                             <tr className="border-b border-gray-300 text-left">
                                                                 <th className="py-2 px-4">Negative ROI</th>
                                                                 <td className="py-2 px-4">{summaryData.negativeCount}</td>
                                                                 <td className="py-2 px-4">-</td>
-                                                                <td className="py-2 px-4">{formatNumber(summaryData.negativeROI)}%</td>
+                                                                <th className="py-2 px-4">{formatNumber(summaryData.negativeROI)}%</th>
                                                             </tr>
                                                         </tbody>
                                                     </table>
@@ -3424,54 +3436,35 @@ const TpoReport = () => {
                                                     />
                                                 </div>
                                                 <div className="bg-gray-50 p-4 rounded">
-                                                    <h4 className="text-lg font-bold mb-3">Result Summary</h4>
+                                                    <h4 className="text-lg font-bold mb-3">Performance of Hi/Lo Events</h4>
                                                     <div className="grid grid-cols-2 gap-4">
-                                                        <div>
-                                                            <h5 className="font-bold mb-2">PPG A</h5>
-                                                            <table className="min-w-full bg-white border border-gray-300">
-                                                                <tbody>
-                                                                    <tr>
-                                                                        <td className="border px-4 py-2 font-semibold">Shared Profit Created</td>
-                                                                        <td className="border px-4 py-2">${formatNumber(chart6Data.summaryData.ppgA.sharedProfitCreated)}</td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td className="border px-4 py-2 font-semibold">Shelf Price Investment</td>
-                                                                        <td className="border px-4 py-2">${formatNumber(chart6Data.summaryData.ppgA.shelfPriceInvestment)}</td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td className="border px-4 py-2 font-semibold">Shared Profit Per $</td>
-                                                                        <td className="border px-4 py-2">{formatNumber(chart6Data.summaryData.ppgA.sharedProfitPerDollar)}%</td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td className="border px-4 py-2 font-semibold">% Funded by Retailer</td>
-                                                                        <td className="border px-4 py-2">{formatNumber(chart6Data.summaryData.ppgA.percentFundedByRetailer)}%</td>
-                                                                    </tr>
-                                                                </tbody>
-                                                            </table>
-                                                        </div>
-                                                        <div>
-                                                            <h5 className="font-bold mb-2">PPG B</h5>
-                                                            <table className="min-w-full bg-white border border-gray-300">
-                                                                <tbody>
-                                                                    <tr>
-                                                                        <td className="border px-4 py-2 font-semibold">Shared Profit Created</td>
-                                                                        <td className="border px-4 py-2">${formatNumber(chart6Data.summaryData.ppgB.sharedProfitCreated)}</td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td className="border px-4 py-2 font-semibold">Shelf Price Investment</td>
-                                                                        <td className="border px-4 py-2">${formatNumber(chart6Data.summaryData.ppgB.shelfPriceInvestment)}</td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td className="border px-4 py-2 font-semibold">Shared Profit Per $</td>
-                                                                        <td className="border px-4 py-2">{formatNumber(chart6Data.summaryData.ppgB.sharedProfitPerDollar)}%</td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td className="border px-4 py-2 font-semibold">% Funded by Retailer</td>
-                                                                        <td className="border px-4 py-2">{formatNumber(chart6Data.summaryData.ppgB.percentFundedByRetailer)}%</td>
-                                                                    </tr>
-                                                                </tbody>
-                                                            </table>
-                                                        </div>
+                                                        {Object.entries(chart6Data.summaryData).map(([ppgName, data]) => (
+                                                            <div key={ppgName} className="border rounded p-3">
+                                                                <h5 className="font-bold mb-2">{ppgName.toUpperCase()}</h5>
+                                                                <table className="min-w-full">
+                                                                    <tbody>
+                                                                        <tr>
+                                                                            <td className="py-1 font-semibold">Price Points:</td>
+                                                                            <td className="py-1">
+                                                                                {data.pricePoints.map(price => `$${price}`).join(', ')}
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td className="py-1 font-semibold">ROI:</td>
+                                                                            <td className="py-1">{isNaN(data.roi) ? 'NaN%' : `${formatNumber(data.roi)}%`}</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td className="py-1 font-semibold">Shared Profit per $:</td>
+                                                                            <td className="py-1">${formatNumber(data.sharedProfitPerDollar)}</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td className="py-1 font-semibold">% Funded by Retailer:</td>
+                                                                            <td className="py-1">{formatNumber(data.percentFundedByRetailer)}%</td>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        ))}
                                                     </div>
                                                 </div>
                                             </div>

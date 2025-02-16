@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { X } from 'lucide-react'
 import { Form, Collapse, type CollapseProps, Tabs } from 'antd'
-import { Event, EventProduct } from '../../../types/event'
+import { Event, EventProduct, EventStatus } from '../../../types/event'
 import EventDetails from './EventDetails'
 import FinancialFields from './FinancialFields'
 import FinancialResults from './FinancialResults'
@@ -42,13 +42,14 @@ export const EventModal: React.FC<EventModalProps> = ({
 }) => {
     const [form] = Form.useForm()
     const { project_id, model_id, id } = useParams();
-    const [formData, setFormData] = useState<Omit<Event, 'id'>>({
+
+    const initialFormData = {
         title: '',
         description: '',
         start_date: startDate ? new Date(startDate.toISOString().split('T')[0]) : undefined,
         end_date: startDate ? new Date(startDate.toISOString().split('T')[0]) : undefined,
         color: '#4F46E5',
-        status: 'draft',
+        status: 'draft' as EventStatus,
         channels: [],
         retailer_id: '',
         brand_id: '',
@@ -58,7 +59,9 @@ export const EventModal: React.FC<EventModalProps> = ({
         planned: [],
         actual: [],
         budget: 0,
-    })
+    };
+
+    const [formData, setFormData] = useState<Omit<Event, 'id'>>(initialFormData)
 
     useEffect(() => {
         if (initialEvent) {
@@ -86,6 +89,7 @@ export const EventModal: React.FC<EventModalProps> = ({
     const handleSubmit = () => {
         onSave(formData)
         onClose()
+        setFormData(initialFormData)
     }
 
     if (!isOpen) return null
