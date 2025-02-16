@@ -14,6 +14,10 @@ const TpoReport = () => {
     const authData = JSON.parse(localStorage.getItem("auth"));
     // const user_id = authData?.user_id;
     const { project_name, project_id, model_id, id } = useParams();
+    // Get current date for year comparison
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+
     const { events } = useEvents();
     const [chartData, setChartData] = useState({
         series: [{
@@ -410,7 +414,14 @@ const TpoReport = () => {
                         }
                     }
                 },
-                colors: ['#feb019']
+                colors: ['#feb019'],
+                tooltip: {
+                    y: {
+                        formatter: function (val) {
+                            return val.toFixed(2) + '%';
+                        }
+                    }
+                }
             }
         }
     });
@@ -575,7 +586,8 @@ const TpoReport = () => {
             data: []
         }, {
             name: 'Current Year',
-            data: []
+            data: [],
+            percentageChanges: []
         }],
         options: {
             chart: {
@@ -592,8 +604,11 @@ const TpoReport = () => {
             dataLabels: {
                 enabled: true,
                 formatter: function (val, { seriesIndex, dataPointIndex, w }) {
+                    console.log({ seriesIndex, dataPointIndex, w });
+
                     if (seriesIndex === 1) { // Only show percentage change on current year bars
                         const percentageChanges = w.config.series[1].percentageChanges || [];
+                        console.log({ percentageChanges });
                         const change = percentageChanges[dataPointIndex] || 0;
                         const arrow = change >= 0 ? '↑' : '↓';
                         return `${val.toFixed(2)} (${arrow}${Math.abs(change).toFixed(1)}%)`;
@@ -855,9 +870,18 @@ const TpoReport = () => {
         }
     });
     const [chart5View, setChart5View] = useState('retailer');
+    const [currentYearEvents, setCurrentYearEvents] = useState([]);
+    const [previousYearEvents, setPreviousYearEvents] = useState([]);
 
     useEffect(() => {
-        if (events.length) {
+        const currentYear = new Date().getFullYear();
+        const previousYear = currentYear - 1;
+        setCurrentYearEvents(events.filter(event => new Date(event.start_date).getFullYear() === currentYear || new Date(event.end_date).getFullYear() === currentYear));
+        setPreviousYearEvents(events.filter(event => new Date(event.start_date).getFullYear() === previousYear || new Date(event.end_date).getFullYear() === previousYear));
+    }, [events]);
+
+    useEffect(() => {
+        if (currentYearEvents.length) {
             calculateChartData();
             calculateChart2Data();
             calculateChart3Data();
@@ -867,8 +891,9 @@ const TpoReport = () => {
             calculateChart7Data();
             calculateChart8Data();
             calculateChart9Data();
+            console.log({ currentYearEvents });
         }
-    }, [events]);
+    }, [currentYearEvents]);
 
     const calculateChartData = () => {
         let totalSpend = 0;
@@ -880,7 +905,7 @@ const TpoReport = () => {
         let positiveROI = [];
 
         // Transform events data for chart
-        events.forEach(event => {
+        currentYearEvents.forEach(event => {
             let eventROI = 0;
             let eventSpend = 0;
 
@@ -942,7 +967,7 @@ const TpoReport = () => {
         // console.log({ totalSpend });
 
         setSummaryData({
-            total: events.length,
+            total: currentYearEvents.length,
             positiveROI: positiveROI.reduce((acc, curr) => acc + curr, 0) / positiveCount,
             positiveCount: positiveCount,
             negativeROI: negativeROI.reduce((acc, curr) => acc + curr, 0) / negativeCount,
@@ -958,7 +983,7 @@ const TpoReport = () => {
         let totalROI = 0;
         let retailerCount = 0;
 
-        events.forEach(event => {
+        currentYearEvents.forEach(event => {
             const retailer = event.retailer_id;
             if (!retailerROIs[retailer]) {
                 retailerROIs[retailer] = {
@@ -1040,7 +1065,7 @@ const TpoReport = () => {
         let correlation1 = 0;
         let correlation2 = 0;
 
-        events.forEach(event => {
+        currentYearEvents.forEach(event => {
             event.planned.forEach(product => {
                 const { financialResults } = getResult(product.financialData);
                 const spend = Number(financialResults.find(r => r.name === "Total Spend")?.value?.replace(/[^0-9.-]+/g, "")) || 0;
@@ -1140,73 +1165,97 @@ const TpoReport = () => {
 
     const calculateChart4Data = () => {
         const eventTypes = {
-            'TPR': { count: 0, lift: 0, roi: 0, spend: 0, incrementalLift: 0 },
-            'Feature Only': { count: 0, lift: 0, roi: 0, spend: 0, incrementalLift: 0 },
-            'Display Only': { count: 0, lift: 0, roi: 0, spend: 0, incrementalLift: 0 },
-            'Feature and Display': { count: 0, lift: 0, roi: 0, spend: 0, incrementalLift: 0 }
+            'TPR': { count: 0, productCount: 0, lift: 0, roi: 0, spend: 0, incrementalLift: 0 },
+            'Feature Only': { count: 0, productCount: 0, lift: 0, roi: 0, spend: 0, incrementalLift: 0 },
+            'Display Only': { count: 0, productCount: 0, lift: 0, roi: 0, spend: 0, incrementalLift: 0 },
+            'Feature and Display': { count: 0, productCount: 0, lift: 0, roi: 0, spend: 0, incrementalLift: 0 }
         };
 
         let totalEvents = 0;
         let totalSpend = 0;
         let totalROI = 0;
         let totalIncrementalLift = 0;
+        let totalProductCount = 0;
 
         // First pass: Calculate totals
-        events.forEach(event => {
+        currentYearEvents.forEach(event => {
+            // Determine event type from the first product's promotional results
+            const firstProduct = event.planned[0];
+            const { promotionalResults: firstProductPromo } = getResult(firstProduct.financialData);
+
+            if (firstProductPromo) {
+                // Check event type once per event
+                const tprEvent = firstProductPromo.find(p => p.promotion === 'TPR')?.acv > 0;
+                const featureEvent = firstProductPromo.find(p => p.promotion === 'Feature Only')?.acv > 0;
+                const displayEvent = firstProductPromo.find(p => p.promotion === 'Display Only')?.acv > 0;
+                const featureAndDisplayEvent = firstProductPromo.find(p => p.promotion === 'Feature and Display')?.acv > 0;
+
+                // Increment counts once per event
+                if (tprEvent) eventTypes.TPR.count++;
+                if (featureEvent) eventTypes['Feature Only'].count++;
+                if (displayEvent) eventTypes['Display Only'].count++;
+                if (featureAndDisplayEvent) eventTypes['Feature and Display'].count++;
+            }
+
+            // Process each product's financial data
             event.planned.forEach(product => {
                 const { financialResults, promotionalResults } = getResult(product.financialData);
                 if (!promotionalResults) return;
-                console.log({ promotionalResults });
 
                 const roi = Number(financialResults.find(r => r.name === "Sales ROI")?.value?.replace(/[^0-9.-]+/g, "")) || 0;
                 const spend = Number(financialResults.find(r => r.name === "Total Spend")?.value?.replace(/[^0-9.-]+/g, "")) || 0;
 
-                // Determine event type from promotional results
+                // Get promotional results
                 const tprResult = promotionalResults.find(p => p.promotion === 'TPR');
                 const featureResult = promotionalResults.find(p => p.promotion === 'Feature Only');
                 const displayResult = promotionalResults.find(p => p.promotion === 'Display Only');
                 const featureAndDisplayResult = promotionalResults.find(p => p.promotion === 'Feature and Display');
 
+                // Accumulate metrics without incrementing counts
                 if (tprResult && tprResult.acv > 0) {
-                    eventTypes.TPR.count++;
+                    eventTypes.TPR.productCount++;
                     eventTypes.TPR.incrementalLift += tprResult.lift;
-                    eventTypes.TPR.roi += (roi * spend);
+                    eventTypes.TPR.roi += (roi);
                     eventTypes.TPR.spend += spend;
                     totalIncrementalLift += tprResult.lift;
+                    totalProductCount++;
                 }
 
                 if (featureResult && featureResult.acv > 0) {
-                    eventTypes['Feature Only'].count++;
+                    eventTypes['Feature Only'].productCount++;
                     eventTypes['Feature Only'].incrementalLift += featureResult.lift;
-                    eventTypes['Feature Only'].roi += (roi * spend);
+                    eventTypes['Feature Only'].roi += (roi);
                     eventTypes['Feature Only'].spend += spend;
                     totalIncrementalLift += featureResult.lift;
+                    totalProductCount++;
                 }
 
                 if (displayResult && displayResult.acv > 0) {
-                    eventTypes['Display Only'].count++;
+                    eventTypes['Display Only'].productCount++;
                     eventTypes['Display Only'].incrementalLift += displayResult.lift;
-                    eventTypes['Display Only'].roi += (roi * spend);
+                    eventTypes['Display Only'].roi += (roi);
                     eventTypes['Display Only'].spend += spend;
                     totalIncrementalLift += displayResult.lift;
+                    totalProductCount++;
                 }
 
                 if (featureAndDisplayResult && featureAndDisplayResult.acv > 0) {
-                    eventTypes['Feature and Display'].count++;
+                    eventTypes['Feature and Display'].productCount++;
                     eventTypes['Feature and Display'].incrementalLift += featureAndDisplayResult.lift;
-                    eventTypes['Feature and Display'].roi += (roi * spend);
+                    eventTypes['Feature and Display'].roi += (roi);
                     eventTypes['Feature and Display'].spend += spend;
                     totalIncrementalLift += featureAndDisplayResult.lift;
+                    totalProductCount++;
                 }
 
-                totalEvents++;
                 totalSpend += spend;
-                totalROI += (roi * spend);
+                totalROI += (roi);
             });
+
+            totalEvents++;
         });
 
         const categories = ['TPR', 'Feature Only', 'Display Only', 'Feature and Display', `All ${totalEvents} Events`];
-        console.log(eventTypes);
 
         // Calculate percentages and weighted averages
         const eventCount = [
@@ -1219,19 +1268,19 @@ const TpoReport = () => {
 
         // Calculate average incremental lift for each type
         const avgLift = [
-            eventTypes.TPR.count > 0 ? eventTypes.TPR.incrementalLift / eventTypes.TPR.count : 0,
-            eventTypes['Feature Only'].count > 0 ? eventTypes['Feature Only'].incrementalLift / eventTypes['Feature Only'].count : 0,
-            eventTypes['Display Only'].count > 0 ? eventTypes['Display Only'].incrementalLift / eventTypes['Display Only'].count : 0,
-            eventTypes['Feature and Display'].count > 0 ? eventTypes['Feature and Display'].incrementalLift / eventTypes['Feature and Display'].count : 0,
-            totalEvents > 0 ? totalIncrementalLift / totalEvents : 0
+            eventTypes.TPR.productCount > 0 ? eventTypes.TPR.incrementalLift / eventTypes.TPR.productCount : 0,
+            eventTypes['Feature Only'].productCount > 0 ? eventTypes['Feature Only'].incrementalLift / eventTypes['Feature Only'].productCount : 0,
+            eventTypes['Display Only'].productCount > 0 ? eventTypes['Display Only'].incrementalLift / eventTypes['Display Only'].productCount : 0,
+            eventTypes['Feature and Display'].productCount > 0 ? eventTypes['Feature and Display'].incrementalLift / eventTypes['Feature and Display'].productCount : 0,
+            totalProductCount > 0 ? totalIncrementalLift / totalProductCount : 0
         ];
 
         const weightedROI = [
-            eventTypes.TPR.spend > 0 ? eventTypes.TPR.roi / eventTypes.TPR.spend : 0,
-            eventTypes['Feature Only'].spend > 0 ? eventTypes['Feature Only'].roi / eventTypes['Feature Only'].spend : 0,
-            eventTypes['Display Only'].spend > 0 ? eventTypes['Display Only'].roi / eventTypes['Display Only'].spend : 0,
-            eventTypes['Feature and Display'].spend > 0 ? eventTypes['Feature and Display'].roi / eventTypes['Feature and Display'].spend : 0,
-            totalSpend > 0 ? totalROI / totalSpend : 0
+            eventTypes.TPR.spend > 0 ? eventTypes.TPR.roi / totalEvents : 0,
+            eventTypes['Feature Only'].spend > 0 ? eventTypes['Feature Only'].roi / totalEvents : 0,
+            eventTypes['Display Only'].spend > 0 ? eventTypes['Display Only'].roi / totalEvents : 0,
+            eventTypes['Feature and Display'].spend > 0 ? eventTypes['Feature and Display'].roi / totalEvents : 0,
+            totalEvents > 0 ? totalROI / totalEvents : 0
         ];
 
         setChart4Data(prev => ({
@@ -1292,70 +1341,107 @@ const TpoReport = () => {
         // Initialize data structure for retailers/brands
         const retailerData = {};
         const brandData = {};
+
         let totalSpend = 0;
-
+        let currentEvent = null;
         // Process events
-        events.forEach(event => {
+        currentYearEvents.forEach(event => {
             const retailerId = event.retailer_id;
+            const brand = event.brand_id;
 
+            // Initialize retailer data if not exists
+            if (!retailerData[retailerId]) {
+                retailerData[retailerId] = discountRanges.map(() => ({
+                    roi: 0,
+                    spend: 0,
+                    count: 0,
+                    productCount: 0,
+                    lift: 0,
+                    fndCount: 0
+                }));
+            }
+
+            // Initialize brand data if not exists
+            if (!brandData[brand]) {
+                brandData[brand] = discountRanges.map(() => ({
+                    roi: 0,
+                    spend: 0,
+                    count: 0,
+                    productCount: 0,
+                    lift: 0,
+                    fndCount: 0
+                }));
+            }
+
+            // Calculate event-level average discount first
+            let eventTotalDiscount = 0;
+            let eventProductCount = 0;
+
+            // First pass: calculate total discount for the event
             event.planned.forEach(product => {
-                const { financialResults } = getResult(product.financialData);
-                const discount = Number(product.financialData.discount) || 0;
-                const roi = Number(financialResults.find(r => r.name === "Sales ROI")?.value?.replace(/[^0-9.-]+/g, "")) || 0;
-                const lift = Number(financialResults.find(r => r.name === "Incremental Lift")?.value?.replace(/[^0-9.-]+/g, "")) || 0;
-                const spend = Number(financialResults.find(r => r.name === "Total Spend")?.value?.replace(/[^0-9.-]+/g, "")) || 0;
-                const brand = product.brand || 'Unknown';
-
-                totalSpend += spend;
-
-                // Initialize retailer data if not exists
-                if (!retailerData[retailerId]) {
-                    retailerData[retailerId] = discountRanges.map(() => ({
-                        roi: 0,
-                        spend: 0,
-                        count: 0,
-                        lift: 0,
-                        fndCount: 0
-                    }));
-                }
-
-                // Initialize brand data if not exists
-                if (!brandData[brand]) {
-                    brandData[brand] = discountRanges.map(() => ({
-                        roi: 0,
-                        spend: 0,
-                        count: 0,
-                        lift: 0,
-                        fndCount: 0
-                    }));
-                }
-
-                // Find appropriate discount range
-                const rangeIndex = discountRanges.findIndex(range =>
-                    discount >= range.min && discount < range.max
-                );
-
-                if (rangeIndex !== -1) {
-                    // Update retailer data
-                    retailerData[retailerId][rangeIndex].roi += (roi * spend);
-                    retailerData[retailerId][rangeIndex].spend += spend;
-                    retailerData[retailerId][rangeIndex].count++;
-                    retailerData[retailerId][rangeIndex].lift += lift;
-                    if (event.type?.includes('Feature') || event.type?.includes('Display')) {
-                        retailerData[retailerId][rangeIndex].fndCount++;
-                    }
-
-                    // Update brand data
-                    brandData[brand][rangeIndex].roi += (roi * spend);
-                    brandData[brand][rangeIndex].spend += spend;
-                    brandData[brand][rangeIndex].count++;
-                    brandData[brand][rangeIndex].lift += lift;
-                    if (event.type?.includes('Feature') || event.type?.includes('Display')) {
-                        brandData[brand][rangeIndex].fndCount++;
-                    }
-                }
+                const basePrice = Number(product.financialData.basePrice) || 0;
+                const promoPrice = Number(product.financialData.promoPrice) || 0;
+                const productDiscount = ((basePrice - promoPrice) * 100) / basePrice;
+                eventTotalDiscount += productDiscount;
+                eventProductCount++;
             });
+
+            // Calculate event average discount
+            const eventAverageDiscount = eventTotalDiscount / eventProductCount;
+
+
+            // Find appropriate discount range for the event
+            const eventRangeIndex = discountRanges.findIndex(range =>
+                eventAverageDiscount >= range.min && eventAverageDiscount < range.max
+            );
+
+            console.log({ eventAverageDiscount, eventRangeIndex });
+            // Second pass: process financial data using event-level range
+            if (eventRangeIndex !== -1) {
+                // Increment event counts once per event
+                retailerData[retailerId][eventRangeIndex].count++;
+                brandData[brand][eventRangeIndex].count++;
+                // if (currentEvent == null) {
+
+                //     currentEvent = event.id;
+                // }
+
+                event.planned.forEach(product => {
+                    const { financialResults, promotionalResults } = getResult(product.financialData);
+
+                    const roi = Number(financialResults.find(r => r.name === "Sales ROI")?.value?.replace(/[^0-9.-]+/g, "")) || 0;
+                    const lift = Number(promotionalResults.find(result => result.promotion === 'Event Total')?.lift || 0);
+                    const spend = Number(financialResults.find(r => r.name === "Total Spend")?.value?.replace(/[^0-9.-]+/g, "")) || 0;
+
+                    totalSpend += spend;
+
+
+
+                    // Update retailer data using event range index
+                    retailerData[retailerId][eventRangeIndex].roi += (roi * spend);
+                    retailerData[retailerId][eventRangeIndex].spend += spend;
+                    retailerData[retailerId][eventRangeIndex].productCount++;
+                    retailerData[retailerId][eventRangeIndex].lift += lift;
+
+                    const featureResult = promotionalResults.find(p => p.promotion === 'Feature Only');
+                    const displayResult = promotionalResults.find(p => p.promotion === 'Display Only');
+
+                    if (featureResult && featureResult.acv > 0 || displayResult && displayResult.acv > 0) {
+                        retailerData[retailerId][eventRangeIndex].fndCount++;
+                    }
+
+                    // Update brand data using event range index
+                    brandData[brand][eventRangeIndex].roi += (roi * spend);
+                    brandData[brand][eventRangeIndex].spend += spend;
+                    brandData[brand][eventRangeIndex].productCount++;
+                    brandData[brand][eventRangeIndex].lift += lift;
+                    if (featureResult && featureResult.acv > 0 || displayResult && displayResult.acv > 0) {
+                        brandData[brand][eventRangeIndex].fndCount++;
+                    }
+                });
+            }
         });
+        console.log({ retailerData, brandData });
 
         // Prepare series data based on selected view
         const data = chart5View === 'retailer' ? retailerData : brandData;
@@ -1421,7 +1507,7 @@ const TpoReport = () => {
         };
 
         // Process events
-        events.forEach(event => {
+        currentYearEvents.forEach(event => {
             event.planned.forEach(product => {
                 const { financialResults } = getResult(product.financialData);
                 const ppg = product.price_point_group || 'ppgA'; // Default to PPG A if not specified
@@ -1529,10 +1615,6 @@ const TpoReport = () => {
             };
         });
 
-        // Get current date for year comparison
-        const currentDate = new Date();
-        const currentYear = currentDate.getFullYear();
-
         // Process events
         events.forEach(event => {
             const eventDate = new Date(event.start_date);
@@ -1548,7 +1630,6 @@ const TpoReport = () => {
                     // Calculate incremental profit
                     const incrementalRevenue = Number(financialResults.find(r => r.name === "Incremental Revenue")?.value?.replace(/[^0-9.-]+/g, "")) || 0;
                     const totalSpend = Number(financialResults.find(r => r.name === "Total Spend")?.value?.replace(/[^0-9.-]+/g, "")) || 0;
-                    console.log({ incrementalRevenue, totalSpend });
                     if (eventYear === currentYear) {
                         channelData[channel].currentYear.profit += incrementalRevenue;
                         channelData[channel].currentYear.spend += totalSpend;
@@ -1611,7 +1692,7 @@ const TpoReport = () => {
     const calculateChart8Data = () => {
         const scatterData = [];
 
-        events.forEach(event => {
+        currentYearEvents.forEach(event => {
             event.planned.forEach(product => {
                 const { financialResults } = getResult(product.financialData);
 
@@ -1620,11 +1701,11 @@ const TpoReport = () => {
                 const roi = Number(roiResult?.replace(/[^0-9.-]+/g, "")) || 0;
 
                 // Calculate Shared Profit Created
-                const baseUnits = Number(product.financialData.base_units) || 0;
-                const promoUnits = Number(product.financialData.promo_units) || 0;
-                const baseShelfPrice = Number(product.financialData.base_price) || 0;
-                const promoShelfPrice = Number(product.financialData.promo_price) || 0;
-                const mfrCOGS = Number(product.financialData.mfr_cogs) || 0;
+                const baseUnits = Number(product.financialData.units) || 0;
+                const promoUnits = Number(financialResults.find(r => r.name === "Units")?.value) || 0;
+                const baseShelfPrice = Number(product.financialData.basePrice) || 0;
+                const promoShelfPrice = Number(product.financialData.promoPrice) || 0;
+                const mfrCOGS = Number(product.financialData.basePrice / 2) || 0;
 
                 const baseSharedProfit = (baseShelfPrice - mfrCOGS) * baseUnits;
                 const promoSharedProfit = (promoShelfPrice - mfrCOGS) * promoUnits;
@@ -1680,10 +1761,8 @@ const TpoReport = () => {
             '4.99': { events: [] }
         };
 
-        events.forEach(event => {
+        currentYearEvents.forEach(event => {
             event.planned.forEach(product => {
-                console.log({ product: product.financialData });
-
                 const promoPrice = Number(product.financialData.promoPrice);
                 const { financialResults, promotionalResults } = getResult(product.financialData);
                 let totalUnits = Number(promotionalResults.find(result => result.promotion === 'Event Total')?.units);
@@ -1717,7 +1796,7 @@ const TpoReport = () => {
             // Generate points from 0 to 100% retailer funding
             const points = [];
             for (let funding = 0; funding <= 100; funding += 5) {
-                const relevantEvents = events.filter(e =>
+                const relevantEvents = currentYearEvents.filter(e =>
                     Math.abs(e.retailerFunding - funding) <= 2.5);
 
                 if (relevantEvents.length > 0) {

@@ -109,6 +109,8 @@ const EventDetails: React.FC<EventDetailsProps> = ({
                 if (!existingPlannedProductIds.has(product.id)) {
                     return {
                         productId: product.id,
+                        productName: product.name,
+                        ...product,
                         financialData: {
                             basePrice: product.basePrice,
                             promoPrice: 0,
@@ -135,6 +137,8 @@ const EventDetails: React.FC<EventDetailsProps> = ({
                 if (!existingActualProductIds.has(product.id)) {
                     return {
                         productId: product.id,
+                        productName: product.name,
+                        ...product,
                         financialData: {
                             basePrice: product.basePrice,
                             promoPrice: 0,

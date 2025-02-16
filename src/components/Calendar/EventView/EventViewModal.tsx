@@ -7,7 +7,6 @@ import { EventBasicInfo } from './sections/EventBasicInfo'
 import { EventAdditionalInfo } from './sections/EventAdditionalInfo'
 import ProductAccordionView from './ProductAccordionView'
 import { createPortal } from 'react-dom'
-import { useEvents } from '../../../hooks/useEvents'
 import { getProductData } from '../../../utils/importUtils'
 import { useParams } from "react-router-dom";
 
@@ -26,13 +25,12 @@ export const EventViewModal: React.FC<EventViewModalProps> = ({
     onEdit,
     onDelete
 }) => {
-    // const { deleteEvent } = useEvents()
     const { project_id, model_id } = useParams();
     const [products, setProducts] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
     const fetchProducts = async () => {
-        console.log({ project_id, model_id });
+        console.log({ project_id, model_id, event });
         if (!project_id || !model_id) return;
 
         try {
@@ -50,8 +48,6 @@ export const EventViewModal: React.FC<EventViewModalProps> = ({
     };
 
     useEffect(() => {
-
-
         fetchProducts();
     }, []);
 

@@ -1,21 +1,21 @@
 import { Channel, Retailer, Brand, Product } from '../types/product'
 
 export const MOCK_CHANNELS: Channel[] = [
-    { id: 'c1', name: 'Online' },
-    { id: 'c2', name: 'Retail' },
-    { id: 'c3', name: 'Wholesale' },
+    { id: 'Online', name: 'Online' },
+    { id: 'Retail', name: 'Retail' },
+    { id: 'Wholesale', name: 'Wholesale' },
 ]
 
 export const MOCK_RETAILERS: Retailer[] = [
-    { id: 'r1', name: 'Walmart' },
-    { id: 'r2', name: 'Target' },
-    { id: 'r3', name: 'Costco' },
+    { id: 'Walmart', name: 'Walmart' },
+    { id: 'Target', name: 'Target' },
+    { id: 'Costco', name: 'Costco' },
 ]
 
 export const MOCK_BRANDS: Brand[] = [
-    { id: 'b1', name: 'Brand A', retailer_id: 'r1' },
-    { id: 'b2', name: 'Brand B', retailer_id: 'r1' },
-    { id: 'b3', name: 'Brand C', retailer_id: 'r2' },
+    { id: 'Brand A', name: 'Brand A', retailer_id: 'Walmart' },
+    { id: 'Brand B', name: 'Brand B', retailer_id: 'Walmart' },
+    { id: 'Brand C', name: 'Brand C', retailer_id: 'Target' },
 ]
 
 export const MOCK_PRODUCTS: Product[] = [

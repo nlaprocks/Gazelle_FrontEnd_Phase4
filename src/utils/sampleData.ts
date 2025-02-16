@@ -10,9 +10,9 @@ export const SAMPLE_EVENTS: Event[] = [
         end_date: new Date(2024, 0, 29), // Week 5
         color: '#4F46E5',
         status: 'active',
-        channels: ['c1', 'c2'], // Online and Retail
-        retailer_id: 'r1', // Walmart
-        brand_id: 'b1', // Brand A
+        channels: ['Online', 'Retail'], // Online and Retail
+        retailer_id: 'Walmart', // Walmart
+        brand_id: 'Brand A', // Brand A
         project_id: 'p1',
         model_id: 'm1',
         budget: 10000,
@@ -70,9 +70,9 @@ export const SAMPLE_EVENTS: Event[] = [
         end_date: new Date(2024, 5, 30), // June 30
         color: '#10B981',
         status: 'draft',
-        channels: ['c2', 'c3'], // Retail and Wholesale
-        retailer_id: 'r1', // Walmart
-        brand_id: 'b1', // Brand A
+        channels: ['Retail'], // Retail and Wholesale
+        retailer_id: 'Walmart', // Walmart
+        brand_id: 'Brand A', // Brand A
         project_id: 'p1',
         model_id: 'm1',
         budget: 10000,
@@ -174,9 +174,9 @@ export const SAMPLE_EVENTS: Event[] = [
         end_date: new Date(2024, 11, 31), // December 31
         color: '#EF4444',
         status: 'draft',
-        channels: ['c1', 'c2', 'c3'], // All channels
-        retailer_id: 'r2', // Target
-        brand_id: 'b3', // Brand C
+        channels: ['Online', 'Retail'], // All channels
+        retailer_id: 'Target', // Target
+        brand_id: 'Brand C', // Brand C
         project_id: 'p1',
         model_id: 'm1',
         budget: 10000,
