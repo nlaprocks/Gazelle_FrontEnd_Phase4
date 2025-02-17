@@ -216,8 +216,6 @@ const Calendar: React.FC<CalendarProps> = ({ projects, selectedRetailer, selecte
                                         product={product}
                                         weeks={weeks}
                                         events={events.filter(event => {
-                                            console.log({ filterEvent: event });
-
                                             return event.planned.some(p => p.productId === product.id)
                                         })}
                                         onAddEvent={handleAddEvent}

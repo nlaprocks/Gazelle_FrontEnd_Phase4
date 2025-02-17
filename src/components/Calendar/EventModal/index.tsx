@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { X } from 'lucide-react'
 import { Form, Collapse, type CollapseProps, Tabs } from 'antd'
-import { Event, EventProduct } from '../../../types/event'
+import { Event, EventProduct, EventStatus } from '../../../types/event'
 import EventDetails from './EventDetails'
 import FinancialFields from './FinancialFields'
 import FinancialResults from './FinancialResults'
@@ -42,13 +42,14 @@ export const EventModal: React.FC<EventModalProps> = ({
 }) => {
     const [form] = Form.useForm()
     const { project_id, model_id, id } = useParams();
-    const [formData, setFormData] = useState<Omit<Event, 'id'>>({
+
+    const initialFormData = {
         title: '',
         description: '',
         start_date: startDate ? new Date(startDate.toISOString().split('T')[0]) : undefined,
         end_date: startDate ? new Date(startDate.toISOString().split('T')[0]) : undefined,
         color: '#4F46E5',
-        status: 'draft',
+        status: 'draft' as EventStatus,
         channels: [],
         retailer_id: '',
         brand_id: '',
@@ -58,7 +59,9 @@ export const EventModal: React.FC<EventModalProps> = ({
         planned: [],
         actual: [],
         budget: 0,
-    })
+    };
+
+    const [formData, setFormData] = useState<Omit<Event, 'id'>>(initialFormData)
 
     useEffect(() => {
         if (initialEvent) {
@@ -71,6 +74,7 @@ export const EventModal: React.FC<EventModalProps> = ({
     }, [initialEvent])
 
     const handleProductDataChange = (productId: string, productName: string, financialData: EventProduct['financialData']) => {
+        console.log({ productId, productName, financialData });
         setFormData(prev => ({
             ...prev,
             planned: prev.planned.map(p =>
@@ -85,29 +89,30 @@ export const EventModal: React.FC<EventModalProps> = ({
     const handleSubmit = () => {
         onSave(formData)
         onClose()
+        setFormData(initialFormData)
     }
 
     if (!isOpen) return null
 
     const productItems: CollapseProps['items'] = formData.planned
-        .map(eventProduct => {
-            const product = productData?.find(p => p.id === eventProduct.productId)
-            if (!product) return null
-            console.log({ product });
-
+        .map((eventProduct: any) => {
+            // const product = productData?.find(p => p.id === eventProduct.productId)
+            // if (!product) return null
+            // console.log({ product });
+            console.log({ id: eventProduct.id, eventProduct });
             const item: ProductAccordionItem = {
-                key: product.id,
-                label: product.name,
+                key: eventProduct.productId,
+                label: eventProduct.productName,
                 children: (
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                         <div>
                             <h4 className="text-lg font-semibold mb-4">Financial Details</h4>
                             <FinancialFields
-                                productId={product.id}
+                                productId={eventProduct.productId}
                                 financialData={eventProduct.financialData}
-                                onChange={(data) => handleProductDataChange(product.id, product.name, data)}
-                                basePrice={product.basePrice}
-                                totalUnits={product.totalUnits}
+                                onChange={(data) => handleProductDataChange(eventProduct.id, eventProduct.name, data)}
+                                basePrice={eventProduct.basePrice}
+                                totalUnits={eventProduct.totalUnits}
                             />
                         </div>
                         <div>
@@ -149,17 +154,15 @@ export const EventModal: React.FC<EventModalProps> = ({
                         <div className="flex h-full">
                             {/* Left side - Event Details (30%) */}
                             <div className="w-[30%] border-r border-gray-200 p-6 overflow-auto">
-                                {productData && (
-                                    <EventDetails
-                                        formData={formData}
-                                        setFormData={setFormData}
-                                        channels={MOCK_CHANNELS}
-                                        projects={projects || []}
-                                        planned={formData.planned}
-                                        actual={formData.actual}
-                                        maxBudget={maxBudget}
-                                    />
-                                )}
+                                <EventDetails
+                                    formData={formData}
+                                    setFormData={setFormData}
+                                    channels={MOCK_CHANNELS}
+                                    projects={projects || []}
+                                    planned={formData.planned}
+                                    actual={formData.actual}
+                                    maxBudget={maxBudget}
+                                />
                             </div>
 
                             {/* Right side - Product Details (70%) */}

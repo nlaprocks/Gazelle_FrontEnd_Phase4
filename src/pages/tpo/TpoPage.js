@@ -7,11 +7,10 @@ import { ImportEvent } from "../../components/Calendar/ImportEvent/ImportEvent";
 import Header from "../../components/header/Header";
 import Footer from "../../components/footer/Footer";
 import Calendar from "../../components/Calendar/Calendar";
-import { Select, Form, Modal, Input, message } from "antd";
+import { Select, Form } from "antd";
 import { useEvents } from '../../hooks/useEvents'
 import { Event } from '../../types/event'
 import { TargetUpdate } from "../../components/Calendar/TargetUpdate";
-// import { Pencil } from 'lucide-react';
 import { eventService } from "../../services/eventService"
 
 // interface TpoData {
@@ -139,41 +138,8 @@ const TpoPage = ({
     const fetchProductData = async (products) => {
         try {
             await eventService.fetchProductData(products, selectedProject, selectedModel, selectedRetailer).then((productData) => {
-                console.log({ productData });
                 setProductData(productData);
             });
-
-            // for (const product of products) {
-            //     const api = `${process.env.REACT_APP_NGROK}/insights/simulation/price/product-data?project_id=${selectedProject}&model_id=${selectedModel}&Retailer=${selectedRetailer}&Product=${product}`;
-
-            //     const response = await axios.get(api);
-            //     if (response.status === 200) {
-            //         // setTimeout(() => {
-            //         let SingleproductData = response?.data?.data[0];
-            //         const basePrice = !isNaN(
-            //             response?.data?.data[0]?.Price_avg_last_4_weeks
-            //         )
-            //             ? response?.data?.data[0]?.Price_avg_last_4_weeks
-            //             : 0;
-
-            //         SingleproductData = {
-            //             id: SingleproductData._id,
-            //             name: SingleproductData.Product,
-            //             brand_id: SingleproductData.Brand,
-            //             retailer_id: SingleproductData.Retailer,
-            //             totalUnits: SingleproductData.total_units_sum / 52,
-            //             promoPriceElasticity:
-            //                 SingleproductData?.Promo_Price_Elasticity,
-            //             basePrice: basePrice,
-            //             // total_units_sum: SingleproductData?.total_units_sum / 52,
-            //         };
-
-            //         productDataArray.push(SingleproductData);
-            //         // }, 500);
-
-            //     }
-            // }
-
         } catch (error) {
             console.log("Error in fetching promo event simulation data: ", error);
         }
@@ -184,7 +150,7 @@ const TpoPage = ({
     const [isImportModalOpen, setIsImportModalOpen] = useState(false)
     const [fetchImportedEvents, setFetchImportedEvents] = useState(false)
 
-    const handleImportEvents = async (importedEvents: Event[]) => {
+    const handleImportEvents = async (importedEvents) => {
         try {
             for (const event of importedEvents) {
                 await createImportedEvent(event)

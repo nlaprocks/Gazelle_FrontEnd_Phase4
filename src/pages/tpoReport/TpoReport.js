@@ -12,8 +12,12 @@ import { useEvents } from "../../hooks/useEvents";
 
 const TpoReport = () => {
     const authData = JSON.parse(localStorage.getItem("auth"));
-    const user_id = authData?.user_id;
+    // const user_id = authData?.user_id;
     const { project_name, project_id, model_id, id } = useParams();
+    // Get current date for year comparison
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+
     const { events } = useEvents();
     const [chartData, setChartData] = useState({
         series: [{
@@ -23,19 +27,20 @@ const TpoReport = () => {
         options: {
             chart: {
                 type: 'bar',
-                height: 400
+                height: 400,
+                toolbar: { show: false }
             },
             plotOptions: {
                 bar: {
                     horizontal: false,
                     columnWidth: '55%',
-                    distributed: true
+                    distributed: true,
                 }
             },
             dataLabels: {
                 enabled: true,
                 formatter: function (val) {
-                    return val.toFixed(1) + '%';
+                    return val.toFixed(2) + '%';
                 },
                 style: {
                     colors: ['#fff']
@@ -50,6 +55,11 @@ const TpoReport = () => {
             yaxis: {
                 title: {
                     text: 'ROI (%)'
+                },
+                labels: {
+                    formatter: function (val) {
+                        return val.toFixed(2) + '%';
+                    }
                 }
             },
             legend: {
@@ -58,6 +68,13 @@ const TpoReport = () => {
             colors: ['#52c41a'],
             theme: {
                 mode: 'light'
+            },
+            tooltip: {
+                y: {
+                    formatter: function (val) {
+                        return val.toFixed(2) + '%';
+                    }
+                }
             }
         }
     });
@@ -77,7 +94,8 @@ const TpoReport = () => {
         options: {
             chart: {
                 type: 'bar',
-                height: 400
+                height: 400,
+                toolbar: { show: false }
             },
             plotOptions: {
                 bar: {
@@ -89,7 +107,7 @@ const TpoReport = () => {
             dataLabels: {
                 enabled: true,
                 formatter: function (val) {
-                    return val.toFixed(1) + '%';
+                    return val.toFixed(2) + '%';
                 },
                 style: {
                     colors: ['#fff']
@@ -117,6 +135,11 @@ const TpoReport = () => {
             yaxis: {
                 title: {
                     text: 'ROI (%)'
+                },
+                labels: {
+                    formatter: function (val) {
+                        return val.toFixed(2) + '%';
+                    }
                 }
             },
             legend: {
@@ -125,6 +148,13 @@ const TpoReport = () => {
             colors: ['#52c41a'],
             theme: {
                 mode: 'light'
+            },
+            tooltip: {
+                y: {
+                    formatter: function (val) {
+                        return val.toFixed(2) + '%';
+                    }
+                }
             }
         }
     });
@@ -143,6 +173,7 @@ const TpoReport = () => {
             chart: {
                 type: 'scatter',
                 height: 400,
+                toolbar: { show: false }
             },
             xaxis: {
                 title: {
@@ -151,7 +182,7 @@ const TpoReport = () => {
                 tickAmount: 5,
                 labels: {
                     formatter: function (val) {
-                        return val.toFixed(2)
+                        return '$' + val.toFixed(2);
                     }
                 }
             },
@@ -161,7 +192,7 @@ const TpoReport = () => {
                 },
                 labels: {
                     formatter: function (val) {
-                        return val.toFixed(0)
+                        return val.toFixed(2);
                     }
                 }
             },
@@ -177,8 +208,9 @@ const TpoReport = () => {
                 custom: function ({ series, seriesIndex, dataPointIndex, w }) {
                     const data = w.globals.initialSeries[seriesIndex].data[dataPointIndex];
                     return `<div class="p-2">
-                        <div>Spend: $${data[0].toFixed(2)}</div>
-                        <div>Volume: ${data[1].toFixed(0)}</div>
+                        <div><b>${data.eventName}</b></div>
+                        <div>Spend: $${data.x.toFixed(2)}</div>
+                        <div>Volume: ${data.y.toFixed(2)}</div>
                     </div>`;
                 }
             }
@@ -187,6 +219,7 @@ const TpoReport = () => {
             chart: {
                 type: 'scatter',
                 height: 400,
+                toolbar: { show: false }
             },
             xaxis: {
                 title: {
@@ -195,7 +228,7 @@ const TpoReport = () => {
                 tickAmount: 5,
                 labels: {
                     formatter: function (val) {
-                        return val.toFixed(2)
+                        return '$' + val.toFixed(2);
                     }
                 }
             },
@@ -205,7 +238,7 @@ const TpoReport = () => {
                 },
                 labels: {
                     formatter: function (val) {
-                        return val.toFixed(1) + '%'
+                        return val.toFixed(2) + '%';
                     }
                 }
             },
@@ -221,8 +254,9 @@ const TpoReport = () => {
                 custom: function ({ series, seriesIndex, dataPointIndex, w }) {
                     const data = w.globals.initialSeries[seriesIndex].data[dataPointIndex];
                     return `<div class="p-2">
-                        <div>Spend: $${data[0].toFixed(2)}</div>
-                        <div>ROI: ${data[1].toFixed(1)}%</div>
+                        <div><b>${data.eventName}</b></div>
+                        <div>Spend: $${data.x.toFixed(2)}</div>
+                        <div>ROI: ${data.y.toFixed(2)}%</div>
                     </div>`;
                 }
             }
@@ -243,25 +277,39 @@ const TpoReport = () => {
                 plotOptions: {
                     bar: {
                         horizontal: true,
-                        distributed: true
+                        distributed: true,
+                        barHeight: '40%'
                     }
                 },
                 dataLabels: {
                     enabled: true,
                     formatter: function (val) {
-                        return val.toFixed(1) + '%';
+                        return val.toFixed(2) + '%';
                     },
                     style: { colors: ['#000'] }
                 },
                 xaxis: {
-                    categories: ['TPR', 'Feature', 'Feature and Display', 'Display', 'All Events'],
-                    title: { text: 'Event Count (% of Total)' }
+                    categories: ['TPR', 'Feature Only', 'Display Only', 'Feature and Display', 'All Events'],
+                    title: { text: '' },
+                    labels: {
+                        show: true
+                    }
                 },
-                colors: ['#2196f3'],
-                title: {
-                    text: 'Event Count (% of Total)',
-                    align: 'center'
-                }
+                yaxis: {
+                    labels: {
+                        style: {
+                            fontSize: '12px'
+                        }
+                    }
+                },
+                grid: {
+                    xaxis: {
+                        lines: {
+                            show: true
+                        }
+                    }
+                },
+                colors: ['#2196f3']
             }
         },
         incrementalLift: {
@@ -278,24 +326,45 @@ const TpoReport = () => {
                 plotOptions: {
                     bar: {
                         horizontal: true,
-                        distributed: true
+                        distributed: true,
+                        barHeight: '40%'
                     }
                 },
                 dataLabels: {
                     enabled: true,
                     formatter: function (val) {
-                        return val.toFixed(1) + '%';
+                        return val.toFixed(2) + '%';
                     },
                     style: { colors: ['#000'] }
                 },
                 xaxis: {
-                    categories: ['TPR', 'Feature', 'Feature and Display', 'Display', 'All Events'],
-                    title: { text: 'Average Incremental Lift (%)' }
+                    categories: ['TPR', 'Feature Only', 'Display Only', 'Feature and Display', 'All Events'],
+                    labels: {
+                        show: true
+                    },
+                    title: { text: '' }
+                },
+                yaxis: {
+                    labels: {
+                        style: {
+                            fontSize: '12px'
+                        }
+                    }
+                },
+                grid: {
+                    xaxis: {
+                        lines: {
+                            show: true
+                        }
+                    }
                 },
                 colors: ['#00e396'],
-                title: {
-                    text: 'Average Incremental Lift (%)',
-                    align: 'center'
+                tooltip: {
+                    y: {
+                        formatter: function (val) {
+                            return val.toFixed(2) + '%';
+                        }
+                    }
                 }
             }
         },
@@ -313,24 +382,45 @@ const TpoReport = () => {
                 plotOptions: {
                     bar: {
                         horizontal: true,
-                        distributed: true
+                        distributed: true,
+                        barHeight: '40%'
                     }
                 },
                 dataLabels: {
                     enabled: true,
                     formatter: function (val) {
-                        return val.toFixed(1) + '%';
+                        return val.toFixed(2) + '%';
                     },
                     style: { colors: ['#000'] }
                 },
                 xaxis: {
-                    categories: ['TPR', 'Feature', 'Feature and Display', 'Display', 'All Events'],
-                    title: { text: 'Weighted Average ROI (%)' }
+                    categories: ['TPR', 'Feature Only', 'Display Only', 'Feature and Display', 'All Events'],
+                    labels: {
+                        show: true
+                    },
+                    title: { text: '' }
+                },
+                yaxis: {
+                    labels: {
+                        style: {
+                            fontSize: '12px'
+                        }
+                    }
+                },
+                grid: {
+                    xaxis: {
+                        lines: {
+                            show: true
+                        }
+                    }
                 },
                 colors: ['#feb019'],
-                title: {
-                    text: 'Weighted Average ROI (%)',
-                    align: 'center'
+                tooltip: {
+                    y: {
+                        formatter: function (val) {
+                            return val.toFixed(2) + '%';
+                        }
+                    }
                 }
             }
         }
@@ -356,7 +446,7 @@ const TpoReport = () => {
             dataLabels: {
                 enabled: true,
                 formatter: function (val) {
-                    return val.toFixed(1) + '%';
+                    return val.toFixed(2) + '%';
                 },
                 style: {
                     colors: ['#000']
@@ -375,7 +465,7 @@ const TpoReport = () => {
                 },
                 labels: {
                     formatter: function (val) {
-                        return val.toFixed(1) + '%';
+                        return val.toFixed(2) + '%';
                     }
                 }
             },
@@ -388,6 +478,13 @@ const TpoReport = () => {
             },
             legend: {
                 show: false
+            },
+            tooltip: {
+                y: {
+                    formatter: function (val) {
+                        return val.toFixed(2) + '%';
+                    }
+                }
             }
         },
         summaryData: {
@@ -397,16 +494,414 @@ const TpoReport = () => {
             fndEvents: []
         }
     });
+    const [chart6Data, setChart6Data] = useState({
+        series: [
+            {
+                name: 'ROI',
+                data: []
+            },
+            {
+                name: 'Shared Profit Created Per $ Invested',
+                data: []
+            },
+            {
+                name: '% Funded by Retailer',
+                data: []
+            }
+        ],
+        options: {
+            chart: {
+                type: 'bar',
+                height: 400,
+                toolbar: { show: false }
+            },
+            plotOptions: {
+                bar: {
+                    horizontal: false,
+                    columnWidth: '45%'
+                }
+            },
+            dataLabels: {
+                enabled: true,
+                formatter: function (val) {
+                    return val.toFixed(2);
+                },
+                style: {
+                    colors: ['#000']
+                }
+            },
+            colors: ['#4472C4', '#00B050', '#FFC000'],
+            xaxis: {
+                categories: [],
+                title: {
+                    text: 'Price Point Groups'
+                }
+            },
+            yaxis: [
+                {
+                    title: {
+                        text: 'ROI (%)'
+                    },
+                    labels: {
+                        formatter: function (val) {
+                            return val.toFixed(2) + '%';
+                        }
+                    }
+                },
+                {
+                    title: {
+                        text: 'Shared Profit per $ / % Funded'
+                    },
+                    labels: {
+                        formatter: function (val) {
+                            return val.toFixed(2);
+                        }
+                    },
+                    opposite: true
+                }
+            ],
+            grid: {
+                borderColor: '#e7e7e7',
+                row: {
+                    colors: ['#f3f3f3', 'transparent'],
+                    opacity: 0.5
+                }
+            },
+            legend: {
+                position: 'bottom'
+            }
+        },
+        summaryData: {
+            ppgA: {
+                sharedProfitCreated: 0,
+                shelfPriceInvestment: 0,
+                sharedProfitPerDollar: 0,
+                percentFundedByRetailer: 0,
+                pricePoints: []
+            },
+            ppgB: {
+                sharedProfitCreated: 0,
+                shelfPriceInvestment: 0,
+                sharedProfitPerDollar: 0,
+                percentFundedByRetailer: 0,
+                pricePoints: []
+            }
+        }
+    });
+    const [chart7Data, setChart7Data] = useState({
+        series: [{
+            name: 'Previous Year',
+            data: []
+        }, {
+            name: 'Current Year',
+            data: [],
+            percentageChanges: []
+        }],
+        options: {
+            chart: {
+                type: 'bar',
+                height: 400,
+                toolbar: { show: false }
+            },
+            plotOptions: {
+                bar: {
+                    horizontal: false,
+                    columnWidth: '55%',
+                }
+            },
+            dataLabels: {
+                enabled: true,
+                formatter: function (val, { seriesIndex, dataPointIndex, w }) {
+                    console.log({ seriesIndex, dataPointIndex, w });
+
+                    if (seriesIndex === 1) { // Only show percentage change on current year bars
+                        const percentageChanges = w.config.series[1].percentageChanges || [];
+                        console.log({ percentageChanges });
+                        const change = percentageChanges[dataPointIndex] || 0;
+                        const arrow = change >= 0 ? '↑' : '↓';
+                        return `${val.toFixed(2)} (${arrow}${Math.abs(change).toFixed(1)}%)`;
+                    }
+                    return val.toFixed(2);
+                }
+            },
+            colors: ['#2196f3', '#00e396'],
+            xaxis: {
+                categories: [], // Will be populated with channel names
+                title: {
+                    text: 'Channels'
+                }
+            },
+            yaxis: {
+                title: {
+                    text: 'Incremental Profit Pool per Dollar Invested on Promo'
+                },
+                labels: {
+                    formatter: function (val) {
+                        return val.toFixed(2);
+                    }
+                }
+            },
+            title: {
+                text: 'Incremental Profit Pool per Dollar Invested on Promo',
+                align: 'center',
+                style: {
+                    fontSize: '14px'
+                }
+            },
+            subtitle: {
+                // Will show the current year and the previous year
+                text: `52 Weeks Ending ${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`,
+                align: 'center'
+            },
+            legend: {
+                position: 'top'
+            }
+        }
+    });
+    const [chart8Data, setChart8Data] = useState({
+        series: [{
+            name: 'Incremental Profit per Dollar',
+            data: []
+        }],
+        options: {
+            chart: {
+                type: 'scatter',
+                height: 400,
+                toolbar: { show: false }
+            },
+            xaxis: {
+                title: {
+                    text: 'Manufacturer ROI (%)',
+                    style: {
+                        fontSize: '14px'
+                    }
+                },
+                tickAmount: 10,
+                labels: {
+                    formatter: function (val) {
+                        return val.toFixed(0) + '%';
+                    }
+                }
+            },
+            yaxis: {
+                title: {
+                    text: 'Incremental Profit Pool per Dollar Invested',
+                    style: {
+                        fontSize: '14px'
+                    }
+                },
+                labels: {
+                    formatter: function (val) {
+                        return '$' + val.toFixed(2);
+                    }
+                }
+            },
+            title: {
+                text: 'Relationship between ROI and Incremental Profit Pool per Event',
+                align: 'center',
+                style: {
+                    fontSize: '16px'
+                }
+            },
+            tooltip: {
+                custom: function ({ series, seriesIndex, dataPointIndex, w }) {
+                    const point = w.globals.initialSeries[seriesIndex].data[dataPointIndex];
+                    return `<div class="p-2">
+                        <div><b>${point.name}</b></div>
+                        <div>ROI: ${point.x.toFixed(1)}%</div>
+                        <div>Profit per $: $${point.y.toFixed(2)}</div>
+                    </div>`;
+                }
+            },
+            markers: {
+                size: 6,
+                colors: ['#00B3E5'],
+                strokeColors: '#fff',
+                strokeWidth: 2
+            },
+            grid: {
+                borderColor: '#e7e7e7',
+                row: {
+                    colors: ['#f3f3f3', 'transparent'],
+                    opacity: 0.5
+                }
+            }
+        }
+    });
+    const [chart9Data, setChart9Data] = useState({
+        series: [
+            {
+                name: '$6.99',
+                data: []
+            },
+            {
+                name: '$5.99',
+                data: []
+            },
+            {
+                name: '$4.99',
+                data: []
+            }
+        ],
+        options: {
+            chart: {
+                type: 'line',
+                height: 400,
+                toolbar: { show: false }
+            },
+            stroke: {
+                width: 2,
+                curve: 'smooth'
+            },
+            colors: ['#00B3E5', '#4CAF50', '#FFC107'],
+            xaxis: {
+                title: {
+                    text: '% of Promo Funded by Retailer',
+                    style: {
+                        fontSize: '14px'
+                    }
+                },
+                labels: {
+                    formatter: function (val) {
+                        return val.toFixed(0) + '%';
+                    }
+                }
+            },
+            yaxis: {
+                title: {
+                    text: 'Manufacturer Promo ROI',
+                    style: {
+                        fontSize: '14px'
+                    }
+                },
+                labels: {
+                    formatter: function (val) {
+                        return val.toFixed(0) + '%';
+                    }
+                }
+            },
+            annotations: {
+                yaxis: [{
+                    y: 25,
+                    borderColor: '#00E396',
+                    label: {
+                        text: 'Minimum Acceptable ROI (25%)',
+                        style: {
+                            color: '#fff',
+                            background: '#00E396'
+                        }
+                    }
+                }],
+                points: [
+                    {
+                        x: 20,
+                        y: 25,
+                        marker: {
+                            size: 6,
+                            fillColor: '#fff',
+                            strokeColor: '#2196F3',
+                            radius: 2
+                        },
+                        label: {
+                            text: 'To get ROI of 25% at $6.99 would need retailer to fund ~20%',
+                            style: {
+                                color: '#333'
+                            }
+                        }
+                    },
+                    {
+                        x: 35,
+                        y: 25,
+                        marker: {
+                            size: 6,
+                            fillColor: '#fff',
+                            strokeColor: '#2196F3',
+                            radius: 2
+                        },
+                        label: {
+                            text: 'To get ROI of 25% at $5.99 would need retailer to fund ~35%',
+                            style: {
+                                color: '#333'
+                            }
+                        }
+                    },
+                    {
+                        x: 50,
+                        y: 25,
+                        marker: {
+                            size: 6,
+                            fillColor: '#fff',
+                            strokeColor: '#2196F3',
+                            radius: 2
+                        },
+                        label: {
+                            text: 'To get ROI of 25% at $4.99 would need retailer to fund ~50%',
+                            style: {
+                                color: '#333'
+                            }
+                        }
+                    }
+                ]
+            },
+            grid: {
+                borderColor: '#e7e7e7',
+                row: {
+                    colors: ['transparent', 'transparent'],
+                    opacity: 0.5
+                }
+            },
+            markers: {
+                size: 4
+            },
+            tooltip: {
+                y: {
+                    formatter: function (val) {
+                        return val.toFixed(1) + '%';
+                    }
+                },
+                x: {
+                    formatter: function (val) {
+                        return val.toFixed(1) + '%';
+                    }
+                }
+            },
+            fill: {
+                type: 'gradient',
+                gradient: {
+                    shadeIntensity: 1,
+                    inverseColors: false,
+                    opacityFrom: 0.45,
+                    opacityTo: 0.05,
+                    stops: [20, 100, 100, 100]
+                }
+            }
+        }
+    });
+    const [chart5View, setChart5View] = useState('retailer');
+    const [currentYearEvents, setCurrentYearEvents] = useState([]);
+    const [previousYearEvents, setPreviousYearEvents] = useState([]);
 
     useEffect(() => {
-        if (events.length) {
+        const currentYear = new Date().getFullYear();
+        const previousYear = currentYear - 1;
+        setCurrentYearEvents(events.filter(event => new Date(event.start_date).getFullYear() === currentYear || new Date(event.end_date).getFullYear() === currentYear));
+        setPreviousYearEvents(events.filter(event => new Date(event.start_date).getFullYear() === previousYear || new Date(event.end_date).getFullYear() === previousYear));
+    }, [events]);
+
+    useEffect(() => {
+        if (currentYearEvents.length) {
             calculateChartData();
             calculateChart2Data();
             calculateChart3Data();
             calculateChart4Data();
             calculateChart5Data();
+            calculateChart6Data();
+            calculateChart7Data();
+            calculateChart8Data();
+            calculateChart9Data();
+            console.log({ currentYearEvents });
         }
-    }, [events]);
+    }, [currentYearEvents]);
 
     const calculateChartData = () => {
         let totalSpend = 0;
@@ -418,7 +913,7 @@ const TpoReport = () => {
         let positiveROI = [];
 
         // Transform events data for chart
-        events.forEach(event => {
+        currentYearEvents.forEach(event => {
             let eventROI = 0;
             let eventSpend = 0;
 
@@ -477,10 +972,10 @@ const TpoReport = () => {
                 }
             }
         }));
-        console.log({ totalSpend });
+        // console.log({ totalSpend });
 
         setSummaryData({
-            total: events.length,
+            total: currentYearEvents.length,
             positiveROI: positiveROI.reduce((acc, curr) => acc + curr, 0) / positiveCount,
             positiveCount: positiveCount,
             negativeROI: negativeROI.reduce((acc, curr) => acc + curr, 0) / negativeCount,
@@ -496,7 +991,7 @@ const TpoReport = () => {
         let totalROI = 0;
         let retailerCount = 0;
 
-        events.forEach(event => {
+        currentYearEvents.forEach(event => {
             const retailer = event.retailer_id;
             if (!retailerROIs[retailer]) {
                 retailerROIs[retailer] = {
@@ -560,7 +1055,7 @@ const TpoReport = () => {
                         y: avgROI,
                         borderColor: '#000',
                         label: {
-                            text: `Avg. ROI: ${avgROI.toFixed(1)}%`,
+                            text: `Avg. ROI: ${avgROI.toFixed(2)}%`,
                             position: 'left',
                             style: {
                                 color: '#000'
@@ -578,21 +1073,30 @@ const TpoReport = () => {
         let correlation1 = 0;
         let correlation2 = 0;
 
-        events.forEach(event => {
+        currentYearEvents.forEach(event => {
             event.planned.forEach(product => {
                 const { financialResults } = getResult(product.financialData);
                 const spend = Number(financialResults.find(r => r.name === "Total Spend")?.value?.replace(/[^0-9.-]+/g, "")) || 0;
                 const roi = Number(financialResults.find(r => r.name === "Sales ROI")?.value?.replace(/[^0-9.-]+/g, "")) || 0;
                 const volume = Number(financialResults.find(r => r.name === "Incremental Revenue")?.value?.replace(/[^0-9.-]+/g, "")) || 0;
 
-                spendVolumeData.push([spend, volume]);
-                spendROIData.push([spend, roi]);
+                // Add event name to the data points
+                spendVolumeData.push({
+                    x: spend,
+                    y: volume,
+                    eventName: event.name || `Event ${event.id}`
+                });
+                spendROIData.push({
+                    x: spend,
+                    y: roi,
+                    eventName: event.name || `Event ${event.id}`
+                });
             });
         });
 
         // Calculate correlations
-        correlation1 = calculateCorrelation(spendVolumeData);
-        correlation2 = calculateCorrelation(spendROIData);
+        correlation1 = calculateCorrelation(spendVolumeData.map(d => [d.x, d.y]));
+        correlation2 = calculateCorrelation(spendROIData.map(d => [d.x, d.y]));
 
         setChart3Data(prev => ({
             ...prev,
@@ -606,6 +1110,16 @@ const TpoReport = () => {
             }],
             options1: {
                 ...prev.options1,
+                tooltip: {
+                    custom: function ({ series, seriesIndex, dataPointIndex, w }) {
+                        const data = w.globals.initialSeries[seriesIndex].data[dataPointIndex];
+                        return `<div class="p-2">
+                            <div><b>${data.eventName}</b></div>
+                            <div>Spend: $${data.x.toFixed(2)}</div>
+                            <div>Volume: ${data.y.toFixed(2)}</div>
+                        </div>`;
+                    }
+                },
                 subtitle: {
                     text: `Correlation: ${correlation1.toFixed(2)}`,
                     align: 'right',
@@ -616,6 +1130,16 @@ const TpoReport = () => {
             },
             options2: {
                 ...prev.options2,
+                tooltip: {
+                    custom: function ({ series, seriesIndex, dataPointIndex, w }) {
+                        const data = w.globals.initialSeries[seriesIndex].data[dataPointIndex];
+                        return `<div class="p-2">
+                            <div><b>${data.eventName}</b></div>
+                            <div>Spend: $${data.x.toFixed(2)}</div>
+                            <div>ROI: ${data.y.toFixed(2)}%</div>
+                        </div>`;
+                    }
+                },
                 subtitle: {
                     text: `Correlation: ${correlation2.toFixed(2)}`,
                     align: 'right',
@@ -649,86 +1173,166 @@ const TpoReport = () => {
 
     const calculateChart4Data = () => {
         const eventTypes = {
-            TPR: { count: 0, lift: 0, roi: 0, spend: 0 },
-            Feature: { count: 0, lift: 0, roi: 0, spend: 0 },
-            'Feature and Display': { count: 0, lift: 0, roi: 0, spend: 0 },
-            Display: { count: 0, lift: 0, roi: 0, spend: 0 }
+            'TPR': { count: 0, productCount: 0, lift: 0, roi: 0, spend: 0, incrementalLift: 0 },
+            'Feature Only': { count: 0, productCount: 0, lift: 0, roi: 0, spend: 0, incrementalLift: 0 },
+            'Display Only': { count: 0, productCount: 0, lift: 0, roi: 0, spend: 0, incrementalLift: 0 },
+            'Feature and Display': { count: 0, productCount: 0, lift: 0, roi: 0, spend: 0, incrementalLift: 0 }
         };
 
-        let totalEvents = events.length;
+        let totalEvents = 0;
         let totalSpend = 0;
         let totalROI = 0;
-        let totalLift = 0;
+        let totalIncrementalLift = 0;
+        let totalProductCount = 0;
 
         // First pass: Calculate totals
-        events.forEach(event => {
-            // Default to TPR if type is not specified
-            const eventType = event.type || 'TPR';
+        currentYearEvents.forEach(event => {
+            // Determine event type from the first product's promotional results
+            const firstProduct = event.planned[0];
+            const { promotionalResults: firstProductPromo } = getResult(firstProduct.financialData);
 
-            if (!eventTypes[eventType]) {
-                console.warn(`Unknown event type: ${eventType}, defaulting to TPR`);
-                eventType = 'TPR';
+            if (firstProductPromo) {
+                // Check event type once per event
+                const tprEvent = firstProductPromo.find(p => p.promotion === 'TPR')?.acv > 0;
+                const featureEvent = firstProductPromo.find(p => p.promotion === 'Feature Only')?.acv > 0;
+                const displayEvent = firstProductPromo.find(p => p.promotion === 'Display Only')?.acv > 0;
+                const featureAndDisplayEvent = firstProductPromo.find(p => p.promotion === 'Feature and Display')?.acv > 0;
+
+                // Increment counts once per event
+                if (tprEvent) eventTypes.TPR.count++;
+                if (featureEvent) eventTypes['Feature Only'].count++;
+                if (displayEvent) eventTypes['Display Only'].count++;
+                if (featureAndDisplayEvent) eventTypes['Feature and Display'].count++;
             }
 
-            eventTypes[eventType].count++;
-
+            // Process each product's financial data
             event.planned.forEach(product => {
-                const { financialResults } = getResult(product.financialData);
+                const { financialResults, promotionalResults } = getResult(product.financialData);
+                if (!promotionalResults) return;
 
                 const roi = Number(financialResults.find(r => r.name === "Sales ROI")?.value?.replace(/[^0-9.-]+/g, "")) || 0;
-                const lift = Number(financialResults.find(r => r.name === "Incremental Lift")?.value?.replace(/[^0-9.-]+/g, "")) || 0;
                 const spend = Number(financialResults.find(r => r.name === "Total Spend")?.value?.replace(/[^0-9.-]+/g, "")) || 0;
 
-                eventTypes[eventType].lift += lift;
-                eventTypes[eventType].roi += (roi * spend);
-                eventTypes[eventType].spend += spend;
+                // Get promotional results
+                const tprResult = promotionalResults.find(p => p.promotion === 'TPR');
+                const featureResult = promotionalResults.find(p => p.promotion === 'Feature Only');
+                const displayResult = promotionalResults.find(p => p.promotion === 'Display Only');
+                const featureAndDisplayResult = promotionalResults.find(p => p.promotion === 'Feature and Display');
+
+                // Accumulate metrics without incrementing counts
+                if (tprResult && tprResult.acv > 0) {
+                    eventTypes.TPR.productCount++;
+                    eventTypes.TPR.incrementalLift += tprResult.lift;
+                    eventTypes.TPR.roi += (roi);
+                    eventTypes.TPR.spend += spend;
+                    totalIncrementalLift += tprResult.lift;
+                    totalProductCount++;
+                }
+
+                if (featureResult && featureResult.acv > 0) {
+                    eventTypes['Feature Only'].productCount++;
+                    eventTypes['Feature Only'].incrementalLift += featureResult.lift;
+                    eventTypes['Feature Only'].roi += (roi);
+                    eventTypes['Feature Only'].spend += spend;
+                    totalIncrementalLift += featureResult.lift;
+                    totalProductCount++;
+                }
+
+                if (displayResult && displayResult.acv > 0) {
+                    eventTypes['Display Only'].productCount++;
+                    eventTypes['Display Only'].incrementalLift += displayResult.lift;
+                    eventTypes['Display Only'].roi += (roi);
+                    eventTypes['Display Only'].spend += spend;
+                    totalIncrementalLift += displayResult.lift;
+                    totalProductCount++;
+                }
+
+                if (featureAndDisplayResult && featureAndDisplayResult.acv > 0) {
+                    eventTypes['Feature and Display'].productCount++;
+                    eventTypes['Feature and Display'].incrementalLift += featureAndDisplayResult.lift;
+                    eventTypes['Feature and Display'].roi += (roi);
+                    eventTypes['Feature and Display'].spend += spend;
+                    totalIncrementalLift += featureAndDisplayResult.lift;
+                    totalProductCount++;
+                }
 
                 totalSpend += spend;
-                totalROI += (roi * spend);
-                totalLift += lift;
+                totalROI += (roi);
             });
+
+            totalEvents++;
         });
 
-        // Calculate percentages and averages
-        const eventCount = Object.entries(eventTypes).map(([type, data]) => {
-            return data.count > 0 ? (data.count / totalEvents) * 100 : 0;
-        });
+        const categories = ['TPR', 'Feature Only', 'Display Only', 'Feature and Display', `All ${totalEvents} Events`];
 
-        const avgLift = Object.entries(eventTypes).map(([type, data]) => {
-            return data.count > 0 ? data.lift / data.count : 0;
-        });
+        // Calculate percentages and weighted averages
+        const eventCount = [
+            (eventTypes.TPR.count / totalEvents) * 100,
+            (eventTypes['Feature Only'].count / totalEvents) * 100,
+            (eventTypes['Display Only'].count / totalEvents) * 100,
+            (eventTypes['Feature and Display'].count / totalEvents) * 100,
+            100 // All events is always 100%
+        ];
 
-        const weightedROI = Object.entries(eventTypes).map(([type, data]) => {
-            return data.spend > 0 ? data.roi / data.spend : 0;
-        });
+        // Calculate average incremental lift for each type
+        const avgLift = [
+            eventTypes.TPR.productCount > 0 ? eventTypes.TPR.incrementalLift / eventTypes.TPR.productCount : 0,
+            eventTypes['Feature Only'].productCount > 0 ? eventTypes['Feature Only'].incrementalLift / eventTypes['Feature Only'].productCount : 0,
+            eventTypes['Display Only'].productCount > 0 ? eventTypes['Display Only'].incrementalLift / eventTypes['Display Only'].productCount : 0,
+            eventTypes['Feature and Display'].productCount > 0 ? eventTypes['Feature and Display'].incrementalLift / eventTypes['Feature and Display'].productCount : 0,
+            totalProductCount > 0 ? totalIncrementalLift / totalProductCount : 0
+        ];
 
-        // Add "All Events" row
-        eventCount.push(100); // Total is always 100%
-        avgLift.push(totalEvents > 0 ? totalLift / totalEvents : 0);
-        weightedROI.push(totalSpend > 0 ? totalROI / totalSpend : 0);
+        const weightedROI = [
+            eventTypes.TPR.spend > 0 ? eventTypes.TPR.roi / totalEvents : 0,
+            eventTypes['Feature Only'].spend > 0 ? eventTypes['Feature Only'].roi / totalEvents : 0,
+            eventTypes['Display Only'].spend > 0 ? eventTypes['Display Only'].roi / totalEvents : 0,
+            eventTypes['Feature and Display'].spend > 0 ? eventTypes['Feature and Display'].roi / totalEvents : 0,
+            totalEvents > 0 ? totalROI / totalEvents : 0
+        ];
 
-        // Update chart data
         setChart4Data(prev => ({
             eventCount: {
                 ...prev.eventCount,
                 series: [{
                     name: 'Event Count',
-                    data: eventCount.map(val => val || 0) // Replace NaN with 0
-                }]
+                    data: eventCount
+                }],
+                options: {
+                    ...prev.eventCount.options,
+                    xaxis: {
+                        ...prev.eventCount.options.xaxis,
+                        categories
+                    }
+                }
             },
             incrementalLift: {
                 ...prev.incrementalLift,
                 series: [{
                     name: 'Incremental Lift',
-                    data: avgLift.map(val => val || 0) // Replace NaN with 0
-                }]
+                    data: avgLift
+                }],
+                options: {
+                    ...prev.incrementalLift.options,
+                    xaxis: {
+                        ...prev.incrementalLift.options.xaxis,
+                        categories
+                    }
+                }
             },
             weightedROI: {
                 ...prev.weightedROI,
                 series: [{
                     name: 'Weighted ROI',
-                    data: weightedROI.map(val => val || 0) // Replace NaN with 0
-                }]
+                    data: weightedROI
+                }],
+                options: {
+                    ...prev.weightedROI.options,
+                    xaxis: {
+                        ...prev.weightedROI.options.xaxis,
+                        categories
+                    }
+                }
             }
         }));
     };
@@ -742,52 +1346,495 @@ const TpoReport = () => {
             { min: 40, max: 50 }
         ];
 
-        const rangeData = discountRanges.map(() => ({
-            roi: 0,
-            spend: 0,
-            count: 0,
-            lift: 0,
-            fndCount: 0
+        // Initialize data structure for retailers/brands
+        const retailerData = {};
+        const brandData = {};
+
+        let totalSpend = 0;
+        let currentEvent = null;
+        // Process events
+        currentYearEvents.forEach(event => {
+            const retailerId = event.retailer_id;
+            const brand = event.brand_id;
+
+            // Initialize retailer data if not exists
+            if (!retailerData[retailerId]) {
+                retailerData[retailerId] = discountRanges.map(() => ({
+                    roi: 0,
+                    spend: 0,
+                    count: 0,
+                    productCount: 0,
+                    lift: 0,
+                    fndCount: 0
+                }));
+            }
+
+            // Initialize brand data if not exists
+            if (!brandData[brand]) {
+                brandData[brand] = discountRanges.map(() => ({
+                    roi: 0,
+                    spend: 0,
+                    count: 0,
+                    productCount: 0,
+                    lift: 0,
+                    fndCount: 0
+                }));
+            }
+
+            // Calculate event-level average discount first
+            let eventTotalDiscount = 0;
+            let eventProductCount = 0;
+
+            // First pass: calculate total discount for the event
+            event.planned.forEach(product => {
+                const basePrice = Number(product.financialData.basePrice) || 0;
+                const promoPrice = Number(product.financialData.promoPrice) || 0;
+                const productDiscount = ((basePrice - promoPrice) * 100) / basePrice;
+                eventTotalDiscount += productDiscount;
+                eventProductCount++;
+            });
+
+            // Calculate event average discount
+            const eventAverageDiscount = eventTotalDiscount / eventProductCount;
+
+
+            // Find appropriate discount range for the event
+            const eventRangeIndex = discountRanges.findIndex(range =>
+                eventAverageDiscount >= range.min && eventAverageDiscount < range.max
+            );
+
+            console.log({ eventAverageDiscount, eventRangeIndex });
+            // Second pass: process financial data using event-level range
+            if (eventRangeIndex !== -1) {
+                // Increment event counts once per event
+                retailerData[retailerId][eventRangeIndex].count++;
+                brandData[brand][eventRangeIndex].count++;
+                // if (currentEvent == null) {
+
+                //     currentEvent = event.id;
+                // }
+
+                event.planned.forEach(product => {
+                    const { financialResults, promotionalResults } = getResult(product.financialData);
+
+                    const roi = Number(financialResults.find(r => r.name === "Sales ROI")?.value?.replace(/[^0-9.-]+/g, "")) || 0;
+                    const lift = Number(promotionalResults.find(result => result.promotion === 'Event Total')?.lift || 0);
+                    const spend = Number(financialResults.find(r => r.name === "Total Spend")?.value?.replace(/[^0-9.-]+/g, "")) || 0;
+
+                    totalSpend += spend;
+
+
+
+                    // Update retailer data using event range index
+                    retailerData[retailerId][eventRangeIndex].roi += (roi * spend);
+                    retailerData[retailerId][eventRangeIndex].spend += spend;
+                    retailerData[retailerId][eventRangeIndex].productCount++;
+                    retailerData[retailerId][eventRangeIndex].lift += lift;
+
+                    const featureResult = promotionalResults.find(p => p.promotion === 'Feature Only');
+                    const displayResult = promotionalResults.find(p => p.promotion === 'Display Only');
+
+                    if (featureResult && featureResult.acv > 0 || displayResult && displayResult.acv > 0) {
+                        retailerData[retailerId][eventRangeIndex].fndCount++;
+                    }
+
+                    // Update brand data using event range index
+                    brandData[brand][eventRangeIndex].roi += (roi * spend);
+                    brandData[brand][eventRangeIndex].spend += spend;
+                    brandData[brand][eventRangeIndex].productCount++;
+                    brandData[brand][eventRangeIndex].lift += lift;
+                    if (featureResult && featureResult.acv > 0 || displayResult && displayResult.acv > 0) {
+                        brandData[brand][eventRangeIndex].fndCount++;
+                    }
+                });
+            }
+        });
+        console.log({ retailerData, brandData });
+
+        // Prepare series data based on selected view
+        const data = chart5View === 'retailer' ? retailerData : brandData;
+        const series = Object.keys(data).map(key => ({
+            name: key,
+            data: data[key].map(range => range.spend > 0 ? (range.roi / range.spend) : 0)
         }));
 
+        // Calculate summary data
+        const summaryData = {
+            noOfEvents: Array(5).fill(0),
+            tradeSpend: Array(5).fill(0),
+            avgLift: Array(5).fill(0),
+            fndEvents: Array(5).fill(0)
+        };
+
+        Object.values(data).forEach(ranges => {
+            ranges.forEach((range, index) => {
+                summaryData.noOfEvents[index] += range.count;
+                summaryData.tradeSpend[index] += (range.spend / totalSpend) * 100;
+                summaryData.avgLift[index] += range.count > 0 ? range.lift / range.count : 0;
+                summaryData.fndEvents[index] += range.fndCount;
+            });
+        });
+
+        setChart5Data(prev => ({
+            ...prev,
+            series: series,
+            options: {
+                ...prev.options,
+                xaxis: {
+                    ...prev.options.xaxis,
+                    categories: ['0-10', '10-20', '20-30', '30-40', '40-50']
+                },
+                colors: ['#4472C4', '#00B050', '#FFC000', '#7030A0'], // Colors for different retailers/brands
+                title: {
+                    text: `ROI by Discount Depth (${chart5View === 'retailer' ? 'Retailer' : 'Brand'} View)`,
+                    align: 'center'
+                }
+            },
+            summaryData: summaryData
+        }));
+    };
+
+    // Add this function at the top level of the component
+    const createPPGGroups = (events) => {
+        // Map to store product combinations and their events
+        const ppgMap = new Map();
+
         events.forEach(event => {
+            // Sort product IDs to ensure consistent combination keys
+            const productIds = event.planned.map(p => p.productId).sort().join('_');
+
+            if (!ppgMap.has(productIds)) {
+                ppgMap.set(productIds, {
+                    products: event.planned.map(p => p.productId),
+                    events: [],
+                    name: `PPG ${String.fromCharCode(65 + ppgMap.size)}` // A, B, C, etc.
+                });
+            }
+
+            ppgMap.get(productIds).events.push(event);
+        });
+
+        return ppgMap;
+    };
+
+    // Update calculateChart6Data function
+    const calculateChart6Data = () => {
+        const ppgGroups = createPPGGroups(currentYearEvents);
+        const ppgResults = new Map();
+
+        // Process each PPG group
+        ppgGroups.forEach((group, productIds) => {
+            const ppgStats = {
+                roi: [],
+                sharedProfitCreated: 0,
+                sharedProfitPerDollar: 0,
+                retailerFunding: [],
+                totalShelfPriceInvestment: 0,
+                pricePoints: new Set() // Track unique price points
+            };
+
+            // Process each event in the PPG
+            group.events.forEach(event => {
+                event.planned.forEach(product => {
+                    const { financialResults, promotionalResults } = getResult(product.financialData);
+                    const basePrice = Number(product.financialData.basePrice) || 0;
+                    const promoPrice = Number(product.financialData.promoPrice) || 0;
+                    const mfrCOGS = basePrice / 2;
+                    const promoUnits = Number(promotionalResults.find(result =>
+                        result.promotion === 'Event Total')?.units) || 0;
+                    const baseUnits = Number(product.financialData.units) || 0;
+
+                    // Add price point
+                    ppgStats.pricePoints.add(promoPrice.toFixed(2));
+
+                    // Calculate Shared Profit
+                    const baseSharedProfit = (basePrice - mfrCOGS) * baseUnits;
+                    const promoSharedProfit = (promoPrice - mfrCOGS) * promoUnits;
+                    const sharedProfitCreated = promoSharedProfit - baseSharedProfit;
+
+                    // Calculate Shelf Price Investment
+                    const shelfPriceInvestment = (basePrice - promoPrice) * promoUnits;
+
+                    // Calculate ROI
+                    const roiResult = financialResults.find(r => r.name === "Sales ROI")?.value;
+                    const roi = Number(roiResult?.replace(/[^0-9.-]+/g, "")) || 0;
+                    ppgStats.roi.push(roi);
+
+                    // Calculate Retailer Funding
+                    // TODO: Check for the mftTradeInvestment correct value of this field with @pankajbhai
+                    const mftTradeInvestment = Number(product.financialData.mft_trade_investment) || 0;
+                    const retailerFunding = ((shelfPriceInvestment - mftTradeInvestment) / shelfPriceInvestment) * 100;
+                    ppgStats.retailerFunding.push(retailerFunding);
+
+                    ppgStats.sharedProfitCreated += sharedProfitCreated;
+                    ppgStats.totalShelfPriceInvestment += shelfPriceInvestment;
+                });
+            });
+
+            // Calculate averages for the PPG
+            ppgStats.avgROI = ppgStats.roi.length ?
+                ppgStats.roi.reduce((a, b) => a + b, 0) / ppgStats.roi.length : 0;
+            ppgStats.sharedProfitPerDollar = ppgStats.totalShelfPriceInvestment ?
+                ppgStats.sharedProfitCreated / ppgStats.totalShelfPriceInvestment : 0;
+            ppgStats.avgRetailerFunding = ppgStats.retailerFunding.length ?
+                ppgStats.retailerFunding.reduce((a, b) => a + b, 0) / ppgStats.retailerFunding.length : 0;
+
+            ppgResults.set(group.name, ppgStats);
+        });
+
+        // Prepare chart data
+        const series = [
+            {
+                name: 'ROI',
+                data: Array.from(ppgResults.values()).map(stats => stats.avgROI)
+            },
+            {
+                name: 'Shared Profit Created Per $ Invested',
+                data: Array.from(ppgResults.values()).map(stats => stats.sharedProfitPerDollar)
+            },
+            {
+                name: '% Funded by Retailer',
+                data: Array.from(ppgResults.values()).map(stats => stats.avgRetailerFunding)
+            }
+        ];
+
+        // Update chart data state
+        setChart6Data(prev => ({
+            ...prev,
+            series,
+            options: {
+                ...prev.options,
+                xaxis: {
+                    ...prev.options.xaxis,
+                    categories: Array.from(ppgResults.keys())
+                }
+            },
+            summaryData: Object.fromEntries(
+                Array.from(ppgResults.entries()).map(([name, stats]) => [
+                    name.toLowerCase().replace(' ', ''),
+                    {
+                        roi: stats.avgROI,
+                        sharedProfitPerDollar: stats.sharedProfitPerDollar,
+                        percentFundedByRetailer: stats.avgRetailerFunding,
+                        pricePoints: Array.from(stats.pricePoints).sort((a, b) => Number(a) - Number(b))
+                    }
+                ])
+            )
+        }));
+    };
+
+    const calculateChart7Data = () => {
+        // Extract unique channels from events
+        const channels = [...new Set(events.flatMap(event =>
+            event.channels ? (Array.isArray(event.channels) ? event.channels : [event.channels]) : []
+        ))];
+
+        // Initialize data structure for year comparison
+        const channelData = {};
+        channels.forEach(channel => {
+            channelData[channel] = {
+                previousYear: {
+                    profit: 0,
+                    spend: 0
+                },
+                currentYear: {
+                    profit: 0,
+                    spend: 0
+                }
+            };
+        });
+
+        // Process events
+        events.forEach(event => {
+            const eventDate = new Date(event.start_date);
+            const eventYear = eventDate.getFullYear();
+            const eventChannels = Array.isArray(event.channels) ? event.channels : [event.channels];
+
+            eventChannels.forEach(channel => {
+                if (!channel || !channelData[channel]) return;
+
+                event.planned.forEach(product => {
+                    const { financialResults } = getResult(product.financialData);
+
+                    // Calculate incremental profit
+                    const incrementalRevenue = Number(financialResults.find(r => r.name === "Incremental Revenue")?.value?.replace(/[^0-9.-]+/g, "")) || 0;
+                    const totalSpend = Number(financialResults.find(r => r.name === "Total Spend")?.value?.replace(/[^0-9.-]+/g, "")) || 0;
+                    if (eventYear === currentYear) {
+                        channelData[channel].currentYear.profit += incrementalRevenue;
+                        channelData[channel].currentYear.spend += totalSpend;
+                    } else if (eventYear === currentYear - 1) {
+                        channelData[channel].previousYear.profit += incrementalRevenue;
+                        channelData[channel].previousYear.spend += totalSpend;
+                    }
+                });
+            });
+        });
+
+        // Calculate profit per dollar and percentage changes
+        const previousYearData = [];
+        const currentYearData = [];
+        const percentageChanges = [];
+
+        channels.forEach(channel => {
+            const prevProfitPerDollar = channelData[channel].previousYear.spend > 0
+                ? channelData[channel].previousYear.profit / channelData[channel].previousYear.spend
+                : 0;
+
+            const currProfitPerDollar = channelData[channel].currentYear.spend > 0
+                ? channelData[channel].currentYear.profit / channelData[channel].currentYear.spend
+                : 0;
+
+            previousYearData.push(prevProfitPerDollar);
+            currentYearData.push(currProfitPerDollar);
+
+            // Calculate percentage change
+            const percentChange = prevProfitPerDollar > 0
+                ? ((currProfitPerDollar - prevProfitPerDollar) / prevProfitPerDollar) * 100
+                : 0;
+            percentageChanges.push(percentChange);
+        });
+
+        // Update chart data
+        setChart7Data(prev => ({
+            ...prev,
+            series: [
+                {
+                    name: 'Previous Year',
+                    data: previousYearData
+                },
+                {
+                    name: 'Current Year',
+                    data: currentYearData,
+                    percentageChanges: percentageChanges // Store percentage changes in the series data
+                }
+            ],
+            options: {
+                ...prev.options,
+                xaxis: {
+                    ...prev.options.xaxis,
+                    categories: channels
+                }
+            }
+        }));
+    };
+
+    const calculateChart8Data = () => {
+        const scatterData = [];
+
+        currentYearEvents.forEach(event => {
             event.planned.forEach(product => {
                 const { financialResults } = getResult(product.financialData);
-                const discount = Number(product.financialData.discount) || 0;
-                const roi = Number(financialResults.find(r => r.name === "Sales ROI")?.value?.replace(/[^0-9.-]+/g, "")) || 0;
-                const lift = Number(financialResults.find(r => r.name === "Incremental Lift")?.value?.replace(/[^0-9.-]+/g, "")) || 0;
-                const spend = Number(financialResults.find(r => r.name === "Total Spend")?.value?.replace(/[^0-9.-]+/g, "")) || 0;
 
-                const rangeIndex = discountRanges.findIndex(range =>
-                    discount >= range.min && discount < range.max
-                );
+                // Calculate ROI
+                const roiResult = financialResults.find(r => r.name === "Sales ROI")?.value;
+                const roi = Number(roiResult?.replace(/[^0-9.-]+/g, "")) || 0;
 
-                if (rangeIndex !== -1) {
-                    rangeData[rangeIndex].roi += (roi * spend);
-                    rangeData[rangeIndex].spend += spend;
-                    rangeData[rangeIndex].count++;
-                    rangeData[rangeIndex].lift += lift;
-                    if (event.type?.includes('Feature') || event.type?.includes('Display')) {
-                        rangeData[rangeIndex].fndCount++;
-                    }
+                // Calculate Shared Profit Created
+                const baseUnits = Number(product.financialData.units) || 0;
+                const promoUnits = Number(financialResults.find(r => r.name === "Units")?.value) || 0;
+                const baseShelfPrice = Number(product.financialData.basePrice) || 0;
+                const promoShelfPrice = Number(product.financialData.promoPrice) || 0;
+                const mfrCOGS = Number(product.financialData.basePrice / 2) || 0;
+
+                const baseSharedProfit = (baseShelfPrice - mfrCOGS) * baseUnits;
+                const promoSharedProfit = (promoShelfPrice - mfrCOGS) * promoUnits;
+                const sharedProfitCreated = promoSharedProfit - baseSharedProfit;
+
+                // Calculate Shelf Price Investment
+                const shelfPriceInvestment = (baseShelfPrice - promoShelfPrice) * promoUnits;
+
+                // Calculate Incremental Profit per Dollar
+                const incrementalProfitPerDollar = shelfPriceInvestment !== 0 ?
+                    sharedProfitCreated / shelfPriceInvestment : 0;
+
+                // Only add points with valid values
+                if (!isNaN(roi) && !isNaN(incrementalProfitPerDollar) &&
+                    isFinite(roi) && isFinite(incrementalProfitPerDollar)) {
+                    scatterData.push({
+                        x: roi,
+                        y: incrementalProfitPerDollar,
+                        name: event.name || `Event ${event.id}`
+                    });
                 }
             });
         });
 
-        const totalSpend = rangeData.reduce((sum, data) => sum + data.spend, 0);
-
-        setChart5Data(prev => ({
+        // Update chart data
+        setChart8Data(prev => ({
             ...prev,
             series: [{
-                name: 'ROI',
-                data: rangeData.map(data => data.spend > 0 ? (data.roi / data.spend) : 0)
+                name: 'Incremental Profit per Dollar',
+                data: scatterData
             }],
-            summaryData: {
-                noOfEvents: rangeData.map(data => data.count),
-                tradeSpend: rangeData.map(data => (data.spend / totalSpend) * 100),
-                avgLift: rangeData.map(data => data.count > 0 ? data.lift / data.count : 0),
-                fndEvents: rangeData.map(data => data.fndCount)
+            options: {
+                ...prev.options,
+                xaxis: {
+                    ...prev.options.xaxis,
+                    min: Math.min(...scatterData.map(d => d.x)) - 5,
+                    max: Math.max(...scatterData.map(d => d.x)) + 5
+                },
+                yaxis: {
+                    ...prev.options.yaxis,
+                    min: Math.min(...scatterData.map(d => d.y)) - 0.5,
+                    max: Math.max(...scatterData.map(d => d.y)) + 0.5
+                }
             }
+        }));
+    };
+
+    const calculateChart9Data = () => {
+        const ppgGroups = createPPGGroups(currentYearEvents);
+        const retailerFundingData = new Map();
+
+        ppgGroups.forEach((group, productIds) => {
+            const fundingPoints = [];
+
+            // Process each event in the PPG
+            group.events.forEach(event => {
+                let eventRetailerFunding = 0;
+                let eventROI = 0;
+
+                event.planned.forEach(product => {
+                    const { financialResults, promotionalResults } = getResult(product.financialData);
+                    const basePrice = Number(product.financialData.basePrice) || 0;
+                    const promoPrice = Number(product.financialData.promoPrice) || 0;
+                    const promoUnits = Number(promotionalResults.find(result =>
+                        result.promotion === 'Event Total')?.units) || 0;
+
+                    // Calculate Shelf Price Investment
+                    const shelfPriceInvestment = (basePrice - promoPrice) * promoUnits;
+
+                    // Calculate ROI
+                    const roiResult = financialResults.find(r => r.name === "Sales ROI")?.value;
+                    const roi = Number(roiResult?.replace(/[^0-9.-]+/g, "")) || 0;
+
+                    // Calculate Retailer Funding
+                    const mftTradeInvestment = Number(product.financialData.mft_trade_investment) || 0;
+                    const retailerFunding = ((shelfPriceInvestment - mftTradeInvestment) / shelfPriceInvestment) * 100;
+
+                    eventRetailerFunding += retailerFunding;
+                    eventROI += roi;
+                });
+
+                // Average metrics for the event
+                const avgRetailerFunding = eventRetailerFunding / event.planned.length;
+                const avgROI = eventROI / event.planned.length;
+
+                fundingPoints.push([avgRetailerFunding, avgROI]);
+            });
+
+            retailerFundingData.set(group.name, fundingPoints);
+        });
+
+        // Generate series data
+        const series = Array.from(retailerFundingData.entries()).map(([ppgName, points]) => ({
+            name: ppgName,
+            data: points.sort((a, b) => a[0] - b[0]) // Sort by retailer funding percentage
+        }));
+
+        setChart9Data(prev => ({
+            ...prev,
+            series
         }));
     };
 
@@ -823,17 +1870,6 @@ const TpoReport = () => {
 
             // Create slide
             let slide = pptx.addSlide({ masterName: "PLACEHOLDER_SLIDE" });
-
-            // Add title
-            // slide.addText("Event Level ROI", {
-            //     x: 0.2,
-            //     y: 0.5,
-            //     w: 13,
-            //     h: 0.35,
-            //     fontSize: 14,
-            //     bold: true,
-            //     color: "000000"
-            // });
 
             // Add summary section at the top
             const summaryY = 0.30; // Moved up
@@ -1296,112 +2332,142 @@ const TpoReport = () => {
 
             let slide = pptx.addSlide({ masterName: "PLACEHOLDER_SLIDE" });
 
-            // Add title
-            slide.addText("Landscape and ROI by event type", {
+            // Event Count chart
+            slide.addShape(pptx.shapes.RECTANGLE, {
                 x: 0.35,
                 y: 0.5,
                 w: 12,
-                h: 0.5,
-                fontSize: 14,
-                bold: true,
-                color: "000000"
+                h: 0.4,
+                fill: { color: "0072bc" }
             });
 
-            // Add description
-            slide.addText("This chart shows count, avg incremental lift (%) and wtd average ROI by type of promotional event", {
+            slide.addText("Event Count (% of Total)", {
                 x: 0.35,
-                y: 1.0,
+                y: 0.5,
                 w: 12,
-                h: 0.3,
+                h: 0.4,
+                align: 'center',
                 fontSize: 12,
-                color: "000000"
+                bold: true,
+                color: "FFFFFF"
             });
 
-            const categories = ['TPR', 'Feature', 'Feature and Display', 'Display', 'All Events'];
-
-            // Add Event Count chart
-            slide.addChart(pptx.charts.BAR, [{
+            const eventCountData = [{
                 name: 'Event Count',
-                labels: categories,
+                labels: ['TPR', 'Feature Only', 'Display Only', 'Feature and Display', 'All Events'],
                 values: chart4Data.eventCount.series[0].data
-            }], {
+            }];
+
+            slide.addChart(pptx.charts.BAR, eventCountData, {
                 x: 0.35,
-                y: 1.5,
+                y: 0.9,
                 w: 12,
-                h: 1.8,
+                h: 1.6,
                 barDir: 'bar',
-                title: "Event Count (% of Total)",
-                showTitle: true,
-                titleFontSize: 12,
+                showTitle: false,
                 showLegend: false,
-                dataLabelFormatCode: '#,##0.0"%"',
+                dataLabelFormatCode: '#,##0.00"%"',
                 chartColors: ['2196f3'],
                 showValue: true,
                 dataLabelPosition: 'outEnd',
                 catAxisOrientation: 'maxMin',
-                barGrouping: "standard",
-                chartColorsOpacity: 100,
-                border: { pt: '1', color: '363636' },
-                plotArea: { border: { pt: '1', color: 'cccccc' } }
+                barGapWidthPct: 60,
+                valAxisMaxVal: 100,
+                valAxisMinVal: 0,
+                catAxisLabelPos: 'low'
             });
 
-            // Add Incremental Lift chart
-            slide.addChart(pptx.charts.BAR, [{
-                name: 'Incremental Lift',
-                labels: categories,
-                values: chart4Data.incrementalLift.series[0].data
-            }], {
+            // Incremental Lift chart
+            slide.addShape(pptx.shapes.RECTANGLE, {
                 x: 0.35,
-                y: 3.5,
+                y: 2.7,
                 w: 12,
-                h: 1.8,
+                h: 0.4,
+                fill: { color: "0072bc" }
+            });
+
+            slide.addText("Average Incremental Lift (%)", {
+                x: 0.35,
+                y: 2.7,
+                w: 12,
+                h: 0.4,
+                align: 'center',
+                fontSize: 12,
+                bold: true,
+                color: "FFFFFF"
+            });
+
+            const incrementalLiftData = [{
+                name: 'Incremental Lift',
+                labels: ['TPR', 'Feature Only', 'Display Only', 'Feature and Display', 'All Events'],
+                values: chart4Data.incrementalLift.series[0].data
+            }];
+
+            slide.addChart(pptx.charts.BAR, incrementalLiftData, {
+                x: 0.35,
+                y: 3.1,
+                w: 12,
+                h: 1.6,
                 barDir: 'bar',
-                title: "Average Incremental Lift (%)",
-                showTitle: true,
-                titleFontSize: 12,
+                showTitle: false,
                 showLegend: false,
-                dataLabelFormatCode: '#,##0.0"%"',
+                dataLabelFormatCode: '#,##0.00"%"',
                 chartColors: ['00e396'],
                 showValue: true,
                 dataLabelPosition: 'outEnd',
                 catAxisOrientation: 'maxMin',
-                barGrouping: "standard",
-                chartColorsOpacity: 100,
-                border: { pt: '1', color: '363636' },
-                plotArea: { border: { pt: '1', color: 'cccccc' } }
+                barGapWidthPct: 60,
+                catAxisLabelPos: 'low'
             });
 
-            // Add Weighted ROI chart
-            slide.addChart(pptx.charts.BAR, [{
-                name: 'Weighted ROI',
-                labels: categories,
-                values: chart4Data.weightedROI.series[0].data
-            }], {
+            // Weighted ROI chart
+            slide.addShape(pptx.shapes.RECTANGLE, {
                 x: 0.35,
-                y: 5.5,
+                y: 4.9,
                 w: 12,
-                h: 1.8,
+                h: 0.4,
+                fill: { color: "0072bc" }
+            });
+
+            slide.addText("Weighted Average ROI (%)", {
+                x: 0.35,
+                y: 4.9,
+                w: 12,
+                h: 0.4,
+                align: 'center',
+                fontSize: 12,
+                bold: true,
+                color: "FFFFFF"
+            });
+
+            const weightedROIData = [{
+                name: 'Weighted ROI',
+                labels: ['TPR', 'Feature Only', 'Display Only', 'Feature and Display', 'All Events'],
+                values: chart4Data.weightedROI.series[0].data
+            }];
+
+            slide.addChart(pptx.charts.BAR, weightedROIData, {
+                x: 0.35,
+                y: 5.3,
+                w: 12,
+                h: 1.6,
                 barDir: 'bar',
-                title: "Weighted Average ROI (%)",
-                showTitle: true,
-                titleFontSize: 12,
+                showTitle: false,
                 showLegend: false,
-                dataLabelFormatCode: '#,##0.0"%"',
+                dataLabelFormatCode: '#,##0.00"%"',
                 chartColors: ['feb019'],
                 showValue: true,
                 dataLabelPosition: 'outEnd',
                 catAxisOrientation: 'maxMin',
-                barGrouping: "standard",
-                chartColorsOpacity: 100,
-                border: { pt: '1', color: '363636' },
-                plotArea: { border: { pt: '1', color: 'cccccc' } }
+                barGapWidthPct: 60,
+                catAxisLabelPos: 'low'
             });
 
             // Add logos
             slide.addImage({
                 path: Logo,
                 x: 0.3,
-                y: 7.5,
+                y: 7.2,
                 w: 1.4,
                 h: 0.5,
                 sizing: { type: "contain", w: 1.4, h: 0.5 }
@@ -1411,7 +2477,7 @@ const TpoReport = () => {
                 slide.addImage({
                     path: authData.company_logo,
                     x: 11.3,
-                    y: 7.5,
+                    y: 7.2,
                     w: 1.4,
                     h: 0.5,
                     sizing: { type: "contain", w: 1.4, h: 0.5 }
@@ -1463,22 +2529,13 @@ const TpoReport = () => {
             let slide = pptx.addSlide({ masterName: "PLACEHOLDER_SLIDE" });
 
             // Add title and description
-            slide.addText("Avg. Wtd ROI for different discount levels by brand", {
+            slide.addText(`Avg. Wtd ROI for different discount levels by ${chart5View}`, {
                 x: 0.35,
                 y: 0.5,
                 w: 12,
                 h: 0.5,
                 fontSize: 14,
                 bold: true,
-                color: "000000"
-            });
-
-            slide.addText("This chart shows the avg ROI by average depth of discount. This can be by retailer or brand or items", {
-                x: 0.35,
-                y: 1.0,
-                w: 12,
-                h: 0.3,
-                fontSize: 12,
                 color: "000000"
             });
 
@@ -1496,7 +2553,7 @@ const TpoReport = () => {
                 h: 4,
                 barDir: 'col',
                 showTitle: true,
-                title: "ROI by Discount Depth",
+                title: `ROI by Discount Depth (${chart5View} View)`,
                 showLegend: true,
                 legendPos: 'b',
                 dataLabelFormatCode: '#,##0.0"%"',
@@ -1531,30 +2588,149 @@ const TpoReport = () => {
                 border: { pt: 1, color: "cccccc" }
             });
 
-            // Add formula section
-            slide.addShape(pptx.shapes.RECTANGLE, {
+            // Add logos
+            slide.addImage({
+                path: Logo,
+                x: 0.3,
+                y: 7.0,
+                w: 1.4,
+                h: 0.5,
+                sizing: { type: "contain", w: 1.4, h: 0.5 }
+            });
+
+            if (authData?.company_logo) {
+                slide.addImage({
+                    path: authData.company_logo,
+                    x: 11.3,
+                    y: 7.0,
+                    w: 1.4,
+                    h: 0.5,
+                    sizing: { type: "contain", w: 1.4, h: 0.5 }
+                });
+            }
+
+            await pptx.writeFile({
+                fileName: `ROI_by_Discount_Depth_${chart5View}.pptx`,
+                compression: true
+            });
+
+        } catch (error) {
+            console.error("PPT Generation Error:", error);
+        } finally {
+            setPresentationGenerated(false);
+        }
+    };
+
+    const generateChart6PPT = async () => {
+        try {
+            setPresentationGenerated(true);
+            let pptx = new pptxgen();
+            pptx.layout = "LAYOUT_WIDE";
+
+            // Master slide setup
+            pptx.defineSlideMaster({
+                title: "PLACEHOLDER_SLIDE",
+                background: { color: "FFFFFF" },
+                objects: [
+                    {
+                        rect: {
+                            x: 0, y: 0, w: "100%", h: 0.35,
+                            fill: { color: "174F73" }
+                        }
+                    },
+                    {
+                        text: {
+                            text: "North Light Analytics Report",
+                            options: {
+                                x: 0, y: 0, w: 6, h: 0.35,
+                                fontSize: 15, color: "FFFFFF"
+                            }
+                        }
+                    }
+                ],
+                slideNumber: { x: 13, y: 0, color: "ffffff", fontSize: 15 }
+            });
+
+            let slide = pptx.addSlide({ masterName: "PLACEHOLDER_SLIDE" });
+
+            // Add main chart
+            const chartData = chart6Data.series.map(series => ({
+                name: series.name,
+                labels: ['PPG A', 'PPG B'],
+                values: series.data
+            }));
+
+            slide.addChart(pptx.charts.BAR, chartData, {
+                x: 0.35,
+                y: 1.5,
+                w: 8,
+                h: 4,
+                barDir: 'col',
+                showTitle: true,
+                title: "Performance by Price Point Group",
+                showLegend: true,
+                legendPos: 'b',
+                dataLabelFormatCode: '#,##0.0"%"',
+                showValue: true,
+                valueBarColors: true,
+                chartColors: ['4472C4', '00B050', 'FFC000'],
+                catAxisTitle: "Price Point Groups",
+                valAxisTitle: "Percentage (%)"
+            });
+
+            // Add summary tables
+            const summaryData = chart6Data.summaryData;
+
+            // PPG A Summary
+            slide.addText("PPG A Summary", {
                 x: 8.5,
                 y: 1.5,
                 w: 4,
-                h: 4,
-                fill: { color: "F5F5F5" }
-            });
-
-            slide.addText("Formula:", {
-                x: 8.7,
-                y: 1.7,
+                h: 0.3,
                 fontSize: 12,
-                bold: true
+                bold: true,
+                color: "000000"
             });
 
-            slide.addText([
-                { text: "Discount Depth:", options: { bold: true } },
-                { text: "\nGroup the events based on the discount percentage in each event in ranges 0-10, 10-20..." }
-            ].join(""), {
-                x: 8.7,
-                y: 2.0,
-                w: 3.6,
-                fontSize: 10
+            slide.addTable([
+                ["Metric", "Value"],
+                ["Shared Profit Created", `$${formatNumber(summaryData.ppgA.sharedProfitCreated)}`],
+                ["Shelf Price Investment", `$${formatNumber(summaryData.ppgA.shelfPriceInvestment)}`],
+                ["Shared Profit Per $", `${formatNumber(summaryData.ppgA.sharedProfitPerDollar)}%`],
+                ["% Funded by Retailer", `${formatNumber(summaryData.ppgA.percentFundedByRetailer)}%`]
+            ], {
+                x: 8.5,
+                y: 1.9,
+                w: 4,
+                colW: [2, 2],
+                fontSize: 10,
+                border: { pt: 1, color: "cccccc" }
+            });
+
+            // PPG B Summary
+            slide.addText("PPG B Summary", {
+                x: 8.5,
+                y: 3.5,
+                w: 4,
+                h: 0.3,
+                fontSize: 12,
+                bold: true,
+                color: "000000"
+            });
+
+            slide.addTable([
+                ["Metric", "Value"],
+                ["Shared Profit Created", `$${formatNumber(summaryData.ppgB.sharedProfitCreated)}`],
+                ["Shelf Price Investment", `$${formatNumber(summaryData.ppgB.shelfPriceInvestment)}`],
+                ["Shared Profit Per $", `${formatNumber(summaryData.ppgB.sharedProfitPerDollar)}%`],
+                ["% Funded by Retailer", `${formatNumber(summaryData.ppgB.percentFundedByRetailer)}%`]
+            ], {
+                x: 8.5,
+                y: 3.9,
+                w: 4,
+                colW: [2, 2],
+                fontSize: 10,
+                border: { pt: 1, color: "cccccc" }
             });
 
             // Add logos
@@ -1579,7 +2755,7 @@ const TpoReport = () => {
             }
 
             await pptx.writeFile({
-                fileName: "ROI_by_Discount_Depth.pptx",
+                fileName: "Performance_by_PPG.pptx",
                 compression: true
             });
 
@@ -1590,8 +2766,337 @@ const TpoReport = () => {
         }
     };
 
+    const generateChart7PPT = async () => {
+        try {
+            setPresentationGenerated(true);
+            let pptx = new pptxgen();
+            pptx.layout = "LAYOUT_WIDE";
+
+            // Master slide setup
+            pptx.defineSlideMaster({
+                title: "PLACEHOLDER_SLIDE",
+                background: { color: "FFFFFF" },
+                objects: [
+                    {
+                        rect: {
+                            x: 0, y: 0, w: "100%", h: 0.35,
+                            fill: { color: "174F73" }
+                        }
+                    },
+                    {
+                        text: {
+                            text: "North Light Analytics Report",
+                            options: {
+                                x: 0, y: 0, w: 6, h: 0.35,
+                                fontSize: 15, color: "FFFFFF"
+                            }
+                        }
+                    }
+                ],
+                slideNumber: { x: 13, y: 0, color: "ffffff", fontSize: 15 }
+            });
+
+            let slide = pptx.addSlide({ masterName: "PLACEHOLDER_SLIDE" });
+
+            // Add main chart
+            const chartData = chart7Data.series.map(series => ({
+                name: series.name,
+                labels: chart7Data.options.xaxis.categories,
+                values: series.data
+            }));
+
+            slide.addChart(pptx.charts.BAR, chartData, {
+                x: 0.35,
+                y: 1.5,
+                w: 12,
+                h: 5,
+                barDir: 'col',
+                showTitle: true,
+                title: "Incremental Profit Pool per Dollar Invested on Promo",
+                showLegend: true,
+                legendPos: 'b',
+                dataLabelFormatCode: '#,##0.00',
+                showValue: true,
+                chartColors: ['2196f3', '00e396', 'feb019'],
+                catAxisTitle: "Channels",
+                valAxisTitle: "Incremental Profit per Dollar"
+            });
+
+            // Add logos
+            slide.addImage({
+                path: Logo,
+                x: 0.3,
+                y: 7.0,
+                w: 1.4,
+                h: 0.5,
+                sizing: { type: "contain", w: 1.4, h: 0.5 }
+            });
+
+            if (authData?.company_logo) {
+                slide.addImage({
+                    path: authData.company_logo,
+                    x: 11.3,
+                    y: 7.0,
+                    w: 1.4,
+                    h: 0.5,
+                    sizing: { type: "contain", w: 1.4, h: 0.5 }
+                });
+            }
+
+            await pptx.writeFile({
+                fileName: "Incremental_Profit_by_Channel.pptx",
+                compression: true
+            });
+
+        } catch (error) {
+            console.error("PPT Generation Error:", error);
+        } finally {
+            setPresentationGenerated(false);
+        }
+    };
+
+    const generateChart8PPT = async () => {
+        try {
+            setPresentationGenerated(true);
+            let pptx = new pptxgen();
+            pptx.layout = "LAYOUT_WIDE";
+
+            // Master slide setup
+            pptx.defineSlideMaster({
+                title: "PLACEHOLDER_SLIDE",
+                background: { color: "FFFFFF" },
+                objects: [
+                    {
+                        rect: {
+                            x: 0, y: 0, w: "100%", h: 0.35,
+                            fill: { color: "174F73" }
+                        }
+                    },
+                    {
+                        text: {
+                            text: "North Light Analytics Report",
+                            options: {
+                                x: 0, y: 0, w: 6, h: 0.35,
+                                fontSize: 15, color: "FFFFFF"
+                            }
+                        }
+                    }
+                ],
+                slideNumber: { x: 13, y: 0, color: "ffffff", fontSize: 15 }
+            });
+
+            let slide = pptx.addSlide({ masterName: "PLACEHOLDER_SLIDE" });
+
+            // Add title
+            slide.addText("Relationship between ROI and Incremental Profit Pool", {
+                x: 0.35,
+                y: 0.5,
+                w: 12,
+                h: 0.5,
+                fontSize: 14,
+                bold: true,
+                color: "000000"
+            });
+
+            // Add chart
+            const scatterData = chart8Data.series[0].data.map(point => ({
+                x: point.x,
+                y: point.y,
+                name: point.name
+            }));
+
+            const chartData = [{
+                name: 'Incremental Profit per Dollar',
+                values: scatterData.map(point => point.y),
+                labels: scatterData.map(point => point.x.toString())
+            }];
+
+            slide.addChart(pptx.charts.SCATTER, chartData, {
+                x: 0.35,
+                y: 1.2,
+                w: 12,
+                h: 5,
+                showTitle: true,
+                title: "Relationship between ROI and Incremental Profit Pool per Event",
+                showLegend: false,
+                lineSize: 0,
+                chartColors: ['#00B3E5'],
+                lineWidth: 0,
+                markerSize: 10,
+                valAxisTitle: "Incremental Profit Pool per Dollar Invested",
+                catAxisTitle: "Manufacturer ROI (%)",
+                plotArea: { border: { pt: 1, color: "888888" } },
+                showValAxisTitle: true,
+                showCatAxisTitle: true,
+                valAxisTitleColor: "000000",
+                catAxisTitleColor: "000000",
+                dataLabelFormatCode: "#,##0.00",
+                valAxisLabelFormatCode: "$#,##0.00",
+                catAxisLabelFormatCode: "#,##0'%'"
+            });
+
+            // Add logos
+            slide.addImage({
+                path: Logo,
+                x: 0.3,
+                y: 7.0,
+                w: 1.4,
+                h: 0.5,
+                sizing: { type: "contain", w: 1.4, h: 0.5 }
+            });
+
+            if (authData?.company_logo) {
+                slide.addImage({
+                    path: authData.company_logo,
+                    x: 11.3,
+                    y: 7.0,
+                    w: 1.4,
+                    h: 0.5,
+                    sizing: { type: "contain", w: 1.4, h: 0.5 }
+                });
+            }
+
+            await pptx.writeFile({
+                fileName: "Relationship_between_ROI_and_Incremental_Profit_Pool.pptx",
+                compression: true
+            });
+
+        } catch (error) {
+            console.error("PPT Generation Error:", error);
+        } finally {
+            setPresentationGenerated(false);
+        }
+    };
+
+    const generateChart9PPT = async () => {
+        try {
+            setPresentationGenerated(true);
+            let pptx = new pptxgen();
+            pptx.layout = "LAYOUT_WIDE";
+
+            // Master slide setup
+            pptx.defineSlideMaster({
+                title: "PLACEHOLDER_SLIDE",
+                background: { color: "FFFFFF" },
+                objects: [
+                    {
+                        rect: {
+                            x: 0, y: 0, w: "100%", h: 0.35,
+                            fill: { color: "174F73" }
+                        }
+                    },
+                    {
+                        text: {
+                            text: "North Light Analytics Report",
+                            options: {
+                                x: 0, y: 0, w: 6, h: 0.35,
+                                fontSize: 15, color: "FFFFFF"
+                            }
+                        }
+                    }
+                ],
+                slideNumber: { x: 13, y: 0, color: "ffffff", fontSize: 15 }
+            });
+
+            let slide = pptx.addSlide({ masterName: "PLACEHOLDER_SLIDE" });
+
+            // Add title
+            slide.addText("Relationship between retailer funding and ROI at different price points", {
+                x: 0.35,
+                y: 0.5,
+                w: 12,
+                h: 0.5,
+                fontSize: 14,
+                bold: true,
+                color: "000000"
+            });
+
+            // Format data for the chart
+            const chartData = chart9Data.series.map(series => {
+                // Ensure data points exist and are properly formatted
+                const validData = series.data.filter(point =>
+                    Array.isArray(point) && point.length === 2 &&
+                    !isNaN(point[0]) && !isNaN(point[1])
+                );
+
+                return {
+                    name: series.name,
+                    values: validData.map(point => point[1]),
+                    labels: validData.map(point => point[0].toString())
+                };
+            }).filter(series => series.values.length > 0); // Only include series with valid data
+
+            if (chartData.length > 0) {
+                // Add chart
+                slide.addChart(pptx.charts.LINE, chartData, {
+                    x: 0.35,
+                    y: 1.2,
+                    w: 12,
+                    h: 5,
+                    showTitle: true,
+                    title: "Relationship between retailer funding and ROI at different price points",
+                    showLegend: true,
+                    legendPos: 'b',
+                    dataLabelFormatCode: "#,##0.00",
+                    showValue: true,
+                    chartColors: ['#00B3E5', '#4CAF50', '#FFC107'],
+                    catAxisTitle: "% of Promo Funded by Retailer",
+                    valAxisTitle: "Manufacturer Promo ROI",
+                    valAxisMinVal: Math.min(...chartData.flatMap(s => s.values)) - 5,
+                    valAxisMaxVal: Math.max(...chartData.flatMap(s => s.values)) + 5,
+                    valGridLine: { style: "none" },
+                    catGridLine: { style: "none" }
+                });
+
+                // Add description
+                slide.addText("The green shaded area indicates the minimum acceptable ROI of 25%", {
+                    x: 0.35,
+                    y: 6.3,
+                    w: 12,
+                    h: 0.3,
+                    fontSize: 12,
+                    color: "000000"
+                });
+
+                // Add logos
+                slide.addImage({
+                    path: Logo,
+                    x: 0.3,
+                    y: 7.0,
+                    w: 1.4,
+                    h: 0.5,
+                    sizing: { type: "contain", w: 1.4, h: 0.5 }
+                });
+
+                if (authData?.company_logo) {
+                    slide.addImage({
+                        path: authData.company_logo,
+                        x: 11.3,
+                        y: 7.0,
+                        w: 1.4,
+                        h: 0.5,
+                        sizing: { type: "contain", w: 1.4, h: 0.5 }
+                    });
+                }
+
+                await pptx.writeFile({
+                    fileName: "Relationship_between_retailer_funding_and_ROI.pptx",
+                    compression: true
+                });
+            } else {
+                console.error("No valid data available for the chart");
+                throw new Error("No valid data available for the chart");
+            }
+
+        } catch (error) {
+            console.error("PPT Generation Error:", error);
+        } finally {
+            setPresentationGenerated(false);
+        }
+    };
+
     const formatNumber = (num) => {
-        return Number(num).toFixed(2);
+        return Number(num).toFixed(1);
     };
 
     return (
@@ -1652,13 +3157,13 @@ const TpoReport = () => {
                                                                 <th className="py-2 px-4">Position ROI</th>
                                                                 <td className="py-2 px-4">{summaryData.positiveCount}</td>
                                                                 <td className="py-2 px-4">-</td>
-                                                                <td className="py-2 px-4">{formatNumber(summaryData.positiveROI)}%</td>
+                                                                <th className="py-2 px-4">{formatNumber(summaryData.positiveROI)}%</th>
                                                             </tr>
                                                             <tr className="border-b border-gray-300 text-left">
                                                                 <th className="py-2 px-4">Negative ROI</th>
                                                                 <td className="py-2 px-4">{summaryData.negativeCount}</td>
                                                                 <td className="py-2 px-4">-</td>
-                                                                <td className="py-2 px-4">{formatNumber(summaryData.negativeROI)}%</td>
+                                                                <th className="py-2 px-4">{formatNumber(summaryData.negativeROI)}%</th>
                                                             </tr>
                                                         </tbody>
                                                     </table>
@@ -1694,7 +3199,6 @@ const TpoReport = () => {
                                         <div>
                                             <div className="flex justify-between mb-4">
                                                 <div>
-                                                    <p>This chart shows the ROI by account which is the same formula as event level ROI but across all events</p>
                                                 </div>
                                                 <button
                                                     className="btn btn-primary"
@@ -1727,7 +3231,7 @@ const TpoReport = () => {
                                         <div>
                                             <div className="flex justify-between mb-4">
                                                 <div>
-                                                    <p>This analysis shows the relationship between trade spend and both incremental volume and ROI</p>
+
                                                 </div>
                                                 <button
                                                     className="btn btn-primary"
@@ -1772,7 +3276,7 @@ const TpoReport = () => {
                                         <div>
                                             <div className="flex justify-between mb-4">
                                                 <div>
-                                                    <p>This chart shows count, avg incremental lift (%) and wtd average ROI by type of promotional event</p>
+
                                                 </div>
                                                 <button
                                                     className="btn btn-primary"
@@ -1783,7 +3287,10 @@ const TpoReport = () => {
                                                 </button>
                                             </div>
                                             <div className="grid grid-cols-3 gap-4">
-                                                <div>
+                                                <div className="flex flex-col">
+                                                    <div className="bg-[#0072bc] text-white p-2 mb-2 text-center">
+                                                        Event Count (% of Total)
+                                                    </div>
                                                     <ReactApexChart
                                                         options={chart4Data.eventCount.options}
                                                         series={chart4Data.eventCount.series}
@@ -1791,7 +3298,10 @@ const TpoReport = () => {
                                                         height={400}
                                                     />
                                                 </div>
-                                                <div>
+                                                <div className="flex flex-col">
+                                                    <div className="bg-[#0072bc] text-white p-2 mb-2 text-center">
+                                                        Average Incremental Lift (%)
+                                                    </div>
                                                     <ReactApexChart
                                                         options={chart4Data.incrementalLift.options}
                                                         series={chart4Data.incrementalLift.series}
@@ -1799,7 +3309,10 @@ const TpoReport = () => {
                                                         height={400}
                                                     />
                                                 </div>
-                                                <div>
+                                                <div className="flex flex-col">
+                                                    <div className="bg-[#0072bc] text-white p-2 mb-2 text-center">
+                                                        Weighted Average ROI (%)
+                                                    </div>
                                                     <ReactApexChart
                                                         options={chart4Data.weightedROI.options}
                                                         series={chart4Data.weightedROI.series}
@@ -1825,7 +3338,6 @@ const TpoReport = () => {
                                         <div>
                                             <div className="flex justify-between mb-4">
                                                 <div>
-                                                    <p>This chart shows the avg ROI by average depth of discount. This can be by retailer or brand or items</p>
                                                 </div>
                                                 <button
                                                     className="btn btn-primary"
@@ -1835,7 +3347,7 @@ const TpoReport = () => {
                                                     {presentationGenerated ? 'Generating...' : 'Download PPT'}
                                                 </button>
                                             </div>
-                                            <div className="grid grid-cols-3 gap-4">
+                                            <div className="grid grid-cols-2 gap-4">
                                                 <div>
                                                     <ReactApexChart
                                                         options={chart5Data.options}
@@ -1844,7 +3356,215 @@ const TpoReport = () => {
                                                         height={400}
                                                     />
                                                 </div>
+                                                <div className="bg-gray-50 p-4 rounded">
+                                                    <h4 className="text-lg font-bold mb-3">Result Summary</h4>
+                                                    <div className="overflow-x-auto">
+                                                        <table className="min-w-full bg-white border border-gray-300">
+                                                            <thead>
+                                                                <tr className="bg-gray-100">
+                                                                    <th className="border px-4 py-2">Discount Depth</th>
+                                                                    <th className="border px-4 py-2">0-10</th>
+                                                                    <th className="border px-4 py-2">10-20</th>
+                                                                    <th className="border px-4 py-2">20-30</th>
+                                                                    <th className="border px-4 py-2">30-40</th>
+                                                                    <th className="border px-4 py-2">40-50</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td className="border px-4 py-2 font-semibold">No. of events</td>
+                                                                    {chart5Data.summaryData.noOfEvents.map((val, i) => (
+                                                                        <td key={i} className="border px-4 py-2">{val}</td>
+                                                                    ))}
+                                                                </tr>
+                                                                <tr>
+                                                                    <td className="border px-4 py-2 font-semibold">% of Trade Spend</td>
+                                                                    {chart5Data.summaryData.tradeSpend.map((val, i) => (
+                                                                        <td key={i} className="border px-4 py-2">{val.toFixed(1)}%</td>
+                                                                    ))}
+                                                                </tr>
+                                                                <tr>
+                                                                    <td className="border px-4 py-2 font-semibold">Avg. Wtd. Lift</td>
+                                                                    {chart5Data.summaryData.avgLift.map((val, i) => (
+                                                                        <td key={i} className="border px-4 py-2">{val.toFixed(1)}%</td>
+                                                                    ))}
+                                                                </tr>
+                                                                <tr>
+                                                                    <td className="border px-4 py-2 font-semibold"># of F&D Events</td>
+                                                                    {chart5Data.summaryData.fndEvents.map((val, i) => (
+                                                                        <td key={i} className="border px-4 py-2">{val}</td>
+                                                                    ))}
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
                                             </div>
+                                        </div>
+                                    </Accordion.Body>
+                                </Accordion.Item>
+                                <Accordion.Item eventKey="5" className="my-2 py-0 rounded-lg border-0">
+                                    <Accordion.Header>
+                                        <div className="flex items-center">
+                                            <div className="theme_badge">
+                                                <span>Chart</span>
+                                                <span className="nla_number">6</span>
+                                            </div>
+                                            <span className="ml-2">Performance by Price Point Group</span>
+                                        </div>
+                                    </Accordion.Header>
+                                    <Accordion.Body>
+                                        <div>
+                                            <div className="flex justify-between mb-4">
+                                                <div>
+                                                </div>
+                                                <button
+                                                    className="btn btn-primary"
+                                                    onClick={generateChart6PPT}
+                                                    disabled={presentationGenerated}
+                                                >
+                                                    {presentationGenerated ? 'Generating...' : 'Download PPT'}
+                                                </button>
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <div>
+                                                    <ReactApexChart
+                                                        options={chart6Data.options}
+                                                        series={chart6Data.series}
+                                                        type="bar"
+                                                        height={400}
+                                                    />
+                                                </div>
+                                                <div className="bg-gray-50 p-4 rounded">
+                                                    <h4 className="text-lg font-bold mb-3">Performance of Hi/Lo Events</h4>
+                                                    <div className="grid grid-cols-2 gap-4">
+                                                        {Object.entries(chart6Data.summaryData).map(([ppgName, data]) => (
+                                                            <div key={ppgName} className="border rounded p-3">
+                                                                <h5 className="font-bold mb-2">{ppgName.toUpperCase()}</h5>
+                                                                <table className="min-w-full">
+                                                                    <tbody>
+                                                                        <tr>
+                                                                            <td className="py-1 font-semibold">Price Points:</td>
+                                                                            <td className="py-1">
+                                                                                {data.pricePoints.map(price => `$${price}`).join(', ')}
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td className="py-1 font-semibold">ROI:</td>
+                                                                            <td className="py-1">{isNaN(data.roi) ? 'NaN%' : `${formatNumber(data.roi)}%`}</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td className="py-1 font-semibold">Shared Profit per $:</td>
+                                                                            <td className="py-1">${formatNumber(data.sharedProfitPerDollar)}</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td className="py-1 font-semibold">% Funded by Retailer:</td>
+                                                                            <td className="py-1">{formatNumber(data.percentFundedByRetailer)}%</td>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </Accordion.Body>
+                                </Accordion.Item>
+                                <Accordion.Item eventKey="6" className="my-2 py-0 rounded-lg border-0">
+                                    <Accordion.Header>
+                                        <div className="flex items-center">
+                                            <div className="theme_badge">
+                                                <span>Chart</span>
+                                                <span className="nla_number">7</span>
+                                            </div>
+                                            <span className="ml-2">Incremental Profit Pool per Dollar Invested on Promo</span>
+                                        </div>
+                                    </Accordion.Header>
+                                    <Accordion.Body>
+                                        <div>
+                                            <div className="flex justify-between mb-4">
+                                                <div>
+                                                </div>
+                                                <button
+                                                    className="btn btn-primary"
+                                                    onClick={generateChart7PPT}
+                                                    disabled={presentationGenerated}
+                                                >
+                                                    {presentationGenerated ? 'Generating...' : 'Download PPT'}
+                                                </button>
+                                            </div>
+                                            <ReactApexChart
+                                                options={chart7Data.options}
+                                                series={chart7Data.series}
+                                                type="bar"
+                                                height={400}
+                                            />
+                                        </div>
+                                    </Accordion.Body>
+                                </Accordion.Item>
+                                <Accordion.Item eventKey="7" className="my-2 py-0 rounded-lg border-0">
+                                    <Accordion.Header>
+                                        <div className="flex items-center">
+                                            <div className="theme_badge">
+                                                <span>Chart</span>
+                                                <span className="nla_number">8</span>
+                                            </div>
+                                            <span className="ml-2">Relationship between ROI and Incremental Profit Pool</span>
+                                        </div>
+                                    </Accordion.Header>
+                                    <Accordion.Body>
+                                        <div>
+                                            <div className="flex justify-between mb-4">
+                                                <div className="flex-1">
+
+                                                </div>
+                                                <button
+                                                    className="btn btn-primary ml-4"
+                                                    onClick={generateChart8PPT}
+                                                    disabled={presentationGenerated}
+                                                >
+                                                    {presentationGenerated ? 'Generating...' : 'Download PPT'}
+                                                </button>
+                                            </div>
+                                            <ReactApexChart
+                                                options={chart8Data.options}
+                                                series={chart8Data.series}
+                                                type="scatter"
+                                                height={500}
+                                            />
+                                        </div>
+                                    </Accordion.Body>
+                                </Accordion.Item>
+                                <Accordion.Item eventKey="8" className="my-2 py-0 rounded-lg border-0">
+                                    <Accordion.Header>
+                                        <div className="flex items-center">
+                                            <div className="theme_badge">
+                                                <span>Chart</span>
+                                                <span className="nla_number">9</span>
+                                            </div>
+                                            <span className="ml-2">Relationship between retailer funding and ROI at different price points</span>
+                                        </div>
+                                    </Accordion.Header>
+                                    <Accordion.Body>
+                                        <div>
+                                            <div className="flex justify-between mb-4">
+                                                <div className="flex-1">
+                                                </div>
+                                                <button
+                                                    className="btn btn-primary ml-4"
+                                                    onClick={generateChart9PPT}
+                                                    disabled={presentationGenerated}
+                                                >
+                                                    {presentationGenerated ? 'Generating...' : 'Download PPT'}
+                                                </button>
+                                            </div>
+                                            <ReactApexChart
+                                                options={chart9Data.options}
+                                                series={chart9Data.series}
+                                                type="line"
+                                                height={500}
+                                            />
                                         </div>
                                     </Accordion.Body>
                                 </Accordion.Item>
@@ -1853,6 +3573,7 @@ const TpoReport = () => {
                     </div>
                 </div>
             </div>
+            <Footer />
         </>
     );
 };
