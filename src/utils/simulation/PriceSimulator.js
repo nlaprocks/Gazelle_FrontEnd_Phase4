@@ -26,6 +26,8 @@ export default function PriceSimulator({
   handleBrandChange,
   handleProductsChangeForPrice,
 }) {
+  console.log({ selectedRetailer, selectedBrand, selectedProducts });
+
   return (
     <div className="simluation_db">
       <div className="container-fluid">
@@ -38,6 +40,7 @@ export default function PriceSimulator({
                     allowClear={true}
                     showSearch
                     placeholder="Select Retailer"
+                    value={selectedRetailer || undefined}
                     onChange={handleRetailerChange}
                     disabled={isPriceSimulationLoading}
                     style={{
@@ -186,7 +189,7 @@ export default function PriceSimulator({
                       <p>
                         {competitorSummary.totalNewWeeklyDollars
                           ? "$ " +
-                            competitorSummary.totalNewWeeklyDollars.toFixed(2)
+                          competitorSummary.totalNewWeeklyDollars.toFixed(2)
                           : "-"}
                       </p>
                     </td>
@@ -194,9 +197,9 @@ export default function PriceSimulator({
                       <p>
                         {competitorSummary.totalChangeWeeklyDollars
                           ? "$ " +
-                            competitorSummary.totalChangeWeeklyDollars.toFixed(
-                              2
-                            )
+                          competitorSummary.totalChangeWeeklyDollars.toFixed(
+                            2
+                          )
                           : "-"}
                       </p>
                     </td>
@@ -204,8 +207,8 @@ export default function PriceSimulator({
                       <p>
                         {competitorSummary.totalPercentageChangeWeeklyDollars
                           ? competitorSummary.totalPercentageChangeWeeklyDollars.toFixed(
-                              2
-                            ) + " %"
+                            2
+                          ) + " %"
                           : "-"}
                       </p>
                     </td>

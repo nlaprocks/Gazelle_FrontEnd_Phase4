@@ -131,7 +131,7 @@ const TpoReport = () => {
             xaxis: {
                 categories: [],
                 title: {
-                    text: 'Accounts'
+                    text: 'Retailers'
                 }
             },
             yaxis: {
@@ -899,7 +899,6 @@ const TpoReport = () => {
                 const { financialResults } = getResult(product.financialData);
                 const roiResult = financialResults.find(r => r.name === "Sales ROI")?.value;
                 const spendResult = financialResults.find(r => r.name === "Total Spend")?.value;
-
 
                 const roi = Number(roiResult?.replace(/[^0-9.-]+/g, "")) || 0;
                 const spend = Number(spendResult?.replace(/[^0-9.-]+/g, "")) || 0;
@@ -3111,7 +3110,7 @@ const TpoReport = () => {
                                                 <span>Chart</span>
                                                 <span className="nla_number">1</span>
                                             </div>
-                                            <span className="ml-2">Event Level ROI For all Events</span>
+                                            <span className="ml-2">What is the ROI for all events?</span>
                                         </div>
                                     </Accordion.Header>
                                     <Accordion.Body>
@@ -3140,7 +3139,7 @@ const TpoReport = () => {
                                                                 <th className="py-2 px-4">{formatNumber(summaryData.avgROI)}%</th>
                                                             </tr>
                                                             <tr className="border-b border-gray-300 text-left">
-                                                                <th className="py-2 px-4">Position ROI</th>
+                                                                <th className="py-2 px-4">Positive ROI</th>
                                                                 <td className="py-2 px-4">{summaryData.positiveCount}</td>
                                                                 <td className="py-2 px-4">${((summaryData.positiveSpend).toFixed(1).toLocaleString())}</td>
                                                                 <th className="py-2 px-4">{formatNumber(summaryData.positiveROI)}%</th>
@@ -3178,7 +3177,7 @@ const TpoReport = () => {
                                                 <span>Chart</span>
                                                 <span className="nla_number">2</span>
                                             </div>
-                                            <span className="ml-2">What is driving the variation in ROI across different accounts?</span>
+                                            <span className="ml-2">What is driving the variation in ROI across different retailers?</span>
                                         </div>
                                     </Accordion.Header>
                                     <Accordion.Body>
@@ -3255,7 +3254,7 @@ const TpoReport = () => {
                                                 <span>Chart</span>
                                                 <span className="nla_number">4</span>
                                             </div>
-                                            <span className="ml-2">Landscape and ROI by event type</span>
+                                            <span className="ml-2">What is the ROI by event types?</span>
                                         </div>
                                     </Accordion.Header>
                                     <Accordion.Body>
@@ -3317,7 +3316,7 @@ const TpoReport = () => {
                                                 <span>Chart</span>
                                                 <span className="nla_number">5</span>
                                             </div>
-                                            <span className="ml-2">Avg. Wtd ROI for different discount levels by brand</span>
+                                            <span className="ml-2">What is the ROI at different discount levels?</span>
                                         </div>
                                     </Accordion.Header>
                                     <Accordion.Body>
@@ -3399,7 +3398,7 @@ const TpoReport = () => {
                                                 <span>Chart</span>
                                                 <span className="nla_number">6</span>
                                             </div>
-                                            <span className="ml-2">Performance by Price Point Group</span>
+                                            <span className="ml-2">What is the performance of PPGs?</span>
                                         </div>
                                     </Accordion.Header>
                                     <Accordion.Body>

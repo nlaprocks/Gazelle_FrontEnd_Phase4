@@ -2,11 +2,25 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "../../css/simulation-style.css";
 import { useParams } from "react-router-dom";
-import { OverlayTrigger, Tooltip, Modal } from "react-bootstrap";
-import Spinner from "react-bootstrap/Spinner";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import PriceSimulator from "../../utils/simulation/PriceSimulator";
 import MarginSimulator from "../../utils/simulation/MarginSimulator";
 import PromoEventSimulator from "../../utils/simulation/promo/PromoEventSimulator";
+
+const getStorageKey = (projectId, modelId) => {
+    return `simulator_state_${projectId}_${modelId}`;
+};
+
+const getStoredState = (projectId, modelId) => {
+    const key = getStorageKey(projectId, modelId);
+    const stored = localStorage.getItem(key);
+    return stored ? JSON.parse(stored) : null;
+};
+
+const saveState = (projectId, modelId, state) => {
+    const key = getStorageKey(projectId, modelId);
+    localStorage.setItem(key, JSON.stringify(state));
+};
 
 export default function Simulation() {
 
@@ -69,12 +83,12 @@ export default function Simulation() {
     const [promoEventChartData, setpromoEventChartData] = React.useState([]);
 
     // Margin Simulator
-    const retailers = Object?.keys(retailerBrandProducts);
-    let brands = selectedRetailer
-        ? Object?.keys(retailerBrandProducts[selectedRetailer])
+    const retailers = Object?.keys(retailerBrandProducts || {});
+    let brands = selectedRetailer && retailerBrandProducts
+        ? Object?.keys(retailerBrandProducts[selectedRetailer] || {})
         : [];
-    let products = selectedBrand
-        ? retailerBrandProducts[selectedRetailer][selectedBrand]
+    let products = selectedBrand && selectedRetailer && retailerBrandProducts
+        ? retailerBrandProducts[selectedRetailer][selectedBrand] || []
         : [];
 
     /* -----start----- Margin API handler -----start----- */
@@ -111,7 +125,32 @@ export default function Simulation() {
 
     // Local handlers
     const handleSimulatorChange = (e) => {
-        setSimulatorType(e.target.value);
+        const newType = e.target.value;
+        setSimulatorType(newType);
+
+        // Load stored values for the selected simulator type
+        const storedState = getStoredState(project_id, model_id);
+        if (storedState && storedState[newType]) {
+            const typeState = storedState[newType];
+
+            // Set common fields
+            setSelectedRetailer(typeState.retailer || '');
+            setSelectedBrand(typeState.brand || '');
+
+            // Set type-specific fields
+            if (newType === 'price') {
+                setSelectedProducts(typeState.products || []);
+                setNewPrices(typeState.newPrices || []);
+                setCompetitorNewPrice(typeState.competitorNewPrice || []);
+            } else {
+                setSelectedProduct(typeState.product || '');
+                if (newType === 'margin') {
+                    setMarginPriceValues(typeState.priceValues || {});
+                } else if (newType === 'promo') {
+                    setPromoEventPriceValues(typeState.priceValues || {});
+                }
+            }
+        }
     };
 
     const handleProductsChangeForPrice = (values) => {
@@ -137,11 +176,27 @@ export default function Simulation() {
         setSelectedBrand("");
         setSelectedProduct("");
         setSelectedProducts([]);
+
+        // Clear related data
         if (simulatorType === "price") {
             setFilteredSelectedPriceProducts([]);
             setCompetitors([]);
             getPriceSimulationApiHandler(value);
         }
+
+        // Save the updated state immediately
+        const currentState = getStoredState(project_id, model_id);
+        const newState = {
+            ...currentState,
+            [simulatorType]: {
+                ...currentState[simulatorType],
+                retailer: value,
+                brand: "",
+                product: "",
+                products: []
+            }
+        };
+        saveState(project_id, model_id, newState);
     };
 
     // Brand change handler
@@ -150,6 +205,19 @@ export default function Simulation() {
         setSelectedBrand(value);
         setSelectedProduct("");
         setSelectedProducts([]);
+
+        // Save the updated state immediately
+        const currentState = getStoredState(project_id, model_id);
+        const newState = {
+            ...currentState,
+            [simulatorType]: {
+                ...currentState[simulatorType],
+                brand: value,
+                product: "",
+                products: []
+            }
+        };
+        saveState(project_id, model_id, newState);
     };
 
     // Product change handler
@@ -176,10 +244,12 @@ export default function Simulation() {
             if (response.status === 200) {
                 setPriceSimulationData(response?.data?.data);
                 setIsPriceSimulationLoading(false);
+                return response.data;
             }
         } catch (error) {
             setIsPriceSimulationLoading(false);
             console.log("Error in fetching simulation data: ", error);
+            return null;
         }
     };
     /* -----start----- Api Handler -----start----- */
@@ -188,37 +258,43 @@ export default function Simulation() {
     const [newPriceChange, setNewPriceChange] = useState([]);
 
     const handleNewPriceOnChange = (index, event, product, type) => {
+        const newValue = event.target?.value || event.value || event; // Handle both event types
         let temp = [...newPriceChange];
+
         if (newPriceChange && newPriceChange.length > 0) {
+            let found = false;
             for (let i = 0; i < newPriceChange.length; i++) {
                 if (product?.Product === newPriceChange[i]?.Product) {
-                    temp[i].newPrice = event.target.value;
+                    temp[i].newPrice = newValue;
+                    found = true;
                     break;
-                } else if (i === newPriceChange.length - 1) {
-                    temp.push({
-                        ...product,
-                        type: type,
-                        newPrice: event.target.value,
-                    });
                 }
+            }
+            if (!found) {
+                temp.push({
+                    ...product,
+                    type: type,
+                    newPrice: newValue,
+                });
             }
         } else {
             temp.push({
                 ...product,
                 type: type,
-                newPrice: event.target.value,
+                newPrice: newValue,
             });
         }
-        // console.log("priceChange", temp);
+
         setNewPriceChange(temp);
+
         if (type === "product") {
             const updatedPrices = [...newPrices];
-            updatedPrices[index] = event.target.value;
+            updatedPrices[index] = newValue;
             setNewPrices(updatedPrices);
         }
         if (type === "competitor") {
             const updatedPrices = [...competitorNewPrice];
-            updatedPrices[index] = event.target.value;
+            updatedPrices[index] = newValue;
             setCompetitorNewPrice(updatedPrices);
         }
     };
@@ -234,9 +310,22 @@ export default function Simulation() {
         newPriceChange &&
             newPriceChange.length > 0 &&
             newPriceChange.map((ele, j) => {
-                if (ele.newPrice !== "" && ele.newPrice !== "0") {
+                if (ele.newPrice !== "" && ele.newPrice !== "0" && ele.Product) {
                     //Volume Impact
                     let Product = ele.Product;
+                    let productOunces = 0;
+
+                    // Safely extract product ounces with error handling
+                    try {
+                        const matches = Product.match(/[+-]?\d+(\.\d+)?/g);
+                        if (matches && matches.length >= 2) {
+                            productOunces = matches[matches.length - 2];
+                        }
+                    } catch (error) {
+                        console.log("Error extracting product ounces:", error);
+                        productOunces = 1; // Default value if extraction fails
+                    }
+
                     let PercentageChangeInPrice =
                         ((ele.newPrice - ele.Price_avg_last_4_weeks) * 100) /
                         ele.Price_avg_last_4_weeks;
@@ -251,6 +340,7 @@ export default function Simulation() {
                     let ChangeInUnits = NewUnits - ele.total_units_sum;
                     let PercentageChangeInUnits =
                         (ChangeInUnits * 100) / ele.total_units_sum;
+
                     tempVolumeImpact.push({
                         Product: Product,
                         Base_Price_Elasticity: ele.Base_Price_Elasticity,
@@ -263,19 +353,14 @@ export default function Simulation() {
                             ele.newPrice != 0 ? PercentageChangeInUnits : 0,
                         NewVolume:
                             ele.newPrice != 0
-                                ? NewUnits *
-                                Product.match(/[+-]?\d+(\.\d+)?/g)[
-                                Product.match(/[+-]?\d+(\.\d+)?/g).length - 2
-                                ]
+                                ? NewUnits * productOunces
                                 : 0,
                         ChangeInVolume:
                             ele.newPrice != 0
-                                ? ChangeInUnits *
-                                Product.match(/[+-]?\d+(\.\d+)?/g)[
-                                Product.match(/[+-]?\d+(\.\d+)?/g).length - 2
-                                ]
+                                ? ChangeInUnits * productOunces
                                 : 0,
                     });
+
                     //Dollar Impact
                     let NewDollars = NewUnits * ele.newPrice;
                     let ChangeInDollars =
@@ -296,7 +381,8 @@ export default function Simulation() {
                     });
                 }
             });
-        console.log(tempVolumeImpact, tempDollarImpact);
+
+        // Rest of the impactHandler function...
         crossEffectHandler(tempVolumeImpact, tempDollarImpact);
     };
 
@@ -680,7 +766,6 @@ export default function Simulation() {
 
     /* -----start------ Calls Impact handler function on price change -----start------ */
     useEffect(() => {
-        // impactHandler();
         if (newPrices.length > 0 || competitorNewPrice.length > 0) {
             impactHandler();
         } else {
@@ -805,12 +890,125 @@ export default function Simulation() {
     useEffect(() => {
         const fetchRetailerBrandProductApiHandler = async () => {
             try {
+                setIsPriceSimulationLoading(true);
                 const api = `${process.env.REACT_APP_NGROK}/insights/retailer_brands_products?project_id=${project_id}&model_id=${model_id}`;
                 const response = await axios.get(api);
                 if (response.status === 200) {
                     setRetailerBrandProducts(response?.data?.data);
+
+                    // After getting the data, restore the stored state
+                    const storedState = getStoredState(project_id, model_id);
+                    if (storedState) {
+                        // Set simulator type
+                        setSimulatorType(storedState.currentType || 'price');
+
+                        // Restore price simulator state
+                        if (storedState.price) {
+                            const priceState = storedState.price;
+                            console.log({ priceState });
+
+                            if (priceState.retailer) {
+                                setSelectedRetailer(priceState.retailer);
+                                // Trigger API call for price simulation
+                                const priceResponse = await getPriceSimulationApiHandler(priceState.retailer);
+
+                                // Only proceed with other settings if API call was successful
+                                if (priceResponse) {
+                                    if (priceState.brand) {
+                                        setSelectedBrand(priceState.brand);
+                                    }
+
+                                    if (priceState.products && priceState.products.length > 0) {
+                                        setSelectedProducts(priceState.products);
+                                    }
+
+                                    // Restore input values and trigger calculations
+                                    if (priceState.newPrices && priceState.newPrices.length > 0) {
+                                        setTimeout(() => {
+                                            setNewPrices(priceState.newPrices);
+                                            // Recreate price change events to trigger calculations
+                                            const priceChanges = priceState.products.map((product, index) => ({
+                                                ...product,
+                                                type: "product",
+                                                newPrice: priceState.newPrices[index]
+                                            }));
+                                            setNewPriceChange(priceChanges);
+
+                                        }, 100);
+
+                                        setTimeout(() => {
+                                            setShowProductResults(true);
+                                        }, 100);
+                                    }
+
+                                    if (priceState.competitorNewPrice && priceState.competitorNewPrice.length > 0) {
+                                        setTimeout(() => {
+                                            setCompetitorNewPrice(priceState.competitorNewPrice);
+                                            // Add competitor price changes if any
+                                            const competitorChanges = competitors.map((competitor, index) => ({
+                                                ...competitor,
+                                                type: "competitor",
+                                                newPrice: priceState.competitorNewPrice[index]
+                                            }));
+                                            setNewPriceChange(prev => [...prev, ...competitorChanges]);
+                                        }, 100);
+
+                                        setTimeout(() => {
+                                            setShowCompetitorResults(true);
+                                        }, 100);
+                                    }
+                                }
+                            }
+                        }
+
+                        // Store margin simulator values
+                        if (storedState.margin) {
+                            const marginState = storedState.margin;
+                            if (marginState.retailer) {
+                                setSelectedRetailer(marginState.retailer);
+                            }
+
+                            if (marginState.brand) {
+                                setSelectedBrand(marginState.brand);
+                            }
+
+                            if (marginState.product) {
+                                setSelectedProduct(marginState.product);
+                                // Trigger API call for margin
+                                await marginSimulationApiHandler(marginState.product);
+                            }
+
+                            if (marginState.priceValues) {
+                                setMarginPriceValues(marginState.priceValues);
+                            }
+                        }
+
+                        // Store promo simulator values  
+                        if (storedState.promo) {
+                            const promoState = storedState.promo;
+                            if (promoState.retailer) {
+                                setSelectedRetailer(promoState.retailer);
+                            }
+
+                            if (promoState.brand) {
+                                setSelectedBrand(promoState.brand);
+                            }
+
+                            if (promoState.product) {
+                                setSelectedProduct(promoState.product);
+                                // Trigger API call for promo
+                                await promoEventHandler(promoState.product);
+                            }
+
+                            if (promoState.priceValues) {
+                                setPromoEventPriceValues(promoState.priceValues);
+                            }
+                        }
+                    }
+                    setIsPriceSimulationLoading(false);
                 }
             } catch (error) {
+                setIsPriceSimulationLoading(false);
                 console.log("Error in fetching retailers", error);
             }
         };
@@ -824,8 +1022,16 @@ export default function Simulation() {
         );
         setFilteredSelectedPriceProducts(filteredData);
         filterCompetitorsHandler(filteredData);
-        setNewPrices([]);
-        setCompetitorNewPrice([]);
+
+        // Only reset prices if there's no stored state
+        const storedState = getStoredState(project_id, model_id);
+        if (!storedState?.price?.newPrices?.length) {
+            setNewPrices([]);
+        }
+        if (!storedState?.price?.competitorNewPrice?.length) {
+            setCompetitorNewPrice([]);
+        }
+
         setShowCompetitorResults(true);
         setShowProductResults(true);
     }, [selectedProducts]);
@@ -1038,6 +1244,57 @@ export default function Simulation() {
             },
         ]);
     }, [promoEventPriceValues]);
+
+    // Add effect to save state when values change
+    useEffect(() => {
+        if (!retailerBrandProducts) return; // Don't save if data isn't loaded
+
+        const currentState = getStoredState(project_id, model_id) || {};
+        const state = {
+            currentType: simulatorType,
+            price: {
+                ...currentState.price,
+                retailer: selectedRetailer || currentState.price?.retailer || '',
+                brand: selectedBrand || currentState.price?.brand || '',
+                products: selectedProducts?.length ? selectedProducts : currentState.price?.products || [],
+                newPrices: newPrices?.length ? newPrices : currentState.price?.newPrices || [],
+                competitorNewPrice: competitorNewPrice?.length ? competitorNewPrice : currentState.price?.competitorNewPrice || []
+            },
+            margin: {
+                ...currentState.margin,
+                retailer: selectedRetailer || currentState.margin?.retailer || '',
+                brand: selectedBrand || currentState.margin?.brand || '',
+                product: selectedProduct || currentState.margin?.product || '',
+                priceValues: Object.keys(marginPriceValues).some(key => marginPriceValues[key])
+                    ? marginPriceValues
+                    : currentState.margin?.priceValues || marginPriceValues
+            },
+            promo: {
+                ...currentState.promo,
+                retailer: selectedRetailer || currentState.promo?.retailer || '',
+                brand: selectedBrand || currentState.promo?.brand || '',
+                product: selectedProduct || currentState.promo?.product || '',
+                priceValues: Object.keys(promoEventPriceValues).some(key => promoEventPriceValues[key])
+                    ? promoEventPriceValues
+                    : currentState.promo?.priceValues || promoEventPriceValues
+            }
+        };
+
+        saveState(project_id, model_id, state);
+    }, [
+        retailerBrandProducts,
+        simulatorType,
+        selectedRetailer,
+        selectedBrand,
+        selectedProducts,
+        selectedProduct,
+        newPrices,
+        competitorNewPrice,
+        marginPriceValues,
+        promoEventPriceValues,
+        project_id,
+        model_id
+    ]);
 
     return (
         <div className="main-content-wrapper">
