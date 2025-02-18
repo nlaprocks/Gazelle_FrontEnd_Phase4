@@ -497,97 +497,67 @@ const TpoReport = () => {
         }
     });
     const [chart6Data, setChart6Data] = useState({
-        series: [
-            {
-                name: 'ROI',
-                data: []
-            },
-            {
-                name: 'Shared Profit Created Per $ Invested',
-                data: []
-            },
-            {
-                name: '% Funded by Retailer',
-                data: []
-            }
-        ],
+        series: [],
         options: {
             chart: {
                 type: 'bar',
                 height: 400,
-                toolbar: { show: false }
+                toolbar: { show: false },
+                stacked: false
             },
             plotOptions: {
                 bar: {
                     horizontal: false,
-                    columnWidth: '45%'
+                    columnWidth: '55%',
+                    distributed: false
                 }
             },
             dataLabels: {
                 enabled: true,
                 formatter: function (val) {
-                    return val.toFixed(2);
+                    // Only show label if value exists and is not zero
+                    return val != null && val !== 0 ? val.toFixed(2) + '%' : '';
                 },
                 style: {
                     colors: ['#000']
                 }
             },
-            colors: ['#4472C4', '#00B050', '#FFC000'],
             xaxis: {
                 categories: [],
                 title: {
                     text: 'Price Point Groups'
+                },
+                labels: {
+                    style: {
+                        fontSize: '12px'
+                    }
                 }
             },
-            yaxis: [
-                {
-                    title: {
-                        text: 'ROI (%)'
-                    },
-                    labels: {
-                        formatter: function (val) {
-                            return val.toFixed(2) + '%';
-                        }
-                    }
+            yaxis: {
+                title: {
+                    text: 'ROI (%)'
                 },
-                {
-                    title: {
-                        text: 'Shared Profit per $ / % Funded'
-                    },
-                    labels: {
-                        formatter: function (val) {
-                            return val.toFixed(2);
-                        }
-                    },
-                    opposite: true
+                labels: {
+                    formatter: function (val) {
+                        return val.toFixed(2) + '%';
+                    }
                 }
-            ],
-            grid: {
-                borderColor: '#e7e7e7',
-                row: {
-                    colors: ['#f3f3f3', 'transparent'],
-                    opacity: 0.5
+            },
+            colors: ['#4472C4', '#00B050', '#FFC000', '#7030A0'], // Different colors for different events
+            title: {
+                text: 'Performance by Price Point Group',
+                align: 'center',
+                style: {
+                    fontSize: '16px'
                 }
             },
             legend: {
+                show: true,
                 position: 'bottom'
             }
         },
         summaryData: {
-            ppgA: {
-                sharedProfitCreated: 0,
-                shelfPriceInvestment: 0,
-                sharedProfitPerDollar: 0,
-                percentFundedByRetailer: 0,
-                pricePoints: []
-            },
-            ppgB: {
-                sharedProfitCreated: 0,
-                shelfPriceInvestment: 0,
-                sharedProfitPerDollar: 0,
-                percentFundedByRetailer: 0,
-                pricePoints: []
-            }
+            ppgGroups: []
         }
     });
     const [chart7Data, setChart7Data] = useState({
@@ -1515,106 +1485,104 @@ const TpoReport = () => {
     // Update calculateChart6Data function
     const calculateChart6Data = () => {
         const ppgGroups = createPPGGroups(currentYearEvents);
-        const ppgResults = new Map();
+        const summaryData = [];
+        const categories = [];
+        const seriesData = new Map(); // Use Map to track events by name
 
         // Process each PPG group
         ppgGroups.forEach((group, productIds) => {
-            const ppgStats = {
-                roi: [],
-                sharedProfitCreated: 0,
-                sharedProfitPerDollar: 0,
-                retailerFunding: [],
-                totalShelfPriceInvestment: 0,
-                pricePoints: new Set() // Track unique price points
-            };
+            const ppgName = group.name;
+            const ppgEvents = [];
+            const ppgProducts = new Map();
+            categories.push(ppgName);
 
-            // Process each event in the PPG
-            group.events.forEach(event => {
+            // Process events in the group
+            group.events.forEach((event) => {
+                const eventData = {
+                    name: event.title,
+                    roi: 0,
+                    sharedProfitPerDollar: 0,
+                    retailerFunding: 0,
+                    products: []
+                };
+
+                // Calculate event metrics
                 event.planned.forEach(product => {
-                    const { financialResults, promotionalResults } = getResult(product.financialData);
+                    const { financialResults } = getResult(product.financialData);
                     const basePrice = Number(product.financialData.basePrice) || 0;
                     const promoPrice = Number(product.financialData.promoPrice) || 0;
-                    const mfrCOGS = basePrice / 2;
-                    const promoUnits = Number(promotionalResults.find(result =>
-                        result.promotion === 'Event Total')?.units) || 0;
-                    const baseUnits = Number(product.financialData.units) || 0;
-
-                    // Add price point
-                    ppgStats.pricePoints.add(promoPrice.toFixed(2));
-
-                    // Calculate Shared Profit
-                    const baseSharedProfit = (basePrice - mfrCOGS) * baseUnits;
-                    const promoSharedProfit = (promoPrice - mfrCOGS) * promoUnits;
-                    const sharedProfitCreated = promoSharedProfit - baseSharedProfit;
-
-                    // Calculate Shelf Price Investment
-                    const shelfPriceInvestment = (basePrice - promoPrice) * promoUnits;
-
-                    // Calculate ROI
                     const roiResult = financialResults.find(r => r.name === "Sales ROI")?.value;
                     const roi = Number(roiResult?.replace(/[^0-9.-]+/g, "")) || 0;
-                    ppgStats.roi.push(roi);
 
-                    // Calculate Retailer Funding
-                    // TODO: Check for the mftTradeInvestment correct value of this field with @pankajbhai
+                    const shelfPriceInvestment = (basePrice - promoPrice) * Number(product.financialData.units);
                     const mftTradeInvestment = Number(product.financialData.mft_trade_investment) || 0;
                     const retailerFunding = ((shelfPriceInvestment - mftTradeInvestment) / shelfPriceInvestment) * 100;
-                    ppgStats.retailerFunding.push(retailerFunding);
 
-                    ppgStats.sharedProfitCreated += sharedProfitCreated;
-                    ppgStats.totalShelfPriceInvestment += shelfPriceInvestment;
+                    eventData.roi += roi;
+                    eventData.retailerFunding += retailerFunding;
+
+                    // Track product-level data
+                    const productData = {
+                        name: product.name,
+                        roi: roi,
+                        sharedProfitPerDollar: shelfPriceInvestment ? (shelfPriceInvestment - mftTradeInvestment) / shelfPriceInvestment : 0,
+                        retailerFunding: retailerFunding,
+                        pricePoints: [promoPrice.toFixed(2)]
+                    };
+
+                    eventData.products.push(productData);
+                    if (!ppgProducts.has(product.productId)) {
+                        ppgProducts.set(product.productId, productData);
+                    }
                 });
+
+                // Calculate average ROI for the event
+                eventData.roi /= event.planned.length;
+                eventData.retailerFunding /= event.planned.length;
+                ppgEvents.push(eventData);
+
+                // Track event data for series
+                if (!seriesData.has(event.title)) {
+                    seriesData.set(event.title, {
+                        name: event.title,
+                        data: Array(categories.length - 1).fill(0) // Fill previous positions with 0
+                    });
+                }
+
+                // Add ROI data for this event
+                const eventSeries = seriesData.get(event.title);
+                eventSeries.data.push(eventData.roi);
             });
 
-            // Calculate averages for the PPG
-            ppgStats.avgROI = ppgStats.roi.length ?
-                ppgStats.roi.reduce((a, b) => a + b, 0) / ppgStats.roi.length : 0;
-            ppgStats.sharedProfitPerDollar = ppgStats.totalShelfPriceInvestment ?
-                ppgStats.sharedProfitCreated / ppgStats.totalShelfPriceInvestment : 0;
-            ppgStats.avgRetailerFunding = ppgStats.retailerFunding.length ?
-                ppgStats.retailerFunding.reduce((a, b) => a + b, 0) / ppgStats.retailerFunding.length : 0;
+            // Fill remaining positions for all series
+            seriesData.forEach(series => {
+                while (series.data.length < categories.length) {
+                    series.data.push(0);
+                }
+            });
 
-            ppgResults.set(group.name, ppgStats);
+            // Add to summary data
+            summaryData.push({
+                ppgName: ppgName,
+                events: ppgEvents,
+                products: Array.from(ppgProducts.values())
+            });
         });
 
-        // Prepare chart data
-        const series = [
-            {
-                name: 'ROI',
-                data: Array.from(ppgResults.values()).map(stats => stats.avgROI)
-            },
-            {
-                name: 'Shared Profit Created Per $ Invested',
-                data: Array.from(ppgResults.values()).map(stats => stats.sharedProfitPerDollar)
-            },
-            {
-                name: '% Funded by Retailer',
-                data: Array.from(ppgResults.values()).map(stats => stats.avgRetailerFunding)
-            }
-        ];
-
-        // Update chart data state
+        // Convert series data to array and update chart
         setChart6Data(prev => ({
             ...prev,
-            series,
+            series: Array.from(seriesData.values()),
             options: {
                 ...prev.options,
                 xaxis: {
                     ...prev.options.xaxis,
-                    categories: Array.from(ppgResults.keys())
+                    categories: categories
                 }
             },
-            summaryData: Object.fromEntries(
-                Array.from(ppgResults.entries()).map(([name, stats]) => [
-                    name.toLowerCase().replace(' ', ''),
-                    {
-                        roi: stats.avgROI,
-                        sharedProfitPerDollar: stats.sharedProfitPerDollar,
-                        percentFundedByRetailer: stats.avgRetailerFunding,
-                        pricePoints: Array.from(stats.pricePoints).sort((a, b) => Number(a) - Number(b))
-                    }
-                ])
-            )
+            summaryData: {
+                ppgGroups: summaryData
+            }
         }));
     };
 
@@ -3447,47 +3415,85 @@ const TpoReport = () => {
                                                     {presentationGenerated ? 'Generating...' : 'Download PPT'}
                                                 </button>
                                             </div>
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <div>
-                                                    <ReactApexChart
-                                                        options={chart6Data.options}
-                                                        series={chart6Data.series}
-                                                        type="bar"
-                                                        height={400}
-                                                    />
-                                                </div>
-                                                <div className="bg-gray-50 p-4 rounded">
-                                                    <h4 className="text-lg font-bold mb-3">Performance of Hi/Lo Events</h4>
-                                                    <div className="grid grid-cols-2 gap-4">
-                                                        {Object.entries(chart6Data.summaryData).map(([ppgName, data]) => (
-                                                            <div key={ppgName} className="border rounded p-3">
-                                                                <h5 className="font-bold mb-2">{ppgName.toUpperCase()}</h5>
-                                                                <table className="min-w-full">
-                                                                    <tbody>
-                                                                        <tr>
-                                                                            <td className="py-1 font-semibold">Price Points:</td>
-                                                                            <td className="py-1">
-                                                                                {data.pricePoints.map(price => `$${price}`).join(', ')}
-                                                                            </td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <td className="py-1 font-semibold">ROI:</td>
-                                                                            <td className="py-1">{isNaN(data.roi) ? 'NaN%' : `${formatNumber(data.roi)}%`}</td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <td className="py-1 font-semibold">Shared Profit per $:</td>
-                                                                            <td className="py-1">${formatNumber(data.sharedProfitPerDollar)}</td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <td className="py-1 font-semibold">% Funded by Retailer:</td>
-                                                                            <td className="py-1">{formatNumber(data.percentFundedByRetailer)}%</td>
-                                                                        </tr>
-                                                                    </tbody>
-                                                                </table>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                </div>
+
+                                            {/* Full width chart */}
+                                            <div className="w-full mb-8">
+                                                <ReactApexChart
+                                                    options={chart6Data.options}
+                                                    series={chart6Data.series}
+                                                    type="bar"
+                                                    height={500}
+                                                />
+                                            </div>
+
+                                            {/* Summary section with accordions */}
+                                            <div className="w-full">
+                                                <Accordion>
+                                                    {chart6Data.summaryData.ppgGroups.map((ppg, index) => (
+                                                        <Accordion.Item key={index} eventKey={index.toString()}>
+                                                            <Accordion.Header>
+                                                                <strong>{ppg.ppgName}</strong>
+                                                            </Accordion.Header>
+                                                            <Accordion.Body>
+                                                                <div className="grid grid-cols-1 gap-4">
+                                                                    {/* Products Summary */}
+                                                                    <div className="bg-gray-50 p-4 rounded">
+                                                                        <h5 className="font-bold mb-3">Products Performance</h5>
+                                                                        <div className="overflow-x-auto">
+                                                                            <table className="min-w-full bg-white border">
+                                                                                <thead>
+                                                                                    <tr className="bg-gray-100">
+                                                                                        <th className="border px-4 py-2">Product</th>
+                                                                                        <th className="border px-4 py-2">ROI</th>
+                                                                                        <th className="border px-4 py-2">Shared Profit per $</th>
+                                                                                        <th className="border px-4 py-2">% Funded by Retailer</th>
+                                                                                        <th className="border px-4 py-2">Price Points</th>
+                                                                                    </tr>
+                                                                                </thead>
+                                                                                <tbody>
+                                                                                    {ppg.products.map((product, pIndex) => (
+                                                                                        <tr key={pIndex}>
+                                                                                            <td className="border px-4 py-2">{product.name}</td>
+                                                                                            <td className="border px-4 py-2">{formatNumber(product.roi)}%</td>
+                                                                                            <td className="border px-4 py-2">${formatNumber(product.sharedProfitPerDollar)}</td>
+                                                                                            <td className="border px-4 py-2">{formatNumber(product.retailerFunding)}%</td>
+                                                                                            <td className="border px-4 py-2">${product.pricePoints.join(', $')}</td>
+                                                                                        </tr>
+                                                                                    ))}
+                                                                                </tbody>
+                                                                            </table>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    {/* Events Summary */}
+                                                                    <div className="bg-gray-50 p-4 rounded">
+                                                                        <h5 className="font-bold mb-3">Events Performance</h5>
+                                                                        <div className="overflow-x-auto">
+                                                                            <table className="min-w-full bg-white border">
+                                                                                <thead>
+                                                                                    <tr className="bg-gray-100">
+                                                                                        <th className="border px-4 py-2">Event</th>
+                                                                                        <th className="border px-4 py-2">ROI</th>
+                                                                                        <th className="border px-4 py-2">% Funded by Retailer</th>
+                                                                                    </tr>
+                                                                                </thead>
+                                                                                <tbody>
+                                                                                    {ppg.events.map((event, eIndex) => (
+                                                                                        <tr key={eIndex}>
+                                                                                            <td className="border px-4 py-2">{event.name}</td>
+                                                                                            <td className="border px-4 py-2">{formatNumber(event.roi)}%</td>
+                                                                                            <td className="border px-4 py-2">{formatNumber(event.retailerFunding)}%</td>
+                                                                                        </tr>
+                                                                                    ))}
+                                                                                </tbody>
+                                                                            </table>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </Accordion.Body>
+                                                        </Accordion.Item>
+                                                    ))}
+                                                </Accordion>
                                             </div>
                                         </div>
                                     </Accordion.Body>
