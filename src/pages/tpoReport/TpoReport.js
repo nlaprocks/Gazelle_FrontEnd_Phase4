@@ -83,7 +83,9 @@ const TpoReport = () => {
         positiveROI: 0,
         negativeROI: 0,
         avgROI: 0,
-        totalSpend: 0
+        totalSpend: 0,
+        positiveSpend: 0,
+        negativeSpend: 0
     });
     const [presentationGenerated, setPresentationGenerated] = React.useState(false);
     const [chart2Data, setChart2Data] = useState({
@@ -495,97 +497,67 @@ const TpoReport = () => {
         }
     });
     const [chart6Data, setChart6Data] = useState({
-        series: [
-            {
-                name: 'ROI',
-                data: []
-            },
-            {
-                name: 'Shared Profit Created Per $ Invested',
-                data: []
-            },
-            {
-                name: '% Funded by Retailer',
-                data: []
-            }
-        ],
+        series: [],
         options: {
             chart: {
                 type: 'bar',
                 height: 400,
-                toolbar: { show: false }
+                toolbar: { show: false },
+                stacked: false
             },
             plotOptions: {
                 bar: {
                     horizontal: false,
-                    columnWidth: '45%'
+                    columnWidth: '55%',
+                    distributed: false
                 }
             },
             dataLabels: {
                 enabled: true,
                 formatter: function (val) {
-                    return val.toFixed(2);
+                    // Only show label if value exists and is not zero
+                    return val != null && val !== 0 ? val.toFixed(2) + '%' : '';
                 },
                 style: {
                     colors: ['#000']
                 }
             },
-            colors: ['#4472C4', '#00B050', '#FFC000'],
             xaxis: {
                 categories: [],
                 title: {
                     text: 'Price Point Groups'
+                },
+                labels: {
+                    style: {
+                        fontSize: '12px'
+                    }
                 }
             },
-            yaxis: [
-                {
-                    title: {
-                        text: 'ROI (%)'
-                    },
-                    labels: {
-                        formatter: function (val) {
-                            return val.toFixed(2) + '%';
-                        }
-                    }
+            yaxis: {
+                title: {
+                    text: 'ROI (%)'
                 },
-                {
-                    title: {
-                        text: 'Shared Profit per $ / % Funded'
-                    },
-                    labels: {
-                        formatter: function (val) {
-                            return val.toFixed(2);
-                        }
-                    },
-                    opposite: true
+                labels: {
+                    formatter: function (val) {
+                        return val.toFixed(2) + '%';
+                    }
                 }
-            ],
-            grid: {
-                borderColor: '#e7e7e7',
-                row: {
-                    colors: ['#f3f3f3', 'transparent'],
-                    opacity: 0.5
+            },
+            colors: ['#4472C4', '#00B050', '#FFC000', '#7030A0'], // Different colors for different events
+            title: {
+                text: 'Performance by Price Point Group',
+                align: 'center',
+                style: {
+                    fontSize: '16px'
                 }
             },
             legend: {
+                show: true,
                 position: 'bottom'
             }
         },
         summaryData: {
-            ppgA: {
-                sharedProfitCreated: 0,
-                shelfPriceInvestment: 0,
-                sharedProfitPerDollar: 0,
-                percentFundedByRetailer: 0,
-                pricePoints: []
-            },
-            ppgB: {
-                sharedProfitCreated: 0,
-                shelfPriceInvestment: 0,
-                sharedProfitPerDollar: 0,
-                percentFundedByRetailer: 0,
-                pricePoints: []
-            }
+            ppgGroups: []
         }
     });
     const [chart7Data, setChart7Data] = useState({
@@ -607,21 +579,25 @@ const TpoReport = () => {
                 bar: {
                     horizontal: false,
                     columnWidth: '55%',
+                    dataLabels: {
+                        position: 'center' // Change from 'top' to 'center'
+                    }
                 }
             },
             dataLabels: {
                 enabled: true,
                 formatter: function (val, { seriesIndex, dataPointIndex, w }) {
-                    console.log({ seriesIndex, dataPointIndex, w });
-
                     if (seriesIndex === 1) { // Only show percentage change on current year bars
                         const percentageChanges = w.config.series[1].percentageChanges || [];
-                        console.log({ percentageChanges });
-                        const change = percentageChanges[dataPointIndex] || 0;
+                        const change = percentageChanges[dataPointIndex];
+                        if (isNaN(change) || change === undefined) return val.toFixed(2);
                         const arrow = change >= 0 ? '↑' : '↓';
                         return `${val.toFixed(2)} (${arrow}${Math.abs(change).toFixed(1)}%)`;
                     }
                     return val.toFixed(2);
+                },
+                style: {
+                    colors: ['#fff'] // Change text color to white for better visibility
                 }
             },
             colors: ['#2196f3', '#00e396'],
@@ -899,7 +875,6 @@ const TpoReport = () => {
             calculateChart7Data();
             calculateChart8Data();
             calculateChart9Data();
-            console.log({ currentYearEvents });
         }
     }, [currentYearEvents]);
 
@@ -911,6 +886,8 @@ const TpoReport = () => {
         let roiValues = [];
         let negativeROI = [];
         let positiveROI = [];
+        let positiveSpend = [];
+        let negativeSpend = [];
 
         // Transform events data for chart
         currentYearEvents.forEach(event => {
@@ -923,9 +900,11 @@ const TpoReport = () => {
                 const roiResult = financialResults.find(r => r.name === "Sales ROI")?.value;
                 const spendResult = financialResults.find(r => r.name === "Total Spend")?.value;
 
+
                 const roi = Number(roiResult?.replace(/[^0-9.-]+/g, "")) || 0;
                 const spend = Number(spendResult?.replace(/[^0-9.-]+/g, "")) || 0;
 
+                console.log({ spend });
                 eventROI += roi;
                 eventSpend += spend;
             });
@@ -933,17 +912,18 @@ const TpoReport = () => {
             // Average ROI across products
             eventROI = eventROI / event.planned.length;
             totalSpend += eventSpend;
-
             if (eventROI > 0) {
                 positiveCount++;
                 positiveROI.push(eventROI);
+                positiveSpend.push(eventSpend);
             }
             if (eventROI < 0) {
                 negativeCount++;
                 negativeROI.push(eventROI);
+                negativeSpend.push(eventSpend);
             }
 
-            eventNames.push(event.name || `Event ${event.id}`);
+            eventNames.push(event.title || `Event ${event.id}`);
             roiValues.push(eventROI);
         });
 
@@ -972,7 +952,6 @@ const TpoReport = () => {
                 }
             }
         }));
-        // console.log({ totalSpend });
 
         setSummaryData({
             total: currentYearEvents.length,
@@ -981,7 +960,9 @@ const TpoReport = () => {
             negativeROI: negativeROI.reduce((acc, curr) => acc + curr, 0) / negativeCount,
             negativeCount: negativeCount,
             avgROI: roiValues.reduce((acc, curr) => acc + curr, 0) / roiValues.length,
-            totalSpend: totalSpend
+            totalSpend: totalSpend,
+            positiveSpend: positiveSpend.reduce((acc, curr) => acc + curr, 0),
+            negativeSpend: negativeSpend.reduce((acc, curr) => acc + curr, 0)
         });
     };
 
@@ -1084,12 +1065,12 @@ const TpoReport = () => {
                 spendVolumeData.push({
                     x: spend,
                     y: volume,
-                    eventName: event.name || `Event ${event.id}`
+                    eventName: `${product.name} : ${event.title}`
                 });
                 spendROIData.push({
                     x: spend,
                     y: roi,
-                    eventName: event.name || `Event ${event.id}`
+                    eventName: `${product.name} : ${event.title}`
                 });
             });
         });
@@ -1338,142 +1319,105 @@ const TpoReport = () => {
     };
 
     const calculateChart5Data = () => {
+        // Initialize data structure for discount ranges
         const discountRanges = [
-            { min: 0, max: 10 },
-            { min: 10, max: 20 },
-            { min: 20, max: 30 },
-            { min: 30, max: 40 },
-            { min: 40, max: 50 }
+            { min: 0, max: 10, events: [] },
+            { min: 10, max: 20, events: [] },
+            { min: 20, max: 30, events: [] },
+            { min: 30, max: 40, events: [] },
+            { min: 40, max: 50, events: [] }
         ];
 
-        // Initialize data structure for retailers/brands
-        const retailerData = {};
-        const brandData = {};
-
         let totalSpend = 0;
-        let currentEvent = null;
-        // Process events
+
+        // Process each event
         currentYearEvents.forEach(event => {
-            const retailerId = event.retailer_id;
-            const brand = event.brand_id;
-
-            // Initialize retailer data if not exists
-            if (!retailerData[retailerId]) {
-                retailerData[retailerId] = discountRanges.map(() => ({
-                    roi: 0,
-                    spend: 0,
-                    count: 0,
-                    productCount: 0,
-                    lift: 0,
-                    fndCount: 0
-                }));
-            }
-
-            // Initialize brand data if not exists
-            if (!brandData[brand]) {
-                brandData[brand] = discountRanges.map(() => ({
-                    roi: 0,
-                    spend: 0,
-                    count: 0,
-                    productCount: 0,
-                    lift: 0,
-                    fndCount: 0
-                }));
-            }
-
-            // Calculate event-level average discount first
+            // Calculate average discount for the event
             let eventTotalDiscount = 0;
             let eventProductCount = 0;
+            let eventROI = 0;
+            let eventSpend = 0;
 
-            // First pass: calculate total discount for the event
+            // Calculate event metrics
             event.planned.forEach(product => {
                 const basePrice = Number(product.financialData.basePrice) || 0;
                 const promoPrice = Number(product.financialData.promoPrice) || 0;
-                const productDiscount = ((basePrice - promoPrice) * 100) / basePrice;
+                const productDiscount = ((basePrice - promoPrice) / basePrice) * 100;
+
+                const { financialResults } = getResult(product.financialData);
+                const roiResult = financialResults.find(r => r.name === "Sales ROI")?.value;
+                const roi = Number(roiResult?.replace(/[^0-9.-]+/g, "")) || 0;
+                const spend = Number(financialResults.find(r => r.name === "Total Spend")?.value?.replace(/[^0-9.-]+/g, "")) || 0;
+
                 eventTotalDiscount += productDiscount;
+                eventROI += roi;
+                eventSpend += spend;
                 eventProductCount++;
+                totalSpend += spend;
             });
 
-            // Calculate event average discount
-            const eventAverageDiscount = eventTotalDiscount / eventProductCount;
+            // Calculate event averages
+            const avgDiscount = eventTotalDiscount / eventProductCount;
+            const avgROI = eventROI / eventProductCount;
 
-
-            // Find appropriate discount range for the event
-            const eventRangeIndex = discountRanges.findIndex(range =>
-                eventAverageDiscount >= range.min && eventAverageDiscount < range.max
+            // Find appropriate discount range and add event
+            const rangeIndex = discountRanges.findIndex(range =>
+                avgDiscount >= range.min && avgDiscount < range.max
             );
 
-            console.log({ eventAverageDiscount, eventRangeIndex });
-            // Second pass: process financial data using event-level range
-            if (eventRangeIndex !== -1) {
-                // Increment event counts once per event
-                retailerData[retailerId][eventRangeIndex].count++;
-                brandData[brand][eventRangeIndex].count++;
-                // if (currentEvent == null) {
-
-                //     currentEvent = event.id;
-                // }
-
-                event.planned.forEach(product => {
-                    const { financialResults, promotionalResults } = getResult(product.financialData);
-
-                    const roi = Number(financialResults.find(r => r.name === "Sales ROI")?.value?.replace(/[^0-9.-]+/g, "")) || 0;
-                    const lift = Number(promotionalResults.find(result => result.promotion === 'Event Total')?.lift || 0);
-                    const spend = Number(financialResults.find(r => r.name === "Total Spend")?.value?.replace(/[^0-9.-]+/g, "")) || 0;
-
-                    totalSpend += spend;
-
-
-
-                    // Update retailer data using event range index
-                    retailerData[retailerId][eventRangeIndex].roi += (roi * spend);
-                    retailerData[retailerId][eventRangeIndex].spend += spend;
-                    retailerData[retailerId][eventRangeIndex].productCount++;
-                    retailerData[retailerId][eventRangeIndex].lift += lift;
-
-                    const featureResult = promotionalResults.find(p => p.promotion === 'Feature Only');
-                    const displayResult = promotionalResults.find(p => p.promotion === 'Display Only');
-
-                    if (featureResult && featureResult.acv > 0 || displayResult && displayResult.acv > 0) {
-                        retailerData[retailerId][eventRangeIndex].fndCount++;
-                    }
-
-                    // Update brand data using event range index
-                    brandData[brand][eventRangeIndex].roi += (roi * spend);
-                    brandData[brand][eventRangeIndex].spend += spend;
-                    brandData[brand][eventRangeIndex].productCount++;
-                    brandData[brand][eventRangeIndex].lift += lift;
-                    if (featureResult && featureResult.acv > 0 || displayResult && displayResult.acv > 0) {
-                        brandData[brand][eventRangeIndex].fndCount++;
-                    }
+            if (rangeIndex !== -1) {
+                discountRanges[rangeIndex].events.push({
+                    name: event.title || `Event ${event.id}`,
+                    roi: avgROI,
+                    spend: eventSpend
                 });
             }
         });
-        console.log({ retailerData, brandData });
 
-        // Prepare series data based on selected view
-        const data = chart5View === 'retailer' ? retailerData : brandData;
-        const series = Object.keys(data).map(key => ({
-            name: key,
-            data: data[key].map(range => range.spend > 0 ? (range.roi / range.spend) : 0)
-        }));
-
-        // Calculate summary data
+        // Prepare summary data
         const summaryData = {
-            noOfEvents: Array(5).fill(0),
-            tradeSpend: Array(5).fill(0),
-            avgLift: Array(5).fill(0),
-            fndEvents: Array(5).fill(0)
+            noOfEvents: discountRanges.map(range => range.events.length),
+            tradeSpend: discountRanges.map(range =>
+                (range.events.reduce((sum, event) => sum + event.spend, 0) / totalSpend) * 100
+            ),
+            avgLift: discountRanges.map(range =>
+                range.events.length > 0
+                    ? range.events.reduce((sum, event) => sum + event.roi, 0) / range.events.length
+                    : 0
+            ),
+            fndEvents: discountRanges.map(range => range.events.length) // Using event count as F&D count for now
         };
 
-        Object.values(data).forEach(ranges => {
-            ranges.forEach((range, index) => {
-                summaryData.noOfEvents[index] += range.count;
-                summaryData.tradeSpend[index] += (range.spend / totalSpend) * 100;
-                summaryData.avgLift[index] += range.count > 0 ? range.lift / range.count : 0;
-                summaryData.fndEvents[index] += range.fndCount;
+        // Prepare series data - one series per event in each range
+        const series = [];
+        const categories = ['0-10', '10-20', '20-30', '30-40', '40-50'];
+
+        // Create a data array with all events properly positioned
+        const data = Array(categories.length).fill(null).map(() => []);
+
+        discountRanges.forEach((range, rangeIndex) => {
+            range.events.forEach(event => {
+                data[rangeIndex].push({
+                    x: categories[rangeIndex],
+                    y: event.roi,
+                    name: event.name
+                });
             });
         });
+
+        // Convert to series format
+        const maxEventsInAnyRange = Math.max(...data.map(range => range.length));
+
+        for (let i = 0; i < maxEventsInAnyRange; i++) {
+            const seriesData = categories.map((cat, catIndex) => {
+                return data[catIndex][i] || { x: cat, y: 0 };
+            });
+
+            series.push({
+                name: `Event ${i + 1}`,
+                data: seriesData.map(d => d.y)
+            });
+        }
 
         setChart5Data(prev => ({
             ...prev,
@@ -1482,12 +1426,33 @@ const TpoReport = () => {
                 ...prev.options,
                 xaxis: {
                     ...prev.options.xaxis,
-                    categories: ['0-10', '10-20', '20-30', '30-40', '40-50']
+                    categories: categories
                 },
-                colors: ['#4472C4', '#00B050', '#FFC000', '#7030A0'], // Colors for different retailers/brands
+                colors: ['#4472C4', '#00B050', '#FFC000', '#7030A0'], // Colors for different events
                 title: {
-                    text: `ROI by Discount Depth (${chart5View === 'retailer' ? 'Retailer' : 'Brand'} View)`,
+                    text: 'ROI by Discount Depth',
                     align: 'center'
+                },
+                tooltip: {
+                    y: {
+                        formatter: function (val) {
+                            return val.toFixed(2) + '%';
+                        }
+                    }
+                },
+                dataLabels: {
+                    ...prev.options.dataLabels,
+                    formatter: function (val) {
+                        // Only show label if value is not zero
+                        return val === 0 ? '' : val.toFixed(2) + '%';
+                    }
+                },
+                plotOptions: {
+                    ...prev.options.plotOptions,
+                    bar: {
+                        ...prev.options.plotOptions?.bar,
+                        hideZeros: true, // Hide zero values
+                    }
                 }
             },
             summaryData: summaryData
@@ -1520,106 +1485,104 @@ const TpoReport = () => {
     // Update calculateChart6Data function
     const calculateChart6Data = () => {
         const ppgGroups = createPPGGroups(currentYearEvents);
-        const ppgResults = new Map();
+        const summaryData = [];
+        const categories = [];
+        const seriesData = new Map(); // Use Map to track events by name
 
         // Process each PPG group
         ppgGroups.forEach((group, productIds) => {
-            const ppgStats = {
-                roi: [],
-                sharedProfitCreated: 0,
-                sharedProfitPerDollar: 0,
-                retailerFunding: [],
-                totalShelfPriceInvestment: 0,
-                pricePoints: new Set() // Track unique price points
-            };
+            const ppgName = group.name;
+            const ppgEvents = [];
+            const ppgProducts = new Map();
+            categories.push(ppgName);
 
-            // Process each event in the PPG
-            group.events.forEach(event => {
+            // Process events in the group
+            group.events.forEach((event) => {
+                const eventData = {
+                    name: event.title,
+                    roi: 0,
+                    sharedProfitPerDollar: 0,
+                    retailerFunding: 0,
+                    products: []
+                };
+
+                // Calculate event metrics
                 event.planned.forEach(product => {
-                    const { financialResults, promotionalResults } = getResult(product.financialData);
+                    const { financialResults } = getResult(product.financialData);
                     const basePrice = Number(product.financialData.basePrice) || 0;
                     const promoPrice = Number(product.financialData.promoPrice) || 0;
-                    const mfrCOGS = basePrice / 2;
-                    const promoUnits = Number(promotionalResults.find(result =>
-                        result.promotion === 'Event Total')?.units) || 0;
-                    const baseUnits = Number(product.financialData.units) || 0;
-
-                    // Add price point
-                    ppgStats.pricePoints.add(promoPrice.toFixed(2));
-
-                    // Calculate Shared Profit
-                    const baseSharedProfit = (basePrice - mfrCOGS) * baseUnits;
-                    const promoSharedProfit = (promoPrice - mfrCOGS) * promoUnits;
-                    const sharedProfitCreated = promoSharedProfit - baseSharedProfit;
-
-                    // Calculate Shelf Price Investment
-                    const shelfPriceInvestment = (basePrice - promoPrice) * promoUnits;
-
-                    // Calculate ROI
                     const roiResult = financialResults.find(r => r.name === "Sales ROI")?.value;
                     const roi = Number(roiResult?.replace(/[^0-9.-]+/g, "")) || 0;
-                    ppgStats.roi.push(roi);
 
-                    // Calculate Retailer Funding
-                    // TODO: Check for the mftTradeInvestment correct value of this field with @pankajbhai
+                    const shelfPriceInvestment = (basePrice - promoPrice) * Number(product.financialData.units);
                     const mftTradeInvestment = Number(product.financialData.mft_trade_investment) || 0;
                     const retailerFunding = ((shelfPriceInvestment - mftTradeInvestment) / shelfPriceInvestment) * 100;
-                    ppgStats.retailerFunding.push(retailerFunding);
 
-                    ppgStats.sharedProfitCreated += sharedProfitCreated;
-                    ppgStats.totalShelfPriceInvestment += shelfPriceInvestment;
+                    eventData.roi += roi;
+                    eventData.retailerFunding += retailerFunding;
+
+                    // Track product-level data
+                    const productData = {
+                        name: product.name,
+                        roi: roi,
+                        sharedProfitPerDollar: shelfPriceInvestment ? (shelfPriceInvestment - mftTradeInvestment) / shelfPriceInvestment : 0,
+                        retailerFunding: retailerFunding,
+                        pricePoints: [promoPrice.toFixed(2)]
+                    };
+
+                    eventData.products.push(productData);
+                    if (!ppgProducts.has(product.productId)) {
+                        ppgProducts.set(product.productId, productData);
+                    }
                 });
+
+                // Calculate average ROI for the event
+                eventData.roi /= event.planned.length;
+                eventData.retailerFunding /= event.planned.length;
+                ppgEvents.push(eventData);
+
+                // Track event data for series
+                if (!seriesData.has(event.title)) {
+                    seriesData.set(event.title, {
+                        name: event.title,
+                        data: Array(categories.length - 1).fill(0) // Fill previous positions with 0
+                    });
+                }
+
+                // Add ROI data for this event
+                const eventSeries = seriesData.get(event.title);
+                eventSeries.data.push(eventData.roi);
             });
 
-            // Calculate averages for the PPG
-            ppgStats.avgROI = ppgStats.roi.length ?
-                ppgStats.roi.reduce((a, b) => a + b, 0) / ppgStats.roi.length : 0;
-            ppgStats.sharedProfitPerDollar = ppgStats.totalShelfPriceInvestment ?
-                ppgStats.sharedProfitCreated / ppgStats.totalShelfPriceInvestment : 0;
-            ppgStats.avgRetailerFunding = ppgStats.retailerFunding.length ?
-                ppgStats.retailerFunding.reduce((a, b) => a + b, 0) / ppgStats.retailerFunding.length : 0;
+            // Fill remaining positions for all series
+            seriesData.forEach(series => {
+                while (series.data.length < categories.length) {
+                    series.data.push(0);
+                }
+            });
 
-            ppgResults.set(group.name, ppgStats);
+            // Add to summary data
+            summaryData.push({
+                ppgName: ppgName,
+                events: ppgEvents,
+                products: Array.from(ppgProducts.values())
+            });
         });
 
-        // Prepare chart data
-        const series = [
-            {
-                name: 'ROI',
-                data: Array.from(ppgResults.values()).map(stats => stats.avgROI)
-            },
-            {
-                name: 'Shared Profit Created Per $ Invested',
-                data: Array.from(ppgResults.values()).map(stats => stats.sharedProfitPerDollar)
-            },
-            {
-                name: '% Funded by Retailer',
-                data: Array.from(ppgResults.values()).map(stats => stats.avgRetailerFunding)
-            }
-        ];
-
-        // Update chart data state
+        // Convert series data to array and update chart
         setChart6Data(prev => ({
             ...prev,
-            series,
+            series: Array.from(seriesData.values()),
             options: {
                 ...prev.options,
                 xaxis: {
                     ...prev.options.xaxis,
-                    categories: Array.from(ppgResults.keys())
+                    categories: categories
                 }
             },
-            summaryData: Object.fromEntries(
-                Array.from(ppgResults.entries()).map(([name, stats]) => [
-                    name.toLowerCase().replace(' ', ''),
-                    {
-                        roi: stats.avgROI,
-                        sharedProfitPerDollar: stats.sharedProfitPerDollar,
-                        percentFundedByRetailer: stats.avgRetailerFunding,
-                        pricePoints: Array.from(stats.pricePoints).sort((a, b) => Number(a) - Number(b))
-                    }
-                ])
-            )
+            summaryData: {
+                ppgGroups: summaryData
+            }
         }));
     };
 
@@ -1687,14 +1650,12 @@ const TpoReport = () => {
             previousYearData.push(prevProfitPerDollar);
             currentYearData.push(currProfitPerDollar);
 
-            // Calculate percentage change
-            const percentChange = prevProfitPerDollar > 0
-                ? ((currProfitPerDollar - prevProfitPerDollar) / prevProfitPerDollar) * 100
-                : 0;
+            // Calculate percentage change between previous and current year
+            const percentChange = ((currProfitPerDollar - prevProfitPerDollar) / prevProfitPerDollar) * 100;
             percentageChanges.push(percentChange);
         });
 
-        // Update chart data
+        // Update chart data with modified options
         setChart7Data(prev => ({
             ...prev,
             series: [
@@ -1705,7 +1666,7 @@ const TpoReport = () => {
                 {
                     name: 'Current Year',
                     data: currentYearData,
-                    percentageChanges: percentageChanges // Store percentage changes in the series data
+                    percentageChanges: percentageChanges
                 }
             ],
             options: {
@@ -1713,6 +1674,31 @@ const TpoReport = () => {
                 xaxis: {
                     ...prev.options.xaxis,
                     categories: channels
+                },
+                plotOptions: {
+                    bar: {
+                        horizontal: false,
+                        columnWidth: '55%',
+                        dataLabels: {
+                            position: 'center'
+                        }
+                    }
+                },
+                dataLabels: {
+                    enabled: true,
+                    formatter: function (val, { seriesIndex, dataPointIndex, w }) {
+                        if (seriesIndex === 1) { // For current year bars
+                            const prevValue = w.config.series[0].data[dataPointIndex];
+                            const currValue = val;
+                            const percentChange = ((currValue - prevValue) / prevValue) * 100;
+                            const arrow = percentChange >= 0 ? '↑' : '↓';
+                            return `${val.toFixed(2)} (${arrow}${Math.abs(percentChange).toFixed(1)}%)`;
+                        }
+                        return val.toFixed(2);
+                    },
+                    style: {
+                        colors: ['#fff']
+                    }
                 }
             }
         }));
@@ -1753,7 +1739,7 @@ const TpoReport = () => {
                     scatterData.push({
                         x: roi,
                         y: incrementalProfitPerDollar,
-                        name: event.name || `Event ${event.id}`
+                        name: `${product.name} : ${event.title}`
                     });
                 }
             });
@@ -3156,13 +3142,13 @@ const TpoReport = () => {
                                                             <tr className="border-b border-gray-300 text-left">
                                                                 <th className="py-2 px-4">Position ROI</th>
                                                                 <td className="py-2 px-4">{summaryData.positiveCount}</td>
-                                                                <td className="py-2 px-4">-</td>
+                                                                <td className="py-2 px-4">${((summaryData.positiveSpend).toFixed(1).toLocaleString())}</td>
                                                                 <th className="py-2 px-4">{formatNumber(summaryData.positiveROI)}%</th>
                                                             </tr>
                                                             <tr className="border-b border-gray-300 text-left">
                                                                 <th className="py-2 px-4">Negative ROI</th>
                                                                 <td className="py-2 px-4">{summaryData.negativeCount}</td>
-                                                                <td className="py-2 px-4">-</td>
+                                                                <td className="py-2 px-4">${((summaryData.negativeSpend).toFixed(1).toLocaleString())}</td>
                                                                 <th className="py-2 px-4">{formatNumber(summaryData.negativeROI)}%</th>
                                                             </tr>
                                                         </tbody>
@@ -3347,16 +3333,19 @@ const TpoReport = () => {
                                                     {presentationGenerated ? 'Generating...' : 'Download PPT'}
                                                 </button>
                                             </div>
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <div>
+                                            <div className="flex flex-col gap-4">
+                                                {/* Full width chart */}
+                                                <div className="w-full">
                                                     <ReactApexChart
                                                         options={chart5Data.options}
                                                         series={chart5Data.series}
                                                         type="bar"
-                                                        height={400}
+                                                        height={500} // Increased height for better visibility
                                                     />
                                                 </div>
-                                                <div className="bg-gray-50 p-4 rounded">
+
+                                                {/* Summary table below */}
+                                                <div className="bg-gray-50 p-4 rounded w-full">
                                                     <h4 className="text-lg font-bold mb-3">Result Summary</h4>
                                                     <div className="overflow-x-auto">
                                                         <table className="min-w-full bg-white border border-gray-300">
@@ -3426,47 +3415,85 @@ const TpoReport = () => {
                                                     {presentationGenerated ? 'Generating...' : 'Download PPT'}
                                                 </button>
                                             </div>
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <div>
-                                                    <ReactApexChart
-                                                        options={chart6Data.options}
-                                                        series={chart6Data.series}
-                                                        type="bar"
-                                                        height={400}
-                                                    />
-                                                </div>
-                                                <div className="bg-gray-50 p-4 rounded">
-                                                    <h4 className="text-lg font-bold mb-3">Performance of Hi/Lo Events</h4>
-                                                    <div className="grid grid-cols-2 gap-4">
-                                                        {Object.entries(chart6Data.summaryData).map(([ppgName, data]) => (
-                                                            <div key={ppgName} className="border rounded p-3">
-                                                                <h5 className="font-bold mb-2">{ppgName.toUpperCase()}</h5>
-                                                                <table className="min-w-full">
-                                                                    <tbody>
-                                                                        <tr>
-                                                                            <td className="py-1 font-semibold">Price Points:</td>
-                                                                            <td className="py-1">
-                                                                                {data.pricePoints.map(price => `$${price}`).join(', ')}
-                                                                            </td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <td className="py-1 font-semibold">ROI:</td>
-                                                                            <td className="py-1">{isNaN(data.roi) ? 'NaN%' : `${formatNumber(data.roi)}%`}</td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <td className="py-1 font-semibold">Shared Profit per $:</td>
-                                                                            <td className="py-1">${formatNumber(data.sharedProfitPerDollar)}</td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <td className="py-1 font-semibold">% Funded by Retailer:</td>
-                                                                            <td className="py-1">{formatNumber(data.percentFundedByRetailer)}%</td>
-                                                                        </tr>
-                                                                    </tbody>
-                                                                </table>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                </div>
+
+                                            {/* Full width chart */}
+                                            <div className="w-full mb-8">
+                                                <ReactApexChart
+                                                    options={chart6Data.options}
+                                                    series={chart6Data.series}
+                                                    type="bar"
+                                                    height={500}
+                                                />
+                                            </div>
+
+                                            {/* Summary section with accordions */}
+                                            <div className="w-full">
+                                                <Accordion>
+                                                    {chart6Data.summaryData.ppgGroups.map((ppg, index) => (
+                                                        <Accordion.Item key={index} eventKey={index.toString()}>
+                                                            <Accordion.Header>
+                                                                <strong>{ppg.ppgName}</strong>
+                                                            </Accordion.Header>
+                                                            <Accordion.Body>
+                                                                <div className="grid grid-cols-1 gap-4">
+                                                                    {/* Products Summary */}
+                                                                    <div className="bg-gray-50 p-4 rounded">
+                                                                        <h5 className="font-bold mb-3">Products Performance</h5>
+                                                                        <div className="overflow-x-auto">
+                                                                            <table className="min-w-full bg-white border">
+                                                                                <thead>
+                                                                                    <tr className="bg-gray-100">
+                                                                                        <th className="border px-4 py-2">Product</th>
+                                                                                        <th className="border px-4 py-2">ROI</th>
+                                                                                        <th className="border px-4 py-2">Shared Profit per $</th>
+                                                                                        <th className="border px-4 py-2">% Funded by Retailer</th>
+                                                                                        <th className="border px-4 py-2">Price Points</th>
+                                                                                    </tr>
+                                                                                </thead>
+                                                                                <tbody>
+                                                                                    {ppg.products.map((product, pIndex) => (
+                                                                                        <tr key={pIndex}>
+                                                                                            <td className="border px-4 py-2">{product.name}</td>
+                                                                                            <td className="border px-4 py-2">{formatNumber(product.roi)}%</td>
+                                                                                            <td className="border px-4 py-2">${formatNumber(product.sharedProfitPerDollar)}</td>
+                                                                                            <td className="border px-4 py-2">{formatNumber(product.retailerFunding)}%</td>
+                                                                                            <td className="border px-4 py-2">${product.pricePoints.join(', $')}</td>
+                                                                                        </tr>
+                                                                                    ))}
+                                                                                </tbody>
+                                                                            </table>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    {/* Events Summary */}
+                                                                    <div className="bg-gray-50 p-4 rounded">
+                                                                        <h5 className="font-bold mb-3">Events Performance</h5>
+                                                                        <div className="overflow-x-auto">
+                                                                            <table className="min-w-full bg-white border">
+                                                                                <thead>
+                                                                                    <tr className="bg-gray-100">
+                                                                                        <th className="border px-4 py-2">Event</th>
+                                                                                        <th className="border px-4 py-2">ROI</th>
+                                                                                        <th className="border px-4 py-2">% Funded by Retailer</th>
+                                                                                    </tr>
+                                                                                </thead>
+                                                                                <tbody>
+                                                                                    {ppg.events.map((event, eIndex) => (
+                                                                                        <tr key={eIndex}>
+                                                                                            <td className="border px-4 py-2">{event.name}</td>
+                                                                                            <td className="border px-4 py-2">{formatNumber(event.roi)}%</td>
+                                                                                            <td className="border px-4 py-2">{formatNumber(event.retailerFunding)}%</td>
+                                                                                        </tr>
+                                                                                    ))}
+                                                                                </tbody>
+                                                                            </table>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </Accordion.Body>
+                                                        </Accordion.Item>
+                                                    ))}
+                                                </Accordion>
                                             </div>
                                         </div>
                                     </Accordion.Body>
