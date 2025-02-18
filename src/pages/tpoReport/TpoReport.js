@@ -1349,140 +1349,105 @@ const TpoReport = () => {
     };
 
     const calculateChart5Data = () => {
+        // Initialize data structure for discount ranges
         const discountRanges = [
-            { min: 0, max: 10 },
-            { min: 10, max: 20 },
-            { min: 20, max: 30 },
-            { min: 30, max: 40 },
-            { min: 40, max: 50 }
+            { min: 0, max: 10, events: [] },
+            { min: 10, max: 20, events: [] },
+            { min: 20, max: 30, events: [] },
+            { min: 30, max: 40, events: [] },
+            { min: 40, max: 50, events: [] }
         ];
 
-        // Initialize data structure for retailers/brands
-        const retailerData = {};
-        const brandData = {};
-
         let totalSpend = 0;
-        let currentEvent = null;
-        // Process events
+
+        // Process each event
         currentYearEvents.forEach(event => {
-            const retailerId = event.retailer_id;
-            const brand = event.brand_id;
-
-            // Initialize retailer data if not exists
-            if (!retailerData[retailerId]) {
-                retailerData[retailerId] = discountRanges.map(() => ({
-                    roi: 0,
-                    spend: 0,
-                    count: 0,
-                    productCount: 0,
-                    lift: 0,
-                    fndCount: 0
-                }));
-            }
-
-            // Initialize brand data if not exists
-            if (!brandData[brand]) {
-                brandData[brand] = discountRanges.map(() => ({
-                    roi: 0,
-                    spend: 0,
-                    count: 0,
-                    productCount: 0,
-                    lift: 0,
-                    fndCount: 0
-                }));
-            }
-
-            // Calculate event-level average discount first
+            // Calculate average discount for the event
             let eventTotalDiscount = 0;
             let eventProductCount = 0;
+            let eventROI = 0;
+            let eventSpend = 0;
 
-            // First pass: calculate total discount for the event
+            // Calculate event metrics
             event.planned.forEach(product => {
                 const basePrice = Number(product.financialData.basePrice) || 0;
                 const promoPrice = Number(product.financialData.promoPrice) || 0;
-                const productDiscount = ((basePrice - promoPrice) * 100) / basePrice;
+                const productDiscount = ((basePrice - promoPrice) / basePrice) * 100;
+
+                const { financialResults } = getResult(product.financialData);
+                const roiResult = financialResults.find(r => r.name === "Sales ROI")?.value;
+                const roi = Number(roiResult?.replace(/[^0-9.-]+/g, "")) || 0;
+                const spend = Number(financialResults.find(r => r.name === "Total Spend")?.value?.replace(/[^0-9.-]+/g, "")) || 0;
+
                 eventTotalDiscount += productDiscount;
+                eventROI += roi;
+                eventSpend += spend;
                 eventProductCount++;
+                totalSpend += spend;
             });
 
-            // Calculate event average discount
-            const eventAverageDiscount = eventTotalDiscount / eventProductCount;
+            // Calculate event averages
+            const avgDiscount = eventTotalDiscount / eventProductCount;
+            const avgROI = eventROI / eventProductCount;
 
-
-            // Find appropriate discount range for the event
-            const eventRangeIndex = discountRanges.findIndex(range =>
-                eventAverageDiscount >= range.min && eventAverageDiscount < range.max
+            // Find appropriate discount range and add event
+            const rangeIndex = discountRanges.findIndex(range =>
+                avgDiscount >= range.min && avgDiscount < range.max
             );
 
-            // Second pass: process financial data using event-level range
-            if (eventRangeIndex !== -1) {
-                // Increment event counts once per event
-                retailerData[retailerId][eventRangeIndex].count++;
-                brandData[brand][eventRangeIndex].count++;
-                // if (currentEvent == null) {
-
-                //     currentEvent = event.id;
-                // }
-
-                event.planned.forEach(product => {
-                    const { financialResults, promotionalResults } = getResult(product.financialData);
-
-                    const roi = Number(financialResults.find(r => r.name === "Sales ROI")?.value?.replace(/[^0-9.-]+/g, "")) || 0;
-                    const lift = Number(promotionalResults.find(result => result.promotion === 'Event Total')?.lift || 0);
-                    const spend = Number(financialResults.find(r => r.name === "Total Spend")?.value?.replace(/[^0-9.-]+/g, "")) || 0;
-
-                    totalSpend += spend;
-
-
-
-                    // Update retailer data using event range index
-                    retailerData[retailerId][eventRangeIndex].roi += (roi * spend);
-                    retailerData[retailerId][eventRangeIndex].spend += spend;
-                    retailerData[retailerId][eventRangeIndex].productCount++;
-                    retailerData[retailerId][eventRangeIndex].lift += lift;
-
-                    const featureResult = promotionalResults.find(p => p.promotion === 'Feature Only');
-                    const displayResult = promotionalResults.find(p => p.promotion === 'Display Only');
-
-                    if (featureResult && featureResult.acv > 0 || displayResult && displayResult.acv > 0) {
-                        retailerData[retailerId][eventRangeIndex].fndCount++;
-                    }
-
-                    // Update brand data using event range index
-                    brandData[brand][eventRangeIndex].roi += (roi * spend);
-                    brandData[brand][eventRangeIndex].spend += spend;
-                    brandData[brand][eventRangeIndex].productCount++;
-                    brandData[brand][eventRangeIndex].lift += lift;
-                    if (featureResult && featureResult.acv > 0 || displayResult && displayResult.acv > 0) {
-                        brandData[brand][eventRangeIndex].fndCount++;
-                    }
+            if (rangeIndex !== -1) {
+                discountRanges[rangeIndex].events.push({
+                    name: event.title || `Event ${event.id}`,
+                    roi: avgROI,
+                    spend: eventSpend
                 });
             }
         });
 
-        // Prepare series data based on selected view
-        const data = chart5View === 'retailer' ? retailerData : brandData;
-        const series = Object.keys(data).map(key => ({
-            name: key,
-            data: data[key].map(range => range.spend > 0 ? (range.roi / range.spend) : 0)
-        }));
-
-        // Calculate summary data
+        // Prepare summary data
         const summaryData = {
-            noOfEvents: Array(5).fill(0),
-            tradeSpend: Array(5).fill(0),
-            avgLift: Array(5).fill(0),
-            fndEvents: Array(5).fill(0)
+            noOfEvents: discountRanges.map(range => range.events.length),
+            tradeSpend: discountRanges.map(range =>
+                (range.events.reduce((sum, event) => sum + event.spend, 0) / totalSpend) * 100
+            ),
+            avgLift: discountRanges.map(range =>
+                range.events.length > 0
+                    ? range.events.reduce((sum, event) => sum + event.roi, 0) / range.events.length
+                    : 0
+            ),
+            fndEvents: discountRanges.map(range => range.events.length) // Using event count as F&D count for now
         };
 
-        Object.values(data).forEach(ranges => {
-            ranges.forEach((range, index) => {
-                summaryData.noOfEvents[index] += range.count;
-                summaryData.tradeSpend[index] += (range.spend / totalSpend) * 100;
-                summaryData.avgLift[index] += range.count > 0 ? range.lift / range.count : 0;
-                summaryData.fndEvents[index] += range.fndCount;
+        // Prepare series data - one series per event in each range
+        const series = [];
+        const categories = ['0-10', '10-20', '20-30', '30-40', '40-50'];
+
+        // Create a data array with all events properly positioned
+        const data = Array(categories.length).fill(null).map(() => []);
+
+        discountRanges.forEach((range, rangeIndex) => {
+            range.events.forEach(event => {
+                data[rangeIndex].push({
+                    x: categories[rangeIndex],
+                    y: event.roi,
+                    name: event.name
+                });
             });
         });
+
+        // Convert to series format
+        const maxEventsInAnyRange = Math.max(...data.map(range => range.length));
+
+        for (let i = 0; i < maxEventsInAnyRange; i++) {
+            const seriesData = categories.map((cat, catIndex) => {
+                return data[catIndex][i] || { x: cat, y: 0 };
+            });
+
+            series.push({
+                name: `Event ${i + 1}`,
+                data: seriesData.map(d => d.y)
+            });
+        }
 
         setChart5Data(prev => ({
             ...prev,
@@ -1491,12 +1456,33 @@ const TpoReport = () => {
                 ...prev.options,
                 xaxis: {
                     ...prev.options.xaxis,
-                    categories: ['0-10', '10-20', '20-30', '30-40', '40-50']
+                    categories: categories
                 },
-                colors: ['#4472C4', '#00B050', '#FFC000', '#7030A0'], // Colors for different retailers/brands
+                colors: ['#4472C4', '#00B050', '#FFC000', '#7030A0'], // Colors for different events
                 title: {
-                    text: `ROI by Discount Depth (${chart5View === 'retailer' ? 'Retailer' : 'Brand'} View)`,
+                    text: 'ROI by Discount Depth',
                     align: 'center'
+                },
+                tooltip: {
+                    y: {
+                        formatter: function (val) {
+                            return val.toFixed(2) + '%';
+                        }
+                    }
+                },
+                dataLabels: {
+                    ...prev.options.dataLabels,
+                    formatter: function (val) {
+                        // Only show label if value is not zero
+                        return val === 0 ? '' : val.toFixed(2) + '%';
+                    }
+                },
+                plotOptions: {
+                    ...prev.options.plotOptions,
+                    bar: {
+                        ...prev.options.plotOptions?.bar,
+                        hideZeros: true, // Hide zero values
+                    }
                 }
             },
             summaryData: summaryData
@@ -3379,16 +3365,19 @@ const TpoReport = () => {
                                                     {presentationGenerated ? 'Generating...' : 'Download PPT'}
                                                 </button>
                                             </div>
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <div>
+                                            <div className="flex flex-col gap-4">
+                                                {/* Full width chart */}
+                                                <div className="w-full">
                                                     <ReactApexChart
                                                         options={chart5Data.options}
                                                         series={chart5Data.series}
                                                         type="bar"
-                                                        height={400}
+                                                        height={500} // Increased height for better visibility
                                                     />
                                                 </div>
-                                                <div className="bg-gray-50 p-4 rounded">
+
+                                                {/* Summary table below */}
+                                                <div className="bg-gray-50 p-4 rounded w-full">
                                                     <h4 className="text-lg font-bold mb-3">Result Summary</h4>
                                                     <div className="overflow-x-auto">
                                                         <table className="min-w-full bg-white border border-gray-300">
