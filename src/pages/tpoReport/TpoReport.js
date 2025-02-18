@@ -83,7 +83,9 @@ const TpoReport = () => {
         positiveROI: 0,
         negativeROI: 0,
         avgROI: 0,
-        totalSpend: 0
+        totalSpend: 0,
+        positiveSpend: 0,
+        negativeSpend: 0
     });
     const [presentationGenerated, setPresentationGenerated] = React.useState(false);
     const [chart2Data, setChart2Data] = useState({
@@ -607,21 +609,25 @@ const TpoReport = () => {
                 bar: {
                     horizontal: false,
                     columnWidth: '55%',
+                    dataLabels: {
+                        position: 'center' // Change from 'top' to 'center'
+                    }
                 }
             },
             dataLabels: {
                 enabled: true,
                 formatter: function (val, { seriesIndex, dataPointIndex, w }) {
-                    console.log({ seriesIndex, dataPointIndex, w });
-
                     if (seriesIndex === 1) { // Only show percentage change on current year bars
                         const percentageChanges = w.config.series[1].percentageChanges || [];
-                        console.log({ percentageChanges });
-                        const change = percentageChanges[dataPointIndex] || 0;
+                        const change = percentageChanges[dataPointIndex];
+                        if (isNaN(change) || change === undefined) return val.toFixed(2);
                         const arrow = change >= 0 ? '↑' : '↓';
                         return `${val.toFixed(2)} (${arrow}${Math.abs(change).toFixed(1)}%)`;
                     }
                     return val.toFixed(2);
+                },
+                style: {
+                    colors: ['#fff'] // Change text color to white for better visibility
                 }
             },
             colors: ['#2196f3', '#00e396'],
@@ -899,7 +905,6 @@ const TpoReport = () => {
             calculateChart7Data();
             calculateChart8Data();
             calculateChart9Data();
-            console.log({ currentYearEvents });
         }
     }, [currentYearEvents]);
 
@@ -911,6 +916,8 @@ const TpoReport = () => {
         let roiValues = [];
         let negativeROI = [];
         let positiveROI = [];
+        let positiveSpend = [];
+        let negativeSpend = [];
 
         // Transform events data for chart
         currentYearEvents.forEach(event => {
@@ -923,9 +930,11 @@ const TpoReport = () => {
                 const roiResult = financialResults.find(r => r.name === "Sales ROI")?.value;
                 const spendResult = financialResults.find(r => r.name === "Total Spend")?.value;
 
+
                 const roi = Number(roiResult?.replace(/[^0-9.-]+/g, "")) || 0;
                 const spend = Number(spendResult?.replace(/[^0-9.-]+/g, "")) || 0;
 
+                console.log({ spend });
                 eventROI += roi;
                 eventSpend += spend;
             });
@@ -933,17 +942,18 @@ const TpoReport = () => {
             // Average ROI across products
             eventROI = eventROI / event.planned.length;
             totalSpend += eventSpend;
-
             if (eventROI > 0) {
                 positiveCount++;
                 positiveROI.push(eventROI);
+                positiveSpend.push(eventSpend);
             }
             if (eventROI < 0) {
                 negativeCount++;
                 negativeROI.push(eventROI);
+                negativeSpend.push(eventSpend);
             }
 
-            eventNames.push(event.name || `Event ${event.id}`);
+            eventNames.push(event.title || `Event ${event.id}`);
             roiValues.push(eventROI);
         });
 
@@ -972,7 +982,6 @@ const TpoReport = () => {
                 }
             }
         }));
-        // console.log({ totalSpend });
 
         setSummaryData({
             total: currentYearEvents.length,
@@ -981,7 +990,9 @@ const TpoReport = () => {
             negativeROI: negativeROI.reduce((acc, curr) => acc + curr, 0) / negativeCount,
             negativeCount: negativeCount,
             avgROI: roiValues.reduce((acc, curr) => acc + curr, 0) / roiValues.length,
-            totalSpend: totalSpend
+            totalSpend: totalSpend,
+            positiveSpend: positiveSpend.reduce((acc, curr) => acc + curr, 0),
+            negativeSpend: negativeSpend.reduce((acc, curr) => acc + curr, 0)
         });
     };
 
@@ -1084,12 +1095,12 @@ const TpoReport = () => {
                 spendVolumeData.push({
                     x: spend,
                     y: volume,
-                    eventName: event.name || `Event ${event.id}`
+                    eventName: `${product.name} : ${event.title}`
                 });
                 spendROIData.push({
                     x: spend,
                     y: roi,
-                    eventName: event.name || `Event ${event.id}`
+                    eventName: `${product.name} : ${event.title}`
                 });
             });
         });
@@ -1403,7 +1414,6 @@ const TpoReport = () => {
                 eventAverageDiscount >= range.min && eventAverageDiscount < range.max
             );
 
-            console.log({ eventAverageDiscount, eventRangeIndex });
             // Second pass: process financial data using event-level range
             if (eventRangeIndex !== -1) {
                 // Increment event counts once per event
@@ -1449,7 +1459,6 @@ const TpoReport = () => {
                 });
             }
         });
-        console.log({ retailerData, brandData });
 
         // Prepare series data based on selected view
         const data = chart5View === 'retailer' ? retailerData : brandData;
@@ -1687,14 +1696,12 @@ const TpoReport = () => {
             previousYearData.push(prevProfitPerDollar);
             currentYearData.push(currProfitPerDollar);
 
-            // Calculate percentage change
-            const percentChange = prevProfitPerDollar > 0
-                ? ((currProfitPerDollar - prevProfitPerDollar) / prevProfitPerDollar) * 100
-                : 0;
+            // Calculate percentage change between previous and current year
+            const percentChange = ((currProfitPerDollar - prevProfitPerDollar) / prevProfitPerDollar) * 100;
             percentageChanges.push(percentChange);
         });
 
-        // Update chart data
+        // Update chart data with modified options
         setChart7Data(prev => ({
             ...prev,
             series: [
@@ -1705,7 +1712,7 @@ const TpoReport = () => {
                 {
                     name: 'Current Year',
                     data: currentYearData,
-                    percentageChanges: percentageChanges // Store percentage changes in the series data
+                    percentageChanges: percentageChanges
                 }
             ],
             options: {
@@ -1713,6 +1720,31 @@ const TpoReport = () => {
                 xaxis: {
                     ...prev.options.xaxis,
                     categories: channels
+                },
+                plotOptions: {
+                    bar: {
+                        horizontal: false,
+                        columnWidth: '55%',
+                        dataLabels: {
+                            position: 'center'
+                        }
+                    }
+                },
+                dataLabels: {
+                    enabled: true,
+                    formatter: function (val, { seriesIndex, dataPointIndex, w }) {
+                        if (seriesIndex === 1) { // For current year bars
+                            const prevValue = w.config.series[0].data[dataPointIndex];
+                            const currValue = val;
+                            const percentChange = ((currValue - prevValue) / prevValue) * 100;
+                            const arrow = percentChange >= 0 ? '↑' : '↓';
+                            return `${val.toFixed(2)} (${arrow}${Math.abs(percentChange).toFixed(1)}%)`;
+                        }
+                        return val.toFixed(2);
+                    },
+                    style: {
+                        colors: ['#fff']
+                    }
                 }
             }
         }));
@@ -1753,7 +1785,7 @@ const TpoReport = () => {
                     scatterData.push({
                         x: roi,
                         y: incrementalProfitPerDollar,
-                        name: event.name || `Event ${event.id}`
+                        name: `${product.name} : ${event.title}`
                     });
                 }
             });
@@ -3156,13 +3188,13 @@ const TpoReport = () => {
                                                             <tr className="border-b border-gray-300 text-left">
                                                                 <th className="py-2 px-4">Position ROI</th>
                                                                 <td className="py-2 px-4">{summaryData.positiveCount}</td>
-                                                                <td className="py-2 px-4">-</td>
+                                                                <td className="py-2 px-4">${((summaryData.positiveSpend).toFixed(1).toLocaleString())}</td>
                                                                 <th className="py-2 px-4">{formatNumber(summaryData.positiveROI)}%</th>
                                                             </tr>
                                                             <tr className="border-b border-gray-300 text-left">
                                                                 <th className="py-2 px-4">Negative ROI</th>
                                                                 <td className="py-2 px-4">{summaryData.negativeCount}</td>
-                                                                <td className="py-2 px-4">-</td>
+                                                                <td className="py-2 px-4">${((summaryData.negativeSpend).toFixed(1).toLocaleString())}</td>
                                                                 <th className="py-2 px-4">{formatNumber(summaryData.negativeROI)}%</th>
                                                             </tr>
                                                         </tbody>
