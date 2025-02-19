@@ -12,10 +12,22 @@ import { useEvents } from '../../hooks/useEvents'
 import { TargetUpdate } from "../../components/Calendar/TargetUpdate";
 import { eventService } from "../../services/eventService"
 
-const TpoPage = ({
-    formData = {},
-    setFormData = () => { },
-}) => {
+const getTpoStorageKey = (projectId, modelId, id) => {
+    return `tpo_state_${projectId}_${modelId}_${id}`;
+};
+
+const getTpoStoredState = (projectId, modelId, id) => {
+    const key = getTpoStorageKey(projectId, modelId, id);
+    const stored = localStorage.getItem(key);
+    return stored ? JSON.parse(stored) : null;
+};
+
+const saveTpoState = (projectId, modelId, id, state) => {
+    const key = getTpoStorageKey(projectId, modelId, id);
+    localStorage.setItem(key, JSON.stringify(state));
+};
+
+const TpoPage = () => {
     const authData = JSON.parse(localStorage.getItem("auth"));
     const user_id = authData?.user_id;
     const { project_name, project_id, model_id, id } = useParams();
@@ -55,6 +67,10 @@ const TpoPage = ({
     });
     const [tempTargets, setTempTargets] = useState({});
 
+    // Add these state declarations after other useState declarations
+    const [isLoading, setIsLoading] = useState(false);
+    const [isAllProductSelected, setIsAllProductSelected] = useState(false);
+    const [selectedProducts, setSelectedProducts] = useState([]);
 
     useEffect(() => {
         const fetchProjects = async () => {
@@ -101,34 +117,135 @@ const TpoPage = ({
     useEffect(() => {
         const fetchRetailerBrandProductApiHandler = async () => {
             try {
-                const api = `${process.env.REACT_APP_NGROK}/insights/retailer_brands_products?project_id=${selectedProject}&model_id=${selectedModel}`;
+                setIsLoading(true);
+                const api = `${process.env.REACT_APP_NGROK}/insights/retailer_brands_products?project_id=${project_id}&model_id=${model_id}`;
                 const response = await axios.get(api);
                 if (response.status === 200) {
                     setRetailerBrandProducts(response?.data?.data);
+
+                    // After getting the data, restore the stored state
+                    const storedState = getTpoStoredState(project_id, model_id, id);
+                    if (storedState) {
+                        if (storedState.retailer) {
+                            setSelectedRetailer(storedState.retailer);
+
+                            if (storedState.brand) {
+                                setSelectedBrand(storedState.brand);
+
+                                if (storedState.products && storedState.products.length > 0) {
+                                    setSelectedProducts(storedState.products);
+                                }
+                            }
+                        }
+                    }
+                    setIsLoading(false);
                 }
             } catch (error) {
+                setIsLoading(false);
                 console.log("Error in fetching retailers", error);
             }
         };
-        if (selectedProject && selectedModel) {
-            fetchRetailerBrandProductApiHandler();
-        } else {
-            setRetailerBrandProducts([]);
-        }
-    }, []);
+        fetchRetailerBrandProductApiHandler();
+    }, [project_id, model_id, id]);
 
-    const handleProductChange = (value) => {
-        setFormData({ ...formData, products: value })
-        fetchProductData(value);
-    }
+    const handleRetailerChange = (value) => {
+        setSelectedRetailer(value);
+        setSelectedBrand("");
+        setSelectedProducts([]);
+
+        // Save the updated state
+        const currentState = getTpoStoredState(project_id, model_id, id) || {};
+        const newState = {
+            ...currentState,
+            retailer: value,
+            brand: "",
+            products: []
+        };
+        saveTpoState(project_id, model_id, id, newState);
+    };
+
+    const handleBrandChange = (value) => {
+        setSelectedBrand(value);
+        setSelectedProducts([]);
+
+        // Save the updated state
+        const currentState = getTpoStoredState(project_id, model_id, id) || {};
+        const newState = {
+            ...currentState,
+            brand: value,
+            products: []
+        };
+        saveTpoState(project_id, model_id, id, newState);
+    };
+
+    const handleProductsChange = (values) => {
+        if (values && values.length && values.includes("select-all")) {
+            if (values.length === products.length + 1) {
+                setIsAllProductSelected(false);
+                return setSelectedProducts([]);
+            }
+            setIsAllProductSelected(true);
+            return setSelectedProducts([...products]);
+        }
+        if (values.length === products.length) {
+            setIsAllProductSelected(true);
+        }
+
+        setSelectedProducts(values);
+
+        // Save the updated state
+        const currentState = getTpoStoredState(project_id, model_id, id) || {};
+        const newState = {
+            ...currentState,
+            products: values
+        };
+        saveTpoState(project_id, model_id, id, newState);
+    };
+
+    useEffect(() => {
+        if (!retailerBrandProducts) return; // Don't save if data isn't loaded
+
+        // get current state and maintain current state if available
+        const currentState = getTpoStoredState(project_id, model_id, id) || {};
+
+        const state = {
+            retailer: currentState.retailer || selectedRetailer,
+            brand: currentState.brand || selectedBrand,
+            products: currentState.products || selectedProducts
+        };
+
+        saveTpoState(project_id, model_id, id, state);
+    }, [
+        retailerBrandProducts,
+        selectedRetailer,
+        selectedBrand,
+        selectedProducts,
+        project_id,
+        model_id,
+        id
+    ]);
+
+    useEffect(() => {
+        fetchProductData(selectedProducts);
+    }, [selectedProducts]);
+
+    // const handleProductChange = (value) => {
+    //     setSelectedProducts(value);
+    //     fetchProductData(value);
+    // };
 
     const fetchProductData = async (products) => {
         try {
+            // loading 
+            setIsLoading(true);
             await eventService.fetchProductData(products, selectedProject, selectedModel, selectedRetailer).then((productData) => {
                 setProductData(productData);
             });
+            setIsLoading(false);
         } catch (error) {
             console.log("Error in fetching promo event simulation data: ", error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -181,16 +298,8 @@ const TpoPage = ({
                                 <div className="flex items-center space-x-2 py-2.5 px-3 gap-2">
                                     <Form.Item>
                                         <Select
-                                            value={formData.retailer_id}
-                                            onChange={value => {
-                                                setFormData({
-                                                    ...formData,
-                                                    retailer_id: value,
-                                                    brand_id: '',
-                                                    products: [],
-                                                })
-                                                setSelectedRetailer(value)
-                                            }}
+                                            value={selectedRetailer}
+                                            onChange={handleRetailerChange}
                                             options={
                                                 retailers.map(retailer => ({
                                                     value: retailer,
@@ -204,15 +313,8 @@ const TpoPage = ({
 
                                     <Form.Item>
                                         <Select
-                                            value={formData.brand_id}
-                                            onChange={value => {
-                                                setFormData({
-                                                    ...formData,
-                                                    brand_id: value,
-                                                    products: [],
-                                                })
-                                                setSelectedBrand(value)
-                                            }}
+                                            value={selectedBrand}
+                                            onChange={handleBrandChange}
                                             options={
                                                 brands.map(brand => ({
                                                     value: brand,
@@ -228,24 +330,28 @@ const TpoPage = ({
                                     <Form.Item>
                                         <Select
                                             mode="multiple"
-                                            value={formData.products}
-                                            onChange={values => {
-                                                handleProductChange(values)
-                                            }}
+                                            value={selectedProducts}
+                                            onChange={handleProductsChange}
                                             style={{
                                                 minWidth: "100%",
                                             }}
-                                            options={
-                                                products.map(product => ({
-                                                    value: product,
-                                                    label: product,
-                                                }))
-                                            }
                                             className="w-full mb-0 shadow-sm rounded-sm filtered-accordion-ant-select"
                                             placeholder="Select products"
                                             disabled={!selectedBrand}
                                             maxTagCount="responsive"
-                                        />
+                                        >
+                                            <Select.Option
+                                                key="select-all"
+                                                value="select-all"
+                                                className="text-primary">
+                                                {!isAllProductSelected ? "Select all" : "Unselect all"}
+                                            </Select.Option>
+                                            {products.map((product, index) => (
+                                                <Select.Option key={index} value={product}>
+                                                    {product}
+                                                </Select.Option>
+                                            ))}
+                                        </Select>
                                     </Form.Item>
                                 </div>
 
@@ -266,7 +372,7 @@ const TpoPage = ({
                     {
                         selectedProject && selectedModel ? (
                             <>
-                                <Calendar projects={projects} selectedRetailer={selectedRetailer} selectedBrand={selectedBrand} productData={productData} fetchImportedEvents={fetchImportedEvents} setFetchImportedEvents={setFetchImportedEvents} targetValues={targetValues} setIsEditingTargets={setIsEditingTargets} setTempTargets={setTempTargets} />
+                                <Calendar projects={projects} selectedRetailer={selectedRetailer} selectedBrand={selectedBrand} productData={productData} fetchImportedEvents={fetchImportedEvents} setFetchImportedEvents={setFetchImportedEvents} targetValues={targetValues} setIsEditingTargets={setIsEditingTargets} setTempTargets={setTempTargets} isLoading={isLoading} />
                             </>
                         ) : (
                             <>

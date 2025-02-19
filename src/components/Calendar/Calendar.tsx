@@ -7,7 +7,7 @@ import EventRow from './EventRow'
 import WeekHeader from './WeekHeader'
 import { getYearCalendarData, addWeeksToDate } from '../../utils/dateUtils'
 import { useEvents } from '../../hooks/useEvents'
-import { message } from 'antd'
+import { message, Spin } from 'antd'
 import { Pencil } from 'lucide-react';
 import { calculateWidgetValues } from '../../utils/widgetCalculations'
 
@@ -25,9 +25,10 @@ interface CalendarProps {
     }
     setIsEditingTargets: (isEditingTargets: boolean) => void
     setTempTargets: (tempTargets: any) => void
+    isLoading: boolean
 }
 
-const Calendar: React.FC<CalendarProps> = ({ projects, selectedRetailer, selectedBrand, productData, fetchImportedEvents, setFetchImportedEvents, targetValues, setIsEditingTargets, setTempTargets }) => {
+const Calendar: React.FC<CalendarProps> = ({ projects, selectedRetailer, selectedBrand, productData, fetchImportedEvents, setFetchImportedEvents, targetValues, setIsEditingTargets, setTempTargets, isLoading }) => {
     const [currentYear, setCurrentYear] = useState(new Date().getFullYear())
     const { events, createEvent, updateEvent, deleteEvent, refreshEvents } = useEvents()
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -185,73 +186,82 @@ const Calendar: React.FC<CalendarProps> = ({ projects, selectedRetailer, selecte
                 </div>
             </div>
 
-            <div className="bg-white rounded-lg w-full shadow-md" >
-                <div className="bg-white rounded-lg shadow-lg overflow-hidden w-full">
-                    <div className="flex items-center justify-between px-4 py-1 border-b">
-                        <h2 className="text-xl font-semibold">{currentYear}</h2>
-                        <div className="flex gap-2">
-                            <button
-                                onClick={handlePrevYear}
-                                className="p-2 hover:bg-gray-100 rounded-full"
-                            >
-                                <ChevronLeft size={20} />
-                            </button>
-                            <button
-                                onClick={handleNextYear}
-                                className="p-2 hover:bg-gray-100 rounded-full"
-                            >
-                                <ChevronRight size={20} />
-                            </button>
+            {isLoading ? (
+                <div className="flex justify-center items-center h-full" >
+                    <Spin />
+                </div>
+            ) : (
+                <div className="bg-white rounded-lg w-full shadow-md" >
+                    <div className="bg-white rounded-lg shadow-lg overflow-hidden w-full">
+                        <div className="flex items-center justify-between px-4 py-1 border-b">
+                            <h2 className="text-xl font-semibold">{currentYear}</h2>
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={handlePrevYear}
+                                    className="p-2 hover:bg-gray-100 rounded-full"
+                                >
+                                    <ChevronLeft size={20} />
+                                </button>
+                                <button
+                                    onClick={handleNextYear}
+                                    className="p-2 hover:bg-gray-100 rounded-full"
+                                >
+                                    <ChevronRight size={20} />
+                                </button>
+                            </div>
+                        </div>
+
+
+                        <div className="overflow-auto">
+                            <table className="w-full border-collapse tpo-calendar">
+                                <WeekHeader weeks={weeks} />
+                                <tbody>
+                                    {productData?.length > 0 && productData.map((product: any) => (
+                                        <EventRow
+                                            key={product.id}
+                                            productName={product.name}
+                                            product={product}
+                                            weeks={weeks}
+                                            events={events.filter(event => {
+                                                return event.planned.some(p => p.productId === product.id)
+                                            })}
+                                            onAddEvent={handleAddEvent}
+                                            onEditEvent={handleEditEvent}
+                                            onCopyEvent={handleCopyEvent}
+                                            onDeleteEvent={handleDeleteEventWrapper}
+                                            onDragEnd={handleDragEnd}
+                                            yearStart={startOfYear(new Date(currentYear, 0, 1))}
+                                        />
+                                    ))}
+
+                                    {productData?.length === 0 && (
+                                        <tr>
+                                            <td colSpan={weeks.length + 1} className="text-center py-4">No products selected</td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
 
-                    <div className="overflow-auto">
-                        <table className="w-full border-collapse tpo-calendar">
-                            <WeekHeader weeks={weeks} />
-                            <tbody>
-                                {productData?.length > 0 && productData.map((product: any) => (
-                                    <EventRow
-                                        key={product.id}
-                                        productName={product.name}
-                                        product={product}
-                                        weeks={weeks}
-                                        events={events.filter(event => {
-                                            return event.planned.some(p => p.productId === product.id)
-                                        })}
-                                        onAddEvent={handleAddEvent}
-                                        onEditEvent={handleEditEvent}
-                                        onCopyEvent={handleCopyEvent}
-                                        onDeleteEvent={handleDeleteEventWrapper}
-                                        onDragEnd={handleDragEnd}
-                                        yearStart={startOfYear(new Date(currentYear, 0, 1))}
-                                    />
-                                ))}
-
-                                {productData?.length === 0 && (
-                                    <tr>
-                                        <td colSpan={weeks.length + 1} className="text-center py-4">No products selected</td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
+                    {productData.length > 0 && (
+                        <EventModal
+                            isOpen={isModalOpen}
+                            onClose={() => setIsModalOpen(false)}
+                            onSave={handleSaveEvent}
+                            initialEvent={selectedEvent}
+                            startDate={selectedDate}
+                            selectedRetailer={selectedRetailer}
+                            selectedBrand={selectedBrand}
+                            projects={projects}
+                            productData={productData}
+                            maxBudget={widgetValues.budgetRemaining}
+                        />
+                    )}
                 </div>
+            )}
 
-                {productData.length > 0 && (
-                    <EventModal
-                        isOpen={isModalOpen}
-                        onClose={() => setIsModalOpen(false)}
-                        onSave={handleSaveEvent}
-                        initialEvent={selectedEvent}
-                        startDate={selectedDate}
-                        selectedRetailer={selectedRetailer}
-                        selectedBrand={selectedBrand}
-                        projects={projects}
-                        productData={productData}
-                        maxBudget={widgetValues.budgetRemaining}
-                    />
-                )}
-            </div>
+
         </>
     )
 }
