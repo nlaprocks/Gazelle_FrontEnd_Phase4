@@ -9,21 +9,8 @@ import Footer from "../../components/footer/Footer";
 import Calendar from "../../components/Calendar/Calendar";
 import { Select, Form } from "antd";
 import { useEvents } from '../../hooks/useEvents'
-import { Event } from '../../types/event'
 import { TargetUpdate } from "../../components/Calendar/TargetUpdate";
 import { eventService } from "../../services/eventService"
-
-// interface TpoData {
-//     project_id: number;
-//     model_id: number;
-//     user_id: number;
-//     id: number;
-//     name: string;
-
-//     volume: number;
-//     spend: number;
-//     revenue: number;
-// }
 
 const TpoPage = ({
     formData = {},

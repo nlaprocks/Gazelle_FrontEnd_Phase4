@@ -212,6 +212,7 @@ export default function PromoEventSimulator({
                                 <Select
                                     showSearch
                                     placeholder="Select Retailer"
+                                    value={selectedRetailer || undefined}
                                     onChange={handleRetailerChange}
                                     style={{
                                         width: "90%",
@@ -231,6 +232,7 @@ export default function PromoEventSimulator({
                             <Select
                                 showSearch
                                 placeholder="Select Brand"
+                                value={selectedBrand || undefined}
                                 onChange={handleBrandChange}
                                 disabled={!selectedRetailer}
                                 style={{
@@ -250,6 +252,7 @@ export default function PromoEventSimulator({
                             <Select
                                 showSearch
                                 placeholder="Select Product"
+                                value={selectedProduct || undefined}
                                 onChange={handleProductChange}
                                 disabled={!selectedBrand}
                                 style={{
