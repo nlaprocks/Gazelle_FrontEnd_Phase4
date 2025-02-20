@@ -12,14 +12,21 @@ interface EventBasicInfoProps {
 export const EventBasicInfo: React.FC<EventBasicInfoProps> = ({ event }) => {
     return (
         <InfoSection title="Basic Information">
-            <InfoRow icon={<FileText size={16} />} label="Title" value={event.title} />
-            {event.description && (
+            <div className='grid grid-cols-[30%_40%_30%] gap-4'>
+                <InfoRow icon={<FileText size={16} />} label="Title" value={event.title} />
+                {event.description && (
+                    <InfoRow
+                        icon={<FileText size={16} />}
+                        label="Description"
+                        value={event.description}
+                    />
+                )}
                 <InfoRow
                     icon={<FileText size={16} />}
-                    label="Description"
-                    value={event.description}
+                    label="PPG Name"
+                    value={event.ppg_name}
                 />
-            )}
+            </div>
             <div className='grid grid-cols-[30%_40%_30%] gap-4 mt-3 pt-3 border-t border-gray-300'>
                 <InfoRow
                     icon={<Tag size={16} />}

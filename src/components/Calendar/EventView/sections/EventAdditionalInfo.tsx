@@ -1,7 +1,6 @@
 import React from 'react'
 import { Event } from '../../../../types/event'
 import { Tags, Box, Building2 } from 'lucide-react'
-import { MOCK_PRODUCTS } from '../../../../utils/mockData'
 
 interface EventAdditionalInfoProps {
     event: Event
@@ -9,8 +8,6 @@ interface EventAdditionalInfoProps {
 
 export const EventAdditionalInfo: React.FC<EventAdditionalInfoProps> = ({ event }) => {
     const products = event.planned
-        .map(ep => MOCK_PRODUCTS.find(p => p.id === ep.productId))
-        .filter((p): p is NonNullable<typeof p> => p !== undefined)
 
     return (
         <div className="bg-gray-100 p-6 rounded-lg border border-gray-200">
@@ -37,10 +34,10 @@ export const EventAdditionalInfo: React.FC<EventAdditionalInfoProps> = ({ event 
                     </div>
                     <div className="flex flex-wrap gap-2">
                         <span className="px-2 py-1 bg-white rounded-md text-sm">
-                            Brand ID: {event.brand_id}
+                            Brand: {event.brand_id}
                         </span>
                         <span className="px-2 py-1 bg-white rounded-md text-sm">
-                            Retailer ID: {event.retailer_id}
+                            Retailer: {event.retailer_id}
                         </span>
                     </div>
                 </div>
@@ -48,15 +45,15 @@ export const EventAdditionalInfo: React.FC<EventAdditionalInfoProps> = ({ event 
                 <div className="col-span-2">
                     <div className="flex items-center gap-2 mb-2">
                         <Box size={16} className="text-gray-500" />
-                        <h4 className="font-medium text-lg">Products</h4>
+                        <h4 className="font-medium text-lg">Total {products.length} Products</h4>
                     </div>
-                    <div className="flex flex-wrap gap-2">
+                    {/* <div className="flex flex-wrap gap-2">
                         {products.map(product => (
                             <span key={product.id} className="px-2 py-1 bg-white rounded-md text-sm">
-                                {product.name}
+                                {product.productName}
                             </span>
                         ))}
-                    </div>
+                    </div> */}
                 </div>
             </div>
         </div>

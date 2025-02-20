@@ -16,7 +16,7 @@ interface EventDetailsProps {
     planned: EventProduct[]
     actual: EventProduct[]
     projects: Array<any>
-    maxBudget: number
+    // maxBudget: number
 }
 
 const EventDetails: React.FC<EventDetailsProps> = ({
@@ -25,8 +25,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({
     channels,
     planned,
     actual,
-    projects,
-    maxBudget
+    projects
 }) => {
     // const filteredBrands = brands.filter(brand => brand.retailer_id === formData.retailer_id)
     // const filteredProducts = products.filter(product =>
@@ -198,7 +197,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({
                     </Form.Item>
                 </div>
 
-                <div>
+                {/* <div>
                     <Form.Item
                         label="Budget"
                         required
@@ -218,6 +217,16 @@ const EventDetails: React.FC<EventDetailsProps> = ({
                             className={`w-full ${formData.budget > maxBudget ? 'border-red-500' : ''}`}
                             min={0}
                             max={maxBudget}
+                        />
+                    </Form.Item>
+                </div> */}
+
+                <div>
+                    <Form.Item label="Ppg Name" required>
+                        <Input
+                            value={formData.ppg_name}
+                            onChange={(e) => setFormData({ ...formData, ppg_name: e.target.value })}
+                            placeholder="Enter ppg name"
                         />
                     </Form.Item>
                 </div>

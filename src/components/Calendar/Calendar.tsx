@@ -255,7 +255,7 @@ const Calendar: React.FC<CalendarProps> = ({ projects, selectedRetailer, selecte
                             selectedBrand={selectedBrand}
                             projects={projects}
                             productData={productData}
-                            maxBudget={widgetValues.budgetRemaining}
+                        // maxBudget={widgetValues.budgetRemaining}
                         />
                     )}
                 </div>

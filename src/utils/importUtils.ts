@@ -15,7 +15,8 @@ interface CsvRow {
     brand_id: string
     project_id: string
     model_id: string
-    budget: string
+    // budget: string
+    ppg_name: string
     // Product data
     productId: string
     basePrice: string
@@ -189,7 +190,8 @@ const createEvent = (
             brand_id: row.brand_id,
             project_id: project_id,
             model_id: model_id,
-            budget: Number(row.budget) || 0,
+            // budget: Number(row.budget) || 0,
+            ppg_name: row.ppg_name || '',
             planned: [productData],
             actual: []
         }

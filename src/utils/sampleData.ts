@@ -15,7 +15,8 @@ export const SAMPLE_EVENTS: Event[] = [
         brand_id: 'Brand A', // Brand A
         project_id: 'p1',
         model_id: 'm1',
-        budget: 10000,
+        // budget: 10000,
+        ppg_name: 'P1',
         planned: [{
             productId: 'p1',
             productName: 'Product 1',
@@ -75,7 +76,8 @@ export const SAMPLE_EVENTS: Event[] = [
         brand_id: 'Brand A', // Brand A
         project_id: 'p1',
         model_id: 'm1',
-        budget: 10000,
+        // budget: 10000,
+        ppg_name: 'P1',
         planned: [
             {
                 productId: 'p1',
@@ -179,7 +181,8 @@ export const SAMPLE_EVENTS: Event[] = [
         brand_id: 'Brand C', // Brand C
         project_id: 'p1',
         model_id: 'm1',
-        budget: 10000,
+        // budget: 10000,
+        ppg_name: 'P1',
         planned: [
             {
                 productId: 'p4',
