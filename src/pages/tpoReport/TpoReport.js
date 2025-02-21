@@ -891,35 +891,49 @@ const TpoReport = () => {
 
         // Transform events data for chart
         currentYearEvents.forEach(event => {
-            let eventROI = 0;
-            let eventSpend = 0;
+            let totalIncrContr = 0;
+            let eventTotalSpend = 0;
 
-            // Calculate ROI for each product in event
+            // Calculate metrics for each product in event
             event.planned.forEach(product => {
-                const { financialResults } = getResult(product.financialData);
-                const roiResult = financialResults.find(r => r.name === "Sales ROI")?.value;
-                const spendResult = financialResults.find(r => r.name === "Total Spend")?.value;
+                const { promotionalResults } = getResult(product.financialData);
+                // Get base values from financialData
+                const baseUnits = Number(product.financialData.units) || 0;
+                const basePrice = Number(product.financialData.basePrice) || 0;
+                const promoPrice = Number(product.financialData.promoPrice) || 0;
+                const vcm = Number(product.financialData.vcm) || 0;
+                const fixedFee = Number(product.financialData.fixedFee) || 0;
 
-                const roi = Number(roiResult?.replace(/[^0-9.-]+/g, "")) || 0;
-                const spend = Number(spendResult?.replace(/[^0-9.-]+/g, "")) || 0;
+                // Get promo units from promotionalResults
+                const promoUnits = Number(promotionalResults?.find(r =>
+                    r.promotion === 'Event Incremental')?.units) || 0;
 
-                console.log({ spend });
-                eventROI += roi;
-                eventSpend += spend;
+                // Calculate incremental contribution
+                const incrContr = promoUnits * vcm;
+
+                totalIncrContr += incrContr;
+
+                // Calculate variable spend
+                const varSpend = (baseUnits + promoUnits) * (basePrice - promoPrice);
+
+                // Add fixed fee to get total spend for this product
+                const productTotalSpend = varSpend + fixedFee;
+                eventTotalSpend += productTotalSpend;
             });
 
-            // Average ROI across products
-            eventROI = eventROI / event.planned.length;
-            totalSpend += eventSpend;
+            // Calculate event ROI
+            const eventROI = eventTotalSpend ? ((totalIncrContr - eventTotalSpend) / eventTotalSpend) : 0;
+
+            totalSpend += eventTotalSpend;
             if (eventROI > 0) {
                 positiveCount++;
                 positiveROI.push(eventROI);
-                positiveSpend.push(eventSpend);
+                positiveSpend.push(eventTotalSpend);
             }
             if (eventROI < 0) {
                 negativeCount++;
                 negativeROI.push(eventROI);
-                negativeSpend.push(eventSpend);
+                negativeSpend.push(eventTotalSpend);
             }
 
             eventNames.push(event.title || `Event ${event.id}`);
@@ -954,14 +968,14 @@ const TpoReport = () => {
 
         setSummaryData({
             total: currentYearEvents.length,
-            positiveROI: positiveROI.reduce((acc, curr) => acc + curr, 0) / positiveCount,
+            positiveROI: positiveROI.length > 0 ? Number(positiveROI.reduce((acc, curr) => acc + curr, 0) / positiveCount) : 0,
             positiveCount: positiveCount,
-            negativeROI: negativeROI.reduce((acc, curr) => acc + curr, 0) / negativeCount,
+            negativeROI: negativeROI.length > 0 ? Number(negativeROI.reduce((acc, curr) => acc + curr, 0) / negativeCount) : 0,
             negativeCount: negativeCount,
-            avgROI: roiValues.reduce((acc, curr) => acc + curr, 0) / roiValues.length,
+            avgROI: roiValues.length > 0 ? Number(roiValues.reduce((acc, curr) => acc + curr, 0) / roiValues.length) : 0,
             totalSpend: totalSpend,
-            positiveSpend: positiveSpend.reduce((acc, curr) => acc + curr, 0),
-            negativeSpend: negativeSpend.reduce((acc, curr) => acc + curr, 0)
+            positiveSpend: positiveSpend.length > 0 ? Number(positiveSpend.reduce((acc, curr) => acc + curr, 0)) : 0,
+            negativeSpend: negativeSpend.length > 0 ? Number(negativeSpend.reduce((acc, curr) => acc + curr, 0)) : 0
         });
     };
 
@@ -1460,22 +1474,22 @@ const TpoReport = () => {
 
     // Add this function at the top level of the component
     const createPPGGroups = (events) => {
-        // Map to store product combinations and their events
+        // Map to store PPG groups and their events
         const ppgMap = new Map();
 
         events.forEach(event => {
-            // Sort product IDs to ensure consistent combination keys
-            const productIds = event.planned.map(p => p.productId).sort().join('_');
+            // Use ppg_name as the key instead of product combinations
+            const ppgName = event.ppg_name || 'Ungrouped';
 
-            if (!ppgMap.has(productIds)) {
-                ppgMap.set(productIds, {
+            if (!ppgMap.has(ppgName)) {
+                ppgMap.set(ppgName, {
                     products: event.planned.map(p => p.productId),
                     events: [],
-                    name: `PPG ${String.fromCharCode(65 + ppgMap.size)}` // A, B, C, etc.
+                    name: ppgName // Use the actual PPG name instead of generating A, B, C
                 });
             }
 
-            ppgMap.get(productIds).events.push(event);
+            ppgMap.get(ppgName).events.push(event);
         });
 
         return ppgMap;
