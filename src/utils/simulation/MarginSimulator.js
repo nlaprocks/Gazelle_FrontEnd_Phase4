@@ -613,7 +613,7 @@
 //       zoom: false,
 //       zoomin: false,
 //       zoomout: false,
-    
+
 //     // zoom: {
 //     //   enable: true,
 //     // },
@@ -1068,7 +1068,7 @@
 
 
 
-import React,{useState} from "react";
+import React, { useState } from "react";
 import ReactEcharts from "echarts-for-react";
 import ApexCharts from "react-apexcharts";
 
@@ -1690,7 +1690,7 @@ export default function MarginSimulator({
   //   chart: {
   //     type: "line",
   //     zoom:false,
-      
+
 
   //     zoom: {
   //       enable: false,
@@ -1866,17 +1866,17 @@ export default function MarginSimulator({
       zoom: false,
       zoomin: false,
       zoomout: false,
-    
-    // zoom: {
-    //   enable: true,
-    // },
-    dataLabels: {
-      enabled: false
+
+      // zoom: {
+      //   enable: true,
+      // },
+      dataLabels: {
+        enabled: false
+      },
+      stroke: {
+        curve: 'smooth'
+      },
     },
-    stroke: {
-      curve: 'smooth'
-    },
-  },
     title: {
       text: "Effects of Change In Price",
       align: 'center',
@@ -1983,8 +1983,8 @@ export default function MarginSimulator({
     tooltip: {
       shared: true,
       intersect: false,
-      zoom:{
-        enable:true,
+      zoom: {
+        enable: true,
       },
       zoom: false,
       zoomin: false,
@@ -2018,6 +2018,7 @@ export default function MarginSimulator({
                   showSearch
                   placeholder="Select Retailer"
                   onChange={handleRetailerChange}
+                  value={selectedRetailer || undefined}
                   style={{
                     width: "90%",
                   }}
@@ -2040,6 +2041,7 @@ export default function MarginSimulator({
                 showSearch
                 placeholder="Select Brand"
                 onChange={handleBrandChange}
+                value={selectedBrand || undefined}
                 disabled={!selectedRetailer}
                 style={{
                   width: "90%",
@@ -2062,6 +2064,7 @@ export default function MarginSimulator({
                 showSearch
                 placeholder="Select Product"
                 onChange={handleProductChange}
+                value={selectedProduct || undefined}
                 disabled={!selectedBrand}
                 style={{
                   width: "90%",
@@ -2228,8 +2231,8 @@ export default function MarginSimulator({
                             value={
                               marginPriceValues?.basePriceElasticity
                                 ? marginPriceValues?.basePriceElasticity?.toFixed(
-                                    2
-                                  )
+                                  2
+                                )
                                 : 0
                             }
                             onChange={handleMarginPriceInputChange}></input>

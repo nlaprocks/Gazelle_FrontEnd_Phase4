@@ -6,7 +6,7 @@ export const calculateWidgetValues = (events: Event[], targetBudget: number) => 
     let totalRevenue = 0
     let totalSpend = 0
     let totalIncrementalRevenue = 0
-    let totalBudgetUsed = 0
+    // let totalBudgetUsed = 0
     let totalROI = 0
     let validROICount = 0
     let totalVolume = 0
@@ -16,7 +16,7 @@ export const calculateWidgetValues = (events: Event[], targetBudget: number) => 
     // Process each event
     events.forEach(event => {
         // Add to budget used
-        totalBudgetUsed += Number(event.budget) || 0
+        // totalBudgetUsed += Number(event.budget) || 0
 
         // Process each planned product in the event
         event.planned.forEach(product => {

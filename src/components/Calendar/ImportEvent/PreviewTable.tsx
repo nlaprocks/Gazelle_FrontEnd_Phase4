@@ -36,13 +36,10 @@ export const PreviewTable: React.FC<PreviewTableProps> = ({ data }) => {
             render: (status: string) => <span className="capitalize">{status}</span>,
         },
         {
-            title: 'Budget',
-            dataIndex: 'budget',
-            key: 'budget',
-            render: (budget: number) => new Intl.NumberFormat('en-US', {
-                style: 'currency',
-                currency: 'USD'
-            }).format(budget),
+            title: 'PPG Name',
+            dataIndex: 'ppg_name',
+            key: 'ppg_name',
+            render: (ppg_name: string) => ppg_name,
         },
         {
             title: 'Products',

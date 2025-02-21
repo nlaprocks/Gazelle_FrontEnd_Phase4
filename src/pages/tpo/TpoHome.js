@@ -60,6 +60,7 @@ const TpoHome = () => {
         setShow(false);
         setEditTpo(false);
         setUpgradeVersion(false);
+        setSubmitAttempted(false);
     }
 
     const [editTpo, setEditTpo] = useState(false);
@@ -74,7 +75,26 @@ const TpoHome = () => {
     });
     const [loading, setLoading] = useState(false);
 
+    // Add new state for tracking form submission attempt
+    const [submitAttempted, setSubmitAttempted] = useState(false);
+
     const handleCreateTpo = async () => {
+        setSubmitAttempted(true);
+
+        // Add validation
+        if (!formData.name?.trim() || !formData.project_id || !formData.model_id) {
+            if (!formData.name?.trim()) {
+                message.error('Please enter Trade Plan name');
+            }
+            if (!formData.project_id) {
+                message.error('Please select a project');
+            }
+            if (!formData.model_id) {
+                message.error('Please select a model');
+            }
+            return;
+        }
+
         try {
             setLoading(true);
             const config = { headers: { Authorization: `Bearer ` + authData.token } };
@@ -191,32 +211,38 @@ const TpoHome = () => {
                 <Modal.Body>
                     <div className="nla_modal_body_title">
                         <div>
-                            <Typography.Title level={5}>Trade Plan Name</Typography.Title>
+                            <Typography.Title level={5}>Trade Plan Name <span className="text-danger">*</span></Typography.Title>
                             <Input
                                 value={formData.name}
                                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                 placeholder="Enter Trade Plan name"
+                                required
+                                status={submitAttempted && !formData.name?.trim() ? 'error' : ''}
                             />
                         </div>
                         <div className="mt-2">
-                            <Typography.Title level={5}>Project</Typography.Title>
+                            <Typography.Title level={5}>Project <span className="text-danger">*</span></Typography.Title>
                             <Select
                                 value={{ value: formData.project_id, label: projects.find(project => project.id === parseInt(formData.project_id))?.project_name }}
                                 onChange={(value) => setFormData({
                                     ...formData,
                                     project_id: value,
+                                    model_id: '', // Reset model when project changes
                                 })}
                                 disabled={upgradeVersion}
                                 options={projects.filter(project => project.is_insight).map(project => ({ value: project.id, label: project.project_name }))}
                                 className="w-full"
                                 placeholder="Select project"
+                                required
+                                status={submitAttempted && !formData.project_id ? 'error' : ''}
                             />
                         </div>
                         <div className="mt-2">
-                            <Typography.Title level={5}>Model</Typography.Title>
+                            <Typography.Title level={5}>Model <span className="text-danger">*</span></Typography.Title>
                             <Select
                                 value={{
-                                    value: formData.model_id, label: `Version ${projects.find(project => project.id === parseInt(formData.project_id))?.Models.find(model => model.id === parseInt(formData.model_id))?.model_version}`
+                                    value: formData.model_id,
+                                    label: `Version ${projects.find(project => project.id === parseInt(formData.project_id))?.Models.find(model => model.id === parseInt(formData.model_id))?.model_version}`
                                 }}
                                 onChange={(value) => setFormData({
                                     ...formData,
@@ -226,6 +252,8 @@ const TpoHome = () => {
                                 className="w-full"
                                 placeholder="Select model"
                                 disabled={!formData.project_id}
+                                required
+                                status={submitAttempted && !formData.model_id ? 'error' : ''}
                             />
                         </div>
                     </div>
@@ -234,7 +262,13 @@ const TpoHome = () => {
                     <Button variant="secondary" className="btn btn-outline-secondary" onClick={onClose}>
                         Close
                     </Button>
-                    <Button variant="primary" className="btn btn-primary" onClick={handleCreateTpo}>
+                    <Button
+                        variant="primary"
+                        className="btn btn-primary"
+                        onClick={handleCreateTpo}
+                        loading={loading}
+                        disabled={loading}
+                    >
                         {editTpo ? "Update Trade Plan" : upgradeVersion ? "Upgrade Version" : "Create Trade Plan"}
                     </Button>
                 </Modal.Footer>

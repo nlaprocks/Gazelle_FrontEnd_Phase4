@@ -15,7 +15,8 @@ export const downloadSampleTemplate = () => {
             channels: 'Online,Retail',
             retailer_id: 'ALBSCO Jewel Div TA',
             brand_id: 'JACK DANIELS',
-            budget: '10000',
+            // budget: '10000',
+            ppg_name: 'P1',
             // Product 1 data
             productId: 'Completely Fresh Foods Jack Daniels Honey Liqueur Bbq Pulled Pork Entree 16OZ 081166302903-JACK DANIELS',
             promoPrice: '7.49',
@@ -40,7 +41,8 @@ export const downloadSampleTemplate = () => {
             channels: 'Online,Retail',
             retailer_id: 'ALBSCO Jewel Div TA',
             brand_id: 'JACK DANIELS',
-            budget: '10000',
+            //  budget: '10000',
+            ppg_name: 'P1',
             // Product 1 data
             productId: 'Completely Fresh Foods Jack Daniels Honey Liqueur Bbq Pulled Pork Entree 16OZ 081166302903-JACK DANIELS',
             promoPrice: '7.49',
@@ -65,7 +67,8 @@ export const downloadSampleTemplate = () => {
             channels: 'Online,Retail',
             retailer_id: 'ALBSCO Jewel Div TA',
             brand_id: 'JACK DANIELS',
-            budget: '10000',
+            // budget: '10000',
+            ppg_name: 'P1',
             // Product 1 data
             productId: 'Completely Fresh Foods Jack Daniels Honey Liqueur Bbq Pulled Pork Entree 16OZ 081166302903-JACK DANIELS',
             promoPrice: '7.49',
@@ -90,7 +93,8 @@ export const downloadSampleTemplate = () => {
             channels: 'Online,Retail',
             retailer_id: 'ALBSCO Jewel Div TA',
             brand_id: 'JACK DANIELS',
-            budget: '10000',
+            // budget: '10000',
+            ppg_name: 'P1',
             productId: 'Completely Fresh Foods Jack Daniels Honey Liqueur Bbq Pulled Pork Entree 16OZ 081166302903-JACK DANIELS',
             promoPrice: '7.49',
             tprDist: '85',
@@ -114,7 +118,8 @@ export const downloadSampleTemplate = () => {
             channels: 'Online,Retail',
             retailer_id: 'ALBSCO Jewel Div TA',
             brand_id: 'JACK DANIELS',
-            budget: '10000',
+            // budget: '10000',
+            ppg_name: 'P1',
             productId: 'Completely Fresh Foods Jack Daniels Old No 7 Brand Bbqck Pulled Chicken Entree 16OZ 089533400108-JACK DANIELS',
             promoPrice: '7.49',
             tprDist: '85',
@@ -157,7 +162,8 @@ export const generateSampleData = (products: string[], retailerId: string, brand
         channels: 'Online,Retail',
         retailer_id: retailerId,
         brand_id: brandId,
-        budget: '', // Leave empty for template
+        // budget: '', // Leave empty for template
+        ppg_name: 'P1',
         productId: product,
         promoPrice: '', // Leave empty for template
         tprDist: '', // Leave empty for template
@@ -187,7 +193,8 @@ export const downloadAdvancedTemplate = async (products: any[], retailerId: stri
         'channels',
         'retailer_id',
         'brand_id',
-        'budget',
+        // 'budget',
+        'ppg_name',
         'productId',
         'promoPrice',
         'tprDist',

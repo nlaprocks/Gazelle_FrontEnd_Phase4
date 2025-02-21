@@ -98,7 +98,6 @@ export default function Simulation() {
             const api = `${process.env.REACT_APP_NGROK}/insights/simulation/price/product-data?project_id=${project_id}&model_id=${model_id}&Retailer=${selectedRetailer}&Product=${product}`;
             const response = await axios.get(api);
             if (response.status === 200) {
-                // console.log("response: ", response);
                 setMarginSimulationData(response?.data?.data);
                 const basePrice = !isNaN(
                     response?.data?.data[0]?.Price_avg_last_4_weeks
@@ -111,10 +110,12 @@ export default function Simulation() {
                     basePrice: basePrice,
                 }));
                 setIsPriceSimulationLoading(false);
+                return response.data;
             }
         } catch (error) {
             setIsPriceSimulationLoading(false);
             console.log("Error in fetching margin simulation data: ", error);
+            return null;
         }
     };
 
@@ -124,7 +125,7 @@ export default function Simulation() {
     const [isAllProductSelected, setIsAllProductSelected] = useState(false);
 
     // Local handlers
-    const handleSimulatorChange = (e) => {
+    const handleSimulatorChange = async (e) => {
         const newType = e.target.value;
         setSimulatorType(newType);
 
@@ -134,20 +135,62 @@ export default function Simulation() {
             const typeState = storedState[newType];
 
             // Set common fields
-            setSelectedRetailer(typeState.retailer || '');
-            setSelectedBrand(typeState.brand || '');
+            if (typeState.retailer) {
+                setSelectedRetailer(typeState.retailer);
 
-            // Set type-specific fields
-            if (newType === 'price') {
-                setSelectedProducts(typeState.products || []);
-                setNewPrices(typeState.newPrices || []);
-                setCompetitorNewPrice(typeState.competitorNewPrice || []);
-            } else {
-                setSelectedProduct(typeState.product || '');
-                if (newType === 'margin') {
-                    setMarginPriceValues(typeState.priceValues || {});
-                } else if (newType === 'promo') {
-                    setPromoEventPriceValues(typeState.priceValues || {});
+                // Handle different simulator types
+                if (newType === 'price') {
+                    const priceResponse = await getPriceSimulationApiHandler(typeState.retailer);
+                    if (priceResponse && typeState.brand) {
+                        setSelectedBrand(typeState.brand);
+                        if (typeState.products && typeState.products.length > 0) {
+                            setSelectedProducts(typeState.products);
+                            setNewPrices(typeState.newPrices || []);
+                            setCompetitorNewPrice(typeState.competitorNewPrice || []);
+                        }
+                    }
+                }
+                else if (newType === 'margin') {
+                    if (typeState.brand) {
+                        setSelectedBrand(typeState.brand);
+
+                        if (typeState.product) {
+                            setSelectedProduct(typeState.product);
+                            // Fetch margin simulation data
+                            await marginSimulationApiHandler(typeState.product);
+
+                            // Set margin price values after data is loaded
+                            if (typeState.priceValues) {
+                                setTimeout(() => {
+                                    setMarginPriceValues(prev => ({
+                                        ...prev,
+                                        ...typeState.priceValues
+                                    }));
+                                }, 100);
+                            }
+                        }
+                    }
+                }
+                else if (newType === 'promo') {
+                    if (typeState.brand) {
+                        setSelectedBrand(typeState.brand);
+
+                        if (typeState.product) {
+                            setSelectedProduct(typeState.product);
+                            // Fetch promo simulation data
+                            await promoEventHandler(typeState.product);
+
+                            // Set promo event values after data is loaded
+                            if (typeState.priceValues) {
+                                setTimeout(() => {
+                                    setPromoEventPriceValues(prev => ({
+                                        ...prev,
+                                        ...typeState.priceValues
+                                    }));
+                                }, 100);
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -920,42 +963,46 @@ export default function Simulation() {
 
                                     if (priceState.products && priceState.products.length > 0) {
                                         setSelectedProducts(priceState.products);
-                                    }
 
-                                    // Restore input values and trigger calculations
-                                    if (priceState.newPrices && priceState.newPrices.length > 0) {
-                                        setTimeout(() => {
+                                        // First get the filtered products data
+                                        const filteredData = priceResponse.data?.filter((item) =>
+                                            priceState.products.includes(item.Product)
+                                        );
+                                        setFilteredSelectedPriceProducts(filteredData);
+                                        filterCompetitorsHandler(filteredData);
+
+                                        // Then restore prices and trigger calculations
+                                        if (priceState.newPrices && priceState.newPrices.length > 0) {
                                             setNewPrices(priceState.newPrices);
-                                            // Recreate price change events to trigger calculations
-                                            const priceChanges = priceState.products.map((product, index) => ({
+
+                                            // Create price change events with complete product data
+                                            const priceChanges = filteredData.map((product, index) => ({
                                                 ...product,
                                                 type: "product",
                                                 newPrice: priceState.newPrices[index]
                                             }));
-                                            setNewPriceChange(priceChanges);
 
-                                        }, 100);
+                                            // If there are competitor prices, add them
+                                            if (priceState.competitorNewPrice && priceState.competitorNewPrice.length > 0) {
+                                                setCompetitorNewPrice(priceState.competitorNewPrice);
 
-                                        setTimeout(() => {
+                                                // Get competitor data and add their price changes
+                                                const competitorChanges = competitors.map((competitor, index) => ({
+                                                    ...competitor,
+                                                    type: "competitor",
+                                                    newPrice: priceState.competitorNewPrice[index]
+                                                }));
+
+                                                // Combine product and competitor changes
+                                                setNewPriceChange([...priceChanges, ...competitorChanges]);
+                                            } else {
+                                                setNewPriceChange(priceChanges);
+                                            }
+
+                                            // Show results sections
                                             setShowProductResults(true);
-                                        }, 100);
-                                    }
-
-                                    if (priceState.competitorNewPrice && priceState.competitorNewPrice.length > 0) {
-                                        setTimeout(() => {
-                                            setCompetitorNewPrice(priceState.competitorNewPrice);
-                                            // Add competitor price changes if any
-                                            const competitorChanges = competitors.map((competitor, index) => ({
-                                                ...competitor,
-                                                type: "competitor",
-                                                newPrice: priceState.competitorNewPrice[index]
-                                            }));
-                                            setNewPriceChange(prev => [...prev, ...competitorChanges]);
-                                        }, 100);
-
-                                        setTimeout(() => {
                                             setShowCompetitorResults(true);
-                                        }, 100);
+                                        }
                                     }
                                 }
                             }
@@ -1023,18 +1070,49 @@ export default function Simulation() {
         setFilteredSelectedPriceProducts(filteredData);
         filterCompetitorsHandler(filteredData);
 
-        // Only reset prices if there's no stored state
+        // Get stored state
         const storedState = getStoredState(project_id, model_id);
-        if (!storedState?.price?.newPrices?.length) {
+        const storedPrices = storedState?.price?.newPrices;
+        const storedCompetitorPrices = storedState?.price?.competitorNewPrice;
+
+        // Only reset prices if there's no stored state or if products selection changed
+        if (!storedPrices || storedPrices.length !== selectedProducts.length) {
             setNewPrices([]);
         }
-        if (!storedState?.price?.competitorNewPrice?.length) {
+        if (!storedCompetitorPrices || storedCompetitorPrices.length !== competitors?.length) {
             setCompetitorNewPrice([]);
+        }
+
+        // If we have stored prices and filtered data, recreate the price changes
+        if (storedPrices && storedPrices.length > 0 && filteredData) {
+            const priceChanges = filteredData.map((product, index) => ({
+                ...product,
+                type: "product",
+                newPrice: storedPrices[index]
+            }));
+
+            if (storedCompetitorPrices && storedCompetitorPrices.length > 0 && competitors) {
+                const competitorChanges = competitors.map((competitor, index) => ({
+                    ...competitor,
+                    type: "competitor",
+                    newPrice: storedCompetitorPrices[index]
+                }));
+                setNewPriceChange([...priceChanges, ...competitorChanges]);
+            } else {
+                setNewPriceChange(priceChanges);
+            }
         }
 
         setShowCompetitorResults(true);
         setShowProductResults(true);
-    }, [selectedProducts]);
+    }, [selectedProducts, priceSimulationData]);
+
+    // Add useEffect to trigger impact calculation when newPriceChange is updated
+    useEffect(() => {
+        if (newPriceChange && newPriceChange.length > 0) {
+            impactHandler();
+        }
+    }, [newPriceChange]);
 
     // Margin simulater useEffect
     useEffect(() => {
@@ -1254,26 +1332,26 @@ export default function Simulation() {
             currentType: simulatorType,
             price: {
                 ...currentState.price,
-                retailer: selectedRetailer || currentState.price?.retailer || '',
-                brand: selectedBrand || currentState.price?.brand || '',
-                products: selectedProducts?.length ? selectedProducts : currentState.price?.products || [],
-                newPrices: newPrices?.length ? newPrices : currentState.price?.newPrices || [],
-                competitorNewPrice: competitorNewPrice?.length ? competitorNewPrice : currentState.price?.competitorNewPrice || []
+                retailer: selectedRetailer || currentState.price?.retailer,
+                brand: selectedBrand || currentState.price?.brand,
+                products: selectedProducts?.length ? selectedProducts : currentState.price?.products,
+                newPrices: newPrices?.length ? newPrices : currentState.price?.newPrices,
+                competitorNewPrice: competitorNewPrice?.length ? competitorNewPrice : currentState.price?.competitorNewPrice
             },
             margin: {
                 ...currentState.margin,
-                retailer: selectedRetailer || currentState.margin?.retailer || '',
-                brand: selectedBrand || currentState.margin?.brand || '',
-                product: selectedProduct || currentState.margin?.product || '',
+                retailer: selectedRetailer || currentState.margin?.retailer,
+                brand: selectedBrand || currentState.margin?.brand,
+                product: selectedProduct || currentState.margin?.product,
                 priceValues: Object.keys(marginPriceValues).some(key => marginPriceValues[key])
                     ? marginPriceValues
                     : currentState.margin?.priceValues || marginPriceValues
             },
             promo: {
                 ...currentState.promo,
-                retailer: selectedRetailer || currentState.promo?.retailer || '',
-                brand: selectedBrand || currentState.promo?.brand || '',
-                product: selectedProduct || currentState.promo?.product || '',
+                retailer: selectedRetailer || currentState.promo?.retailer,
+                brand: selectedBrand || currentState.promo?.brand,
+                product: selectedProduct || currentState.promo?.product,
                 priceValues: Object.keys(promoEventPriceValues).some(key => promoEventPriceValues[key])
                     ? promoEventPriceValues
                     : currentState.promo?.priceValues || promoEventPriceValues

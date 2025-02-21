@@ -272,7 +272,7 @@ export const ImportEvent: React.FC<ImportEventProps> = ({ show, onClose, onImpor
                                 <ul className="list-disc ml-6">
                                     <li>All dates should be in YYYY-MM-DD format</li>
                                     <li>Required fields: Start Date, End Date, Product Name</li>
-                                    <li>Budget values should be numbers only (no currency symbols)</li>
+                                    {/* <li>Budget values should be numbers only (no currency symbols)</li> */}
                                     <li>Don't modify column headers</li>
                                     <li>Save file as CSV format before uploading</li>
                                 </ul>

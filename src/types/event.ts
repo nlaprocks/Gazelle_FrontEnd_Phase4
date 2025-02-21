@@ -22,7 +22,8 @@ export interface BaseEvent {
     event_tpo_id: string
     retailer_id: string
     brand_id: string
-    budget: number
+    // budget: number
+    ppg_name: string
     // products: EventProduct[]
     planned: EventProduct[]
     actual: EventProduct[]
