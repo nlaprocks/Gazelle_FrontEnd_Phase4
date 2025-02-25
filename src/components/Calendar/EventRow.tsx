@@ -71,7 +71,7 @@ const EventRow: React.FC<EventRowProps> = ({
                         return (
                             <div
                                 key={`event-${event.id}-${product?.id}`}
-                                className="relative top-1/2 -translate-y-1/2 z-10"
+                                className="relative top-1/2 -translate-y-1/2"
                                 style={style}
                             >
                                 <EventItem

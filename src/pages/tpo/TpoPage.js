@@ -8,6 +8,7 @@ import Header from "../../components/header/Header";
 import Footer from "../../components/footer/Footer";
 import Calendar from "../../components/Calendar/Calendar";
 import { Select, Form } from "antd";
+import { Link } from "react-router-dom";
 import { useEvents } from '../../hooks/useEvents'
 import { TargetUpdate } from "../../components/Calendar/TargetUpdate";
 import { eventService } from "../../services/eventService"
@@ -282,12 +283,18 @@ const TpoPage = () => {
             <div className="min-h-[calc(100vh-40px)] bg-[rgb(249,249,249)] pt-20 pb-8">
                 <div className="mx-auto px-12" >
                     <div className="flex justify-between flex-wrap items-center h-full">
-                        <div className="flex flex-col " >
-                            <a href="/tpo" className="flex items-center gap-2" >
+                        <div className="flex" >
+                            <Link to="/tpo">
+                                <div className="nla-arrow-left-icon">
+                                    <span></span>
+                                </div>
+                            </Link>
+                            <h4 className="text-2xl font-bold"> {project_name} </h4>
+                            {/* <a href="/tpo" className="flex items-center gap-2" >
                                 <div className="fa-solid fa-arrow-left" > </div>
                                 <span> Back </span>
                             </a>
-                            <h4 className="text-2xl font-bold"> {project_name} </h4>
+                            <h4 className="text-2xl font-bold"> {project_name} </h4> */}
                         </div>
                         <div>
                             <div className="tpo-page flex justify-end flex-wrap items-center gap-x-4 gap-y-2" >
