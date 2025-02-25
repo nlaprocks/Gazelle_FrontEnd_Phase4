@@ -154,11 +154,11 @@ const TopBar = ({ setShowShareModal, sidebarState }) => {
                     <img src={info} alt="info" style={{ marginLeft: "4px" }} />
                   </a> */}
                 </div>
-                <div>
+                {/* <div>
                   <a href="#!" className="btn btn-primary d-inline-flex">
                     Save <Save />
                   </a>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>

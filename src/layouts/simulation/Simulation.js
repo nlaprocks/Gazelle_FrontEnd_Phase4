@@ -1407,14 +1407,14 @@ export default function Simulation() {
                                     </select>
                                 </div>
                                 <div className="other-design-studio-buttons ml-3">
-                                    <OverlayTrigger
+                                    {/* <OverlayTrigger
                                         placement="top"
                                         delay={{ show: 250, hide: 250 }}
                                         overlay={<Tooltip id="overlay-example">Save</Tooltip>}>
                                         <a href="#!" className={`btn icon-btn btn-primary`}>
                                             <i className="fa-solid fa-floppy-disk alertAligns"></i>
                                         </a>
-                                    </OverlayTrigger>
+                                    </OverlayTrigger> */}
                                     {/* <div>
                     <a href="##" className="btn btn-primary">
                       Save
