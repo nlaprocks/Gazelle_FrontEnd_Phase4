@@ -1000,6 +1000,7 @@ const TpoReport = () => {
                 const { financialResults } = getResult(product.financialData);
                 const roiResult = financialResults.find(r => r.name === "Sales ROI")?.value;
                 const roi = Number(roiResult?.replace(/[^0-9.-]+/g, "")) || 0;
+                // TODO: Change roi logic
                 eventROI += roi;
             });
 
@@ -1068,23 +1069,27 @@ const TpoReport = () => {
         let correlation2 = 0;
 
         currentYearEvents.forEach(event => {
+            let spend = 0;
+            let volume = 0;
+            let roi = 0;
             event.planned.forEach(product => {
                 const { financialResults } = getResult(product.financialData);
-                const spend = Number(financialResults.find(r => r.name === "Total Spend")?.value?.replace(/[^0-9.-]+/g, "")) || 0;
-                const roi = Number(financialResults.find(r => r.name === "Sales ROI")?.value?.replace(/[^0-9.-]+/g, "")) || 0;
-                const volume = Number(financialResults.find(r => r.name === "Incremental Revenue")?.value?.replace(/[^0-9.-]+/g, "")) || 0;
+                spend += Number(financialResults.find(r => r.name === "Total Spend")?.value?.replace(/[^0-9.-]+/g, "")) || 0;
+                // TODO: Change roi logic
+                roi += Number(financialResults.find(r => r.name === "Sales ROI")?.value?.replace(/[^0-9.-]+/g, "")) || 0;
+                volume += Number(financialResults.find(r => r.name === "Incremental Revenue")?.value?.replace(/[^0-9.-]+/g, "")) || 0;
+            });
 
-                // Add event name to the data points
-                spendVolumeData.push({
-                    x: spend,
-                    y: volume,
-                    eventName: `${product.name} : ${event.title}`
-                });
-                spendROIData.push({
-                    x: spend,
-                    y: roi,
-                    eventName: `${product.name} : ${event.title}`
-                });
+            // Add event name to the data points
+            spendVolumeData.push({
+                x: spend,
+                y: volume,
+                eventName: `${event.title}`
+            });
+            spendROIData.push({
+                x: spend,
+                y: roi,
+                eventName: `${event.title}`
             });
         });
 
@@ -1525,6 +1530,7 @@ const TpoReport = () => {
                     const basePrice = Number(product.financialData.basePrice) || 0;
                     const promoPrice = Number(product.financialData.promoPrice) || 0;
                     const roiResult = financialResults.find(r => r.name === "Sales ROI")?.value;
+                    // TODO: Change roi logic
                     const roi = Number(roiResult?.replace(/[^0-9.-]+/g, "")) || 0;
 
                     const shelfPriceInvestment = (basePrice - promoPrice) * Number(product.financialData.units);
@@ -1626,6 +1632,7 @@ const TpoReport = () => {
             const eventYear = eventDate.getFullYear();
             const eventChannels = Array.isArray(event.channels) ? event.channels : [event.channels];
 
+            // TODO : Change logic by retailer. Not channel
             eventChannels.forEach(channel => {
                 if (!channel || !channelData[channel]) return;
 
@@ -3518,7 +3525,7 @@ const TpoReport = () => {
                                                 <span>Chart</span>
                                                 <span className="nla_number">7</span>
                                             </div>
-                                            <span className="ml-2">Incremental Profit Pool per Dollar Invested on Promo</span>
+                                            <span className="ml-2">What is the Incremental Profit Per Dollar Invested on Promo By Retailer?</span>
                                         </div>
                                     </Accordion.Header>
                                     <Accordion.Body>
@@ -3550,7 +3557,7 @@ const TpoReport = () => {
                                                 <span>Chart</span>
                                                 <span className="nla_number">8</span>
                                             </div>
-                                            <span className="ml-2">Relationship between ROI and Incremental Profit Pool</span>
+                                            <span className="ml-2">What is the relationship between ROI and Incremental Profit Pool?</span>
                                         </div>
                                     </Accordion.Header>
                                     <Accordion.Body>
@@ -3583,7 +3590,7 @@ const TpoReport = () => {
                                                 <span>Chart</span>
                                                 <span className="nla_number">9</span>
                                             </div>
-                                            <span className="ml-2">Relationship between retailer funding and ROI at different price points</span>
+                                            <span className="ml-2">How is the relationship between retailer funding and ROI at different price points?</span>
                                         </div>
                                     </Accordion.Header>
                                     <Accordion.Body>
