@@ -1777,8 +1777,6 @@ const TpoReport = () => {
                     sharedProfitCreated / shelfPriceInvestment : 0;
                 totalIncrementalProfitPerDollar += incrementalProfitPerDollar;
 
-                console.log({ baseShelfPrice, promoShelfPrice, mfrCOGS, promoUnits, incrementalProfitPerDollar, sharedProfitCreated, shelfPriceInvestment });
-
 
             });
 
@@ -2915,83 +2913,62 @@ const TpoReport = () => {
                             }
                         }
                     }
-                ],
-                slideNumber: { x: 13, y: 0, color: "ffffff", fontSize: 15 }
+                ]
             });
 
             let slide = pptx.addSlide({ masterName: "PLACEHOLDER_SLIDE" });
 
             // Add title
-            slide.addText("Relationship between ROI and Incremental Profit Pool", {
-                x: 0.35,
+            slide.addText("Relationship between ROI and Incremental Profit Pool per Event", {
+                x: 0.5,
                 y: 0.5,
-                w: 12,
-                h: 0.5,
-                fontSize: 14,
+                fontSize: 18,
                 bold: true,
                 color: "000000"
             });
 
-            // Add chart
-            const scatterData = chart8Data.series[0].data.map(point => ({
-                x: point.x,
-                y: point.y,
-                name: point.name
-            }));
-
-            const chartData = [{
-                name: 'Incremental Profit per Dollar',
-                values: scatterData.map(point => point.y),
-                labels: scatterData.map(point => point.x.toString())
+            // Format chart data properly for scatter plot
+            const formattedChartData = [{
+                name: "Incremental Profit per Dollar",
+                values: chart8Data.series[0].data.map(point => ({
+                    x: point.x,
+                    y: point.y
+                }))
             }];
 
-            slide.addChart(pptx.charts.SCATTER, chartData, {
-                x: 0.35,
-                y: 1.2,
-                w: 12,
-                h: 5,
-                showTitle: true,
-                title: "Relationship between ROI and Incremental Profit Pool per Event",
+            // Add scatter plot
+            slide.addChart(pptx.ChartType.scatter, formattedChartData, {
+                x: 0.5,
+                y: 1,
+                w: 9,
+                h: 4.5,
+                showTitle: false,
                 showLegend: false,
-                lineSize: 0,
-                chartColors: ['#00B3E5'],
-                lineWidth: 0,
-                markerSize: 10,
+                chartColors: ['00B3E5'],
+                plotArea: { fill: { color: 'FFFFFF' } },
                 valAxisTitle: "Incremental Profit Pool per Dollar Invested",
                 catAxisTitle: "Manufacturer ROI (%)",
-                plotArea: { border: { pt: 1, color: "888888" } },
-                showValAxisTitle: true,
-                showCatAxisTitle: true,
-                valAxisTitleColor: "000000",
-                catAxisTitleColor: "000000",
-                dataLabelFormatCode: "#,##0.00",
-                valAxisLabelFormatCode: "$#,##0.00",
-                catAxisLabelFormatCode: "#,##0'%'"
+                valAxisTitleRotate: 270,
+                valAxis: {
+                    showMajorGridlines: true,
+                    majorGridlines: { color: "e7e7e7" },
+                    minimum: chart8Data.options.yaxis.min,
+                    maximum: chart8Data.options.yaxis.max
+                },
+                catAxis: {
+                    showMajorGridlines: true,
+                    majorGridlines: { color: "e7e7e7" },
+                    minimum: chart8Data.options.xaxis.min,
+                    maximum: chart8Data.options.xaxis.max,
+                    formatCode: "0.00"
+                },
+                dataLabelFormatCode: "0.00",
+                lineSize: 0,
+                markerSize: 6
             });
-
-            // Add logos
-            slide.addImage({
-                path: Logo,
-                x: 0.3,
-                y: 7.0,
-                w: 1.4,
-                h: 0.5,
-                sizing: { type: "contain", w: 1.4, h: 0.5 }
-            });
-
-            if (authData?.company_logo) {
-                slide.addImage({
-                    path: authData.company_logo,
-                    x: 11.3,
-                    y: 7.0,
-                    w: 1.4,
-                    h: 0.5,
-                    sizing: { type: "contain", w: 1.4, h: 0.5 }
-                });
-            }
 
             await pptx.writeFile({
-                fileName: "Relationship_between_ROI_and_Incremental_Profit_Pool.pptx",
+                fileName: "ROI_and_Incremental_Profit_Pool.pptx",
                 compression: true
             });
 
