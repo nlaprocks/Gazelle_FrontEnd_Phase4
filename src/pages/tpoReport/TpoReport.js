@@ -97,7 +97,7 @@ const TpoReport = () => {
             chart: {
                 type: 'bar',
                 height: 400,
-                toolbar: { show: false }
+                toolbar: { show: false },
             },
             plotOptions: {
                 bar: {
@@ -175,7 +175,10 @@ const TpoReport = () => {
             chart: {
                 type: 'scatter',
                 height: 400,
-                toolbar: { show: false }
+                toolbar: { show: false },
+                zoom: {
+                    enabled: false,
+                }
             },
             xaxis: {
                 title: {
@@ -221,7 +224,10 @@ const TpoReport = () => {
             chart: {
                 type: 'scatter',
                 height: 400,
-                toolbar: { show: false }
+                toolbar: { show: false },
+                zoom: {
+                    enabled: false,
+                }
             },
             xaxis: {
                 title: {
@@ -491,6 +497,7 @@ const TpoReport = () => {
         },
         summaryData: {
             noOfEvents: [],
+            avgWeightedROI: [],
             tradeSpend: [],
             avgLift: [],
             fndEvents: []
@@ -643,7 +650,10 @@ const TpoReport = () => {
             chart: {
                 type: 'scatter',
                 height: 400,
-                toolbar: { show: false }
+                toolbar: { show: false },
+                zoom: {
+                    enabled: false,
+                }
             },
             xaxis: {
                 title: {
@@ -882,7 +892,8 @@ const TpoReport = () => {
     const calculateEventROI = (event) => {
         let totalIncrContr = 0;
         let eventTotalSpend = 0;
-
+        let eventTotalUnits = 0;
+        let eventTotalPromoUnits = 0;
         // Calculate metrics for each product in event
         event.planned.forEach(product => {
             const { promotionalResults } = getResult(product.financialData);
@@ -900,7 +911,8 @@ const TpoReport = () => {
             // Calculate incremental contribution
             const incrContr = promoUnits * vcm;
             totalIncrContr += incrContr;
-
+            eventTotalUnits += promoUnits + baseUnits;
+            eventTotalPromoUnits += promoUnits;
             // Calculate variable spend
             const varSpend = (baseUnits + promoUnits) * (basePrice - promoPrice);
 
@@ -911,9 +923,11 @@ const TpoReport = () => {
 
         // Calculate and return event ROI and related metrics
         return {
-            roi: eventTotalSpend ? ((totalIncrContr - eventTotalSpend) / eventTotalSpend) : 0,
+            roi: eventTotalSpend ? ((totalIncrContr - eventTotalSpend) / eventTotalSpend) * 100 : 0,
             totalSpend: eventTotalSpend,
-            incrementalContribution: totalIncrContr
+            incrementalContribution: totalIncrContr,
+            eventTotalUnits,
+            eventLift: eventTotalPromoUnits ? (eventTotalPromoUnits * 100) / eventTotalUnits : 0
         };
     };
 
@@ -991,23 +1005,28 @@ const TpoReport = () => {
     const calculateChart2Data = () => {
         // Group events by retailer and calculate average ROI
         const retailerROIs = {};
-        let totalROI = 0;
         let eventCount = 0;
+        let totalSpend = 0;
+        let totalIncrementalContribution = 0;
 
         currentYearEvents.forEach(event => {
             const retailer = event.retailer_id;
             if (!retailerROIs[retailer]) {
                 retailerROIs[retailer] = {
                     totalROI: 0,
-                    count: 0
+                    count: 0,
+                    totalSpend: 0,
+                    totalIncrementalContribution: 0
                 };
             }
 
-            const { roi } = calculateEventROI(event);
+            const { totalSpend: eventTotalSpend, incrementalContribution } = calculateEventROI(event);
 
-            retailerROIs[retailer].totalROI += roi;
+            totalSpend += eventTotalSpend;
+            totalIncrementalContribution += incrementalContribution;
+            retailerROIs[retailer].totalSpend += eventTotalSpend;
+            retailerROIs[retailer].totalIncrementalContribution += incrementalContribution;
             retailerROIs[retailer].count += 1;
-            totalROI += roi;
             eventCount++;
         });
 
@@ -1016,13 +1035,15 @@ const TpoReport = () => {
         const roiValues = [];
 
         Object.entries(retailerROIs).forEach(([retailer, data]) => {
-            const avgROI = data.totalROI / data.count;
+            console.log({ data });
+
+            const roi = (((data.totalIncrementalContribution - data.totalSpend) / data.totalSpend) * 100);
             accounts.push(retailer);
-            roiValues.push(avgROI);
+            roiValues.push(roi);
         });
 
         // Calculate overall average ROI
-        const avgROI = totalROI / eventCount;
+        const totalRoi = (((totalIncrementalContribution - totalSpend) / totalSpend) * 100);
 
         // Create colors array based on ROI values
         const colors = roiValues.map(value => {
@@ -1046,10 +1067,10 @@ const TpoReport = () => {
                 },
                 annotations: {
                     yaxis: [{
-                        y: avgROI,
+                        y: totalRoi,
                         borderColor: '#000',
                         label: {
-                            text: `Avg. ROI: ${avgROI.toFixed(2)}%`,
+                            text: `Avg. ROI: ${totalRoi.toFixed(2)}%`,
                             position: 'left',
                             style: {
                                 color: '#000'
@@ -1361,34 +1382,22 @@ const TpoReport = () => {
             { min: 40, max: 50, events: [] }
         ];
 
-        let totalSpend = 0;
-        let totalRoi = 0;
         let totalEventCount = 0;
-
+        let totalEventsSpend = 0;
         // Process each event
         currentYearEvents.forEach(event => {
             // Calculate average discount for the event
             let eventTotalDiscount = 0;
             let eventProductCount = 0;
-            let eventROI = 0;
-            let eventSpend = 0;
 
-            const { roi, totalSpend: spend } = calculateEventROI(event);
+            const { roi, totalSpend, eventLift, eventTotalUnits, incrementalContribution } = calculateEventROI(event);
             totalEventCount++;
-            totalSpend += spend;
-            eventROI += roi;
-
+            totalEventsSpend += totalSpend;
             // Calculate event metrics
             event.planned.forEach(product => {
                 const basePrice = Number(product.financialData.basePrice) || 0;
                 const promoPrice = Number(product.financialData.promoPrice) || 0;
                 const productDiscount = ((basePrice - promoPrice) / basePrice) * 100;
-
-                // const { financialResults } = getResult(product.financialData);
-                // const roiResult = financialResults.find(r => r.name === "Sales ROI")?.value;
-                // const roi = Number(roiResult?.replace(/[^0-9.-]+/g, "")) || 0;
-                // const spend = Number(financialResults.find(r => r.name === "Total Spend")?.value?.replace(/[^0-9.-]+/g, "")) || 0;
-
                 eventTotalDiscount += productDiscount;
                 eventProductCount++;
             });
@@ -1396,7 +1405,6 @@ const TpoReport = () => {
 
             // Calculate event averages
             const avgDiscount = eventTotalDiscount / eventProductCount;
-            const avgROI = eventROI / totalEventCount;
 
             // Find appropriate discount range and add event
             const rangeIndex = discountRanges.findIndex(range =>
@@ -1406,23 +1414,49 @@ const TpoReport = () => {
             if (rangeIndex !== -1) {
                 discountRanges[rangeIndex].events.push({
                     name: event.title,
-                    roi: avgROI,
-                    spend: eventSpend
+                    roi: roi,
+                    spend: totalSpend,
+                    eventLift: eventLift,
+                    eventTotalUnits: eventTotalUnits,
+                    incrementalContribution: incrementalContribution
                 });
             }
         });
+
+        console.log({ discountRanges });
 
         // Prepare summary data
         const summaryData = {
             noOfEvents: discountRanges.map(range => range.events.length),
             tradeSpend: discountRanges.map(range =>
-                (range.events.reduce((sum, event) => sum + event.spend, 0) / totalSpend) * 100
+                (range.events.reduce((sum, event) => sum + event.spend, 0) / totalEventsSpend) * 100
             ),
+            // TODO : Update calculation
+            // Calculation = each event (SUM(eventLift * eventTotalUnits)) / SUM(all eventTotalUnits)
             avgLift: discountRanges.map(range =>
                 range.events.length > 0
-                    ? range.events.reduce((sum, event) => sum + event.roi, 0) / range.events.length
+                    ? range.events.reduce((sum, event) => sum + event.eventLift * event.eventTotalUnits, 0) / range.events.reduce((sum, event) => sum + event.eventTotalUnits, 0)
                     : 0
             ),
+            // avgLift: discountRanges.map(range =>
+            //     range.events.length > 0
+            //         ? range.events.reduce((sum, event) => sum + event.roi, 0) / range.events.length
+            //         : 0
+            // ),
+            // TODO : Update calculation
+            // Calculation = each event (SUM(incrementalContribution - spend)) / SUM(all spend)
+
+            avgWeightedROI: discountRanges.map(range =>
+                range.events.length > 0
+                    ? range.events.reduce((sum, event) => sum + (event.incrementalContribution - event.spend), 0) / range.events.reduce((sum, event) => sum + event.spend, 0) * 100
+                    : 0
+            ),
+
+            // avgWeightedROI: discountRanges.map(range =>
+            //     range.events.length > 0
+            //         ? range.events.reduce((sum, event) => sum + event.roi, 0) / range.events.length
+            //         : 0
+            // ),
             fndEvents: discountRanges.map(range => range.events.length) // Using event count as F&D count for now
         };
 
@@ -1627,6 +1661,7 @@ const TpoReport = () => {
 
     const calculateChart7Data = () => {
         // Extract unique channels from events
+        let retailerName = "";
         const channels = [...new Set(events.flatMap(event =>
             event.channels ? (Array.isArray(event.channels) ? event.channels : [event.channels]) : []
         ))];
@@ -3389,6 +3424,12 @@ const TpoReport = () => {
                                                                     <td className="border px-4 py-2 font-semibold">No. of events</td>
                                                                     {chart5Data.summaryData.noOfEvents.map((val, i) => (
                                                                         <td key={i} className="border px-4 py-2">{val}</td>
+                                                                    ))}
+                                                                </tr>
+                                                                <tr>
+                                                                    <td className="border px-4 py-2 font-semibold">Avg. Wtd. ROI</td>
+                                                                    {chart5Data.summaryData.avgWeightedROI.map((val, i) => (
+                                                                        <td key={i} className="border px-4 py-2">{val.toFixed(1)}%</td>
                                                                     ))}
                                                                 </tr>
                                                                 <tr>
