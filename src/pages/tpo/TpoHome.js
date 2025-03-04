@@ -6,6 +6,7 @@ import { Modal } from "react-bootstrap";
 import Header from "../../components/header/Header";
 import Footer from "../../components/footer/Footer";
 import { TpoCard } from "./TpoCard";
+import createImg from "../../assets/images/new_project_create_image.png";
 
 
 const TpoHome = () => {
@@ -13,6 +14,7 @@ const TpoHome = () => {
     const user_id = authData?.user_id;
     const [projects, setProjects] = useState([]);
     const [eventTpos, setEventTpos] = useState([]);
+    const [showCancelProject, setShowCancelProject] = useState(false);
 
     // Fetch event tpos
     const fetchEventTpos = async () => {
@@ -61,7 +63,17 @@ const TpoHome = () => {
         setEditTpo(false);
         setUpgradeVersion(false);
         setSubmitAttempted(false);
+        setShowCancelProject(true);
     }
+
+    const handleCloseCancel = () => {
+        setShowCancelProject(false);
+        setShow(true);
+    };
+
+    const handleCloseCancelClose = () => {
+        setShowCancelProject(false);
+      };
 
     const [editTpo, setEditTpo] = useState(false);
 
@@ -204,7 +216,7 @@ const TpoHome = () => {
             </div>
 
             {/* Add Create TPO Modal */}
-            <Modal show={show} onHide={onClose} centered>
+            <Modal show={show} onHide={onClose} centered backdrop="static" keyboard={false}>
                 <Modal.Header closeButton>
                     <Modal.Title>{editTpo ? "Edit Trade Plan" : upgradeVersion ? "Upgrade Version" : "Create Trade Plan"}</Modal.Title>
                 </Modal.Header>
@@ -273,6 +285,37 @@ const TpoHome = () => {
                     </Button>
                 </Modal.Footer>
             </Modal>
+
+            {/* <!-- Cancel Project Modal Start --> */}
+            <Modal show={showCancelProject} onHide={onClose} id="cancelProject" centered>
+                <Modal.Header>
+                <Modal.Title>Cancel Trade Plan</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                <div class="nla_modal_banenr">
+                    <img src={createImg} alt="placeholder" class="img-fluid" />
+                </div>
+                <div class="nla_modal_body_title text-center">
+                    <h5>Are you Sure?</h5>
+                    <p>Pressing yes will cancel the Trade Plan</p>
+                </div>
+                </Modal.Body>
+                <Modal.Footer>
+                <button
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    data-bs-toggle="modal"
+                    data-bs-target="#createNewProject"
+                    onClick={handleCloseCancel}
+                >
+                    No
+                </button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onClick={handleCloseCancelClose}>
+                    Yes
+                </button>
+                </Modal.Footer>
+            </Modal>
+            {/* <!-- Cancel Project Modal End --> */}
             <Footer />
         </>
     );
