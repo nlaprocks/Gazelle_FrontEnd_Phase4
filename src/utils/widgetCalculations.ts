@@ -64,8 +64,8 @@ export const calculateWidgetValues = (events: Event[], targetBudget: number) => 
     const totalContribution = Number((totalSpend + totalCogs) - totalRevenue);
     return {
         totalVolume: totalVolume.toFixed(2),
-        totalRevenue: totalRevenue.toFixed(2),
-        totalContribution, // As per requirement
+        totalRevenue: Number(totalRevenue.toFixed(2)).toLocaleString(),
+        totalContribution: Number(totalContribution.toFixed(2)).toLocaleString(), // As per requirement
         totalSpend,
         incrementalVolume: totalIncrementalVolume.toFixed(2),
         incrementalRevenue: totalIncrementalRevenue.toFixed(2),

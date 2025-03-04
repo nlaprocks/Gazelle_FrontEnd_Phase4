@@ -46,12 +46,16 @@ export const TargetUpdate = ({ isEditingTargets, tempTargets, setTempTargets, ta
                         Target Volume
                     </label>
                     <Input
-                        type="number"
-                        value={tempTargets.volume}
-                        onChange={(e) => setTempTargets({
-                            ...tempTargets,
-                            volume: parseInt(e.target.value) || 0
-                        })}
+                        type="text"
+                        value={tempTargets.volume?.toLocaleString() || '0'}
+                        onChange={(e) => {
+                            const value = e.target.value.replace(/,/g, '');
+                            const numValue = parseInt(value) || 0;
+                            setTempTargets({
+                                ...tempTargets,
+                                volume: numValue
+                            });
+                        }}
                     />
                 </div>
                 <div>
@@ -59,12 +63,16 @@ export const TargetUpdate = ({ isEditingTargets, tempTargets, setTempTargets, ta
                         Target Spend
                     </label>
                     <Input
-                        type="number"
-                        value={tempTargets.spend}
-                        onChange={(e) => setTempTargets({
-                            ...tempTargets,
-                            spend: parseInt(e.target.value) || 0
-                        })}
+                        type="text"
+                        value={tempTargets.spend?.toLocaleString() || '0'}
+                        onChange={(e) => {
+                            const value = e.target.value.replace(/,/g, '');
+                            const spendValue = parseInt(value) || 0;
+                            setTempTargets({
+                                ...tempTargets,
+                                spend: spendValue
+                            });
+                        }}
                         prefix="$"
                     />
                 </div>
@@ -73,12 +81,16 @@ export const TargetUpdate = ({ isEditingTargets, tempTargets, setTempTargets, ta
                         Target Revenue
                     </label>
                     <Input
-                        type="number"
-                        value={tempTargets.revenue}
-                        onChange={(e) => setTempTargets({
-                            ...tempTargets,
-                            revenue: parseInt(e.target.value) || 0
-                        })}
+                        type="text"
+                        value={tempTargets.revenue?.toLocaleString() || '0'}
+                        onChange={(e) => {
+                            const value = e.target.value.replace(/,/g, '');
+                            const revenueValue = parseInt(value) || 0;
+                            setTempTargets({
+                                ...tempTargets,
+                                revenue: revenueValue
+                            });
+                        }}
                         prefix="$"
                     />
                 </div>

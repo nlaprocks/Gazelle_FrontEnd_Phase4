@@ -10,7 +10,7 @@ import Footer from "../../components/footer/Footer";
 import Header from "../../components/header/Header";
 import { useEvents } from "../../hooks/useEvents";
 
-const TpoReport = () => {
+const TpoReport = ({ event, projects }) => {
     const authData = JSON.parse(localStorage.getItem("auth"));
     // const user_id = authData?.user_id;
     const { project_name, project_id, model_id, id } = useParams();
@@ -872,7 +872,7 @@ const TpoReport = () => {
         const previousYear = currentYear - 1;
         setCurrentYearEvents(events.filter(event => new Date(event.start_date).getFullYear() === currentYear || new Date(event.end_date).getFullYear() === currentYear));
         setPreviousYearEvents(events.filter(event => new Date(event.start_date).getFullYear() === previousYear || new Date(event.end_date).getFullYear() === previousYear));
-    }, [events]);
+    }, [projects, events]);
 
     useEffect(() => {
         if (currentYearEvents.length) {
@@ -3152,7 +3152,7 @@ const TpoReport = () => {
                 <div className="border-b border-[#cccccc] pb-3 px-[36px]">
                     <div className="container-fluid">
                         <div className="flex gap-2">
-                            <a href="/tpo" className="flex items-center gap-2">
+                            <a href={`/tpo/${encodeURIComponent(project_name)}/${project_id}/${model_id}/${id}`} className="flex items-center gap-2">
                                 <div className="nla-arrow-left-icon"><span></span></div>
                             </a>
                             <h4 className="text-2xl font-bold">{project_name}</h4>
