@@ -9,6 +9,7 @@ import Logo from "../../assets/images/darkLogo.png";
 import Footer from "../../components/footer/Footer";
 import Header from "../../components/header/Header";
 import { useEvents } from "../../hooks/useEvents";
+import { Link } from "react-router-dom";
 
 const TpoReport = ({ event, projects }) => {
     const authData = JSON.parse(localStorage.getItem("auth"));
@@ -2019,7 +2020,7 @@ const TpoReport = ({ event, projects }) => {
             const pptChartData = [{
                 name: 'Event ROI',
                 labels: chartLabels,
-                values: chartValues
+                values: chartValues  // Remove the division by 100 since values are already in correct format
             }];
 
             slide.addChart(pptx.charts.BAR, pptChartData, {
@@ -2045,8 +2046,9 @@ const TpoReport = ({ event, projects }) => {
                 valAxisTitle: "ROI (%)",
                 valAxisTitleColor: "000000",
                 valAxisTitleFontSize: 12,
-                valAxisMinVal: Math.min(...chartValues) - 10,
-                valAxisMaxVal: Math.max(...chartValues) + 10,
+                // Update the axis min/max values to work with the divided values
+                valAxisMinVal: 0,  // Start from 0
+                valAxisMaxVal: Math.max(...chartValues) + 100, // Add some padding
                 valGridLine: { style: "none" },
                 catGridLine: { style: "none" }
             });
@@ -2259,13 +2261,13 @@ const TpoReport = ({ event, projects }) => {
             // Format data for scatter plots
             const volumeData = {
                 name: 'Incremental Volume',
-                labels: chart3Data.series1[0].data.map(point => point[0].toString()),
+                labels: chart3Data.series1[0].data.map(point => point[0]?.toString()),
                 values: chart3Data.series1[0].data.map(point => point[1])
             };
 
             const roiData = {
                 name: 'ROI',
-                labels: chart3Data.series2[0].data.map(point => point[0].toString()),
+                labels: chart3Data.series2[0].data.map(point => point[0]?.toString()),
                 values: chart3Data.series2[0].data.map(point => point[1])
             };
 
@@ -3152,9 +3154,9 @@ const TpoReport = ({ event, projects }) => {
                 <div className="border-b border-[#cccccc] pb-3 px-[36px]">
                     <div className="container-fluid">
                         <div className="flex gap-2">
-                            <a href={`/tpo/${encodeURIComponent(project_name)}/${project_id}/${model_id}/${id}`} className="flex items-center gap-2">
+                            <Link to={`/tpo/${encodeURIComponent(project_name)}/${project_id}/${model_id}/${id}`} className="flex items-center gap-2">
                                 <div className="nla-arrow-left-icon"><span></span></div>
-                            </a>
+                            </Link>
                             <h4 className="text-2xl font-bold">{project_name}</h4>
                         </div>
                     </div>
