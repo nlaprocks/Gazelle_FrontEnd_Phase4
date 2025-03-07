@@ -923,12 +923,14 @@ const TpoReport = ({ event, projects }) => {
         });
 
         // Calculate and return event ROI and related metrics
+        const roi = eventTotalSpend ? ((totalIncrContr - eventTotalSpend) / eventTotalSpend) * 100 : 0;
         return {
-            roi: eventTotalSpend ? ((totalIncrContr - eventTotalSpend) / eventTotalSpend) * 100 : 0,
+            roi,
             totalSpend: eventTotalSpend,
             incrementalContribution: totalIncrContr,
             eventTotalUnits,
-            eventLift: eventTotalPromoUnits ? (eventTotalPromoUnits * 100) / eventTotalUnits : 0
+            eventLift: eventTotalPromoUnits ? (eventTotalPromoUnits * 100) / eventTotalUnits : 0,
+            eventROIUnits: eventTotalUnits * roi
         };
     };
 
@@ -1036,8 +1038,6 @@ const TpoReport = ({ event, projects }) => {
         const roiValues = [];
 
         Object.entries(retailerROIs).forEach(([retailer, data]) => {
-            console.log({ data });
-
             const roi = (((data.totalIncrementalContribution - data.totalSpend) / data.totalSpend) * 100);
             accounts.push(retailer);
             roiValues.push(roi);
@@ -1391,7 +1391,7 @@ const TpoReport = ({ event, projects }) => {
             let eventTotalDiscount = 0;
             let eventProductCount = 0;
 
-            const { roi, totalSpend, eventLift, eventTotalUnits, incrementalContribution } = calculateEventROI(event);
+            const { roi, totalSpend, eventLift, eventTotalUnits, incrementalContribution, eventROIUnits } = calculateEventROI(event);
             totalEventCount++;
             totalEventsSpend += totalSpend;
             // Calculate event metrics
@@ -1419,12 +1419,11 @@ const TpoReport = ({ event, projects }) => {
                     spend: totalSpend,
                     eventLift: eventLift,
                     eventTotalUnits: eventTotalUnits,
-                    incrementalContribution: incrementalContribution
+                    incrementalContribution: incrementalContribution,
+                    eventROIUnits: eventROIUnits
                 });
             }
         });
-
-        console.log({ discountRanges });
 
         // Prepare summary data
         const summaryData = {
@@ -1439,25 +1438,11 @@ const TpoReport = ({ event, projects }) => {
                     ? range.events.reduce((sum, event) => sum + event.eventLift * event.eventTotalUnits, 0) / range.events.reduce((sum, event) => sum + event.eventTotalUnits, 0)
                     : 0
             ),
-            // avgLift: discountRanges.map(range =>
-            //     range.events.length > 0
-            //         ? range.events.reduce((sum, event) => sum + event.roi, 0) / range.events.length
-            //         : 0
-            // ),
-            // TODO : Update calculation
-            // Calculation = each event (SUM(incrementalContribution - spend)) / SUM(all spend)
-
             avgWeightedROI: discountRanges.map(range =>
                 range.events.length > 0
-                    ? range.events.reduce((sum, event) => sum + (event.incrementalContribution - event.spend), 0) / range.events.reduce((sum, event) => sum + event.spend, 0) * 100
+                    ? range.events.reduce((sum, event) => sum + (event.eventROIUnits), 0) / range.events.reduce((sum, event) => sum + event.eventTotalUnits, 0)
                     : 0
             ),
-
-            // avgWeightedROI: discountRanges.map(range =>
-            //     range.events.length > 0
-            //         ? range.events.reduce((sum, event) => sum + event.roi, 0) / range.events.length
-            //         : 0
-            // ),
             fndEvents: discountRanges.map(range => range.events.length) // Using event count as F&D count for now
         };
 
