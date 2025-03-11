@@ -128,7 +128,7 @@ const Calendar: React.FC<CalendarProps> = ({ projects, selectedRetailer, selecte
                     </div>
                     <div className="bg-white rounded-lg py-2 px-4 w-full border-b-4 border-secondary shadow color-shadow" >
                         <p className="text-gray-500 text-sm" > Total Contribution </p>
-                        <p className="text-black text-2xl font-bold" > ${widgetValues.totalContribution.toFixed(1)} </p>
+                        <p className="text-black text-2xl font-bold" > ${widgetValues.totalContribution} </p>
                     </div>
                     <div className="bg-white rounded-lg py-2 px-4 w-full border-b-4 border-secondary shadow color-shadow" >
                         <p className="text-gray-500 text-sm" > Total Spend </p>

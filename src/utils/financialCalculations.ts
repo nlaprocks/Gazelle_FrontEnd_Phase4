@@ -11,7 +11,7 @@ export const calculateFinancialResults = (values: {
     promoPriceElasticity?: number
 }): { name: string; value: string }[] => {
     const {
-        units,
+        units, // promo units
         promoPrice,
         basePrice,
         edlpPerUnitRate,
@@ -19,7 +19,7 @@ export const calculateFinancialResults = (values: {
         fixedFee,
         listPrice,
         vcm,
-        increamentalUnits,
+        increamentalUnits, // promo units
     } = values
     // console.log({ units, promoPrice, basePrice, edlpPerUnitRate, promoPerUnitRate, fixedFee, listPrice, vcm, increamentalUnits });
 
