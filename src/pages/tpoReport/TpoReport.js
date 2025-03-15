@@ -867,13 +867,26 @@ const TpoReport = ({ event, projects }) => {
     const [chart5View, setChart5View] = useState('retailer');
     const [currentYearEvents, setCurrentYearEvents] = useState([]);
     const [previousYearEvents, setPreviousYearEvents] = useState([]);
+    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+    const [availableYears, setAvailableYears] = useState([]);
 
     useEffect(() => {
-        const currentYear = new Date().getFullYear();
-        const previousYear = currentYear - 1;
-        setCurrentYearEvents(events.filter(event => new Date(event.start_date).getFullYear() === currentYear || new Date(event.end_date).getFullYear() === currentYear));
+        // Get all unique years from events
+        if (events.length) {
+            const years = new Set();
+            events.forEach(event => {
+                years.add(new Date(event.start_date).getFullYear());
+                years.add(new Date(event.end_date).getFullYear());
+            });
+            setAvailableYears(Array.from(years).sort((a, b) => b - a)); // Sort descending
+        }
+    }, [events]);
+
+    useEffect(() => {
+        const previousYear = selectedYear - 1;
+        setCurrentYearEvents(events.filter(event => new Date(event.start_date).getFullYear() === selectedYear || new Date(event.end_date).getFullYear() === selectedYear));
         setPreviousYearEvents(events.filter(event => new Date(event.start_date).getFullYear() === previousYear || new Date(event.end_date).getFullYear() === previousYear));
-    }, [projects, events]);
+    }, [projects, events, selectedYear]);
 
     useEffect(() => {
         if (currentYearEvents.length) {
@@ -1891,35 +1904,48 @@ const TpoReport = ({ event, projects }) => {
         }));
     };
 
-    const generatePPT = async () => {
+    const generatePPT = async (existingPptx = null) => {
         try {
-            setPresentationGenerated(true);
-            let pptx = new pptxgen();
-            pptx.layout = "LAYOUT_WIDE";
+            if (!existingPptx) {
+                setPresentationGenerated(true);
+            }
 
-            // Add master slide
-            pptx.defineSlideMaster({
-                title: "PLACEHOLDER_SLIDE",
-                background: { color: "FFFFFF" },
-                objects: [
-                    {
-                        rect: {
-                            x: 0, y: 0, w: "100%", h: 0.35,
-                            fill: { color: "174F73" }
-                        }
-                    },
-                    {
-                        text: {
-                            text: "North Light Analytics Report",
-                            options: {
-                                x: 0, y: 0, w: 6, h: 0.35,
-                                fontSize: 15, color: "FFFFFF"
+            // Create a new pptx instance if not provided
+            let pptx = existingPptx || new pptxgen();
+
+            // Ensure pptx is properly initialized
+            if (!pptx.addSlide) {
+                console.error("Invalid pptx object, creating a new one");
+                pptx = new pptxgen();
+            }
+
+            if (!existingPptx) {
+                pptx.layout = "LAYOUT_WIDE";
+
+                // Add master slide
+                pptx.defineSlideMaster({
+                    title: "PLACEHOLDER_SLIDE",
+                    background: { color: "FFFFFF" },
+                    objects: [
+                        {
+                            rect: {
+                                x: 0, y: 0, w: "100%", h: 0.35,
+                                fill: { color: "174F73" }
+                            }
+                        },
+                        {
+                            text: {
+                                text: "North Light Analytics Report",
+                                options: {
+                                    x: 0, y: 0, w: 6, h: 0.35,
+                                    fontSize: 15, color: "FFFFFF"
+                                }
                             }
                         }
-                    }
-                ],
-                slideNumber: { x: 13, y: 0, color: "ffffff", fontSize: 15 }
-            });
+                    ],
+                    slideNumber: { x: 13, y: 0, color: "ffffff", fontSize: 15 }
+                });
+            }
 
             // Create slide
             let slide = pptx.addSlide({ masterName: "PLACEHOLDER_SLIDE" });
@@ -2083,48 +2109,67 @@ const TpoReport = ({ event, projects }) => {
                 });
             }
 
-            // Save the presentation with the chart title as the filename
-            await pptx.writeFile({
-                fileName: "What is the ROI for all events.pptx",
-                compression: true
-            });
+            // Only save if this is not part of a combined presentation
+            if (!existingPptx) {
+                await pptx.writeFile({
+                    fileName: "What is the ROI for all events.pptx",
+                    compression: true
+                });
+            }
 
+            return pptx;
         } catch (error) {
             console.error("PPT Generation Error:", error);
+            return null;
         } finally {
-            setPresentationGenerated(false);
+            if (!existingPptx) {
+                setPresentationGenerated(false);
+            }
         }
     };
 
-    const generateChart2PPT = async () => {
+    const generateChart2PPT = async (existingPptx = null) => {
         try {
-            setPresentationGenerated(true);
-            let pptx = new pptxgen();
-            pptx.layout = "LAYOUT_WIDE";
+            if (!existingPptx) {
+                setPresentationGenerated(true);
+            }
 
-            // Master slide setup remains same...
-            pptx.defineSlideMaster({
-                title: "PLACEHOLDER_SLIDE",
-                background: { color: "FFFFFF" },
-                objects: [
-                    {
-                        rect: {
-                            x: 0, y: 0, w: "100%", h: 0.35,
-                            fill: { color: "174F73" }
-                        }
-                    },
-                    {
-                        text: {
-                            text: "North Light Analytics Report",
-                            options: {
-                                x: 0, y: 0, w: 6, h: 0.35,
-                                fontSize: 15, color: "FFFFFF"
+            // Create a new pptx instance if not provided
+            let pptx = existingPptx || new pptxgen();
+
+            // Ensure pptx is properly initialized
+            if (!pptx.addSlide) {
+                console.error("Invalid pptx object, creating a new one");
+                pptx = new pptxgen();
+            }
+
+            if (!existingPptx) {
+                pptx.layout = "LAYOUT_WIDE";
+
+                // Add master slide
+                pptx.defineSlideMaster({
+                    title: "PLACEHOLDER_SLIDE",
+                    background: { color: "FFFFFF" },
+                    objects: [
+                        {
+                            rect: {
+                                x: 0, y: 0, w: "100%", h: 0.35,
+                                fill: { color: "174F73" }
+                            }
+                        },
+                        {
+                            text: {
+                                text: "North Light Analytics Report",
+                                options: {
+                                    x: 0, y: 0, w: 6, h: 0.35,
+                                    fontSize: 15, color: "FFFFFF"
+                                }
                             }
                         }
-                    }
-                ],
-                slideNumber: { x: 13, y: 0, color: "ffffff", fontSize: 15 }
-            });
+                    ],
+                    slideNumber: { x: 13, y: 0, color: "ffffff", fontSize: 15 }
+                });
+            }
 
             let slide = pptx.addSlide({ masterName: "PLACEHOLDER_SLIDE" });
 
@@ -2205,48 +2250,67 @@ const TpoReport = ({ event, projects }) => {
                 });
             }
 
-            // Save the presentation with the chart title as the filename
-            await pptx.writeFile({
-                fileName: "What is driving the variation in ROI across different retailers.pptx",
-                compression: true
-            });
+            // Only save if this is not part of a combined presentation
+            if (!existingPptx) {
+                await pptx.writeFile({
+                    fileName: "What is driving the variation in ROI across different retailers.pptx",
+                    compression: true
+                });
+            }
 
+            return pptx;
         } catch (error) {
             console.error("PPT Generation Error:", error);
+            return null;
         } finally {
-            setPresentationGenerated(false);
+            if (!existingPptx) {
+                setPresentationGenerated(false);
+            }
         }
     };
 
-    const generateChart3PPT = async () => {
+    const generateChart3PPT = async (existingPptx = null) => {
         try {
-            setPresentationGenerated(true);
-            let pptx = new pptxgen();
-            pptx.layout = "LAYOUT_WIDE";
+            if (!existingPptx) {
+                setPresentationGenerated(true);
+            }
 
-            // Master slide setup
-            pptx.defineSlideMaster({
-                title: "PLACEHOLDER_SLIDE",
-                background: { color: "FFFFFF" },
-                objects: [
-                    {
-                        rect: {
-                            x: 0, y: 0, w: "100%", h: 0.35,
-                            fill: { color: "174F73" }
-                        }
-                    },
-                    {
-                        text: {
-                            text: "North Light Analytics Report",
-                            options: {
-                                x: 0, y: 0, w: 6, h: 0.35,
-                                fontSize: 15, color: "FFFFFF"
+            // Create a new pptx instance if not provided
+            let pptx = existingPptx || new pptxgen();
+
+            // Ensure pptx is properly initialized
+            if (!pptx.addSlide) {
+                console.error("Invalid pptx object, creating a new one");
+                pptx = new pptxgen();
+            }
+
+            if (!existingPptx) {
+                pptx.layout = "LAYOUT_WIDE";
+
+                // Add master slide
+                pptx.defineSlideMaster({
+                    title: "PLACEHOLDER_SLIDE",
+                    background: { color: "FFFFFF" },
+                    objects: [
+                        {
+                            rect: {
+                                x: 0, y: 0, w: "100%", h: 0.35,
+                                fill: { color: "174F73" }
+                            }
+                        },
+                        {
+                            text: {
+                                text: "North Light Analytics Report",
+                                options: {
+                                    x: 0, y: 0, w: 6, h: 0.35,
+                                    fontSize: 15, color: "FFFFFF"
+                                }
                             }
                         }
-                    }
-                ],
-                slideNumber: { x: 13, y: 0, color: "ffffff", fontSize: 15 }
-            });
+                    ],
+                    slideNumber: { x: 13, y: 0, color: "ffffff", fontSize: 15 }
+                });
+            }
 
             let slide = pptx.addSlide({ masterName: "PLACEHOLDER_SLIDE" });
 
@@ -2390,47 +2454,67 @@ const TpoReport = ({ event, projects }) => {
             }
 
             // Save the presentation with the chart title as the filename
-            await pptx.writeFile({
-                fileName: "What is the relationship between trade spend, incremental volume, and ROI.pptx",
-                compression: true
-            });
+            // Only save if this is not part of a combined presentation
+            if (!existingPptx) {
+                await pptx.writeFile({
+                    fileName: "What is the relationship between trade spend, incremental volume, and ROI.pptx",
+                    compression: true
+                });
+            }
 
+            return pptx;
         } catch (error) {
             console.error("PPT Generation Error:", error);
+            return null;
         } finally {
-            setPresentationGenerated(false);
+            if (!existingPptx) {
+                setPresentationGenerated(false);
+            }
         }
     };
 
-    const generateChart4PPT = async () => {
+    const generateChart4PPT = async (existingPptx = null) => {
         try {
-            setPresentationGenerated(true);
-            let pptx = new pptxgen();
-            pptx.layout = "LAYOUT_WIDE";
+            if (!existingPptx) {
+                setPresentationGenerated(true);
+            }
 
-            // Master slide setup
-            pptx.defineSlideMaster({
-                title: "PLACEHOLDER_SLIDE",
-                background: { color: "FFFFFF" },
-                objects: [
-                    {
-                        rect: {
-                            x: 0, y: 0, w: "100%", h: 0.35,
-                            fill: { color: "174F73" }
-                        }
-                    },
-                    {
-                        text: {
-                            text: "North Light Analytics Report",
-                            options: {
-                                x: 0, y: 0, w: 6, h: 0.35,
-                                fontSize: 15, color: "FFFFFF"
+            // Create a new pptx instance if not provided
+            let pptx = existingPptx || new pptxgen();
+
+            // Ensure pptx is properly initialized
+            if (!pptx.addSlide) {
+                console.error("Invalid pptx object, creating a new one");
+                pptx = new pptxgen();
+            }
+
+            if (!existingPptx) {
+                pptx.layout = "LAYOUT_WIDE";
+
+                // Add master slide
+                pptx.defineSlideMaster({
+                    title: "PLACEHOLDER_SLIDE",
+                    background: { color: "FFFFFF" },
+                    objects: [
+                        {
+                            rect: {
+                                x: 0, y: 0, w: "100%", h: 0.35,
+                                fill: { color: "174F73" }
+                            }
+                        },
+                        {
+                            text: {
+                                text: "North Light Analytics Report",
+                                options: {
+                                    x: 0, y: 0, w: 6, h: 0.35,
+                                    fontSize: 15, color: "FFFFFF"
+                                }
                             }
                         }
-                    }
-                ],
-                slideNumber: { x: 13, y: 0, color: "ffffff", fontSize: 15 }
-            });
+                    ],
+                    slideNumber: { x: 13, y: 0, color: "ffffff", fontSize: 15 }
+                });
+            }
 
             let slide = pptx.addSlide({ masterName: "PLACEHOLDER_SLIDE" });
 
@@ -2632,47 +2716,67 @@ const TpoReport = ({ event, projects }) => {
             }
 
             // Save the presentation with the chart title as the filename
-            await pptx.writeFile({
-                fileName: "What is the ROI by event types.pptx",
-                compression: true
-            });
+            // Only save if this is not part of a combined presentation
+            if (!existingPptx) {
+                await pptx.writeFile({
+                    fileName: "What is the ROI by event types.pptx",
+                    compression: true
+                });
+            }
 
+            return pptx;
         } catch (error) {
             console.error("PPT Generation Error:", error);
+            return null;
         } finally {
-            setPresentationGenerated(false);
+            if (!existingPptx) {
+                setPresentationGenerated(false);
+            }
         }
     };
 
-    const generateChart5PPT = async () => {
+    const generateChart5PPT = async (existingPptx = null) => {
         try {
-            setPresentationGenerated(true);
-            let pptx = new pptxgen();
-            pptx.layout = "LAYOUT_WIDE";
+            if (!existingPptx) {
+                setPresentationGenerated(true);
+            }
 
-            // Master slide setup
-            pptx.defineSlideMaster({
-                title: "PLACEHOLDER_SLIDE",
-                background: { color: "FFFFFF" },
-                objects: [
-                    {
-                        rect: {
-                            x: 0, y: 0, w: "100%", h: 0.35,
-                            fill: { color: "174F73" }
-                        }
-                    },
-                    {
-                        text: {
-                            text: "North Light Analytics Report",
-                            options: {
-                                x: 0, y: 0, w: 6, h: 0.35,
-                                fontSize: 15, color: "FFFFFF"
+            // Create a new pptx instance if not provided
+            let pptx = existingPptx || new pptxgen();
+
+            // Ensure pptx is properly initialized
+            if (!pptx.addSlide) {
+                console.error("Invalid pptx object, creating a new one");
+                pptx = new pptxgen();
+            }
+
+            if (!existingPptx) {
+                pptx.layout = "LAYOUT_WIDE";
+
+                // Add master slide
+                pptx.defineSlideMaster({
+                    title: "PLACEHOLDER_SLIDE",
+                    background: { color: "FFFFFF" },
+                    objects: [
+                        {
+                            rect: {
+                                x: 0, y: 0, w: "100%", h: 0.35,
+                                fill: { color: "174F73" }
+                            }
+                        },
+                        {
+                            text: {
+                                text: "North Light Analytics Report",
+                                options: {
+                                    x: 0, y: 0, w: 6, h: 0.35,
+                                    fontSize: 15, color: "FFFFFF"
+                                }
                             }
                         }
-                    }
-                ],
-                slideNumber: { x: 13, y: 0, color: "ffffff", fontSize: 15 }
-            });
+                    ],
+                    slideNumber: { x: 13, y: 0, color: "ffffff", fontSize: 15 }
+                });
+            }
 
             let slide = pptx.addSlide({ masterName: "PLACEHOLDER_SLIDE" });
 
@@ -2762,47 +2866,67 @@ const TpoReport = ({ event, projects }) => {
             }
 
             // Save the presentation with the chart title as the filename
-            await pptx.writeFile({
-                fileName: "What is the ROI at different discount levels.pptx",
-                compression: true
-            });
+            // Only save if this is not part of a combined presentation
+            if (!existingPptx) {
+                await pptx.writeFile({
+                    fileName: "What is the ROI at different discount levels.pptx",
+                    compression: true
+                });
+            }
 
+            return pptx;
         } catch (error) {
             console.error("PPT Generation Error:", error);
+            return null;
         } finally {
-            setPresentationGenerated(false);
+            if (!existingPptx) {
+                setPresentationGenerated(false);
+            }
         }
     };
 
-    const generateChart6PPT = async () => {
+    const generateChart6PPT = async (existingPptx = null) => {
         try {
-            setPresentationGenerated(true);
-            let pptx = new pptxgen();
-            pptx.layout = "LAYOUT_WIDE";
+            if (!existingPptx) {
+                setPresentationGenerated(true);
+            }
 
-            // Master slide setup
-            pptx.defineSlideMaster({
-                title: "PLACEHOLDER_SLIDE",
-                background: { color: "FFFFFF" },
-                objects: [
-                    {
-                        rect: {
-                            x: 0, y: 0, w: "100%", h: 0.35,
-                            fill: { color: "174F73" }
-                        }
-                    },
-                    {
-                        text: {
-                            text: "North Light Analytics Report",
-                            options: {
-                                x: 0, y: 0, w: 6, h: 0.35,
-                                fontSize: 15, color: "FFFFFF"
+            // Create a new pptx instance if not provided
+            let pptx = existingPptx || new pptxgen();
+
+            // Ensure pptx is properly initialized
+            if (!pptx.addSlide) {
+                console.error("Invalid pptx object, creating a new one");
+                pptx = new pptxgen();
+            }
+
+            if (!existingPptx) {
+                pptx.layout = "LAYOUT_WIDE";
+
+                // Add master slide
+                pptx.defineSlideMaster({
+                    title: "PLACEHOLDER_SLIDE",
+                    background: { color: "FFFFFF" },
+                    objects: [
+                        {
+                            rect: {
+                                x: 0, y: 0, w: "100%", h: 0.35,
+                                fill: { color: "174F73" }
+                            }
+                        },
+                        {
+                            text: {
+                                text: "North Light Analytics Report",
+                                options: {
+                                    x: 0, y: 0, w: 6, h: 0.35,
+                                    fontSize: 15, color: "FFFFFF"
+                                }
                             }
                         }
-                    }
-                ],
-                slideNumber: { x: 13, y: 0, color: "ffffff", fontSize: 15 }
-            });
+                    ],
+                    slideNumber: { x: 13, y: 0, color: "ffffff", fontSize: 15 }
+                });
+            }
 
             let slide = pptx.addSlide({ masterName: "PLACEHOLDER_SLIDE" });
 
@@ -2916,47 +3040,67 @@ const TpoReport = ({ event, projects }) => {
             }
 
             // Save the presentation with the chart title as the filename
-            await pptx.writeFile({
-                fileName: "What is the performance of PPGs.pptx",
-                compression: true
-            });
+            // Only save if this is not part of a combined presentation
+            if (!existingPptx) {
+                await pptx.writeFile({
+                    fileName: "What is the performance of PPGs.pptx",
+                    compression: true
+                });
+            }
 
+            return pptx;
         } catch (error) {
             console.error("PPT Generation Error:", error);
+            return null;
         } finally {
-            setPresentationGenerated(false);
+            if (!existingPptx) {
+                setPresentationGenerated(false);
+            }
         }
     };
 
-    const generateChart7PPT = async () => {
+    const generateChart7PPT = async (existingPptx = null) => {
         try {
-            setPresentationGenerated(true);
-            let pptx = new pptxgen();
-            pptx.layout = "LAYOUT_WIDE";
+            if (!existingPptx) {
+                setPresentationGenerated(true);
+            }
 
-            // Master slide setup
-            pptx.defineSlideMaster({
-                title: "PLACEHOLDER_SLIDE",
-                background: { color: "FFFFFF" },
-                objects: [
-                    {
-                        rect: {
-                            x: 0, y: 0, w: "100%", h: 0.35,
-                            fill: { color: "174F73" }
-                        }
-                    },
-                    {
-                        text: {
-                            text: "North Light Analytics Report",
-                            options: {
-                                x: 0, y: 0, w: 6, h: 0.35,
-                                fontSize: 15, color: "FFFFFF"
+            // Create a new pptx instance if not provided
+            let pptx = existingPptx || new pptxgen();
+
+            // Ensure pptx is properly initialized
+            if (!pptx.addSlide) {
+                console.error("Invalid pptx object, creating a new one");
+                pptx = new pptxgen();
+            }
+
+            if (!existingPptx) {
+                pptx.layout = "LAYOUT_WIDE";
+
+                // Add master slide
+                pptx.defineSlideMaster({
+                    title: "PLACEHOLDER_SLIDE",
+                    background: { color: "FFFFFF" },
+                    objects: [
+                        {
+                            rect: {
+                                x: 0, y: 0, w: "100%", h: 0.35,
+                                fill: { color: "174F73" }
+                            }
+                        },
+                        {
+                            text: {
+                                text: "North Light Analytics Report",
+                                options: {
+                                    x: 0, y: 0, w: 6, h: 0.35,
+                                    fontSize: 15, color: "FFFFFF"
+                                }
                             }
                         }
-                    }
-                ],
-                slideNumber: { x: 13, y: 0, color: "ffffff", fontSize: 15 }
-            });
+                    ],
+                    slideNumber: { x: 13, y: 0, color: "ffffff", fontSize: 15 }
+                });
+            }
 
             let slide = pptx.addSlide({ masterName: "PLACEHOLDER_SLIDE" });
 
@@ -3017,46 +3161,66 @@ const TpoReport = ({ event, projects }) => {
             }
 
             // Save the presentation with the chart title as the filename
-            await pptx.writeFile({
-                fileName: "What is the Incremental Profit Per Dollar Invested on Promo By Retailer.pptx",
-                compression: true
-            });
+            // Only save if this is not part of a combined presentation
+            if (!existingPptx) {
+                await pptx.writeFile({
+                    fileName: "What is the Incremental Profit Per Dollar Invested on Promo By Retailer.pptx",
+                    compression: true
+                });
+            }
 
+            return pptx;
         } catch (error) {
             console.error("PPT Generation Error:", error);
+            return null;
         } finally {
-            setPresentationGenerated(false);
+            if (!existingPptx) {
+                setPresentationGenerated(false);
+            }
         }
     };
 
-    const generateChart8PPT = async () => {
+    const generateChart8PPT = async (existingPptx = null) => {
         try {
-            setPresentationGenerated(true);
-            let pptx = new pptxgen();
-            pptx.layout = "LAYOUT_WIDE";
+            if (!existingPptx) {
+                setPresentationGenerated(true);
+            }
 
-            // Master slide setup
-            pptx.defineSlideMaster({
-                title: "PLACEHOLDER_SLIDE",
-                background: { color: "FFFFFF" },
-                objects: [
-                    {
-                        rect: {
-                            x: 0, y: 0, w: "100%", h: 0.35,
-                            fill: { color: "174F73" }
-                        }
-                    },
-                    {
-                        text: {
-                            text: "North Light Analytics Report",
-                            options: {
-                                x: 0, y: 0, w: 6, h: 0.35,
-                                fontSize: 15, color: "FFFFFF"
+            // Create a new pptx instance if not provided
+            let pptx = existingPptx || new pptxgen();
+
+            // Ensure pptx is properly initialized
+            if (!pptx.addSlide) {
+                console.error("Invalid pptx object, creating a new one");
+                pptx = new pptxgen();
+            }
+
+            if (!existingPptx) {
+                pptx.layout = "LAYOUT_WIDE";
+
+                // Add master slide
+                pptx.defineSlideMaster({
+                    title: "PLACEHOLDER_SLIDE",
+                    background: { color: "FFFFFF" },
+                    objects: [
+                        {
+                            rect: {
+                                x: 0, y: 0, w: "100%", h: 0.35,
+                                fill: { color: "174F73" }
+                            }
+                        },
+                        {
+                            text: {
+                                text: "North Light Analytics Report",
+                                options: {
+                                    x: 0, y: 0, w: 6, h: 0.35,
+                                    fontSize: 15, color: "FFFFFF"
+                                }
                             }
                         }
-                    }
-                ]
-            });
+                    ]
+                });
+            }
 
             let slide = pptx.addSlide({ masterName: "PLACEHOLDER_SLIDE" });
 
@@ -3141,47 +3305,67 @@ const TpoReport = ({ event, projects }) => {
             }
 
             // Save the presentation with the chart title as the filename
-            await pptx.writeFile({
-                fileName: "What is the relationship between ROI and Incremental Profit Pool.pptx",
-                compression: true
-            });
+            // Only save if this is not part of a combined presentation
+            if (!existingPptx) {
+                await pptx.writeFile({
+                    fileName: "What is the relationship between ROI and Incremental Profit Pool.pptx",
+                    compression: true
+                });
+            }
 
+            return pptx;
         } catch (error) {
             console.error("PPT Generation Error:", error);
+            return null;
         } finally {
-            setPresentationGenerated(false);
+            if (!existingPptx) {
+                setPresentationGenerated(false);
+            }
         }
     };
 
-    const generateChart9PPT = async () => {
+    const generateChart9PPT = async (existingPptx = null) => {
         try {
-            setPresentationGenerated(true);
-            let pptx = new pptxgen();
-            pptx.layout = "LAYOUT_WIDE";
+            if (!existingPptx) {
+                setPresentationGenerated(true);
+            }
 
-            // Master slide setup
-            pptx.defineSlideMaster({
-                title: "PLACEHOLDER_SLIDE",
-                background: { color: "FFFFFF" },
-                objects: [
-                    {
-                        rect: {
-                            x: 0, y: 0, w: "100%", h: 0.35,
-                            fill: { color: "174F73" }
-                        }
-                    },
-                    {
-                        text: {
-                            text: "North Light Analytics Report",
-                            options: {
-                                x: 0, y: 0, w: 6, h: 0.35,
-                                fontSize: 15, color: "FFFFFF"
+            // Create a new pptx instance if not provided
+            let pptx = existingPptx || new pptxgen();
+
+            // Ensure pptx is properly initialized
+            if (!pptx.addSlide) {
+                console.error("Invalid pptx object, creating a new one");
+                pptx = new pptxgen();
+            }
+
+            if (!existingPptx) {
+                pptx.layout = "LAYOUT_WIDE";
+
+                // Add master slide
+                pptx.defineSlideMaster({
+                    title: "PLACEHOLDER_SLIDE",
+                    background: { color: "FFFFFF" },
+                    objects: [
+                        {
+                            rect: {
+                                x: 0, y: 0, w: "100%", h: 0.35,
+                                fill: { color: "174F73" }
+                            }
+                        },
+                        {
+                            text: {
+                                text: "North Light Analytics Report",
+                                options: {
+                                    x: 0, y: 0, w: 6, h: 0.35,
+                                    fontSize: 15, color: "FFFFFF"
+                                }
                             }
                         }
-                    }
-                ],
-                slideNumber: { x: 13, y: 0, color: "ffffff", fontSize: 15 }
-            });
+                    ],
+                    slideNumber: { x: 13, y: 0, color: "ffffff", fontSize: 15 }
+                });
+            }
 
             let slide = pptx.addSlide({ masterName: "PLACEHOLDER_SLIDE" });
 
@@ -3192,17 +3376,6 @@ const TpoReport = ({ event, projects }) => {
                 w: 12,
                 h: 0.4,
                 fontSize: 16,
-                bold: true,
-                color: "000000"
-            });
-
-            // Add title
-            slide.addText("Relationship between retailer funding and ROI at different price points", {
-                x: 0.35,
-                y: 0.9,
-                w: 12,
-                h: 0.5,
-                fontSize: 14,
                 bold: true,
                 color: "000000"
             });
@@ -3264,15 +3437,22 @@ const TpoReport = ({ event, projects }) => {
             }
 
             // Save the presentation with the chart title as the filename
-            await pptx.writeFile({
-                fileName: "What is the relationship between retailer funding and ROI at different price points.pptx",
-                compression: true
-            });
+            // Only save if this is not part of a combined presentation
+            if (!existingPptx) {
+                await pptx.writeFile({
+                    fileName: "What is the relationship between retailer funding and ROI at different price points.pptx",
+                    compression: true
+                });
+            }
 
+            return pptx;
         } catch (error) {
             console.error("PPT Generation Error:", error);
+            return null;
         } finally {
-            setPresentationGenerated(false);
+            if (!existingPptx) {
+                setPresentationGenerated(false);
+            }
         }
     };
 
@@ -3285,17 +3465,256 @@ const TpoReport = ({ event, projects }) => {
         return numValue.toFixed(2);
     };
 
+    const generateAllPPT = async () => {
+        try {
+            setPresentationGenerated(true);
+
+            // Create a new presentation
+            let pptx = new pptxgen();
+
+            // Ensure pptx is properly initialized
+            if (!pptx.addSlide) {
+                console.error("Invalid pptx object, creating a new one");
+                pptx = new pptxgen();
+            }
+
+            // Set presentation properties
+            pptx.layout = "LAYOUT_WIDE";
+            pptx.title = `${project_name} Complete Report ${selectedYear}`;
+            pptx.subject = "Trade Promotion Optimization Report";
+            pptx.company = "North Light Analytics";
+            pptx.author = authData?.name || "User";
+            pptx.revision = "1";
+
+            // Add master slide
+            pptx.defineSlideMaster({
+                title: "PLACEHOLDER_SLIDE",
+                background: { color: "FFFFFF" },
+                objects: [
+                    {
+                        rect: {
+                            x: 0, y: 0, w: "100%", h: 0.35,
+                            fill: { color: "174F73" }
+                        }
+                    },
+                    {
+                        text: {
+                            text: "North Light Analytics Report",
+                            options: {
+                                x: 0, y: 0, w: 6, h: 0.35,
+                                fontSize: 15, color: "FFFFFF"
+                            }
+                        }
+                    }
+                ],
+                slideNumber: { x: 13, y: 0, color: "ffffff", fontSize: 15 }
+            });
+
+            // Add a title slide
+            let titleSlide = pptx.addSlide({ masterName: "PLACEHOLDER_SLIDE" });
+
+            // Add title
+            titleSlide.addText(`${project_name} - Trade Promotion Optimization Report`, {
+                x: 0.5,
+                y: 1.5,
+                w: 12,
+                h: 1.0,
+                fontSize: 24,
+                bold: true,
+                color: "000000",
+                align: "center"
+            });
+
+            // Add year
+            titleSlide.addText(`Year: ${selectedYear}`, {
+                x: 0.5,
+                y: 2.5,
+                w: 12,
+                h: 0.5,
+                fontSize: 18,
+                color: "000000",
+                align: "center"
+            });
+
+            // Add date
+            titleSlide.addText(`Generated on: ${new Date().toLocaleDateString()}`, {
+                x: 0.5,
+                y: 3.5,
+                w: 12,
+                h: 0.5,
+                fontSize: 14,
+                color: "000000",
+                align: "center"
+            });
+
+            // Add logos to title slide
+            titleSlide.addImage({
+                path: Logo,
+                x: 5.3,
+                y: 5.0,
+                w: 2.4,
+                h: 1.0,
+                sizing: { type: "contain", w: 2.4, h: 1.0 }
+            });
+
+            if (authData?.company_logo) {
+                titleSlide.addImage({
+                    path: authData.company_logo,
+                    x: 5.3,
+                    y: 6.0,
+                    w: 2.4,
+                    h: 1.0,
+                    sizing: { type: "contain", w: 2.4, h: 1.0 }
+                });
+            }
+
+            // Generate all chart slides sequentially with proper error handling
+            try {
+                // Chart 1
+                try {
+                    const pptx1 = await generatePPT(pptx);
+                    if (pptx1 && pptx1.addSlide) pptx = pptx1;
+                } catch (err) {
+                    console.error("Error generating Chart 1:", err);
+                }
+
+                // Chart 2
+                try {
+                    const pptx2 = await generateChart2PPT(pptx);
+                    if (pptx2 && pptx2.addSlide) pptx = pptx2;
+                } catch (err) {
+                    console.error("Error generating Chart 2:", err);
+                }
+
+                // Chart 3
+                try {
+                    const pptx3 = await generateChart3PPT(pptx);
+                    if (pptx3 && pptx3.addSlide) pptx = pptx3;
+                } catch (err) {
+                    console.error("Error generating Chart 3:", err);
+                }
+
+                // Chart 4
+                try {
+                    const pptx4 = await generateChart4PPT(pptx);
+                    if (pptx4 && pptx4.addSlide) pptx = pptx4;
+                } catch (err) {
+                    console.error("Error generating Chart 4:", err);
+                }
+
+                // Chart 5
+                try {
+                    const pptx5 = await generateChart5PPT(pptx);
+                    if (pptx5 && pptx5.addSlide) pptx = pptx5;
+                } catch (err) {
+                    console.error("Error generating Chart 5:", err);
+                }
+
+                // Chart 6
+                try {
+                    const pptx6 = await generateChart6PPT(pptx);
+                    if (pptx6 && pptx6.addSlide) pptx = pptx6;
+                } catch (err) {
+                    console.error("Error generating Chart 6:", err);
+                }
+
+                // Chart 7
+                try {
+                    const pptx7 = await generateChart7PPT(pptx);
+                    if (pptx7 && pptx7.addSlide) pptx = pptx7;
+                } catch (err) {
+                    console.error("Error generating Chart 7:", err);
+                }
+
+                // Chart 8
+                try {
+                    const pptx8 = await generateChart8PPT(pptx);
+                    if (pptx8 && pptx8.addSlide) pptx = pptx8;
+                } catch (err) {
+                    console.error("Error generating Chart 8:", err);
+                }
+
+                // Chart 9
+                // try {
+                //     const pptx9 = await generateChart9PPT(pptx);
+                //     if (pptx9 && pptx9.addSlide) pptx = pptx9;
+                // } catch (err) {
+                //     console.error("Error generating Chart 9:", err);
+                // }
+            } catch (chartError) {
+                console.error("Error generating chart slides:", chartError);
+            }
+
+            // Verify the pptx object is valid before saving
+            if (!pptx || !pptx.writeFile) {
+                console.error("Invalid pptx object before saving");
+                alert("There was an error generating the complete PPT. Please try again.");
+                setPresentationGenerated(false);
+                return;
+            }
+
+            // Save the presentation with proper error handling
+            try {
+                await pptx.writeFile({
+                    fileName: `${project_name}_Complete_Report_${selectedYear}.pptx`,
+                    compression: true
+                });
+                console.log("Complete PPT file saved successfully");
+            } catch (saveError) {
+                console.error("Error saving PPT file:", saveError);
+                alert("There was an error saving the complete PPT file. Please try again.");
+            }
+        } catch (error) {
+            console.error("Error in generateAllPPT:", error);
+            alert("There was an error generating the complete PPT. Please try again.");
+        } finally {
+            setPresentationGenerated(false);
+        }
+    };
+
     return (
         <>
             <Header />
             <div className="min-h-[calc(100vh-40px)] pt-20 pb-8">
                 <div className="border-b border-[#cccccc] pb-3 px-[36px]">
                     <div className="container-fluid">
-                        <div className="flex gap-2">
-                            <Link to={`/tpo/${encodeURIComponent(project_name)}/${project_id}/${model_id}/${id}`} className="flex items-center gap-2">
-                                <div className="nla-arrow-left-icon"><span></span></div>
-                            </Link>
-                            <h4 className="text-2xl font-bold">{project_name}</h4>
+                        <div className="flex justify-between items-center">
+                            <div className="flex gap-2">
+                                <Link to={`/tpo/${encodeURIComponent(project_name)}/${project_id}/${model_id}/${id}`} className="flex items-center gap-2">
+                                    <div className="nla-arrow-left-icon"><span></span></div>
+                                </Link>
+                                <h4 className="text-2xl font-bold">{project_name}</h4>
+                            </div>
+                            <div className="flex items-center gap-4">
+                                <div className="flex items-center">
+                                    {/* <label htmlFor="yearSelect" className="mr-2 font-medium">Year:</label>
+                                    <select
+                                        id="yearSelect"
+                                        className="form-select rounded border border-gray-300 py-1 px-3"
+                                        value={selectedYear}
+                                        onChange={(e) => setSelectedYear(parseInt(e.target.value))}
+                                    >
+                                        {availableYears.map(year => (
+                                            <option key={year} value={year}>{year}</option>
+                                        ))}
+                                    </select> */}
+                                </div>
+                                <button
+                                    className="btn btn-primary"
+                                    onClick={generateAllPPT}
+                                    disabled={presentationGenerated}
+                                >
+                                    {presentationGenerated ? (
+                                        <>
+                                            Generating...
+                                        </>
+                                    ) : (
+                                        <>
+                                            Download All PPT
+                                        </>
+                                    )}
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -3356,7 +3775,7 @@ const TpoReport = ({ event, projects }) => {
                                                 </div>
                                                 <button
                                                     className="btn btn-primary"
-                                                    onClick={generatePPT}
+                                                    onClick={() => generatePPT()}
                                                     disabled={presentationGenerated}
                                                 >
                                                     {presentationGenerated ? 'Generating...' : 'Download PPT'}
@@ -3388,7 +3807,7 @@ const TpoReport = ({ event, projects }) => {
                                                 </div>
                                                 <button
                                                     className="btn btn-primary"
-                                                    onClick={generateChart2PPT}
+                                                    onClick={() => generateChart2PPT()}
                                                     disabled={presentationGenerated}
                                                 >
                                                     {presentationGenerated ? 'Generating...' : 'Download PPT'}
@@ -3421,7 +3840,7 @@ const TpoReport = ({ event, projects }) => {
                                                 </div>
                                                 <button
                                                     className="btn btn-primary"
-                                                    onClick={generateChart3PPT}
+                                                    onClick={() => generateChart3PPT()}
                                                     disabled={presentationGenerated}
                                                 >
                                                     {presentationGenerated ? 'Generating...' : 'Download PPT'}
@@ -3466,7 +3885,7 @@ const TpoReport = ({ event, projects }) => {
                                                 </div>
                                                 <button
                                                     className="btn btn-primary"
-                                                    onClick={generateChart4PPT}
+                                                    onClick={() => generateChart4PPT()}
                                                     disabled={presentationGenerated}
                                                 >
                                                     {presentationGenerated ? 'Generating...' : 'Download PPT'}
@@ -3527,7 +3946,7 @@ const TpoReport = ({ event, projects }) => {
                                                 </div>
                                                 <button
                                                     className="btn btn-primary"
-                                                    onClick={generateChart5PPT}
+                                                    onClick={() => generateChart5PPT()}
                                                     disabled={presentationGenerated}
                                                 >
                                                     {presentationGenerated ? 'Generating...' : 'Download PPT'}
@@ -3615,7 +4034,7 @@ const TpoReport = ({ event, projects }) => {
                                                 </div>
                                                 <button
                                                     className="btn btn-primary"
-                                                    onClick={generateChart6PPT}
+                                                    onClick={() => generateChart6PPT()}
                                                     disabled={presentationGenerated}
                                                 >
                                                     {presentationGenerated ? 'Generating...' : 'Download PPT'}
@@ -3764,7 +4183,7 @@ const TpoReport = ({ event, projects }) => {
                                                 </div>
                                                 <button
                                                     className="btn btn-primary"
-                                                    onClick={generateChart7PPT}
+                                                    onClick={() => generateChart7PPT()}
                                                     disabled={presentationGenerated}
                                                 >
                                                     {presentationGenerated ? 'Generating...' : 'Download PPT'}
@@ -3797,7 +4216,7 @@ const TpoReport = ({ event, projects }) => {
                                                 </div>
                                                 <button
                                                     className="btn btn-primary ml-4"
-                                                    onClick={generateChart8PPT}
+                                                    onClick={() => generateChart8PPT()}
                                                     disabled={presentationGenerated}
                                                 >
                                                     {presentationGenerated ? 'Generating...' : 'Download PPT'}
@@ -3827,13 +4246,13 @@ const TpoReport = ({ event, projects }) => {
                                             <div className="flex justify-between mb-4">
                                                 <div className="flex-1">
                                                 </div>
-                                                <button
+                                                {/* <button
                                                     className="btn btn-primary ml-4"
-                                                    onClick={generateChart9PPT}
+                                                    onClick={() => generateChart9PPT()}
                                                     disabled={presentationGenerated}
                                                 >
                                                     {presentationGenerated ? 'Generating...' : 'Download PPT'}
-                                                </button>
+                                                </button> */}
                                             </div>
                                             <ReactApexChart
                                                 options={chart9Data.options}
