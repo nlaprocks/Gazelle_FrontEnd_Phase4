@@ -215,8 +215,8 @@ const TpoReport = ({ event, projects }) => {
                     const data = w.globals.initialSeries[seriesIndex].data[dataPointIndex];
                     return `<div class="p-2">
                         <div><b>${data.eventName}</b></div>
-                        <div>Spend: $${data.x.toFixed(2)}</div>
-                        <div>Volume: ${data.y.toFixed(2)}</div>
+                        <div>Spend: $${formatCurrency(data.x)}</div>
+                        <div>Volume: ${formatCurrency(data.y)}</div>
                     </div>`;
                 }
             }
@@ -264,7 +264,7 @@ const TpoReport = ({ event, projects }) => {
                     const data = w.globals.initialSeries[seriesIndex].data[dataPointIndex];
                     return `<div class="p-2">
                         <div><b>${data.eventName}</b></div>
-                        <div>Spend: $${data.x.toFixed(2)}</div>
+                        <div>Spend: $${formatCurrency(data.x)}</div>
                         <div>ROI: ${data.y.toFixed(2)}%</div>
                     </div>`;
                 }
@@ -301,7 +301,10 @@ const TpoReport = ({ event, projects }) => {
                     categories: ['TPR', 'Feature Only', 'Display Only', 'Feature and Display', 'All Events'],
                     title: { text: '' },
                     labels: {
-                        show: true
+                        show: true,
+                        formatter: function (val) {
+                            return val + '%';
+                        }
                     }
                 },
                 yaxis: {
@@ -349,7 +352,10 @@ const TpoReport = ({ event, projects }) => {
                 xaxis: {
                     categories: ['TPR', 'Feature Only', 'Display Only', 'Feature and Display', 'All Events'],
                     labels: {
-                        show: true
+                        show: true,
+                        formatter: function (val) {
+                            return val + '%';
+                        }
                     },
                     title: { text: '' }
                 },
@@ -405,7 +411,10 @@ const TpoReport = ({ event, projects }) => {
                 xaxis: {
                     categories: ['TPR', 'Feature Only', 'Display Only', 'Feature and Display', 'All Events'],
                     labels: {
-                        show: true
+                        show: true,
+                        formatter: function (val) {
+                            return val + '%';
+                        }
                     },
                     title: { text: '' }
                 },
@@ -598,11 +607,11 @@ const TpoReport = ({ event, projects }) => {
                     if (seriesIndex === 1) { // Only show percentage change on current year bars
                         const percentageChanges = w.config.series[1].percentageChanges || [];
                         const change = percentageChanges[dataPointIndex];
-                        if (isNaN(change) || change === undefined) return val.toFixed(2);
+                        if (isNaN(change) || change === undefined) return `$${val.toFixed(2)}`;
                         const arrow = change >= 0 ? '↑' : '↓';
-                        return `${val.toFixed(2)} (${arrow}${Math.abs(change).toFixed(1)}%)`;
+                        return `$${val.toFixed(2)} (${arrow}${Math.abs(change).toFixed(1)}%)`;
                     }
-                    return val.toFixed(2);
+                    return `$${val.toFixed(2)}`;
                 },
                 style: {
                     colors: ['#fff'] // Change text color to white for better visibility
@@ -617,11 +626,11 @@ const TpoReport = ({ event, projects }) => {
             },
             yaxis: {
                 title: {
-                    text: 'Incremental Profit Pool per Dollar Invested on Promo'
+                    text: 'Incremental Profit'
                 },
                 labels: {
                     formatter: function (val) {
-                        return val.toFixed(2);
+                        return `$${val.toFixed(2)}`;
                     }
                 }
             },
@@ -638,7 +647,15 @@ const TpoReport = ({ event, projects }) => {
                 align: 'center'
             },
             legend: {
-                position: 'top'
+                position: 'top',
+                horizontalAlign: 'center'
+            },
+            tooltip: {
+                y: {
+                    formatter: function (val) {
+                        return `$${val.toFixed(2)}`;
+                    }
+                }
             }
         }
     });
@@ -1114,12 +1131,14 @@ const TpoReport = ({ event, projects }) => {
             spendVolumeData.push({
                 x: eventTotalSpend,
                 y: volume,
-                eventName: `${event.title}`
+                eventName: `${event.title}`,
+                originalX: eventTotalSpend // Store original value for tooltip
             });
             spendROIData.push({
                 x: eventTotalSpend,
                 y: eventROI,
-                eventName: `${event.title}`
+                eventName: `${event.title}`,
+                originalX: eventTotalSpend // Store original value for tooltip
             });
         });
 
@@ -1127,57 +1146,112 @@ const TpoReport = ({ event, projects }) => {
         correlation1 = calculateCorrelation(spendVolumeData.map(d => [d.x, d.y]));
         correlation2 = calculateCorrelation(spendROIData.map(d => [d.x, d.y]));
 
-        setChart3Data(prev => ({
-            ...prev,
-            series1: [{
-                name: 'Incremental Volume',
-                data: spendVolumeData
-            }],
-            series2: [{
-                name: 'ROI (%)',
-                data: spendROIData
-            }],
-            options1: {
-                ...prev.options1,
-                tooltip: {
-                    custom: function ({ series, seriesIndex, dataPointIndex, w }) {
-                        const data = w.globals.initialSeries[seriesIndex].data[dataPointIndex];
-                        return `<div class="p-2">
-                            <div><b>${data.eventName}</b></div>
-                            <div>Spend: $${data.x.toFixed(2)}</div>
-                            <div>Volume: ${data.y.toFixed(2)}</div>
-                        </div>`;
-                    }
-                },
-                subtitle: {
-                    text: `Correlation: ${correlation1.toFixed(2)}`,
-                    align: 'right',
-                    style: {
-                        fontSize: '12px'
-                    }
-                }
-            },
-            options2: {
-                ...prev.options2,
-                tooltip: {
-                    custom: function ({ series, seriesIndex, dataPointIndex, w }) {
-                        const data = w.globals.initialSeries[seriesIndex].data[dataPointIndex];
-                        return `<div class="p-2">
-                            <div><b>${data.eventName}</b></div>
-                            <div>Spend: $${data.x.toFixed(2)}</div>
-                            <div>ROI: ${data.y.toFixed(2)}%</div>
-                        </div>`;
-                    }
-                },
-                subtitle: {
-                    text: `Correlation: ${correlation2.toFixed(2)}`,
-                    align: 'right',
-                    style: {
-                        fontSize: '12px'
-                    }
-                }
+        // Create round, equidistant X-axis values
+        if (spendVolumeData.length > 0) {
+            // Find min and max spend values
+            const minSpend = Math.min(...spendVolumeData.map(d => d.x));
+            const maxSpend = Math.max(...spendVolumeData.map(d => d.x));
+
+            // Round to nearest 100,000 for better readability
+            const roundedMin = Math.floor(minSpend / 100000) * 100000;
+            const roundedMax = Math.ceil(maxSpend / 100000) * 100000;
+
+            // Create 7 equidistant points
+            const interval = Math.round((roundedMax - roundedMin) / 6);
+            const roundedInterval = Math.ceil(interval / 100000) * 100000;
+
+            // Generate tick values
+            const tickValues = [];
+            for (let i = 0; i < 7; i++) {
+                tickValues.push(roundedMin + (i * roundedInterval));
             }
-        }));
+
+            setChart3Data(prev => ({
+                ...prev,
+                series1: [{
+                    name: 'Incremental Volume',
+                    data: spendVolumeData
+                }],
+                series2: [{
+                    name: 'ROI (%)',
+                    data: spendROIData
+                }],
+                options1: {
+                    ...prev.options1,
+                    xaxis: {
+                        ...prev.options1.xaxis,
+                        min: roundedMin,
+                        max: roundedMin + (6 * roundedInterval),
+                        tickAmount: 7,
+                        axisTicks: {
+                            show: true
+                        },
+                        axisBorder: {
+                            show: true
+                        },
+                        labels: {
+                            formatter: function (val) {
+                                return '$' + formatNumber(val);
+                            }
+                        }
+                    },
+                    tooltip: {
+                        custom: function ({ series, seriesIndex, dataPointIndex, w }) {
+                            const data = w.globals.initialSeries[seriesIndex].data[dataPointIndex];
+                            return `<div class="p-2">
+                                <div><b>${data.eventName}</b></div>
+                                <div>Spend: $${formatCurrency(data.originalX)}</div>
+                                <div>Volume: ${formatCurrency(data.y)}</div>
+                            </div>`;
+                        }
+                    },
+                    subtitle: {
+                        text: `Correlation: ${correlation1.toFixed(2)}`,
+                        align: 'right',
+                        style: {
+                            fontSize: '12px'
+                        }
+                    }
+                },
+                options2: {
+                    ...prev.options2,
+                    xaxis: {
+                        ...prev.options2.xaxis,
+                        min: roundedMin,
+                        max: roundedMin + (6 * roundedInterval),
+                        tickAmount: 7,
+                        axisTicks: {
+                            show: true
+                        },
+                        axisBorder: {
+                            show: true
+                        },
+                        labels: {
+                            formatter: function (val) {
+                                return '$' + formatNumber(val);
+                            }
+                        }
+                    },
+                    tooltip: {
+                        custom: function ({ series, seriesIndex, dataPointIndex, w }) {
+                            const data = w.globals.initialSeries[seriesIndex].data[dataPointIndex];
+                            return `<div class="p-2">
+                                <div><b>${data.eventName}</b></div>
+                                <div>Spend: $${formatCurrency(data.originalX)}</div>
+                                <div>ROI: ${data.y.toFixed(2)}%</div>
+                            </div>`;
+                        }
+                    },
+                    subtitle: {
+                        text: `Correlation: ${correlation2.toFixed(2)}`,
+                        align: 'right',
+                        style: {
+                            fontSize: '12px'
+                        }
+                    }
+                }
+            }));
+        }
     };
 
     const calculateCorrelation = (data) => {
@@ -1761,12 +1835,33 @@ const TpoReport = ({ event, projects }) => {
                             const currValue = val;
                             const percentChange = ((currValue - prevValue) / prevValue) * 100;
                             const arrow = percentChange >= 0 ? '↑' : '↓';
-                            return `${val.toFixed(2)} (${arrow}${Math.abs(percentChange).toFixed(1)}%)`;
+                            return `$${val.toFixed(2)} (${arrow}${Math.abs(percentChange).toFixed(1)}%)`;
                         }
-                        return val.toFixed(2);
+                        return `$${val.toFixed(2)}`;
                     },
                     style: {
                         colors: ['#fff']
+                    }
+                },
+                yaxis: {
+                    title: {
+                        text: 'Incremental Profit'
+                    },
+                    labels: {
+                        formatter: function (val) {
+                            return `$${val.toFixed(2)}`;
+                        }
+                    }
+                },
+                legend: {
+                    position: 'top',
+                    horizontalAlign: 'center'
+                },
+                tooltip: {
+                    y: {
+                        formatter: function (val) {
+                            return `$${val.toFixed(2)}`;
+                        }
                     }
                 }
             }
@@ -2009,19 +2104,19 @@ const TpoReport = ({ event, projects }) => {
                 [
                     { text: "Total", options: { bold: true, border: { pt: 0 } } },
                     { text: summaryData.total.toString(), options: { border: { pt: 0 } } },
-                    { text: `$${formatNumber(summaryData.totalSpend)}`, options: { border: { pt: 0 } } },
+                    { text: `$${formatCurrency(summaryData.totalSpend)}`, options: { border: { pt: 0 } } },
                     { text: `${formatNumber(summaryData.avgROI)}%`, options: { border: { pt: 0 } } }
                 ],
                 [
                     { text: "Positive ROI", options: { bold: true, border: { pt: 0 } } },
                     { text: summaryData.positiveCount.toString(), options: { border: { pt: 0 } } },
-                    { text: `$${formatNumber(summaryData.positiveSpend)}`, options: { border: { pt: 0 } } },
+                    { text: `$${formatCurrency(summaryData.positiveSpend)}`, options: { border: { pt: 0 } } },
                     { text: `${formatNumber(summaryData.positiveROI)}%`, options: { border: { pt: 0 } } }
                 ],
                 [
                     { text: "Negative ROI", options: { bold: true, border: { pt: 0 } } },
                     { text: summaryData.negativeCount.toString(), options: { border: { pt: 0 } } },
-                    { text: `$${formatNumber(summaryData.negativeSpend)}`, options: { border: { pt: 0 } } },
+                    { text: `$${formatCurrency(summaryData.negativeSpend)}`, options: { border: { pt: 0 } } },
                     { text: `${formatNumber(summaryData.negativeROI)}%`, options: { border: { pt: 0 } } }
                 ]
             ];
@@ -2325,27 +2420,32 @@ const TpoReport = ({ event, projects }) => {
                 color: "000000"
             });
 
-            // Prepare data for XY charts
-            const volumeData = [{
-                name: 'Incremental Volume',
-                values: chart3Data.series1[0].data.map(point => point.y),
-                labels: chart3Data.series1[0].data.map(point => point.x.toString())
-            }];
-
-            const roiData = [{
-                name: 'ROI',
-                values: chart3Data.series2[0].data.map(point => point.y),
-                labels: chart3Data.series2[0].data.map(point => point.x.toString())
-            }];
-
-            // Since scatter charts aren't working, let's create a simple bar chart
-            // that shows the relationship between spend and volume/ROI
-
             // Sort data by spend (x value) for better visualization
             const sortedVolumeData = [...chart3Data.series1[0].data].sort((a, b) => a.x - b.x);
             const sortedRoiData = [...chart3Data.series2[0].data].sort((a, b) => a.x - b.x);
 
-            // Prepare data for bar charts
+            // Create round, equidistant spend values for X-axis
+            const minSpend = Math.min(...sortedVolumeData.map(d => d.x));
+            const maxSpend = Math.max(...sortedVolumeData.map(d => d.x));
+
+            // Round to nearest 100,000 for better readability
+            const roundedMin = Math.floor(minSpend / 100000) * 100000;
+            const roundedMax = Math.ceil(maxSpend / 100000) * 100000;
+
+            // Create 5 equidistant points for the PPT
+            const interval = Math.round((roundedMax - roundedMin) / 4);
+            const roundedInterval = Math.ceil(interval / 100000) * 100000;
+
+            // Generate tick values
+            const tickValues = [];
+            for (let i = 0; i < 5; i++) {
+                tickValues.push(roundedMin + (i * roundedInterval));
+            }
+
+            // Format tick values for display
+            const formattedTickValues = tickValues.map(val => `$${formatNumber(val)}`);
+
+            // Prepare data for bar charts with equidistant X-axis
             const volumeBarData = [{
                 name: 'Incremental Volume',
                 labels: sortedVolumeData.map((point, i) => `Event ${i + 1}`),
@@ -2355,7 +2455,7 @@ const TpoReport = ({ event, projects }) => {
             const spendBarData = [{
                 name: 'Spend',
                 labels: sortedVolumeData.map((point, i) => `Event ${i + 1}`),
-                values: sortedVolumeData.map(point => point.x)
+                values: sortedVolumeData.map(point => point.originalX || point.x)
             }];
 
             const roiBarData = [{
@@ -2395,7 +2495,11 @@ const TpoReport = ({ event, projects }) => {
                 valAxisTitle: "Spend ($)",
                 plotArea: { border: { pt: 1, color: "888888" } },
                 showValAxisTitle: true,
-                valAxisTitleColor: "000000"
+                valAxisTitleColor: "000000",
+                valAxisLabelFormatCode: "$#,##0",
+                valAxisMaxVal: roundedMin + (4 * roundedInterval),
+                valAxisMinVal: roundedMin,
+                valAxisMajorUnit: roundedInterval
             });
 
             // Right chart - Trade Spend vs ROI
@@ -2429,7 +2533,11 @@ const TpoReport = ({ event, projects }) => {
                 valAxisTitle: "Spend ($)",
                 plotArea: { border: { pt: 1, color: "888888" } },
                 showValAxisTitle: true,
-                valAxisTitleColor: "000000"
+                valAxisTitleColor: "000000",
+                valAxisLabelFormatCode: "$#,##0",
+                valAxisMaxVal: roundedMin + (4 * roundedInterval),
+                valAxisMinVal: roundedMin,
+                valAxisMajorUnit: roundedInterval
             });
 
             // Add logos
@@ -2603,7 +2711,8 @@ const TpoReport = ({ event, projects }) => {
                 catAxisOrientation: 'maxMin',
                 barGapWidthPct: 60,
                 catAxisHidden: true, // Hide the category axis since we're showing labels separately
-                catAxisLabelPos: 'low'
+                catAxisLabelPos: 'low',
+                valAxisLabelFormatCode: '0"%"' // Format X-axis values with % symbol
             });
 
             // Incremental Lift chart - Middle section
@@ -2615,7 +2724,7 @@ const TpoReport = ({ event, projects }) => {
                 fill: { color: "0072bc" }
             });
 
-            slide.addText("Incremental Lift (%)", {
+            slide.addText("Average Incremental Lift (%)", {
                 x: 5.55,
                 y: 0.9,
                 w: 3.2,
@@ -2647,7 +2756,8 @@ const TpoReport = ({ event, projects }) => {
                 catAxisOrientation: 'maxMin',
                 barGapWidthPct: 60,
                 catAxisHidden: true, // Hide the category axis
-                catAxisLabelPos: 'low'
+                catAxisLabelPos: 'low',
+                valAxisLabelFormatCode: '0"%"' // Format X-axis values with % symbol
             });
 
             // Weighted ROI chart - Right section
@@ -2691,7 +2801,8 @@ const TpoReport = ({ event, projects }) => {
                 catAxisOrientation: 'maxMin',
                 barGapWidthPct: 60,
                 catAxisHidden: true, // Hide the category axis
-                catAxisLabelPos: 'low'
+                catAxisLabelPos: 'low',
+                valAxisLabelFormatCode: '0"%"' // Format X-axis values with % symbol
             });
 
             // Add logos
@@ -2834,7 +2945,7 @@ const TpoReport = ({ event, projects }) => {
                 ["Avg. Wtd. ROI", ...summaryData.avgWeightedROI.map(val => val === 0 ? '-' : (val).toFixed(2) + '%')],
                 ["% of Trade Spend", ...summaryData.tradeSpend.map(val => val === 0 ? '-' : val.toFixed(1) + '%')],
                 ["Avg. Wtd. Lift", ...summaryData.avgLift.map(val => val === 0 ? '-' : val.toFixed(1) + '%')],
-                ["# of F&D Events", ...summaryData.fndEvents.map(val => val === 0 ? '-' : val)]
+                ["No. of F&D Events", ...summaryData.fndEvents.map(val => val === 0 ? '-' : val)]
             ], {
                 x: 0.35,
                 y: 5.5,
@@ -3465,6 +3576,20 @@ const TpoReport = ({ event, projects }) => {
         return numValue.toFixed(2);
     };
 
+    // Add a new function for formatting currency with commas
+    const formatCurrency = (num) => {
+        if (num === undefined || num === null) return '$0.0';
+
+        // Convert to number to ensure proper formatting
+        const numValue = Number(num);
+
+        // Format with commas for thousands and 1 decimal place
+        return numValue.toLocaleString('en-IN', {
+            minimumFractionDigits: 1,
+            maximumFractionDigits: 1
+        });
+    };
+
     const generateAllPPT = async () => {
         try {
             setPresentationGenerated(true);
@@ -3755,19 +3880,19 @@ const TpoReport = ({ event, projects }) => {
                                                             <tr className="border-b border-gray-300 text-left">
                                                                 <th className="py-2 px-4">Total</th>
                                                                 <th className="py-2 px-4">{summaryData.total}</th>
-                                                                <th className="py-2 px-4">${((summaryData.totalSpend).toFixed(1).toLocaleString())}</th>
+                                                                <th className="py-2 px-4">${formatCurrency(summaryData.totalSpend)}</th>
                                                                 <th className="py-2 px-4">{formatNumber(summaryData.avgROI)}%</th>
                                                             </tr>
                                                             <tr className="border-b border-gray-300 text-left">
                                                                 <th className="py-2 px-4">Positive ROI</th>
                                                                 <td className="py-2 px-4">{summaryData.positiveCount}</td>
-                                                                <td className="py-2 px-4">${((summaryData.positiveSpend).toFixed(1).toLocaleString())}</td>
+                                                                <td className="py-2 px-4">${formatCurrency(summaryData.positiveSpend)}</td>
                                                                 <th className="py-2 px-4">{formatNumber(summaryData.positiveROI)}%</th>
                                                             </tr>
                                                             <tr className="border-b border-gray-300 text-left">
                                                                 <th className="py-2 px-4">Negative ROI</th>
                                                                 <td className="py-2 px-4">{summaryData.negativeCount}</td>
-                                                                <td className="py-2 px-4">${((summaryData.negativeSpend).toFixed(1).toLocaleString())}</td>
+                                                                <td className="py-2 px-4">${formatCurrency(summaryData.negativeSpend)}</td>
                                                                 <th className="py-2 px-4">{formatNumber(summaryData.negativeROI)}%</th>
                                                             </tr>
                                                         </tbody>
@@ -4004,7 +4129,7 @@ const TpoReport = ({ event, projects }) => {
                                                                     ))}
                                                                 </tr>
                                                                 <tr>
-                                                                    <td className="border px-4 py-2 font-semibold"># of F&D Events</td>
+                                                                    <td className="border px-4 py-2 font-semibold">No. of F&D Events</td>
                                                                     {chart5Data.summaryData.fndEvents.map((val, i) => (
                                                                         <td key={i} className="border px-4 py-2">{val}</td>
                                                                     ))}
