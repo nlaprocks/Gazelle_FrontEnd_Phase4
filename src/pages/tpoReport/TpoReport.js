@@ -1446,36 +1446,11 @@ const TpoReport = ({ event, projects }) => {
             fndEvents: discountRanges.map(range => range.events.length) // Using event count as F&D count for now
         };
 
-        // Prepare series data - one series per event in each range
-        const series = [];
-        const categories = ['0-10', '10-20', '20-30', '30-40', '40-50'];
-
-        // Create a data array with all events properly positioned
-        const data = Array(categories.length).fill(null).map(() => []);
-
-        discountRanges.forEach((range, rangeIndex) => {
-            range.events.forEach(event => {
-                data[rangeIndex].push({
-                    x: categories[rangeIndex],
-                    y: event.roi,
-                    name: event.name
-                });
-            });
-        });
-
-        // Convert to series format
-        const maxEventsInAnyRange = Math.max(...data.map(range => range.length));
-
-        for (let i = 0; i < maxEventsInAnyRange; i++) {
-            const seriesData = categories.map((cat, catIndex) => {
-                return data[catIndex][i] || { x: cat, y: 0 };
-            });
-
-            series.push({
-                name: `Event ${i + 1}`,
-                data: seriesData.map(d => d.y)
-            });
-        }
+        // Prepare series data - one bar per discount range using weighted ROI
+        const series = [{
+            name: 'Weighted ROI',
+            data: summaryData.avgWeightedROI.map(roi => parseFloat((roi).toFixed(2)))
+        }];
 
         setChart5Data(prev => ({
             ...prev,
@@ -1484,9 +1459,9 @@ const TpoReport = ({ event, projects }) => {
                 ...prev.options,
                 xaxis: {
                     ...prev.options.xaxis,
-                    categories: categories
+                    categories: ['0-10', '10-20', '20-30', '30-40', '40-50']
                 },
-                colors: ['#4472C4', '#00B050', '#FFC000', '#7030A0'], // Colors for different events
+                colors: ['#52c41a'], // Green color for ROI bars
                 title: {
                     text: 'ROI by Discount Depth',
                     align: 'center'
@@ -1494,14 +1469,13 @@ const TpoReport = ({ event, projects }) => {
                 tooltip: {
                     y: {
                         formatter: function (val) {
-                            return val.toFixed(2) + '%';
+                            return val === 0 ? 'N/A' : val.toFixed(2) + '%';
                         }
                     }
                 },
                 dataLabels: {
                     ...prev.options.dataLabels,
                     formatter: function (val) {
-                        // Only show label if value is not zero
                         return val === 0 ? '' : val.toFixed(2) + '%';
                     }
                 },
@@ -1509,7 +1483,8 @@ const TpoReport = ({ event, projects }) => {
                     ...prev.options.plotOptions,
                     bar: {
                         ...prev.options.plotOptions?.bar,
-                        hideZeros: true, // Hide zero values
+                        columnWidth: '50%', // Wider bars since we only have one series
+                        distributed: true, // Distribute colors
                     }
                 }
             },
@@ -1545,7 +1520,12 @@ const TpoReport = ({ event, projects }) => {
         const ppgGroups = createPPGGroups(currentYearEvents);
         const summaryData = [];
         const categories = [];
-        const seriesData = new Map(); // Use Map to track events by name
+
+        // Create a single series for the average ROI
+        const avgRoiSeries = {
+            name: 'Average ROI',
+            data: []
+        };
 
         // Process each PPG group
         ppgGroups.forEach((group, productIds) => {
@@ -1553,6 +1533,10 @@ const TpoReport = ({ event, projects }) => {
             const ppgEvents = [];
             const ppgProducts = new Map();
             categories.push(ppgName);
+
+            let totalROI = 0;
+            let totalUnits = 0;
+            let eventCount = 0;
 
             // Process events in the group
             group.events.forEach((event) => {
@@ -1565,7 +1549,11 @@ const TpoReport = ({ event, projects }) => {
                 };
 
                 // Calculate event metrics
-                const { roi: eventRoi, totalSpend: eventSpend } = calculateEventROI(event);
+                const { roi: eventRoi, totalSpend: eventSpend, eventTotalUnits, eventROIUnits } = calculateEventROI(event);
+                totalROI += eventROIUnits;
+                totalUnits += eventTotalUnits;
+                eventCount++;
+
                 event.planned.forEach(product => {
                     const { financialResults } = getResult(product.financialData);
                     const basePrice = Number(product.financialData.basePrice) || 0;
@@ -1577,7 +1565,6 @@ const TpoReport = ({ event, projects }) => {
                     const mftTradeInvestment = Number(product.financialData.fixedFee + (product.financialData.edlpPerUnitRate + product.financialData.promoPerUnitRate) * Number(product.financialData.units)) || 0;
                     const retailerFunding = ((shelfPriceInvestment - mftTradeInvestment) / shelfPriceInvestment) * 100;
 
-                    // eventData.roi += productRoi;
                     eventData.retailerFunding += retailerFunding;
 
                     // Track product-level data
@@ -1599,44 +1586,52 @@ const TpoReport = ({ event, projects }) => {
                 eventData.roi = eventRoi;
                 eventData.retailerFunding /= event.planned.length;
                 ppgEvents.push(eventData);
-
-                // Track event data for series
-                if (!seriesData.has(event.title)) {
-                    seriesData.set(event.title, {
-                        name: event.title,
-                        data: Array(categories.length - 1).fill(0) // Fill previous positions with 0
-                    });
-                }
-
-                // Add ROI data for this event
-                const eventSeries = seriesData.get(event.title);
-                eventSeries.data.push(eventData.roi);
             });
 
-            // Fill remaining positions for all series
-            seriesData.forEach(series => {
-                while (series.data.length < categories.length) {
-                    series.data.push(0);
-                }
-            });
+            // Calculate weighted average ROI for this PPG group
+            const avgRoi = totalUnits > 0 ? totalROI / totalUnits : 0;
+            avgRoiSeries.data.push(parseFloat((avgRoi).toFixed(2))); // Convert to percentage and fix to 2 decimal places
 
             // Add to summary data
             summaryData.push({
                 ppgName: ppgName,
                 events: ppgEvents,
-                products: Array.from(ppgProducts.values())
+                products: Array.from(ppgProducts.values()),
+                avgRoi: avgRoi
             });
         });
 
-        // Convert series data to array and update chart
+        // Update chart data with the single series
         setChart6Data(prev => ({
             ...prev,
-            series: Array.from(seriesData.values()),
+            series: [avgRoiSeries],
             options: {
                 ...prev.options,
                 xaxis: {
                     ...prev.options.xaxis,
                     categories: categories
+                },
+                colors: ['#52c41a'], // Green color for ROI bars
+                dataLabels: {
+                    ...prev.options.dataLabels,
+                    formatter: function (val) {
+                        return val === 0 ? '' : val.toFixed(2) + '%';
+                    }
+                },
+                tooltip: {
+                    y: {
+                        formatter: function (val) {
+                            return val === 0 ? 'N/A' : val.toFixed(2) + '%';
+                        }
+                    }
+                },
+                plotOptions: {
+                    ...prev.options.plotOptions,
+                    bar: {
+                        ...prev.options.plotOptions?.bar,
+                        columnWidth: '50%', // Wider bars since we only have one series
+                        distributed: true, // Distribute colors
+                    }
                 }
             },
             summaryData: {
@@ -1812,6 +1807,10 @@ const TpoReport = ({ event, projects }) => {
             }
         });
 
+        // Calculate correlation
+        const correlationData = scatterData.map(point => [point.x, point.y]);
+        const correlation = calculateCorrelation(correlationData);
+
         // Update chart data
         setChart8Data(prev => ({
             ...prev,
@@ -1831,7 +1830,8 @@ const TpoReport = ({ event, projects }) => {
                     min: Math.min(...scatterData.map(d => d.y)) - 0.5,
                     max: Math.max(...scatterData.map(d => d.y)) + 0.5
                 }
-            }
+            },
+            correlation: correlation
         }));
     };
 
@@ -1924,105 +1924,128 @@ const TpoReport = ({ event, projects }) => {
             // Create slide
             let slide = pptx.addSlide({ masterName: "PLACEHOLDER_SLIDE" });
 
-            // Add summary section at the top
-            const summaryY = 0.30; // Moved up
-            const leftColX = 0.35;
-            const colWidth = 3;
-            const rowHeight = 0.3;
-
-            // Add main ROI text
-            slide.addText(`Avg. ROI across all events: ${formatNumber(summaryData.avgROI)}%`, {
-                x: leftColX,
-                y: summaryY,
-                w: 12,
-                h: rowHeight,
-                fontSize: 12,
+            // Add chart title at the top with ROI text on the right
+            slide.addText("What is the ROI for all events?", {
+                x: 0.35,
+                y: 0.4,
+                w: 6, // Half width to make room for ROI text
+                h: 0.4,
+                fontSize: 16,
                 bold: true,
                 color: "000000"
             });
 
-            // Add 4-column grid
-            const gridData = [
-                [`Total: ${summaryData.total}`,
-                `Events: ${summaryData.total}`,
-                `Trade Spend: $${(summaryData.totalSpend / 1000000).toFixed(1)}MM`,
-                `Avg. ROI: ${formatNumber(summaryData.avgROI)}%`]
-            ];
-
-            gridData[0].forEach((text, index) => {
-                slide.addText(text, {
-                    x: leftColX + (index * colWidth),
-                    y: summaryY + rowHeight,
-                    w: colWidth,
-                    h: rowHeight,
-                    fontSize: 11,
-                    color: "000000"
-                });
+            // Add ROI text on the right side of the title
+            slide.addText(`Avg. ROI across all events: ${formatNumber(summaryData.avgROI)}%`, {
+                x: 6.35, // Position to the right of the title
+                y: 0.4,
+                w: 6,
+                h: 0.4,
+                fontSize: 14,
+                bold: true,
+                color: "000000",
+                align: "right"
             });
 
-            // Add 2-column grid
-            const bottomGridData = [
-                `Positive ROI: ${summaryData.positiveROI} (${formatNumber((summaryData.positiveROI / summaryData.total) * 100)}%)`,
-                `Negative ROI: ${summaryData.negativeROI} (${formatNumber((summaryData.negativeROI / summaryData.total) * 100)}%)`
+            // Create a styled summary table similar to the image
+            // Header row with blue background
+            // slide.addShape(pptx.shapes.RECTANGLE, {
+            //     x: 0.35,
+            //     y: 0.9,
+            //     w: 12,
+            //     h: 0.5,
+            //     fill: { color: "174F73" },
+            //     line: { color: "174F73" } // Match border to background to hide it
+            // });
+
+            // slide.addText(`Avg. ROI across all events: ${formatNumber(summaryData.avgROI)}%`, {
+            //     x: 0.35,
+            //     y: 0.9,
+            //     w: 12,
+            //     h: 0.5,
+            //     fontSize: 14,
+            //     bold: true,
+            //     color: "FFFFFF",
+            //     valign: "middle",
+            //     margin: [0, 0, 0, 0.2]
+            // });
+
+            // Create table headers with gray background
+            const tableHeaders = [
+                { text: "Overall", options: { bold: true, color: "000000", fill: "E6E6E6", border: { pt: 0 } } },
+                { text: "Events", options: { bold: true, color: "000000", fill: "E6E6E6", border: { pt: 0 } } },
+                { text: "Trade Spend", options: { bold: true, color: "000000", fill: "E6E6E6", border: { pt: 0 } } },
+                { text: "Avg. ROI", options: { bold: true, color: "000000", fill: "E6E6E6", border: { pt: 0 } } }
             ];
 
-            bottomGridData.forEach((text, index) => {
-                slide.addText(text, {
-                    x: leftColX + (index * 6),
-                    y: summaryY + (rowHeight * 2),
-                    w: 6,
-                    h: rowHeight,
-                    fontSize: 11,
-                    color: "000000"
-                });
-            });
+            // Create table rows
+            const tableRows = [
+                [
+                    { text: "Total", options: { bold: true, border: { pt: 0 } } },
+                    { text: summaryData.total.toString(), options: { border: { pt: 0 } } },
+                    { text: `$${formatNumber(summaryData.totalSpend)}`, options: { border: { pt: 0 } } },
+                    { text: `${formatNumber(summaryData.avgROI)}%`, options: { border: { pt: 0 } } }
+                ],
+                [
+                    { text: "Positive ROI", options: { bold: true, border: { pt: 0 } } },
+                    { text: summaryData.positiveCount.toString(), options: { border: { pt: 0 } } },
+                    { text: `$${formatNumber(summaryData.positiveSpend)}`, options: { border: { pt: 0 } } },
+                    { text: `${formatNumber(summaryData.positiveROI)}%`, options: { border: { pt: 0 } } }
+                ],
+                [
+                    { text: "Negative ROI", options: { bold: true, border: { pt: 0 } } },
+                    { text: summaryData.negativeCount.toString(), options: { border: { pt: 0 } } },
+                    { text: `$${formatNumber(summaryData.negativeSpend)}`, options: { border: { pt: 0 } } },
+                    { text: `${formatNumber(summaryData.negativeROI)}%`, options: { border: { pt: 0 } } }
+                ]
+            ];
 
-            // Add divider line
-            slide.addShape(pptx.shapes.LINE, {
-                x1: leftColX,
-                y1: summaryY + (rowHeight * 3) + 0.1,
-                x2: 12.35,
-                y2: summaryY + (rowHeight * 3) + 0.1,
-                line: { color: "CCCCCC", width: 1 }
+            // Add the table to the slide - remove border to eliminate lines
+            slide.addTable([tableHeaders, ...tableRows], {
+                x: 0.35,
+                y: 1.4,
+                w: 12,
+                colW: [3, 3, 3, 3],
+                rowH: [0.4, 0.4, 0.4, 0.4],
+                fontSize: 12,
+                border: { pt: 0, color: "FFFFFF" }, // Set border to 0 to remove lines
+                fill: { color: "FFFFFF" }
+                // Removed firstRow styling since we're applying it directly to the cells
             });
 
             // Add chart area below summary
-            const chartY = summaryY + (rowHeight * 4); // Position chart below summary
-
-            slide.addShape(pptx.shapes.RECTANGLE, {
-                x: 0.19,
-                y: chartY,
-                w: 13,
-                h: 5.0, // Adjusted height
-                line: { color: "cccccc" },
-                fill: { color: "ffffff" }
-            });
+            const chartY = 3.2; // Position chart below summary
 
             // Prepare and add chart with adjusted position
             const chartValues = chartData.series[0].data;
             const chartLabels = chartData.options.xaxis.categories;
 
+            // Create the chart data with the exact values
             const pptChartData = [{
                 name: 'Event ROI',
                 labels: chartLabels,
-                values: chartValues  // Remove the division by 100 since values are already in correct format
+                values: chartValues,
+                dataLabels: chartValues.map(value => value.toString())
             }];
 
             slide.addChart(pptx.charts.BAR, pptChartData, {
                 x: 0.35,
-                y: chartY + 0.2, // Adjusted Y position
+                y: chartY,
                 w: 12,
-                h: 4, // Adjusted height
+                h: 3.5,
                 barDir: 'col',
                 barGrouping: "standard",
                 dataLabelColor: "000000",
                 dataLabelFontFace: "Arial",
                 dataLabelFontSize: 10,
                 dataLabelPosition: "outEnd",
-                dataLabelFormatCode: "#,##0.00'%'",
+                dataLabelFormatCode: '0.00"%"',
                 showValue: true,
-                chartColors: chartValues.map(value => value >= 0 ? '52c41a' : 'ff4d4f'),
-                invertedColors: chartValues.map(value => value >= 0 ? '52c41a' : 'ff4d4f'),
+                chartColors: chartValues.map(value => {
+                    if (value >= 35) return '52c41a';
+                    if (value > 0) return 'ffd700';
+                    return 'ff4d4f';
+                }),
                 showLegend: false,
                 showTitle: false,
                 catAxisTitle: "Events",
@@ -2031,14 +2054,15 @@ const TpoReport = ({ event, projects }) => {
                 valAxisTitle: "ROI (%)",
                 valAxisTitleColor: "000000",
                 valAxisTitleFontSize: 12,
-                // Update the axis min/max values to work with the divided values
-                valAxisMinVal: 0,  // Start from 0
-                valAxisMaxVal: Math.max(...chartValues) + 100, // Add some padding
-                valGridLine: { style: "none" },
-                catGridLine: { style: "none" }
+                valAxisMinVal: 0, // Start from 0%
+                valAxisMaxVal: Math.max(...chartValues) * 1.1, // Add 10% padding
+                valGridLine: { style: "solid" },
+                catGridLine: { style: "none" },
+                valAxisLabelFormatCode: '0"%"', // Format y-axis labels as percentages
+                valAxisMajorUnit: 200 // Set major unit to 200% for y-axis
             });
 
-            // Add logos at the bottom
+            // Add logos
             slide.addImage({
                 path: Logo,
                 x: 0.3,
@@ -2059,9 +2083,9 @@ const TpoReport = ({ event, projects }) => {
                 });
             }
 
-            // Save the presentation
+            // Save the presentation with the chart title as the filename
             await pptx.writeFile({
-                fileName: "Event_Level_ROI.pptx",
+                fileName: "What is the ROI for all events.pptx",
                 compression: true
             });
 
@@ -2104,13 +2128,14 @@ const TpoReport = ({ event, projects }) => {
 
             let slide = pptx.addSlide({ masterName: "PLACEHOLDER_SLIDE" });
 
-            // Add description text
-            slide.addText("This chart shows the ROI by account which is the same formula as event level ROI but across all events", {
+            // Add chart title at the top
+            slide.addText("What is driving the variation in ROI across different retailers?", {
                 x: 0.35,
-                y: 0.5,
+                y: 0.4,
                 w: 12,
-                h: 0.5,
-                fontSize: 12,
+                h: 0.4,
+                fontSize: 16,
+                bold: true,
                 color: "000000"
             });
 
@@ -2121,12 +2146,13 @@ const TpoReport = ({ event, projects }) => {
             const pptChartData = [{
                 name: 'Account ROI',
                 labels: chartLabels,
-                values: chartValues
+                values: chartValues,
+                dataLabels: chartValues.map(value => value.toString())
             }];
 
             slide.addChart(pptx.charts.BAR, pptChartData, {
                 x: 0.35,
-                y: 1.2,
+                y: 1.5,
                 w: 12,
                 h: 5.5,
                 barDir: 'col',
@@ -2135,7 +2161,7 @@ const TpoReport = ({ event, projects }) => {
                 dataLabelFontFace: "Arial",
                 dataLabelFontSize: 10,
                 dataLabelPosition: "outEnd",
-                dataLabelFormatCode: "#,##0.00'%'",
+                dataLabelFormatCode: '0.00"%"',
                 showValue: true,
                 chartColors: chartValues.map(value => {
                     if (value >= 35) return '52c41a';
@@ -2150,28 +2176,19 @@ const TpoReport = ({ event, projects }) => {
                 valAxisTitle: "ROI (%)",
                 valAxisTitleColor: "000000",
                 valAxisTitleFontSize: 12,
-                valAxisMinVal: Math.min(...chartValues) - 10,
-                valAxisMaxVal: Math.max(...chartValues) + 10,
-                valGridLine: { style: "none" },
+                valAxisMinVal: 0, // Start from 0%
+                valAxisMaxVal: Math.max(...chartValues) * 1.1, // Add 10% padding
+                valAxisLabelFormatCode: '0"%"', // Format as round percentages (0%, 50%, etc.)
+                valAxisMajorUnit: 50, // Set major tick marks at 50% intervals
+                valGridLine: { style: "solid" },
                 catGridLine: { style: "none" }
-            });
-
-            // Add question text at bottom
-            slide.addText("What is driving the variation in ROI across different accounts?", {
-                x: 0.35,
-                y: 6.8,
-                w: 12,
-                h: 0.3,
-                fontSize: 12,
-                color: "000000",
-                bold: true
             });
 
             // Add logos
             slide.addImage({
                 path: Logo,
                 x: 0.3,
-                y: 7.2,
+                y: 7.0,
                 w: 1.4,
                 h: 0.5,
                 sizing: { type: "contain", w: 1.4, h: 0.5 }
@@ -2181,15 +2198,16 @@ const TpoReport = ({ event, projects }) => {
                 slide.addImage({
                     path: authData.company_logo,
                     x: 11.3,
-                    y: 7.2,
+                    y: 7.0,
                     w: 1.4,
                     h: 0.5,
                     sizing: { type: "contain", w: 1.4, h: 0.5 }
                 });
             }
 
+            // Save the presentation with the chart title as the filename
             await pptx.writeFile({
-                fileName: "Account_Level_ROI.pptx",
+                fileName: "What is driving the variation in ROI across different retailers.pptx",
                 compression: true
             });
 
@@ -2206,7 +2224,7 @@ const TpoReport = ({ event, projects }) => {
             let pptx = new pptxgen();
             pptx.layout = "LAYOUT_WIDE";
 
-            // Master slide setup remains same...
+            // Master slide setup
             pptx.defineSlideMaster({
                 title: "PLACEHOLDER_SLIDE",
                 background: { color: "FFFFFF" },
@@ -2232,93 +2250,122 @@ const TpoReport = ({ event, projects }) => {
 
             let slide = pptx.addSlide({ masterName: "PLACEHOLDER_SLIDE" });
 
-            // Add title
-            slide.addText("Trade spend versus incremental case consumption and ROI (%)", {
+            // Add chart title at the top
+            slide.addText("What is the relationship between trade spend, incremental volume, and ROI?", {
                 x: 0.35,
-                y: 0.5,
+                y: 0.4,
                 w: 12,
-                h: 0.5,
-                fontSize: 14,
+                h: 0.4,
+                fontSize: 16,
                 bold: true,
                 color: "000000"
             });
 
-            // Format data for scatter plots
-            const volumeData = {
+            // Prepare data for XY charts
+            const volumeData = [{
                 name: 'Incremental Volume',
-                labels: chart3Data.series1[0].data.map(point => point[0]?.toString()),
-                values: chart3Data.series1[0].data.map(point => point[1])
-            };
+                values: chart3Data.series1[0].data.map(point => point.y),
+                labels: chart3Data.series1[0].data.map(point => point.x.toString())
+            }];
 
-            const roiData = {
+            const roiData = [{
                 name: 'ROI',
-                labels: chart3Data.series2[0].data.map(point => point[0]?.toString()),
-                values: chart3Data.series2[0].data.map(point => point[1])
-            };
+                values: chart3Data.series2[0].data.map(point => point.y),
+                labels: chart3Data.series2[0].data.map(point => point.x.toString())
+            }];
+
+            // Since scatter charts aren't working, let's create a simple bar chart
+            // that shows the relationship between spend and volume/ROI
+
+            // Sort data by spend (x value) for better visualization
+            const sortedVolumeData = [...chart3Data.series1[0].data].sort((a, b) => a.x - b.x);
+            const sortedRoiData = [...chart3Data.series2[0].data].sort((a, b) => a.x - b.x);
+
+            // Prepare data for bar charts
+            const volumeBarData = [{
+                name: 'Incremental Volume',
+                labels: sortedVolumeData.map((point, i) => `Event ${i + 1}`),
+                values: sortedVolumeData.map(point => point.y)
+            }];
+
+            const spendBarData = [{
+                name: 'Spend',
+                labels: sortedVolumeData.map((point, i) => `Event ${i + 1}`),
+                values: sortedVolumeData.map(point => point.x)
+            }];
+
+            const roiBarData = [{
+                name: 'ROI',
+                labels: sortedRoiData.map((point, i) => `Event ${i + 1}`),
+                values: sortedRoiData.map(point => point.y)
+            }];
 
             // Left chart - Trade Spend vs Incremental Volume
-            slide.addChart(pptx.charts.SCATTER, [volumeData], {
+            slide.addChart(pptx.charts.BAR, volumeBarData, {
                 x: 0.35,
-                y: 1.2,
+                y: 1.5,
                 w: 5.9,
-                h: 5,
+                h: 2.3,
                 showTitle: true,
-                title: "Trade Spend vs. Incremental Volume",
+                title: "Incremental Volume by Event",
                 showLegend: false,
-                lineSize: 0,
                 chartColors: ['4472C4'],
-                lineWidth: 0,
-                markerSize: 10,
                 dataLabelFormatCode: "#,##0",
                 valAxisTitle: "Incremental Volume",
-                catAxisTitle: "Spend ($)",
                 plotArea: { border: { pt: 1, color: "888888" } },
                 showValAxisTitle: true,
-                showCatAxisTitle: true,
-                valAxisTitleColor: "000000",
-                catAxisTitleColor: "000000"
+                valAxisTitleColor: "000000"
+            });
+
+            // Left chart (bottom) - Spend
+            slide.addChart(pptx.charts.BAR, spendBarData, {
+                x: 0.35,
+                y: 4.0,
+                w: 5.9,
+                h: 2.3,
+                showTitle: true,
+                title: "Spend by Event",
+                showLegend: false,
+                chartColors: ['FF9900'],
+                dataLabelFormatCode: "$#,##0",
+                valAxisTitle: "Spend ($)",
+                plotArea: { border: { pt: 1, color: "888888" } },
+                showValAxisTitle: true,
+                valAxisTitleColor: "000000"
             });
 
             // Right chart - Trade Spend vs ROI
-            slide.addChart(pptx.charts.SCATTER, [roiData], {
+            slide.addChart(pptx.charts.BAR, roiBarData, {
                 x: 6.45,
-                y: 1.2,
+                y: 1.5,
                 w: 5.9,
-                h: 5,
+                h: 2.3,
                 showTitle: true,
-                title: "Trade Spend vs. ROI (%)",
+                title: "ROI by Event",
                 showLegend: false,
-                lineSize: 0,
                 chartColors: ['4472C4'],
-                lineWidth: 0,
-                markerSize: 10,
                 dataLabelFormatCode: "#,##0.0'%'",
                 valAxisTitle: "ROI (%)",
-                catAxisTitle: "Spend ($)",
                 plotArea: { border: { pt: 1, color: "888888" } },
                 showValAxisTitle: true,
-                showCatAxisTitle: true,
-                valAxisTitleColor: "000000",
-                catAxisTitleColor: "000000"
+                valAxisTitleColor: "000000"
             });
 
-            // Add correlation values
-            slide.addText(`Correlation: ${chart3Data.options1.subtitle.text.split(": ")[1]}`, {
-                x: 0.35,
-                y: 6.3,
-                w: 5.9,
-                h: 0.3,
-                fontSize: 12,
-                color: "000000"
-            });
-
-            slide.addText(`Correlation: ${chart3Data.options2.subtitle.text.split(": ")[1]}`, {
+            // Right chart (bottom) - Spend
+            slide.addChart(pptx.charts.BAR, spendBarData, {
                 x: 6.45,
-                y: 6.3,
+                y: 4.0,
                 w: 5.9,
-                h: 0.3,
-                fontSize: 12,
-                color: "000000"
+                h: 2.3,
+                showTitle: true,
+                title: "Spend by Event",
+                showLegend: false,
+                chartColors: ['FF9900'],
+                dataLabelFormatCode: "$#,##0",
+                valAxisTitle: "Spend ($)",
+                plotArea: { border: { pt: 1, color: "888888" } },
+                showValAxisTitle: true,
+                valAxisTitleColor: "000000"
             });
 
             // Add logos
@@ -2342,8 +2389,9 @@ const TpoReport = ({ event, projects }) => {
                 });
             }
 
+            // Save the presentation with the chart title as the filename
             await pptx.writeFile({
-                fileName: "Trade_Spend_Analysis.pptx",
+                fileName: "What is the relationship between trade spend, incremental volume, and ROI.pptx",
                 compression: true
             });
 
@@ -2386,19 +2434,63 @@ const TpoReport = ({ event, projects }) => {
 
             let slide = pptx.addSlide({ masterName: "PLACEHOLDER_SLIDE" });
 
-            // Event Count chart
-            slide.addShape(pptx.shapes.RECTANGLE, {
+            // Add chart title at the top
+            slide.addText("What is the ROI by event types?", {
                 x: 0.35,
-                y: 0.5,
+                y: 0.4,
                 w: 12,
+                h: 0.4,
+                fontSize: 16,
+                bold: true,
+                color: "000000"
+            });
+
+            // Create a labels-only chart on the left
+            const labelsData = [{
+                name: 'Labels',
+                labels: ['TPR', 'Feature Only', 'Display Only', 'Feature and Display', 'All Events'],
+                values: [0, 0, 0, 0, 0] // Zero values so bars don't show
+            }];
+
+            // Add labels-only chart
+            slide.addChart(pptx.charts.BAR, labelsData, {
+                x: 0.35,
+                y: 1.3,
+                w: 1.8,
+                h: 5.6,
+                barDir: 'bar',
+                showTitle: false,
+                showLegend: false,
+                chartColors: ['FFFFFF'], // White color so bars are invisible
+                showValue: false,
+                catAxisOrientation: 'maxMin',
+                valAxisHidden: true, // Hide value axis
+                valAxisMaxVal: 0.1, // Very small max value to ensure bars don't show
+                plotArea: { fill: { color: 'FFFFFF' }, border: { pt: 0, color: "FFFFFF" } }, // White background, no border
+                barGapWidthPct: 60,
+                dataLabelPosition: 'outEnd',
+                catGridLine: { style: "none" }, // Hide category grid lines
+                valGridLine: { style: "none" }, // Hide value grid lines
+                catAxisLineShow: false, // Hide category axis line
+                valAxisLineShow: false, // Hide value axis line
+                dataBorder: { pt: 0 }, // No border on data elements
+                border: { pt: 0, color: "FFFFFF" }, // No border on chart
+                chartArea: { border: { pt: 0, color: "FFFFFF" } } // No border on chart area
+            });
+
+            // Event Count chart - Left section
+            slide.addShape(pptx.shapes.RECTANGLE, {
+                x: 2.25,
+                y: 0.9,
+                w: 3.2,
                 h: 0.4,
                 fill: { color: "0072bc" }
             });
 
             slide.addText("Event Count (% of Total)", {
-                x: 0.35,
-                y: 0.5,
-                w: 12,
+                x: 2.25,
+                y: 0.9,
+                w: 3.2,
                 h: 0.4,
                 align: 'center',
                 fontSize: 12,
@@ -2408,42 +2500,41 @@ const TpoReport = ({ event, projects }) => {
 
             const eventCountData = [{
                 name: 'Event Count',
-                labels: ['TPR', 'Feature Only', 'Display Only', 'Feature and Display', 'All Events'],
+                labels: ['', '', '', '', ''], // Empty labels since we're showing them separately
                 values: chart4Data.eventCount.series[0].data
             }];
 
             slide.addChart(pptx.charts.BAR, eventCountData, {
-                x: 0.35,
-                y: 0.9,
-                w: 12,
-                h: 1.6,
+                x: 2.25,
+                y: 1.3,
+                w: 3.2,
+                h: 5.6,
                 barDir: 'bar',
                 showTitle: false,
                 showLegend: false,
-                dataLabelFormatCode: '#,##0.00"%"',
-                chartColors: ['2196f3'],
+                dataLabelFormatCode: '#,##0.0"%"',
+                chartColors: ['4472C4'],
                 showValue: true,
                 dataLabelPosition: 'outEnd',
                 catAxisOrientation: 'maxMin',
                 barGapWidthPct: 60,
-                valAxisMaxVal: 100,
-                valAxisMinVal: 0,
+                catAxisHidden: true, // Hide the category axis since we're showing labels separately
                 catAxisLabelPos: 'low'
             });
 
-            // Incremental Lift chart
+            // Incremental Lift chart - Middle section
             slide.addShape(pptx.shapes.RECTANGLE, {
-                x: 0.35,
-                y: 2.7,
-                w: 12,
+                x: 5.55,
+                y: 0.9,
+                w: 3.2,
                 h: 0.4,
                 fill: { color: "0072bc" }
             });
 
-            slide.addText("Average Incremental Lift (%)", {
-                x: 0.35,
-                y: 2.7,
-                w: 12,
+            slide.addText("Incremental Lift (%)", {
+                x: 5.55,
+                y: 0.9,
+                w: 3.2,
                 h: 0.4,
                 align: 'center',
                 fontSize: 12,
@@ -2453,40 +2544,41 @@ const TpoReport = ({ event, projects }) => {
 
             const incrementalLiftData = [{
                 name: 'Incremental Lift',
-                labels: ['TPR', 'Feature Only', 'Display Only', 'Feature and Display', 'All Events'],
+                labels: ['', '', '', '', ''], // Empty labels
                 values: chart4Data.incrementalLift.series[0].data
             }];
 
             slide.addChart(pptx.charts.BAR, incrementalLiftData, {
-                x: 0.35,
-                y: 3.1,
-                w: 12,
-                h: 1.6,
+                x: 5.55,
+                y: 1.3,
+                w: 3.2,
+                h: 5.6,
                 barDir: 'bar',
                 showTitle: false,
                 showLegend: false,
-                dataLabelFormatCode: '#,##0.00"%"',
+                dataLabelFormatCode: '#,##0.0"%"',
                 chartColors: ['00e396'],
                 showValue: true,
                 dataLabelPosition: 'outEnd',
                 catAxisOrientation: 'maxMin',
                 barGapWidthPct: 60,
+                catAxisHidden: true, // Hide the category axis
                 catAxisLabelPos: 'low'
             });
 
-            // Weighted ROI chart
+            // Weighted ROI chart - Right section
             slide.addShape(pptx.shapes.RECTANGLE, {
-                x: 0.35,
-                y: 4.9,
-                w: 12,
+                x: 8.85,
+                y: 0.9,
+                w: 3.2,
                 h: 0.4,
                 fill: { color: "0072bc" }
             });
 
             slide.addText("Weighted Average ROI (%)", {
-                x: 0.35,
-                y: 4.9,
-                w: 12,
+                x: 8.85,
+                y: 0.9,
+                w: 3.2,
                 h: 0.4,
                 align: 'center',
                 fontSize: 12,
@@ -2496,24 +2588,25 @@ const TpoReport = ({ event, projects }) => {
 
             const weightedROIData = [{
                 name: 'Weighted ROI',
-                labels: ['TPR', 'Feature Only', 'Display Only', 'Feature and Display', 'All Events'],
+                labels: ['', '', '', '', ''], // Empty labels
                 values: chart4Data.weightedROI.series[0].data
             }];
 
             slide.addChart(pptx.charts.BAR, weightedROIData, {
-                x: 0.35,
-                y: 5.3,
-                w: 12,
-                h: 1.6,
+                x: 8.85,
+                y: 1.3,
+                w: 3.2,
+                h: 5.6,
                 barDir: 'bar',
                 showTitle: false,
                 showLegend: false,
-                dataLabelFormatCode: '#,##0.00"%"',
+                dataLabelFormatCode: '#,##0.0"%"',
                 chartColors: ['feb019'],
                 showValue: true,
                 dataLabelPosition: 'outEnd',
                 catAxisOrientation: 'maxMin',
                 barGapWidthPct: 60,
+                catAxisHidden: true, // Hide the category axis
                 catAxisLabelPos: 'low'
             });
 
@@ -2521,7 +2614,7 @@ const TpoReport = ({ event, projects }) => {
             slide.addImage({
                 path: Logo,
                 x: 0.3,
-                y: 7.2,
+                y: 7.0,
                 w: 1.4,
                 h: 0.5,
                 sizing: { type: "contain", w: 1.4, h: 0.5 }
@@ -2531,15 +2624,16 @@ const TpoReport = ({ event, projects }) => {
                 slide.addImage({
                     path: authData.company_logo,
                     x: 11.3,
-                    y: 7.2,
+                    y: 7.0,
                     w: 1.4,
                     h: 0.5,
                     sizing: { type: "contain", w: 1.4, h: 0.5 }
                 });
             }
 
+            // Save the presentation with the chart title as the filename
             await pptx.writeFile({
-                fileName: "Event_Type_Analysis.pptx",
+                fileName: "What is the ROI by event types.pptx",
                 compression: true
             });
 
@@ -2582,23 +2676,23 @@ const TpoReport = ({ event, projects }) => {
 
             let slide = pptx.addSlide({ masterName: "PLACEHOLDER_SLIDE" });
 
-            // Add title and description
-            slide.addText(`Avg. Wtd ROI for different discount levels by ${chart5View}`, {
+            // Add chart title at the top
+            slide.addText("What is the ROI at different discount levels?", {
                 x: 0.35,
-                y: 0.5,
+                y: 0.4,
                 w: 12,
-                h: 0.5,
-                fontSize: 14,
+                h: 0.4,
+                fontSize: 16,
                 bold: true,
                 color: "000000"
             });
 
             // Add main chart
-            const chartData = chart5Data.series.map(series => ({
-                name: series.name,
+            const chartData = [{
+                name: 'Weighted ROI',
                 labels: ['0-10', '10-20', '20-30', '30-40', '40-50'],
-                values: series.data
-            }));
+                values: chart5Data.series[0].data.map(val => val === 0 ? null : val) // Replace 0 with null to hide
+            }];
 
             slide.addChart(pptx.charts.BAR, chartData, {
                 x: 0.35,
@@ -2607,32 +2701,36 @@ const TpoReport = ({ event, projects }) => {
                 h: 4,
                 barDir: 'col',
                 showTitle: true,
-                title: `ROI by Discount Depth (${chart5View} View)`,
-                showLegend: true,
-                legendPos: 'b',
-                dataLabelFormatCode: '#,##0.0"%"',
+                title: `ROI by Discount Depth`,
+                showLegend: false, // No legend needed for single series
+                dataLabelFormatCode: '#,##0.00"%"',
                 showValue: true,
-                valueBarColors: true,
-                chartColors: ['4472C4', '00B050', 'FFC000', '7030A0'],
+                chartColors: chart5Data.series[0].data.map(value => {
+                    if (value >= 35) return '52c41a'; // Green for high ROI
+                    if (value > 0) return 'ffd700';  // Yellow for medium ROI
+                    return 'ff4d4f';                 // Red for negative ROI
+                }),
                 catAxisTitle: "Discount Depth",
-                valAxisTitle: "ROI (%)"
+                valAxisTitle: "ROI (%)",
+                dataLabelPosition: "outEnd"
             });
 
             // Add summary table
             const summaryData = chart5Data.summaryData;
             slide.addTable([
                 [
-                    { text: "Discount Depth", options: { bold: true } },
-                    { text: "0-10", options: { bold: true } },
-                    { text: "10-20", options: { bold: true } },
-                    { text: "20-30", options: { bold: true } },
-                    { text: "30-40", options: { bold: true } },
-                    { text: "40-50", options: { bold: true } }
+                    { text: "Discount Depth", options: { bold: true, fill: { color: "f2f2f2" } } },
+                    { text: "0-10", options: { bold: true, fill: { color: "f2f2f2" } } },
+                    { text: "10-20", options: { bold: true, fill: { color: "f2f2f2" } } },
+                    { text: "20-30", options: { bold: true, fill: { color: "f2f2f2" } } },
+                    { text: "30-40", options: { bold: true, fill: { color: "f2f2f2" } } },
+                    { text: "40-50", options: { bold: true, fill: { color: "f2f2f2" } } }
                 ],
-                ["No. of events", ...summaryData.noOfEvents],
-                ["% of Trade Spend", ...summaryData.tradeSpend.map(val => val.toFixed(1) + '%')],
-                ["Avg. Wtd. Lift", ...summaryData.avgLift.map(val => val.toFixed(1) + '%')],
-                ["# of F&D Events", ...summaryData.fndEvents]
+                ["No. of events", ...summaryData.noOfEvents.map(val => val === 0 ? '-' : val)],
+                ["Avg. Wtd. ROI", ...summaryData.avgWeightedROI.map(val => val === 0 ? '-' : (val).toFixed(2) + '%')],
+                ["% of Trade Spend", ...summaryData.tradeSpend.map(val => val === 0 ? '-' : val.toFixed(1) + '%')],
+                ["Avg. Wtd. Lift", ...summaryData.avgLift.map(val => val === 0 ? '-' : val.toFixed(1) + '%')],
+                ["# of F&D Events", ...summaryData.fndEvents.map(val => val === 0 ? '-' : val)]
             ], {
                 x: 0.35,
                 y: 5.5,
@@ -2663,8 +2761,9 @@ const TpoReport = ({ event, projects }) => {
                 });
             }
 
+            // Save the presentation with the chart title as the filename
             await pptx.writeFile({
-                fileName: `ROI_by_Discount_Depth_${chart5View}.pptx`,
+                fileName: "What is the ROI at different discount levels.pptx",
                 compression: true
             });
 
@@ -2707,82 +2806,90 @@ const TpoReport = ({ event, projects }) => {
 
             let slide = pptx.addSlide({ masterName: "PLACEHOLDER_SLIDE" });
 
+            // Add chart title at the top
+            slide.addText("What is the performance of PPGs?", {
+                x: 0.35,
+                y: 0.4,
+                w: 12,
+                h: 0.4,
+                fontSize: 16,
+                bold: true,
+                color: "000000"
+            });
+
             // Add main chart
-            const chartData = chart6Data.series.map(series => ({
-                name: series.name,
-                labels: ['PPG A', 'PPG B'],
-                values: series.data
-            }));
+            const chartData = [{
+                name: 'Average ROI',
+                labels: chart6Data.options.xaxis.categories,
+                values: chart6Data.series[0].data.map(val => val === 0 ? null : val) // Replace 0 with null to hide
+            }];
 
             slide.addChart(pptx.charts.BAR, chartData, {
                 x: 0.35,
-                y: 1.5,
-                w: 8,
+                y: 1.0,
+                w: 12,
                 h: 4,
                 barDir: 'col',
                 showTitle: true,
                 title: "Performance by Price Point Group",
-                showLegend: true,
-                legendPos: 'b',
-                dataLabelFormatCode: '#,##0.0"%"',
+                showLegend: false, // No legend needed for single series
+                dataLabelFormatCode: '#,##0.00"%"',
                 showValue: true,
-                valueBarColors: true,
-                chartColors: ['4472C4', '00B050', 'FFC000'],
+                chartColors: chart6Data.series[0].data.map(value => {
+                    if (value >= 35) return '52c41a'; // Green for high ROI
+                    if (value > 0) return 'ffd700';  // Yellow for medium ROI
+                    return 'ff4d4f';                 // Red for negative ROI
+                }),
                 catAxisTitle: "Price Point Groups",
-                valAxisTitle: "Percentage (%)"
+                valAxisTitle: "ROI (%)",
+                dataLabelPosition: "outEnd"
             });
 
-            // Add summary tables
+            // Add summary table
             const summaryData = chart6Data.summaryData;
+            const ppgGroups = summaryData.ppgGroups;
 
-            // PPG A Summary
-            slide.addText("PPG A Summary", {
-                x: 8.5,
-                y: 1.5,
-                w: 4,
-                h: 0.3,
-                fontSize: 12,
-                bold: true,
-                color: "000000"
+            // Create header row with PPG names
+            const headerRow = [
+                { text: "Metric", options: { bold: true, fill: { color: "f2f2f2" } } }
+            ];
+
+            // Add each PPG name to the header
+            chart6Data.options.xaxis.categories.forEach(ppgName => {
+                headerRow.push({ text: ppgName, options: { bold: true, fill: { color: "f2f2f2" } } });
             });
 
-            slide.addTable([
-                ["Metric", "Value"],
-                ["Shared Profit Created", `$${formatNumber(summaryData.ppgA.sharedProfitCreated)}`],
-                ["Shelf Price Investment", `$${formatNumber(summaryData.ppgA.shelfPriceInvestment)}`],
-                ["Shared Profit Per $", `${formatNumber(summaryData.ppgA.sharedProfitPerDollar)}%`],
-                ["% Funded by Retailer", `${formatNumber(summaryData.ppgA.percentFundedByRetailer)}%`]
-            ], {
-                x: 8.5,
-                y: 1.9,
-                w: 4,
-                colW: [2, 2],
-                fontSize: 10,
-                border: { pt: 1, color: "cccccc" }
-            });
+            // Create data rows
+            const tableRows = [headerRow];
 
-            // PPG B Summary
-            slide.addText("PPG B Summary", {
-                x: 8.5,
-                y: 3.5,
-                w: 4,
-                h: 0.3,
-                fontSize: 12,
-                bold: true,
-                color: "000000"
+            // No. of events row
+            const eventsRow = ["No. of events"];
+            ppgGroups.forEach(group => {
+                eventsRow.push(group.events.length === 0 ? '-' : group.events.length);
             });
+            tableRows.push(eventsRow);
 
-            slide.addTable([
-                ["Metric", "Value"],
-                ["Shared Profit Created", `$${formatNumber(summaryData.ppgB.sharedProfitCreated)}`],
-                ["Shelf Price Investment", `$${formatNumber(summaryData.ppgB.shelfPriceInvestment)}`],
-                ["Shared Profit Per $", `${formatNumber(summaryData.ppgB.sharedProfitPerDollar)}%`],
-                ["% Funded by Retailer", `${formatNumber(summaryData.ppgB.percentFundedByRetailer)}%`]
-            ], {
-                x: 8.5,
-                y: 3.9,
-                w: 4,
-                colW: [2, 2],
+            // Avg. Wtd. ROI row
+            const roiRow = ["Avg. Wtd. ROI"];
+            ppgGroups.forEach(group => {
+                const roi = group.avgRoi;
+                roiRow.push(roi === 0 ? '-' : (roi).toFixed(2) + '%');
+            });
+            tableRows.push(roiRow);
+
+            // No. of Products row
+            const productsRow = ["No. of Products"];
+            ppgGroups.forEach(group => {
+                productsRow.push(group.products.length === 0 ? '-' : group.products.length);
+            });
+            tableRows.push(productsRow);
+
+            // Add the summary table
+            slide.addTable(tableRows, {
+                x: 0.35,
+                y: 5.5,
+                w: 12,
+                colW: Array(headerRow.length).fill(12 / headerRow.length), // Evenly distribute column widths
                 fontSize: 10,
                 border: { pt: 1, color: "cccccc" }
             });
@@ -2808,8 +2915,9 @@ const TpoReport = ({ event, projects }) => {
                 });
             }
 
+            // Save the presentation with the chart title as the filename
             await pptx.writeFile({
-                fileName: "Performance_by_PPG.pptx",
+                fileName: "What is the performance of PPGs.pptx",
                 compression: true
             });
 
@@ -2852,6 +2960,17 @@ const TpoReport = ({ event, projects }) => {
 
             let slide = pptx.addSlide({ masterName: "PLACEHOLDER_SLIDE" });
 
+            // Add chart title at the top
+            slide.addText("What is the Incremental Profit Per Dollar Invested on Promo By Retailer?", {
+                x: 0.35,
+                y: 0.4,
+                w: 12,
+                h: 0.4,
+                fontSize: 16,
+                bold: true,
+                color: "000000"
+            });
+
             // Add main chart
             const chartData = chart7Data.series.map(series => ({
                 name: series.name,
@@ -2861,7 +2980,7 @@ const TpoReport = ({ event, projects }) => {
 
             slide.addChart(pptx.charts.BAR, chartData, {
                 x: 0.35,
-                y: 1.5,
+                y: 1.0,
                 w: 12,
                 h: 5,
                 barDir: 'col',
@@ -2897,8 +3016,9 @@ const TpoReport = ({ event, projects }) => {
                 });
             }
 
+            // Save the presentation with the chart title as the filename
             await pptx.writeFile({
-                fileName: "Incremental_Profit_by_Channel.pptx",
+                fileName: "What is the Incremental Profit Per Dollar Invested on Promo By Retailer.pptx",
                 compression: true
             });
 
@@ -2940,57 +3060,89 @@ const TpoReport = ({ event, projects }) => {
 
             let slide = pptx.addSlide({ masterName: "PLACEHOLDER_SLIDE" });
 
-            // Add title
-            slide.addText("Relationship between ROI and Incremental Profit Pool per Event", {
-                x: 0.5,
-                y: 0.5,
-                fontSize: 18,
+            // Add chart title at the top
+            slide.addText("What is the relationship between ROI and Incremental Profit Pool?", {
+                x: 0.35,
+                y: 0.4,
+                w: 12,
+                h: 0.4,
+                fontSize: 16,
                 bold: true,
                 color: "000000"
             });
 
             // Format chart data properly for scatter plot
+            const chartData = chart8Data.series[0].data;
+
+            // Create separate arrays for x and y values
+            const xValues = chartData.map(point => point.x);
+            const yValues = chartData.map(point => point.y);
+
             const formattedChartData = [{
-                name: "Incremental Profit per Dollar",
-                values: chart8Data.series[0].data.map(point => ({
-                    x: point.x,
-                    y: point.y
-                }))
+                name: "Events",
+                values: xValues,
+                sizes: Array(xValues.length).fill(4),
+                labels: chartData.map(point => point.name || ''),
+                valuesY: yValues
             }];
 
             // Add scatter plot
-            slide.addChart(pptx.ChartType.scatter, formattedChartData, {
+            slide.addChart(pptx.charts.SCATTER, formattedChartData, {
                 x: 0.5,
-                y: 1,
-                w: 9,
-                h: 4.5,
+                y: 1.5,
+                w: 12,
+                h: 5,
                 showTitle: false,
                 showLegend: false,
-                chartColors: ['00B3E5'],
-                plotArea: { fill: { color: 'FFFFFF' } },
-                valAxisTitle: "Incremental Profit Pool per Dollar Invested",
-                catAxisTitle: "Manufacturer ROI (%)",
-                valAxisTitleRotate: 270,
-                valAxis: {
-                    showMajorGridlines: true,
-                    majorGridlines: { color: "e7e7e7" },
-                    minimum: chart8Data.options.yaxis.min,
-                    maximum: chart8Data.options.yaxis.max
-                },
-                catAxis: {
-                    showMajorGridlines: true,
-                    majorGridlines: { color: "e7e7e7" },
-                    minimum: chart8Data.options.xaxis.min,
-                    maximum: chart8Data.options.xaxis.max,
-                    formatCode: "0.00"
-                },
-                dataLabelFormatCode: "0.00",
+                chartColors: ['4472C4'],
+                lineWidth: 0,
                 lineSize: 0,
-                markerSize: 6
+                markerSize: 10,
+                dataLabelFormatCode: '#,##0.0"%"',
+                valAxisTitle: "Incremental Profit per Dollar",
+                catAxisTitle: "ROI (%)",
+                plotArea: { border: { pt: 1, color: "888888" } },
+                showValAxisTitle: true,
+                showCatAxisTitle: true,
+                valAxisTitleColor: "000000",
+                catAxisTitleColor: "000000"
             });
 
+            // Add correlation value
+            slide.addText(`Correlation: ${chart8Data.correlation ? chart8Data.correlation.toFixed(2) : "N/A"}`, {
+                x: 0.5,
+                y: 6.5,
+                w: 12,
+                h: 0.3,
+                fontSize: 12,
+                color: "000000",
+                bold: true
+            });
+
+            // Add logos
+            slide.addImage({
+                path: Logo,
+                x: 0.3,
+                y: 7.0,
+                w: 1.4,
+                h: 0.5,
+                sizing: { type: "contain", w: 1.4, h: 0.5 }
+            });
+
+            if (authData?.company_logo) {
+                slide.addImage({
+                    path: authData.company_logo,
+                    x: 11.3,
+                    y: 7.0,
+                    w: 1.4,
+                    h: 0.5,
+                    sizing: { type: "contain", w: 1.4, h: 0.5 }
+                });
+            }
+
+            // Save the presentation with the chart title as the filename
             await pptx.writeFile({
-                fileName: "ROI_and_Incremental_Profit_Pool.pptx",
+                fileName: "What is the relationship between ROI and Incremental Profit Pool.pptx",
                 compression: true
             });
 
@@ -3033,10 +3185,21 @@ const TpoReport = ({ event, projects }) => {
 
             let slide = pptx.addSlide({ masterName: "PLACEHOLDER_SLIDE" });
 
+            // Add chart title at the top
+            slide.addText("What is the relationship between retailer funding and ROI at different price points?", {
+                x: 0.35,
+                y: 0.4,
+                w: 12,
+                h: 0.4,
+                fontSize: 16,
+                bold: true,
+                color: "000000"
+            });
+
             // Add title
             slide.addText("Relationship between retailer funding and ROI at different price points", {
                 x: 0.35,
-                y: 0.5,
+                y: 0.9,
                 w: 12,
                 h: 0.5,
                 fontSize: 14,
@@ -3044,82 +3207,67 @@ const TpoReport = ({ event, projects }) => {
                 color: "000000"
             });
 
-            // Format data for the chart
-            const chartData = chart9Data.series.map(series => {
-                // Ensure data points exist and are properly formatted
-                const validData = series.data.filter(point =>
-                    Array.isArray(point) && point.length === 2 &&
-                    !isNaN(point[0]) && !isNaN(point[1])
-                );
-
-                return {
+            // Format data for scatter plot
+            const scatterData = [];
+            chart9Data.series.forEach(series => {
+                scatterData.push({
                     name: series.name,
-                    values: validData.map(point => point[1]),
-                    labels: validData.map(point => point[0].toString())
-                };
-            }).filter(series => series.values.length > 0); // Only include series with valid data
-
-            if (chartData.length > 0) {
-                // Add chart
-                slide.addChart(pptx.charts.LINE, chartData, {
-                    x: 0.35,
-                    y: 1.2,
-                    w: 12,
-                    h: 5,
-                    showTitle: true,
-                    title: "Relationship between retailer funding and ROI at different price points",
-                    showLegend: true,
-                    legendPos: 'b',
-                    dataLabelFormatCode: "#,##0.00",
-                    showValue: true,
-                    chartColors: ['#00B3E5', '#4CAF50', '#FFC107'],
-                    catAxisTitle: "% of Promo Funded by Retailer",
-                    valAxisTitle: "Manufacturer Promo ROI",
-                    valAxisMinVal: Math.min(...chartData.flatMap(s => s.values)) - 5,
-                    valAxisMaxVal: Math.max(...chartData.flatMap(s => s.values)) + 5,
-                    valGridLine: { style: "none" },
-                    catGridLine: { style: "none" }
+                    values: series.data.map(point => ({
+                        x: point[0], // Retailer funding %
+                        y: point[1]  // ROI %
+                    }))
                 });
+            });
 
-                // Add description
-                slide.addText("The green shaded area indicates the minimum acceptable ROI of 25%", {
-                    x: 0.35,
-                    y: 6.3,
-                    w: 12,
-                    h: 0.3,
-                    fontSize: 12,
-                    color: "000000"
-                });
+            // Add scatter plot
+            slide.addChart(pptx.charts.SCATTER, scatterData, {
+                x: 0.35,
+                y: 1.5,
+                w: 12,
+                h: 5,
+                showTitle: false,
+                showLegend: true,
+                legendPos: 'b',
+                lineSize: 0,
+                chartColors: ['4472C4', '00B050', 'FFC000', '7030A0'],
+                lineWidth: 0,
+                markerSize: 10,
+                dataLabelFormatCode: '#,##0.0"%"',
+                valAxisTitle: "ROI (%)",
+                catAxisTitle: "Retailer Funding (%)",
+                plotArea: { border: { pt: 1, color: "888888" } },
+                showValAxisTitle: true,
+                showCatAxisTitle: true,
+                valAxisTitleColor: "000000",
+                catAxisTitleColor: "000000"
+            });
 
-                // Add logos
+            // Add logos
+            slide.addImage({
+                path: Logo,
+                x: 0.3,
+                y: 7.0,
+                w: 1.4,
+                h: 0.5,
+                sizing: { type: "contain", w: 1.4, h: 0.5 }
+            });
+
+            if (authData?.company_logo) {
                 slide.addImage({
-                    path: Logo,
-                    x: 0.3,
+                    path: authData.company_logo,
+                    x: 11.3,
                     y: 7.0,
                     w: 1.4,
                     h: 0.5,
                     sizing: { type: "contain", w: 1.4, h: 0.5 }
                 });
-
-                if (authData?.company_logo) {
-                    slide.addImage({
-                        path: authData.company_logo,
-                        x: 11.3,
-                        y: 7.0,
-                        w: 1.4,
-                        h: 0.5,
-                        sizing: { type: "contain", w: 1.4, h: 0.5 }
-                    });
-                }
-
-                await pptx.writeFile({
-                    fileName: "Relationship_between_retailer_funding_and_ROI.pptx",
-                    compression: true
-                });
-            } else {
-                console.error("No valid data available for the chart");
-                throw new Error("No valid data available for the chart");
             }
+
+            // Save the presentation with the chart title as the filename
+            await pptx.writeFile({
+                fileName: "What is the relationship between retailer funding and ROI at different price points.pptx",
+                compression: true
+            });
 
         } catch (error) {
             console.error("PPT Generation Error:", error);
@@ -3129,7 +3277,12 @@ const TpoReport = ({ event, projects }) => {
     };
 
     const formatNumber = (num) => {
-        return Number(num).toFixed(1);
+        if (num === undefined || num === null) return '0.0';
+
+        // Convert to number to ensure proper formatting
+        const numValue = Number(num);
+
+        return numValue.toFixed(2);
     };
 
     return (
@@ -3477,6 +3630,49 @@ const TpoReport = ({ event, projects }) => {
                                                     type="bar"
                                                     height={500}
                                                 />
+                                            </div>
+
+                                            {/* Summary table */}
+                                            <div className="bg-gray-50 p-4 rounded w-full mb-8">
+                                                <h4 className="text-lg font-bold mb-3">Result Summary</h4>
+                                                <div className="overflow-x-auto">
+                                                    <table className="min-w-full bg-white border border-gray-300">
+                                                        <thead>
+                                                            <tr className="bg-gray-100">
+                                                                <th className="border px-4 py-2">Metric</th>
+                                                                {chart6Data.options.xaxis.categories.map((category, i) => (
+                                                                    <th key={i} className="border px-4 py-2">{category}</th>
+                                                                ))}
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td className="border px-4 py-2 font-semibold">No. of events</td>
+                                                                {chart6Data.summaryData.ppgGroups.map((group, i) => (
+                                                                    <td key={i} className="border px-4 py-2">
+                                                                        {group.events.length === 0 ? '-' : group.events.length}
+                                                                    </td>
+                                                                ))}
+                                                            </tr>
+                                                            <tr>
+                                                                <td className="border px-4 py-2 font-semibold">Avg. Wtd. ROI</td>
+                                                                {chart6Data.summaryData.ppgGroups.map((group, i) => (
+                                                                    <td key={i} className="border px-4 py-2">
+                                                                        {group.avgRoi === 0 ? '-' : (group.avgRoi).toFixed(2) + '%'}
+                                                                    </td>
+                                                                ))}
+                                                            </tr>
+                                                            <tr>
+                                                                <td className="border px-4 py-2 font-semibold">No. of Products</td>
+                                                                {chart6Data.summaryData.ppgGroups.map((group, i) => (
+                                                                    <td key={i} className="border px-4 py-2">
+                                                                        {group.products.length === 0 ? '-' : group.products.length}
+                                                                    </td>
+                                                                ))}
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
                                             </div>
 
                                             {/* Summary section with accordions */}
