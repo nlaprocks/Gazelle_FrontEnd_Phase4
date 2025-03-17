@@ -35,10 +35,10 @@ const EventRow: React.FC<EventRowProps> = ({
     }
 
     const calculateEventPosition = (event: Event) => {
-        const startWeek = event.start_date ? Math.max(0, differenceInWeeks(startOfWeek(event.start_date, { weekStartsOn: 1 }), yearStart)) : 0
-        const endWeek = event.end_date ? Math.min(51, differenceInWeeks(startOfWeek(event.end_date, { weekStartsOn: 1 }), yearStart)) : 51
+        const startWeek = event.start_date ? Math.max(1, differenceInWeeks(startOfWeek(event.start_date, { weekStartsOn: 1 }), yearStart)) + 1 : 0
+        const endWeek = event.end_date ? Math.min(52, differenceInWeeks(startOfWeek(event.end_date, { weekStartsOn: 1 }), yearStart)) + 1 : 51
         const duration = endWeek - startWeek + 1
-
+        console.log({ event, startWeek, endWeek, duration })
         return {
             left: `${(startWeek / 52) * 100}%`,
             width: `${(duration / 52) * 100}%`,
@@ -52,7 +52,7 @@ const EventRow: React.FC<EventRowProps> = ({
 
     return (
         <tr className="relative">
-            <td className="product-title border-b border-r border-gray-200 p-2 font-medium bg-gray-50 sticky left-0 z-10 min-w-[120px] max-w-[120px]">
+            <td className="product-title border-b border-r border-gray-200 p-2 font-medium bg-gray-50 left-0 z-10 min-w-[120px] max-w-[120px]">
                 <Tooltip placement="topLeft" title={productName}>
                     <span>{productName}</span>
                 </Tooltip>

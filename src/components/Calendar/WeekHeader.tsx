@@ -22,7 +22,7 @@ const WeekHeader: React.FC<WeekHeaderProps> = ({ weeks }) => {
     return (
         <thead>
             <tr>
-                <th className="border-b border-r border-sky-700 p-2 bg-secondary text-white sticky left-0 z-20 font-semibold">
+                <th className="border-b border-r border-sky-700 p-2 bg-secondary text-white left-0 z-20 font-semibold">
                     Products
                 </th>
                 {months.map((month) => (
@@ -36,7 +36,7 @@ const WeekHeader: React.FC<WeekHeaderProps> = ({ weeks }) => {
                 ))}
             </tr>
             <tr>
-                <th className="border-b border-r border-gray-200 p-2 bg-gray-50 sticky left-0 z-20">
+                <th className="border-b border-r border-gray-200 p-2 bg-gray-50 left-0 z-20">
                     &nbsp;
                 </th>
                 {weeks.map((week) => (

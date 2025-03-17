@@ -3927,7 +3927,13 @@ body.modal-open {
 .product-title span {
   overflow: hidden;
   text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
+  display: block;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.product-title {
+  max-width: 120px;
+  min-width: 120px;
+  width: 120px;
 }
