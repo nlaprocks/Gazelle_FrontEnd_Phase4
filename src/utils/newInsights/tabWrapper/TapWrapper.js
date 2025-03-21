@@ -355,7 +355,7 @@ const TapWrapper = ({ showShareModal, setShowShareModal, sidebarState }) => {
                   </a>
                 </div>
                 <p>
-                  Total <span>{adminQuestionsReducer?.question?.data?.length + newCreatedSlides?.length}</span> Insight
+                  Total <span>{String((adminQuestionsReducer?.question?.data?.length || 0) + (newCreatedSlides?.length || 0))}</span> Insight
                 </p>
               </div>
               <>

@@ -262,7 +262,6 @@ const FilterDropDown = ({ chartData, role, callingQuestionsOnReducersSuccess, se
                   <Select
                     mode="multiple"
                     placeholder="Search by Retailer"
-                    prefixIcon={<SearchOutlined />}
                     value={selectedRetailers}
                     // onChange={setSelectedRetailers}
                     onChange={(values) => {
@@ -364,7 +363,6 @@ const FilterDropDown = ({ chartData, role, callingQuestionsOnReducersSuccess, se
                   <Select
                     mode="multiple"
                     placeholder="Search by Brands"
-                    prefixIcon={<SearchOutlined />}
                     value={selectedBrands} 
                     onChange={(values) => {
                       if (values.includes("selectAll")) {
@@ -416,7 +414,6 @@ const FilterDropDown = ({ chartData, role, callingQuestionsOnReducersSuccess, se
                   <Select
                     mode="multiple"
                     placeholder="Search by Products"
-                    prefixIcon={<SearchOutlined />}
                     value={selectedProducts}
                     // onChange={setSelectedProducts}
                     onChange={(values) => {

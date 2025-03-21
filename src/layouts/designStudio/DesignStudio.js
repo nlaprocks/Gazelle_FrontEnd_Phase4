@@ -983,14 +983,14 @@ const DesignStudio = () => {
               >
                 Pause
               </button> */}
-              <button
+              {/* <button
                 type="button"
                 className="btn btn-outline-danger runCancel"
                 data-bs-dismiss="modal"
                 onClick={handleClose}
               >
                 Cancel
-              </button>
+              </button> */}
             </>
           )}
         </Modal.Footer>

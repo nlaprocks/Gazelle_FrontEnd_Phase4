@@ -1,9 +1,7 @@
-
 import React from "react";
 import Modal from "react-bootstrap/Modal";
 import { useSelector, useDispatch } from "react-redux";
 import { Select, DatePicker } from "antd";
-import { SearchOutlined } from "@ant-design/icons";
 import { Spinner } from "react-bootstrap";
 import { useParams } from "react-router";
 import allActions from "../../../store";
@@ -37,7 +35,7 @@ const ApplyFilter = ({ showApplyFilterModal, setShowApplyFilterModal, InsightsBl
     const formattedDate = `${month}/${day}/${dateObject.getFullYear()}`;
     return formattedDate;
   }
-// console.log(getFiltersReducer,"getfilterreducer")
+  // console.log(getFiltersReducer,"getfilterreducer")
   const [dateRange, setDateRange] = React.useState({
     startDate: null,
     endDate: null,
@@ -151,7 +149,7 @@ const ApplyFilter = ({ showApplyFilterModal, setShowApplyFilterModal, InsightsBl
       filterProducts();
     }
   }, [selectedRetailers, selectedBrands, retailerBrandsProducts]);
-// }, []);
+  // }, []);
 
 
   return (
@@ -175,7 +173,6 @@ const ApplyFilter = ({ showApplyFilterModal, setShowApplyFilterModal, InsightsBl
             <Select
               mode="multiple"
               placeholder="Select Retailer"
-              prefixIcon={<SearchOutlined />}
               value={selectedRetailers}
               onChange={(values) => {
                 if (values.includes("selectAll")) {
@@ -236,7 +233,6 @@ const ApplyFilter = ({ showApplyFilterModal, setShowApplyFilterModal, InsightsBl
             <Select
               mode="multiple"
               placeholder="Select Brand"
-              prefixIcon={<SearchOutlined />}
               value={selectedBrands}
               // onChange={setSelectedBrands}
               onChange={(values) => {
@@ -274,7 +270,6 @@ const ApplyFilter = ({ showApplyFilterModal, setShowApplyFilterModal, InsightsBl
             <Select
               mode="multiple"
               placeholder="Select Products"
-              prefixIcon={<SearchOutlined />}
               value={selectedProducts}
               // onChange={setSelectedProducts}
               onChange={(values) => {
@@ -312,33 +307,6 @@ const ApplyFilter = ({ showApplyFilterModal, setShowApplyFilterModal, InsightsBl
                 ))}
             </Select>
           </div>
-          {/* <div className="input-wrapper rounded border">
-            <RangePicker
-                className="filtered-accordion-range-picker"
-                value={[
-                startDate ? dayjs(startDate, dateFormat) : null,
-                endDate ? dayjs(endDate, dateFormat) : null,
-                ]}
-                format={dateFormat}
-                onChange={(dates) => {
-                if (!dates) {
-                    setDateRange({
-                    startDate: null,
-                    endDate: null,
-                    });
-                } else {
-                    const [startMoment, endMoment] = dates;
-                    const sDate = startMoment ? startMoment.format(dateFormat) : null;
-                    const eDate = endMoment ? endMoment.format(dateFormat) : null;
-
-                    setDateRange({
-                    startDate: sDate,
-                    endDate: eDate,
-                    });
-                }
-                }}
-            />
-          </div> */}
         </div>
       </Modal.Body>
 
