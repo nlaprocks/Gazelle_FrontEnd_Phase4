@@ -136,8 +136,9 @@ const PromotionalLiftChart = ({ isLoading }) => {
         style: {
           fontSize: '10px',
         },
+        rotateAlways: true,
         formatter: function (value) {
-          const maxLabelLength = 10;
+          const maxLabelLength = 15;
           if (value?.length > maxLabelLength) {
             return value.substring(0, maxLabelLength - 3) + "...";
           }

@@ -1393,7 +1393,15 @@ export default function Simulation() {
                             </div>
                         </div>
                         <div className="col-lg-8">
-                            <div className="btn-wrapper">
+                            <div className="btn-wrapper flex gap-4">
+                                <div>
+                                    <a
+                                        href={`/new-insights/${project_id}/${model_id}`}
+                                        className="btn btn-outline-primary d-inline-flex items-center gap-3">
+                                        Insights
+                                        <i className="fa-solid fa-eye ms-0"></i>
+                                    </a>
+                                </div>
                                 <div className="other-design-studio-buttons version_btn">
                                     <select
                                         className="form-select form-select-lg sim_drop"
