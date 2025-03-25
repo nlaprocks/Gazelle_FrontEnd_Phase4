@@ -26,9 +26,11 @@ interface CalendarProps {
     setIsEditingTargets: (isEditingTargets: boolean) => void
     setTempTargets: (tempTargets: any) => void
     isLoading: boolean
+    isCreateEventModalOpen: boolean
+    setIsCreateEventModalOpen: (isCreateEventModalOpen: boolean) => void
 }
 
-const Calendar: React.FC<CalendarProps> = ({ projects, selectedRetailer, selectedBrand, productData, fetchImportedEvents, setFetchImportedEvents, targetValues, setIsEditingTargets, setTempTargets, isLoading }) => {
+const Calendar: React.FC<CalendarProps> = ({ projects, selectedRetailer, selectedBrand, productData, fetchImportedEvents, setFetchImportedEvents, targetValues, setIsEditingTargets, setTempTargets, isLoading, isCreateEventModalOpen, setIsCreateEventModalOpen }) => {
     const [currentYear, setCurrentYear] = useState(new Date().getFullYear())
     const { events, createEvent, updateEvent, deleteEvent, refreshEvents } = useEvents()
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -40,9 +42,46 @@ const Calendar: React.FC<CalendarProps> = ({ projects, selectedRetailer, selecte
     const handlePrevYear = () => setCurrentYear(prev => prev - 1)
     const handleNextYear = () => setCurrentYear(prev => prev + 1)
 
-    const handleAddEvent = (date: Date) => {
+    const handleAddEvent = (date: Date, product?: any) => {
         setSelectedDate(date)
-        setSelectedEvent(undefined)
+        setSelectedEvent({
+            id: '',
+            title: '',
+            description: '',
+            start_date: date,
+            end_date: date,
+            color: '',
+            status: 'draft',
+            channels: [],
+            project_id: '',
+            model_id: '',
+            event_tpo_id: '',
+            retailer_id: selectedRetailer,
+            brand_id: selectedBrand,
+            ppg_name: '',
+            planned: product ? [{
+                productId: product.id,
+                productName: product.name,
+                financialData: {
+                    basePrice: 0,
+                    promoPrice: 0,
+                    discount: 0,
+                    units: 0,
+                    tprDist: 0,
+                    doDist: 0,
+                    foDist: 0,
+                    fdDist: 0,
+                    listPrice: 0,
+                    edlpPerUnitRate: 0,
+                    promoPerUnitRate: 0,
+                    vcm: 0,
+                    fixedFee: 0,
+                    increamentalUnits: 0,
+                    promoPriceElasticity: 0
+                }
+            }] : [],
+            actual: []
+        })
         setIsModalOpen(true)
     }
 
@@ -111,8 +150,21 @@ const Calendar: React.FC<CalendarProps> = ({ projects, selectedRetailer, selecte
     }
 
     // Calculate widget values
-    const widgetValues = calculateWidgetValues(events, targetValues.spend)
+    const widgetValues = calculateWidgetValues(events, targetValues.spend, currentYear)
 
+    useEffect(() => {
+        if (isCreateEventModalOpen) {
+            setIsModalOpen(true)
+            console.log({ isCreateEventModalOpen });
+
+        }
+    }, [isCreateEventModalOpen])
+
+    useEffect(() => {
+        if (!isModalOpen) {
+            setIsCreateEventModalOpen(false)
+        }
+    }, [isModalOpen])
 
     return (
         <>
@@ -255,7 +307,6 @@ const Calendar: React.FC<CalendarProps> = ({ projects, selectedRetailer, selecte
                             selectedBrand={selectedBrand}
                             projects={projects}
                             productData={productData}
-                        // maxBudget={widgetValues.budgetRemaining}
                         />
                     )}
                 </div>

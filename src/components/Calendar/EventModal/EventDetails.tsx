@@ -68,7 +68,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({
     let brands = formData.retailer_id && retailerBrandProducts[formData.retailer_id] ? Object.keys(retailerBrandProducts[formData.retailer_id]) : []
     // @ts-ignore
     let products = formData.retailer_id && formData.brand_id && retailerBrandProducts[formData.retailer_id]?.[formData.brand_id] ? retailerBrandProducts[formData.retailer_id][formData.brand_id] : []
-
+    console.log({ products })
     useEffect(() => {
         const fetchRetailerBrandProductApiHandler = async () => {
             try {
@@ -96,11 +96,18 @@ const EventDetails: React.FC<EventDetailsProps> = ({
     ]
     const [selectedProducts, setSelectedProducts] = useState<string[]>([])
 
+    // Initialize selectedProducts when initialEvent has planned products
+    useEffect(() => {
+        if (formData?.planned?.length > 0) {
+            const productName = formData.planned.map((p: any) => p.productName);
+            setSelectedProducts(productName);
+        }
+    }, [formData.planned]);
+
     const handleProductChange = async (values: string[]) => {
         setSelectedProducts(values)
 
         await eventService.fetchProductData(values, formData.project_id, formData.model_id, formData.retailer_id).then((productData: any) => {
-            console.log({ productData })
             const existingPlannedProductIds = new Set(formData.planned.map((p: any) => p.productId))
             const existingActualProductIds = new Set(formData.actual.map((p: any) => p.productId))
 
@@ -368,12 +375,13 @@ const EventDetails: React.FC<EventDetailsProps> = ({
                         <Select
                             mode="multiple"
                             value={selectedProducts}
-                            onChange={(values) => handleProductChange(values)}
-                            options={products.map((product: any) => ({ value: product, label: product }))}
-                            className="w-full"
+                            onChange={handleProductChange}
                             placeholder="Select products"
-                            disabled={!formData.brand_id}
-                            maxTagCount={2}
+                            className="w-full"
+                            options={products.map((product: any) => ({
+                                value: product,
+                                label: product
+                            }))}
                         />
                     </Form.Item>
                 </div>

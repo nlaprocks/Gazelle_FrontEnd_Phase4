@@ -1,7 +1,7 @@
 import { Event } from '../types/event'
 import { getResult } from './financialCalculations'
 
-export const calculateWidgetValues = (events: Event[], targetBudget: number) => {
+export const calculateWidgetValues = (events: Event[], targetBudget: number, year: number) => {
     // Initialize accumulators
     let totalRevenue = 0
     let totalSpend = 0
@@ -13,8 +13,10 @@ export const calculateWidgetValues = (events: Event[], targetBudget: number) => 
     let totalIncrementalVolume = 0
     let totalCogs = 0;
 
+    const currentYearEvents = events.filter(event => new Date(event.start_date ?? new Date()).getFullYear() === year || new Date(event.end_date ?? new Date()).getFullYear() === year);
+
     // Process each event
-    events.forEach(event => {
+    currentYearEvents.forEach(event => {
         // Add to budget used
         // totalBudgetUsed += Number(event.budget) || 0
 

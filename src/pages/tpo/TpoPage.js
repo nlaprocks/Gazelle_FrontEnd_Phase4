@@ -277,6 +277,8 @@ const TpoPage = () => {
         }
     }, [tpoData]);
 
+    const [isCreateEventModalOpen, setIsCreateEventModalOpen] = useState(false)
+
     return (
         <>
             <Header />
@@ -372,6 +374,12 @@ const TpoPage = () => {
                                 >
                                     <p className="text-base font-medium" > Import </p>
                                 </button>
+                                <button
+                                    className="flex items-center bg-[rgb(73,162,128)] text-white hover:shadow-sm rounded-lg py-2.5 px-3"
+                                    onClick={() => setIsCreateEventModalOpen(true)}
+                                >
+                                    <p className="text-base font-medium" > Create Event </p>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -379,7 +387,7 @@ const TpoPage = () => {
                     {
                         selectedProject && selectedModel ? (
                             <>
-                                <Calendar projects={projects} selectedRetailer={selectedRetailer} selectedBrand={selectedBrand} productData={productData} fetchImportedEvents={fetchImportedEvents} setFetchImportedEvents={setFetchImportedEvents} targetValues={targetValues} setIsEditingTargets={setIsEditingTargets} setTempTargets={setTempTargets} isLoading={isLoading} />
+                                <Calendar projects={projects} selectedRetailer={selectedRetailer} selectedBrand={selectedBrand} productData={productData} fetchImportedEvents={fetchImportedEvents} setFetchImportedEvents={setFetchImportedEvents} targetValues={targetValues} setIsEditingTargets={setIsEditingTargets} setTempTargets={setTempTargets} isLoading={isLoading} isCreateEventModalOpen={isCreateEventModalOpen} setIsCreateEventModalOpen={setIsCreateEventModalOpen} />
                             </>
                         ) : (
                             <>

@@ -12,8 +12,8 @@ export interface BaseEvent {
     id: string // Added id to BaseEvent
     title: string
     description: string
-    start_date?: Date
-    end_date?: Date
+    start_date: Date | undefined
+    end_date: Date | undefined
     color: string
     status: EventStatus
     channels: string[]
