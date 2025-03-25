@@ -16,7 +16,7 @@ const TopBar = ({ setShowShareModal, sidebarState }) => {
 
   const [project, setProject] = React.useState([]);
   const project_id = useParams().id;
-  
+
 
   // Model Version
   const getInsightsVersionReducer = useSelector((state) => state.getInsightsVersionReducer);
@@ -31,7 +31,7 @@ const TopBar = ({ setShowShareModal, sidebarState }) => {
     // window.location.reload();
   }, []);
 
-  
+
   const latestVersionId = getInsightsVersionReducer?.insightsVersion?.data?.[0]?.id; // Assuming the first version is the latest
 
 
@@ -81,43 +81,37 @@ const TopBar = ({ setShowShareModal, sidebarState }) => {
                   })}
                 </select> */}
 
-                
-                <select
-  className="form-select"
-  value={model_id}
-  onChange={(e) => {
-    
-    const selectedVersion = e.target.value || latestVersionId;
-    
 
-    navigate(`/new-insights/${project_id}/${selectedVersion}`);
-    window.location.reload(); 
-  }}
->
-  <option value="">Select a Version</option>
-  
-  {getInsightsVersionReducer?.insightsVersion?.data?.map((val, id) => {
-    
-  
-    return (
-      <>
-        {val?.model_version === 1 && model_id === 1 ? (
-          <option value={val?.id} key={id} disabled={true}>
-            Version {val?.model_version}
-          </option>
-        ) : (
-          <option value={val?.id} key={id}>
-            Version {val?.model_version}
-          </option>
-        )}
-      </>
-    );
-  })}
-</select>
+                <select
+                  className="form-select"
+                  value={model_id}
+                  onChange={(e) => {
+
+                    const selectedVersion = e.target.value || latestVersionId;
+
+
+                    navigate(`/new-insights/${project_id}/${selectedVersion}`);
+                    window.location.reload();
+                  }}
+                >
+                  <option value="">Select a Version</option>
+
+                  {getInsightsVersionReducer?.insightsVersion?.data?.map((val, id) => {
+                    return val?.model_version === 1 && model_id === 1 ? (
+                      <option value={val?.id} key={id} disabled={true}>
+                        Version {String(val?.model_version)}
+                      </option>
+                    ) : (
+                      <option value={val?.id} key={id}>
+                        Version {String(val?.model_version)}
+                      </option>
+                    );
+                  })}
+                </select>
 
               </div>
               <div className="other-design-studio-buttons">
-              <div>
+                <div>
                   <a
                     href={`/simulation/${encodeURIComponent(project)}/${project_id}/${model_id}`}
                     className="btn btn-outline-primary d-inline-flex items-center gap-3"
