@@ -10,7 +10,7 @@ interface EventRowProps {
     product: Product
     weeks: { weekNumber: number; startDate: Date }[]
     events: Event[]
-    onAddEvent: (date: Date) => void
+    onAddEvent: (date: Date, product: Product) => void
     onEditEvent: (event: Event) => void
     onCopyEvent: (event: Event) => void
     onDeleteEvent: (id: string) => void
@@ -31,7 +31,7 @@ const EventRow: React.FC<EventRowProps> = ({
     yearStart,
 }) => {
     const handleCellDoubleClick = (date: Date) => {
-        onAddEvent(date)
+        onAddEvent(date, product)
     }
 
     const calculateEventPosition = (event: Event) => {
