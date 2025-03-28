@@ -83,6 +83,15 @@ export const TpoCard = ({ event, projects, fetchEventTpos, handleEditTpo, handle
                     <div className="flex gap-2 py-4 text-lg">
                         <label className="font-semibold">Project:</label> <p>{project?.project_name}</p>
                     </div>
+                    <div className="flex gap-2 py-2 text-lg">
+                        <label className="font-semibold">Retailer:</label> <p>{event.retailer_id}</p>
+                    </div>
+                    <div className="flex gap-2 py-2 text-lg">
+                        <label className="font-semibold">Brand:</label> <p>{event.brand_id}</p>
+                    </div>
+                    <div className="flex gap-2 py-2 text-lg">
+                        <label className="font-semibold">Year:</label> <p>{event.year}</p>
+                    </div>
                     {/* <p>Version {getModelVersion(event)}</p> */}
                     <Link
                         to={`/tpo/${encodeURIComponent(project?.project_name)}/${event?.project_id}/${event?.model_id}/${event?.id}`}

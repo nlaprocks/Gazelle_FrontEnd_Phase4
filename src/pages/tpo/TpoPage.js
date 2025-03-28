@@ -12,66 +12,50 @@ import { Link } from "react-router-dom";
 import { useEvents } from '../../hooks/useEvents'
 import { TargetUpdate } from "../../components/Calendar/TargetUpdate";
 import { eventService } from "../../services/eventService"
+import { useRetailerBrandData } from '../../hooks/useRetailerBrandData';
 
-const getTpoStorageKey = (projectId, modelId, id) => {
-    return `tpo_state_${projectId}_${modelId}_${id}`;
+const getTpoStorageKey = (projectId, modelId, eventTpoId) => {
+    return `tpo_state_${projectId}_${modelId}_${eventTpoId}`;
 };
 
-const getTpoStoredState = (projectId, modelId, id) => {
-    const key = getTpoStorageKey(projectId, modelId, id);
+const getTpoStoredState = (projectId, modelId, eventTpoId) => {
+    const key = getTpoStorageKey(projectId, modelId, eventTpoId);
     const stored = localStorage.getItem(key);
     return stored ? JSON.parse(stored) : null;
 };
 
-const saveTpoState = (projectId, modelId, id, state) => {
-    const key = getTpoStorageKey(projectId, modelId, id);
+const saveTpoState = (projectId, modelId, eventTpoId, state) => {
+    const key = getTpoStorageKey(projectId, modelId, eventTpoId);
     localStorage.setItem(key, JSON.stringify(state));
 };
 
 const TpoPage = () => {
     const authData = JSON.parse(localStorage.getItem("auth"));
     const user_id = authData?.user_id;
-    const { project_name, project_id, model_id, id } = useParams();
+    const { project_name, project_id, model_id, id: event_tpo_id } = useParams();
 
     // Fetch TPO data
     const [tpoData, setTpoData] = useState(null);
-
     const [projects, setProjects] = useState([]);
     const [projectModels, setProjectModels] = useState([]);
-    const [retailerBrandProducts, setRetailerBrandProducts] = useState([]);
     const navigate = useNavigate();
 
+    // Use the retailer brand data hook
+    const { retailerBrandProducts, getProductsForBrand, isLoading: isLoadingProducts } = useRetailerBrandData(project_id, model_id);
+
     const handleRedirect = () => {
-        navigate(`/tpo-report/${project_name}/${project_id}/${model_id}/${id}`);
+        navigate(`/tpo-report/${project_name}/${project_id}/${model_id}/${event_tpo_id}`);
     };
 
     // Select project and model
     const [selectedProject, setSelectedProject] = useState(project_id);
     const [selectedModel, setSelectedModel] = useState(model_id);
-
-    const [selectedRetailer, setSelectedRetailer] = useState("");
-    const [selectedBrand, setSelectedBrand] = useState("");
     const [productData, setProductData] = useState([]);
-    const retailers = Object?.keys(retailerBrandProducts);
-    let brands = selectedRetailer
-        ? Object?.keys(retailerBrandProducts[selectedRetailer])
-        : [];
-    let products = selectedBrand
-        ? retailerBrandProducts[selectedRetailer][selectedBrand]
-        : [];
-
-    const [isEditingTargets, setIsEditingTargets] = useState(false);
-    const [targetValues, setTargetValues] = useState({
-        volume: 0,
-        spend: 0,
-        revenue: 0
-    });
-    const [tempTargets, setTempTargets] = useState({});
+    const [selectedProducts, setSelectedProducts] = useState([]);
+    const [isAllProductSelected, setIsAllProductSelected] = useState(false);
 
     // Add these state declarations after other useState declarations
     const [isLoading, setIsLoading] = useState(false);
-    const [isAllProductSelected, setIsAllProductSelected] = useState(false);
-    const [selectedProducts, setSelectedProducts] = useState([]);
 
     useEffect(() => {
         const fetchProjects = async () => {
@@ -90,16 +74,19 @@ const TpoPage = () => {
 
         // fetch tpo data
         const fetchTpoData = async () => {
-            const api = `${process.env.REACT_APP_Base_URL}/api/v1/events/tpo/${id}`;
-            const config = { headers: { Authorization: `Bearer ` + authData.token, "accept": "application/json" } };
-            const response = await axios.get(api, config);
-            console.log("response", response.data);
-            setTpoData(response?.data);
-            setTargetValues({
-                volume: response?.data?.volume || 0,
-                spend: response?.data?.spend || 0,
-                revenue: response?.data?.revenue || 0
-            });
+            try {
+                const api = `${process.env.REACT_APP_Base_URL}/api/v1/events/tpo/${event_tpo_id}`;
+                const config = { headers: { Authorization: `Bearer ` + authData.token, "accept": "application/json" } };
+                const response = await axios.get(api, config);
+                setTpoData(response?.data);
+                setTargetValues({
+                    volume: response?.data?.volume || 0,
+                    spend: response?.data?.spend || 0,
+                    revenue: response?.data?.revenue || 0
+                });
+            } catch (error) {
+                console.log("Error fetching TPO data:", error);
+            }
         }
 
         fetchProjects();
@@ -115,137 +102,59 @@ const TpoPage = () => {
         fetchProjectModels();
     }, [selectedProject]);
 
+    // Set initial products when TPO data and retailerBrandProducts are loaded
     useEffect(() => {
-        const fetchRetailerBrandProductApiHandler = async () => {
-            try {
-                setIsLoading(true);
-                const api = `${process.env.REACT_APP_NGROK}/insights/retailer_brands_products?project_id=${project_id}&model_id=${model_id}`;
-                const response = await axios.get(api);
-                if (response.status === 200) {
-                    setRetailerBrandProducts(response?.data?.data);
-
-                    // After getting the data, restore the stored state
-                    const storedState = getTpoStoredState(project_id, model_id, id);
-                    if (storedState) {
-                        if (storedState.retailer) {
-                            setSelectedRetailer(storedState.retailer);
-
-                            if (storedState.brand) {
-                                setSelectedBrand(storedState.brand);
-
-                                if (storedState.products && storedState.products.length > 0) {
-                                    setSelectedProducts(storedState.products);
-                                }
-                            }
-                        }
-                    }
-                    setIsLoading(false);
-                }
-            } catch (error) {
-                setIsLoading(false);
-                console.log("Error in fetching retailers", error);
+        if (tpoData?.retailer_id && tpoData?.brand_id && retailerBrandProducts[tpoData.retailer_id]) {
+            const products = getProductsForBrand(tpoData.retailer_id, tpoData.brand_id);
+            setSelectedProducts(products);
+            if (products.length > 0) {
+                fetchProductData(products, tpoData.retailer_id);
             }
-        };
-        fetchRetailerBrandProductApiHandler();
-    }, [project_id, model_id, id]);
-
-    const handleRetailerChange = (value) => {
-        setSelectedRetailer(value);
-        setSelectedBrand("");
-        setSelectedProducts([]);
-
-        // Save the updated state
-        const currentState = getTpoStoredState(project_id, model_id, id) || {};
-        const newState = {
-            ...currentState,
-            retailer: value,
-            brand: "",
-            products: []
-        };
-        saveTpoState(project_id, model_id, id, newState);
-    };
-
-    const handleBrandChange = (value) => {
-        setSelectedBrand(value);
-        setSelectedProducts([]);
-
-        // Save the updated state
-        const currentState = getTpoStoredState(project_id, model_id, id) || {};
-        const newState = {
-            ...currentState,
-            brand: value,
-            products: []
-        };
-        saveTpoState(project_id, model_id, id, newState);
-    };
+        }
+    }, [tpoData, retailerBrandProducts]);
 
     const handleProductsChange = (values) => {
         if (values && values.length && values.includes("select-all")) {
-            if (values.length === products.length + 1) {
+            const availableProducts = getProductsForBrand(tpoData?.retailer_id, tpoData?.brand_id);
+            if (values.length === availableProducts.length + 1) {
                 setIsAllProductSelected(false);
                 return setSelectedProducts([]);
             }
             setIsAllProductSelected(true);
-            return setSelectedProducts([...products]);
+            return setSelectedProducts(availableProducts);
         }
-        if (values.length === products.length) {
+
+        const availableProducts = getProductsForBrand(tpoData?.retailer_id, tpoData?.brand_id);
+        if (values.length === availableProducts.length) {
             setIsAllProductSelected(true);
         }
 
         setSelectedProducts(values);
 
         // Save the updated state
-        const currentState = getTpoStoredState(project_id, model_id, id) || {};
+        const currentState = getTpoStoredState(project_id, model_id, event_tpo_id) || {};
         const newState = {
             ...currentState,
             products: values
         };
-        saveTpoState(project_id, model_id, id, newState);
+        saveTpoState(project_id, model_id, event_tpo_id, newState);
     };
 
     useEffect(() => {
-        if (!retailerBrandProducts) return; // Don't save if data isn't loaded
-
-        // get current state and maintain current state if available
-        const currentState = getTpoStoredState(project_id, model_id, id) || {};
-
-        const state = {
-            retailer: currentState.retailer || selectedRetailer,
-            brand: currentState.brand || selectedBrand,
-            products: currentState.products || selectedProducts
-        };
-
-        saveTpoState(project_id, model_id, id, state);
-    }, [
-        retailerBrandProducts,
-        selectedRetailer,
-        selectedBrand,
-        selectedProducts,
-        project_id,
-        model_id,
-        id
-    ]);
-
-    useEffect(() => {
-        fetchProductData(selectedProducts);
+        if (tpoData?.retailer_id && selectedProducts.length > 0) {
+            fetchProductData(selectedProducts, tpoData.retailer_id);
+        }
     }, [selectedProducts]);
 
-    // const handleProductChange = (value) => {
-    //     setSelectedProducts(value);
-    //     fetchProductData(value);
-    // };
-
-    const fetchProductData = async (products) => {
+    const fetchProductData = async (products, retailerId) => {
         try {
-            // loading 
             setIsLoading(true);
-            await eventService.fetchProductData(products, selectedProject, selectedModel, selectedRetailer).then((productData) => {
+            await eventService.fetchProductData(products, selectedProject, selectedModel, retailerId).then((productData) => {
                 setProductData(productData);
             });
             setIsLoading(false);
         } catch (error) {
             console.log("Error in fetching promo event simulation data: ", error);
-        } finally {
             setIsLoading(false);
         }
     };
@@ -278,6 +187,13 @@ const TpoPage = () => {
     }, [tpoData]);
 
     const [isCreateEventModalOpen, setIsCreateEventModalOpen] = useState(false)
+    const [isEditingTargets, setIsEditingTargets] = useState(false);
+    const [targetValues, setTargetValues] = useState({
+        volume: 0,
+        spend: 0,
+        revenue: 0
+    });
+    const [tempTargets, setTempTargets] = useState({});
 
     return (
         <>
@@ -292,50 +208,10 @@ const TpoPage = () => {
                                 </div>
                             </Link>
                             <h4 className="text-2xl font-bold"> {project_name} </h4>
-                            {/* <a href="/tpo" className="flex items-center gap-2" >
-                                <div className="fa-solid fa-arrow-left" > </div>
-                                <span> Back </span>
-                            </a>
-                            <h4 className="text-2xl font-bold"> {project_name} </h4> */}
                         </div>
                         <div>
                             <div className="tpo-page flex justify-end flex-wrap items-center gap-x-4 gap-y-2" >
-                                {/* <button className="flex items-center space-x-2 bg-white text-black hover:shadow-sm rounded-lg py-2.5 px-3" >
-                                    <p className="text-base font-medium" >01.01.2024 - 03.01.2024 </p>
-                                </button> */}
-
                                 <div className="flex items-center space-x-2 py-2.5 px-3 gap-2">
-                                    <Form.Item>
-                                        <Select
-                                            value={selectedRetailer}
-                                            onChange={handleRetailerChange}
-                                            options={
-                                                retailers.map(retailer => ({
-                                                    value: retailer,
-                                                    label: retailer,
-                                                }))
-                                            }
-                                            className="w-full mb-0 shadow-sm rounded-sm"
-                                            placeholder="Select retailer"
-                                        />
-                                    </Form.Item>
-
-                                    <Form.Item>
-                                        <Select
-                                            value={selectedBrand}
-                                            onChange={handleBrandChange}
-                                            options={
-                                                brands.map(brand => ({
-                                                    value: brand,
-                                                    label: brand,
-                                                }))
-                                            }
-                                            className="w-full mb-0 shadow-sm rounded-sm"
-                                            placeholder="Select brand"
-                                            disabled={!selectedRetailer}
-                                        />
-                                    </Form.Item>
-
                                     <Form.Item>
                                         <Select
                                             mode="multiple"
@@ -346,8 +222,8 @@ const TpoPage = () => {
                                             }}
                                             className="w-full mb-0 shadow-sm rounded-sm filtered-accordion-ant-select"
                                             placeholder="Select products"
-                                            disabled={!selectedBrand}
                                             maxTagCount="responsive"
+                                            loading={isLoadingProducts}
                                         >
                                             <Select.Option
                                                 key="select-all"
@@ -355,7 +231,7 @@ const TpoPage = () => {
                                                 className="text-primary">
                                                 {!isAllProductSelected ? "Select all" : "Unselect all"}
                                             </Select.Option>
-                                            {products.map((product, index) => (
+                                            {getProductsForBrand(tpoData?.retailer_id, tpoData?.brand_id).map((product, index) => (
                                                 <Select.Option key={index} value={product}>
                                                     {product}
                                                 </Select.Option>
@@ -387,11 +263,23 @@ const TpoPage = () => {
                     {
                         selectedProject && selectedModel ? (
                             <>
-                                <Calendar projects={projects} selectedRetailer={selectedRetailer} selectedBrand={selectedBrand} productData={productData} fetchImportedEvents={fetchImportedEvents} setFetchImportedEvents={setFetchImportedEvents} targetValues={targetValues} setIsEditingTargets={setIsEditingTargets} setTempTargets={setTempTargets} isLoading={isLoading} isCreateEventModalOpen={isCreateEventModalOpen} setIsCreateEventModalOpen={setIsCreateEventModalOpen} />
+                                <Calendar
+                                    projects={projects}
+                                    selectedRetailer={tpoData?.retailer_id}
+                                    selectedBrand={tpoData?.brand_id}
+                                    productData={productData}
+                                    fetchImportedEvents={fetchImportedEvents}
+                                    setFetchImportedEvents={setFetchImportedEvents}
+                                    targetValues={targetValues}
+                                    setIsEditingTargets={setIsEditingTargets}
+                                    setTempTargets={setTempTargets}
+                                    isLoading={isLoading || isLoadingProducts}
+                                    isCreateEventModalOpen={isCreateEventModalOpen}
+                                    setIsCreateEventModalOpen={setIsCreateEventModalOpen}
+                                />
                             </>
                         ) : (
                             <>
-                                {/* Show Information about select project and model */}
                                 <div className="bg-white rounded-lg w-full shadow-md p-4 text-center" >
                                     <p className="text-gray-500 text-sm" > Select project and model to view TPO </p>
                                 </div>
@@ -405,7 +293,7 @@ const TpoPage = () => {
                 show={isImportModalOpen}
                 onClose={() => setIsImportModalOpen(false)}
                 onImport={handleImportEvents}
-                event_tpo_id={id}
+                event_tpo_id={event_tpo_id}
                 retailerBrandProducts={retailerBrandProducts}
             />
 
@@ -416,12 +304,11 @@ const TpoPage = () => {
                 targetValues={targetValues}
                 setTargetValues={setTargetValues}
                 setIsEditingTargets={setIsEditingTargets}
-                event_tpo_id={id}
+                event_tpo_id={event_tpo_id}
             />
 
             <Footer />
         </>
-
     );
 };
 

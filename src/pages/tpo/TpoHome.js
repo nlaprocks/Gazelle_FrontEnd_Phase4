@@ -7,7 +7,7 @@ import Header from "../../components/header/Header";
 import Footer from "../../components/footer/Footer";
 import { TpoCard } from "./TpoCard";
 import createImg from "../../assets/images/new_project_create_image.png";
-
+import { useRetailerBrandData } from "../../hooks/useRetailerBrandData";
 
 const TpoHome = () => {
     const authData = JSON.parse(localStorage.getItem("auth"));
@@ -58,6 +58,10 @@ const TpoHome = () => {
             project_id: '',
             model_id: '',
             user_id: user_id,
+            retailer_id: '',
+            brand_id: '',
+            year: new Date().getFullYear(),
+            submit_type: 'create',
         });
         setShow(false);
         setEditTpo(false);
@@ -73,7 +77,7 @@ const TpoHome = () => {
 
     const handleCloseCancelClose = () => {
         setShowCancelProject(false);
-      };
+    };
 
     const [editTpo, setEditTpo] = useState(false);
 
@@ -83,6 +87,9 @@ const TpoHome = () => {
         project_id: '',
         model_id: '',
         user_id: user_id,
+        retailer_id: '',
+        brand_id: '',
+        year: new Date().getFullYear(),
         submit_type: 'create',
     });
     const [loading, setLoading] = useState(false);
@@ -90,11 +97,17 @@ const TpoHome = () => {
     // Add new state for tracking form submission attempt
     const [submitAttempted, setSubmitAttempted] = useState(false);
 
+    // Use the retailer brand data hook
+    const { retailers, getBrandsForRetailer, isLoading: isRetailerDataLoading } = useRetailerBrandData(
+        formData.project_id,
+        formData.model_id
+    );
+
     const handleCreateTpo = async () => {
         setSubmitAttempted(true);
 
         // Add validation
-        if (!formData.name?.trim() || !formData.project_id || !formData.model_id) {
+        if (!formData.name?.trim() || !formData.project_id || !formData.model_id || !formData.retailer_id || !formData.brand_id) {
             if (!formData.name?.trim()) {
                 message.error('Please enter Trade Plan name');
             }
@@ -103,6 +116,12 @@ const TpoHome = () => {
             }
             if (!formData.model_id) {
                 message.error('Please select a model');
+            }
+            if (!formData.retailer_id) {
+                message.error('Please select a retailer');
+            }
+            if (!formData.brand_id) {
+                message.error('Please select a brand');
             }
             return;
         }
@@ -127,6 +146,9 @@ const TpoHome = () => {
                         model_id: '',
                         submit_type: 'create',
                         user_id: user_id,
+                        retailer_id: '',
+                        brand_id: '',
+                        year: new Date().getFullYear(),
                     });
 
                     setEditTpo(false);
@@ -148,6 +170,9 @@ const TpoHome = () => {
                         model_id: '',
                         submit_type: 'create',
                         user_id: user_id,
+                        retailer_id: '',
+                        brand_id: '',
+                        year: new Date().getFullYear(),
                     });
 
                     setEditTpo(false);
@@ -240,6 +265,8 @@ const TpoHome = () => {
                                     ...formData,
                                     project_id: value,
                                     model_id: '', // Reset model when project changes
+                                    retailer_id: '', // Reset retailer when project changes
+                                    brand_id: '', // Reset brand when project changes
                                 })}
                                 disabled={upgradeVersion}
                                 options={projects.filter(project => project.is_insight).map(project => ({ value: project.id, label: project.project_name }))}
@@ -259,6 +286,8 @@ const TpoHome = () => {
                                 onChange={(value) => setFormData({
                                     ...formData,
                                     model_id: value,
+                                    retailer_id: '', // Reset retailer when model changes
+                                    brand_id: '', // Reset brand when model changes
                                 })}
                                 options={projects.find(project => project.id === parseInt(formData.project_id))?.Models.map((model) => ({ value: model.id, label: `Version ${model?.model_version}` }))}
                                 className="w-full"
@@ -266,6 +295,54 @@ const TpoHome = () => {
                                 disabled={!formData.project_id}
                                 required
                                 status={submitAttempted && !formData.model_id ? 'error' : ''}
+                            />
+                        </div>
+                        <div className="mt-2">
+                            <Typography.Title level={5}>Retailer <span className="text-danger">*</span></Typography.Title>
+                            <Select
+                                value={formData.retailer_id}
+                                onChange={(value) => setFormData({
+                                    ...formData,
+                                    retailer_id: value,
+                                    brand_id: '', // Reset brand when retailer changes
+                                })}
+                                className="w-full"
+                                placeholder="Select retailer"
+                                disabled={!formData.model_id || isRetailerDataLoading}
+                                loading={isRetailerDataLoading}
+                                options={retailers.map(retailer => ({ value: retailer, label: retailer }))}
+                                required
+                                status={submitAttempted && !formData.retailer_id ? 'error' : ''}
+                            />
+                        </div>
+                        <div className="mt-2">
+                            <Typography.Title level={5}>Brand <span className="text-danger">*</span></Typography.Title>
+                            <Select
+                                value={formData.brand_id}
+                                onChange={(value) => setFormData({ ...formData, brand_id: value })}
+                                className="w-full"
+                                placeholder="Select brand"
+                                disabled={!formData.retailer_id || isRetailerDataLoading}
+                                loading={isRetailerDataLoading}
+                                options={getBrandsForRetailer(formData.retailer_id).map(brand => ({ value: brand, label: brand }))}
+                                required
+                                status={submitAttempted && !formData.brand_id ? 'error' : ''}
+                            />
+                        </div>
+                        <div className="mt-2">
+                            <Typography.Title level={5}>Year <span className="text-danger">*</span></Typography.Title>
+                            <Select
+                                value={formData.year}
+                                onChange={(value) => setFormData({ ...formData, year: value })}
+                                className="w-full"
+                                placeholder="Select year"
+                                required
+                                status={submitAttempted && !formData.year ? 'error' : ''}
+                                options={[
+                                    { value: new Date().getFullYear(), label: new Date().getFullYear() },
+                                    { value: new Date().getFullYear() + 1, label: new Date().getFullYear() + 1 },
+                                    { value: new Date().getFullYear() - 1, label: new Date().getFullYear() - 1 }
+                                ]}
                             />
                         </div>
                     </div>
@@ -289,30 +366,30 @@ const TpoHome = () => {
             {/* <!-- Cancel Project Modal Start --> */}
             <Modal show={showCancelProject} onHide={onClose} id="cancelProject" centered>
                 <Modal.Header>
-                <Modal.Title>Cancel Trade Plan</Modal.Title>
+                    <Modal.Title>Cancel Trade Plan</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                <div class="nla_modal_banenr">
-                    <img src={createImg} alt="placeholder" class="img-fluid" />
-                </div>
-                <div class="nla_modal_body_title text-center">
-                    <h5>Are you Sure?</h5>
-                    <p>Pressing yes will cancel the Trade Plan</p>
-                </div>
+                    <div class="nla_modal_banenr">
+                        <img src={createImg} alt="placeholder" class="img-fluid" />
+                    </div>
+                    <div class="nla_modal_body_title text-center">
+                        <h5>Are you Sure?</h5>
+                        <p>Pressing yes will cancel the Trade Plan</p>
+                    </div>
                 </Modal.Body>
                 <Modal.Footer>
-                <button
-                    type="button"
-                    class="btn btn-outline-secondary"
-                    data-bs-toggle="modal"
-                    data-bs-target="#createNewProject"
-                    onClick={handleCloseCancel}
-                >
-                    No
-                </button>
-                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onClick={handleCloseCancelClose}>
-                    Yes
-                </button>
+                    <button
+                        type="button"
+                        class="btn btn-outline-secondary"
+                        data-bs-toggle="modal"
+                        data-bs-target="#createNewProject"
+                        onClick={handleCloseCancel}
+                    >
+                        No
+                    </button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onClick={handleCloseCancelClose}>
+                        Yes
+                    </button>
                 </Modal.Footer>
             </Modal>
             {/* <!-- Cancel Project Modal End --> */}
